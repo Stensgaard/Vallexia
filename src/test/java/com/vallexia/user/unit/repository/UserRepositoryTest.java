@@ -1,0 +1,404 @@
+package com.vallexia.user.unit.repository;
+
+import com.vallexia.user.entity.User;
+import com.vallexia.user.fixtures.UserTestFixtures;
+import com.vallexia.user.repository.UserRepository;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
+
+/**
+ * Unit tests for UserRepository.
+ * Tests repository query methods with mocked implementations.
+ * 
+ * @author Vallexia Team
+ * @version 1.0
+ * @since 2024-01-01
+ */
+@ExtendWith(MockitoExtension.class)
+@DisplayName("UserRepository Unit Tests")
+class UserRepositoryTest {
+  
+  @Mock
+  private UserRepository userRepository;
+  
+  // ==================== findByUsername() Tests ====================
+  
+  @Test
+  @DisplayName("Should find user by username")
+  void shouldFindUserByUsername() {
+    // Given
+    User user = UserTestFixtures.createUser();
+    when(userRepository.findByUsername(UserTestFixtures.TEST_USERNAME))
+        .thenReturn(Optional.of(user));
+    
+    // When
+    Optional<User> found = userRepository.findByUsername(UserTestFixtures.TEST_USERNAME);
+    
+    // Then
+    assertThat(found).isPresent();
+    assertThat(found.get().getUsername()).isEqualTo(UserTestFixtures.TEST_USERNAME);
+    assertThat(found.get().getEmail()).isEqualTo(UserTestFixtures.TEST_EMAIL);
+    verify(userRepository).findByUsername(UserTestFixtures.TEST_USERNAME);
+  }
+  
+  @Test
+  @DisplayName("Should return empty Optional when username not found")
+  void shouldReturnEmptyOptionalWhenUsernameNotFound() {
+    // Given
+    when(userRepository.findByUsername("nonexistent"))
+        .thenReturn(Optional.empty());
+    
+    // When
+    Optional<User> found = userRepository.findByUsername("nonexistent");
+    
+    // Then
+    assertThat(found).isEmpty();
+    verify(userRepository).findByUsername("nonexistent");
+  }
+  
+  @Test
+  @DisplayName("Should be case-sensitive when finding by username")
+  void shouldBeCaseSensitiveWhenFindingByUsername() {
+    // Given
+    when(userRepository.findByUsername(UserTestFixtures.TEST_USERNAME.toUpperCase()))
+        .thenReturn(Optional.empty());
+    
+    // When
+    Optional<User> found = userRepository.findByUsername(UserTestFixtures.TEST_USERNAME.toUpperCase());
+    
+    // Then
+    assertThat(found).isEmpty(); // Username search is case-sensitive
+    verify(userRepository).findByUsername(UserTestFixtures.TEST_USERNAME.toUpperCase());
+  }
+  
+  // ==================== findByEmail() Tests ====================
+  
+  @Test
+  @DisplayName("Should find user by email")
+  void shouldFindUserByEmail() {
+    // Given
+    User user = UserTestFixtures.createUser();
+    when(userRepository.findByEmail(UserTestFixtures.TEST_EMAIL))
+        .thenReturn(Optional.of(user));
+    
+    // When
+    Optional<User> found = userRepository.findByEmail(UserTestFixtures.TEST_EMAIL);
+    
+    // Then
+    assertThat(found).isPresent();
+    assertThat(found.get().getEmail()).isEqualTo(UserTestFixtures.TEST_EMAIL);
+    assertThat(found.get().getUsername()).isEqualTo(UserTestFixtures.TEST_USERNAME);
+    verify(userRepository).findByEmail(UserTestFixtures.TEST_EMAIL);
+  }
+  
+  @Test
+  @DisplayName("Should return empty Optional when email not found")
+  void shouldReturnEmptyOptionalWhenEmailNotFound() {
+    // Given
+    when(userRepository.findByEmail("nonexistent@example.com"))
+        .thenReturn(Optional.empty());
+    
+    // When
+    Optional<User> found = userRepository.findByEmail("nonexistent@example.com");
+    
+    // Then
+    assertThat(found).isEmpty();
+    verify(userRepository).findByEmail("nonexistent@example.com");
+  }
+  
+  // ==================== existsByUsername() Tests ====================
+  
+  @Test
+  @DisplayName("Should return true when username exists")
+  void shouldReturnTrueWhenUsernameExists() {
+    // Given
+    when(userRepository.existsByUsername(UserTestFixtures.TEST_USERNAME))
+        .thenReturn(true);
+    
+    // When
+    boolean exists = userRepository.existsByUsername(UserTestFixtures.TEST_USERNAME);
+    
+    // Then
+    assertThat(exists).isTrue();
+    verify(userRepository).existsByUsername(UserTestFixtures.TEST_USERNAME);
+  }
+  
+  @Test
+  @DisplayName("Should return false when username does not exist")
+  void shouldReturnFalseWhenUsernameDoesNotExist() {
+    // Given
+    when(userRepository.existsByUsername("nonexistent"))
+        .thenReturn(false);
+    
+    // When
+    boolean exists = userRepository.existsByUsername("nonexistent");
+    
+    // Then
+    assertThat(exists).isFalse();
+    verify(userRepository).existsByUsername("nonexistent");
+  }
+  
+  // ==================== existsByEmail() Tests ====================
+  
+  @Test
+  @DisplayName("Should return true when email exists")
+  void shouldReturnTrueWhenEmailExists() {
+    // Given
+    when(userRepository.existsByEmail(UserTestFixtures.TEST_EMAIL))
+        .thenReturn(true);
+    
+    // When
+    boolean exists = userRepository.existsByEmail(UserTestFixtures.TEST_EMAIL);
+    
+    // Then
+    assertThat(exists).isTrue();
+    verify(userRepository).existsByEmail(UserTestFixtures.TEST_EMAIL);
+  }
+  
+  @Test
+  @DisplayName("Should return false when email does not exist")
+  void shouldReturnFalseWhenEmailDoesNotExist() {
+    // Given
+    when(userRepository.existsByEmail("nonexistent@example.com"))
+        .thenReturn(false);
+    
+    // When
+    boolean exists = userRepository.existsByEmail("nonexistent@example.com");
+    
+    // Then
+    assertThat(exists).isFalse();
+    verify(userRepository).existsByEmail("nonexistent@example.com");
+  }
+  
+  @Test
+  @DisplayName("Should return true when email exists for different user")
+  void shouldReturnTrueWhenEmailExistsForDifferentUser() {
+    // Given
+    when(userRepository.existsByEmail(UserTestFixtures.TEST_EMAIL))
+        .thenReturn(true);
+    
+    // When
+    boolean exists = userRepository.existsByEmail(UserTestFixtures.TEST_EMAIL);
+    
+    // Then
+    assertThat(exists).isTrue();
+    verify(userRepository).existsByEmail(UserTestFixtures.TEST_EMAIL);
+  }
+  
+  // ==================== findByUsernameOrEmail() Tests ====================
+  
+  @Test
+  @DisplayName("Should find user by username or email using username")
+  void shouldFindUserByUsernameOrEmailUsingUsername() {
+    // Given
+    User user = UserTestFixtures.createUser();
+    when(userRepository.findByUsernameOrEmail(UserTestFixtures.TEST_USERNAME, "other@example.com"))
+        .thenReturn(Optional.of(user));
+    
+    // When
+    Optional<User> found = userRepository.findByUsernameOrEmail(
+        UserTestFixtures.TEST_USERNAME, 
+        "other@example.com"
+    );
+    
+    // Then
+    assertThat(found).isPresent();
+    assertThat(found.get().getUsername()).isEqualTo(UserTestFixtures.TEST_USERNAME);
+    verify(userRepository).findByUsernameOrEmail(UserTestFixtures.TEST_USERNAME, "other@example.com");
+  }
+  
+  @Test
+  @DisplayName("Should find user by username or email using email")
+  void shouldFindUserByUsernameOrEmailUsingEmail() {
+    // Given
+    User user = UserTestFixtures.createUser();
+    when(userRepository.findByUsernameOrEmail("otheruser", UserTestFixtures.TEST_EMAIL))
+        .thenReturn(Optional.of(user));
+    
+    // When
+    Optional<User> found = userRepository.findByUsernameOrEmail(
+        "otheruser", 
+        UserTestFixtures.TEST_EMAIL
+    );
+    
+    // Then
+    assertThat(found).isPresent();
+    assertThat(found.get().getEmail()).isEqualTo(UserTestFixtures.TEST_EMAIL);
+    verify(userRepository).findByUsernameOrEmail("otheruser", UserTestFixtures.TEST_EMAIL);
+  }
+  
+  @Test
+  @DisplayName("Should return empty Optional when neither username nor email match")
+  void shouldReturnEmptyOptionalWhenNeitherUsernameNorEmailMatch() {
+    // Given
+    when(userRepository.findByUsernameOrEmail("nonexistent", "nonexistent@example.com"))
+        .thenReturn(Optional.empty());
+    
+    // When
+    Optional<User> found = userRepository.findByUsernameOrEmail("nonexistent", "nonexistent@example.com");
+    
+    // Then
+    assertThat(found).isEmpty();
+    verify(userRepository).findByUsernameOrEmail("nonexistent", "nonexistent@example.com");
+  }
+  
+  // ==================== findByUsernameAndEnabledTrue() Tests ====================
+  
+  @Test
+  @DisplayName("Should find enabled user by username")
+  void shouldFindEnabledUserByUsername() {
+    // Given
+    User user = UserTestFixtures.createUser();
+    user.setEnabled(true);
+    when(userRepository.findByUsernameAndEnabledTrue(UserTestFixtures.TEST_USERNAME))
+        .thenReturn(Optional.of(user));
+    
+    // When
+    Optional<User> found = userRepository.findByUsernameAndEnabledTrue(UserTestFixtures.TEST_USERNAME);
+    
+    // Then
+    assertThat(found).isPresent();
+    assertThat(found.get().getEnabled()).isTrue();
+    verify(userRepository).findByUsernameAndEnabledTrue(UserTestFixtures.TEST_USERNAME);
+  }
+  
+  @Test
+  @DisplayName("Should not find disabled user by username")
+  void shouldNotFindDisabledUserByUsername() {
+    // Given
+    when(userRepository.findByUsernameAndEnabledTrue(UserTestFixtures.TEST_USERNAME))
+        .thenReturn(Optional.empty());
+    
+    // When
+    Optional<User> found = userRepository.findByUsernameAndEnabledTrue(UserTestFixtures.TEST_USERNAME);
+    
+    // Then
+    assertThat(found).isEmpty();
+    verify(userRepository).findByUsernameAndEnabledTrue(UserTestFixtures.TEST_USERNAME);
+  }
+  
+  @Test
+  @DisplayName("Should return empty Optional when enabled user not found")
+  void shouldReturnEmptyOptionalWhenEnabledUserNotFound() {
+    // Given
+    when(userRepository.findByUsernameAndEnabledTrue("nonexistent"))
+        .thenReturn(Optional.empty());
+    
+    // When
+    Optional<User> found = userRepository.findByUsernameAndEnabledTrue("nonexistent");
+    
+    // Then
+    assertThat(found).isEmpty();
+    verify(userRepository).findByUsernameAndEnabledTrue("nonexistent");
+  }
+  
+  // ==================== findByEmailAndEnabledTrue() Tests ====================
+  
+  @Test
+  @DisplayName("Should find enabled user by email")
+  void shouldFindEnabledUserByEmail() {
+    // Given
+    User user = UserTestFixtures.createUser();
+    user.setEnabled(true);
+    when(userRepository.findByEmailAndEnabledTrue(UserTestFixtures.TEST_EMAIL))
+        .thenReturn(Optional.of(user));
+    
+    // When
+    Optional<User> found = userRepository.findByEmailAndEnabledTrue(UserTestFixtures.TEST_EMAIL);
+    
+    // Then
+    assertThat(found).isPresent();
+    assertThat(found.get().getEnabled()).isTrue();
+    verify(userRepository).findByEmailAndEnabledTrue(UserTestFixtures.TEST_EMAIL);
+  }
+  
+  @Test
+  @DisplayName("Should not find disabled user by email")
+  void shouldNotFindDisabledUserByEmail() {
+    // Given
+    when(userRepository.findByEmailAndEnabledTrue(UserTestFixtures.TEST_EMAIL))
+        .thenReturn(Optional.empty());
+    
+    // When
+    Optional<User> found = userRepository.findByEmailAndEnabledTrue(UserTestFixtures.TEST_EMAIL);
+    
+    // Then
+    assertThat(found).isEmpty();
+    verify(userRepository).findByEmailAndEnabledTrue(UserTestFixtures.TEST_EMAIL);
+  }
+  
+  @Test
+  @DisplayName("Should return empty Optional when enabled email not found")
+  void shouldReturnEmptyOptionalWhenEnabledEmailNotFound() {
+    // Given
+    when(userRepository.findByEmailAndEnabledTrue("nonexistent@example.com"))
+        .thenReturn(Optional.empty());
+    
+    // When
+    Optional<User> found = userRepository.findByEmailAndEnabledTrue("nonexistent@example.com");
+    
+    // Then
+    assertThat(found).isEmpty();
+    verify(userRepository).findByEmailAndEnabledTrue("nonexistent@example.com");
+  }
+  
+  // ==================== findById() Tests (JpaRepository) ====================
+  
+  @Test
+  @DisplayName("Should find user by ID")
+  void shouldFindUserById() {
+    // Given
+    User user = UserTestFixtures.createUser();
+    when(userRepository.findById(1L))
+        .thenReturn(Optional.of(user));
+    
+    // When
+    Optional<User> found = userRepository.findById(1L);
+    
+    // Then
+    assertThat(found).isPresent();
+    assertThat(found.get().getId()).isEqualTo(1L);
+    verify(userRepository).findById(1L);
+  }
+  
+  @Test
+  @DisplayName("Should return empty Optional when ID not found")
+  void shouldReturnEmptyOptionalWhenIdNotFound() {
+    // Given
+    when(userRepository.findById(999L))
+        .thenReturn(Optional.empty());
+    
+    // When
+    Optional<User> found = userRepository.findById(999L);
+    
+    // Then
+    assertThat(found).isEmpty();
+    verify(userRepository).findById(999L);
+  }
+  
+  @Test
+  @DisplayName("Should save user")
+  void shouldSaveUser() {
+    // Given
+    User user = UserTestFixtures.createUser();
+    when(userRepository.save(user))
+        .thenReturn(user);
+    
+    // When
+    User saved = userRepository.save(user);
+    
+    // Then
+    assertThat(saved).isNotNull();
+    assertThat(saved.getUsername()).isEqualTo(UserTestFixtures.TEST_USERNAME);
+    assertThat(saved.getEmail()).isEqualTo(UserTestFixtures.TEST_EMAIL);
+    verify(userRepository).save(user);
+  }
+}
