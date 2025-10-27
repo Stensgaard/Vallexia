@@ -1,0 +1,77 @@
+{
+  "properties": [
+    {
+      "name": "app.jwt.secret",
+      "type": "java.lang.String",
+      "description": "JWT secret key for signing tokens. Must be at least 32 characters long for security.",
+      "sourceType": "com.vallexia.config.JwtProperties"
+    },
+    {
+      "name": "app.jwt.access-token-expiration",
+      "type": "java.lang.Long",
+      "description": "Access token expiration time in milliseconds. Default is 900000 (15 minutes).",
+      "defaultValue": 900000,
+      "sourceType": "com.vallexia.config.JwtProperties"
+    },
+    {
+      "name": "app.jwt.refresh-token-expiration",
+      "type": "java.lang.Long",
+      "description": "Refresh token expiration time in milliseconds. Default is 86400000 (24 hours).",
+      "defaultValue": 86400000,
+      "sourceType": "com.vallexia.config.JwtProperties"
+    },
+    {
+      "name": "app.cors.allowed-origins",
+      "type": "java.util.List<java.lang.String>",
+      "description": "List of allowed origins for CORS requests. Can be URLs or wildcard patterns.",
+      "sourceType": "com.vallexia.config.CorsProperties"
+    },
+    {
+      "name": "app.cors.allowed-methods",
+      "type": "java.util.List<java.lang.String>",
+      "description": "List of allowed HTTP methods for CORS requests (GET, POST, PUT, DELETE, OPTIONS).",
+      "sourceType": "com.vallexia.config.CorsProperties"
+    },
+    {
+      "name": "app.cors.allowed-headers",
+      "type": "java.util.List<java.lang.String>",
+      "description": "List of allowed headers for CORS requests (Authorization, Content-Type, etc.).",
+      "sourceType": "com.vallexia.config.CorsProperties"
+    },
+    {
+      "name": "app.cors.allow-credentials",
+      "type": "java.lang.Boolean",
+      "description": "Whether to allow credentials (cookies, authorization headers) in CORS requests.",
+      "defaultValue": true,
+      "sourceType": "com.vallexia.config.CorsProperties"
+    },
+    {
+      "name": "app.auth.lockout.max-failed-attempts",
+      "type": "java.lang.Integer",
+      "description": "Maximum number of failed login attempts before account lockout. Default: 5",
+      "defaultValue": 5,
+      "sourceType": "com.vallexia.config.security.AccountSecurityProperties"
+    },
+    {
+      "name": "app.auth.lockout.duration-minutes",
+      "type": "java.lang.Integer",
+      "description": "Account lockout duration in minutes. Default: 15 minutes",
+      "defaultValue": 15,
+      "sourceType": "com.vallexia.config.security.AccountSecurityProperties"
+    },
+    {
+      "name": "app.audit.trusted-proxies",
+      "type": "java.lang.String",
+      "description": "Comma-separated list of trusted proxy IP addresses for extracting real client IP from X-Forwarded-For headers. Example: \"172.17.0.1,10.0.0.1\"",
+      "defaultValue": "",
+      "sourceType": "com.vallexia.config.AuditProperties"
+    },
+    {
+      "name": "app.audit.retention-days",
+      "type": "java.lang.Integer",
+      "description": "Audit log retention period in days. Audit logs older than this will be automatically deleted.",
+      "defaultValue": 90,
+      "sourceType": "com.vallexia.config.AuditProperties"
+    }
+  ]
+}
