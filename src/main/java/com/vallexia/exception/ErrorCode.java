@@ -1,0 +1,66 @@
+package com.vallexia.exception;
+
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
+
+/**
+ * Enumeration of standardized error codes used throughout the application.
+ * Each error code maps to an HTTP status code and provides a consistent
+ * error code string for client consumption.
+ * 
+ * @author Vallexia Team
+ * @version 1.0
+ * @since 2024-01-01
+ */
+@Getter
+public enum ErrorCode {
+  
+  // Authentication & Authorization Errors (4xx)
+  AUTHENTICATION_ERROR("AUTH_001", HttpStatus.UNAUTHORIZED, "Authentication failed"),
+  INVALID_CREDENTIALS("AUTH_002", HttpStatus.UNAUTHORIZED, "Invalid username or password"),
+  TOKEN_EXPIRED("AUTH_003", HttpStatus.UNAUTHORIZED, "Authentication token has expired"),
+  INVALID_TOKEN("AUTH_004", HttpStatus.UNAUTHORIZED, "Invalid authentication token"),
+  ACCESS_DENIED("AUTH_005", HttpStatus.FORBIDDEN, "You do not have permission to access this resource"),
+  ACCOUNT_LOCKED("AUTH_006", HttpStatus.LOCKED, "Account is temporarily locked due to multiple failed login attempts"),
+  ACCOUNT_DISABLED("AUTH_007", HttpStatus.FORBIDDEN, "Account is disabled"),
+  
+  // User Management Errors (4xx)
+  USER_NOT_FOUND("USER_001", HttpStatus.NOT_FOUND, "User not found"),
+  USER_ALREADY_EXISTS("USER_002", HttpStatus.CONFLICT, "User already exists"),
+  INVALID_USER_DATA("USER_003", HttpStatus.BAD_REQUEST, "Invalid user data provided"),
+  
+  // Validation Errors (4xx)
+  VALIDATION_ERROR("VAL_001", HttpStatus.BAD_REQUEST, "Validation failed"),
+  INVALID_INPUT("VAL_002", HttpStatus.BAD_REQUEST, "Invalid input provided"),
+  MISSING_REQUIRED_FIELD("VAL_003", HttpStatus.BAD_REQUEST, "Required field is missing"),
+  
+  // Nutritional Data Errors (4xx)
+  INVALID_NUTRITIONAL_DATA("NUT_001", HttpStatus.BAD_REQUEST, "Invalid nutritional data provided"),
+  NUTRITIONAL_CALCULATION_ERROR("NUT_002", HttpStatus.INTERNAL_SERVER_ERROR, "Error calculating nutritional information"),
+  
+  // Resource Errors (4xx)
+  RESOURCE_NOT_FOUND("RES_001", HttpStatus.NOT_FOUND, "Requested resource not found"),
+  RESOURCE_CONFLICT("RES_002", HttpStatus.CONFLICT, "Resource conflict detected"),
+  
+  // Server Errors (5xx)
+  INTERNAL_SERVER_ERROR("SYS_001", HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"),
+  SERVICE_UNAVAILABLE("SYS_002", HttpStatus.SERVICE_UNAVAILABLE, "Service temporarily unavailable"),
+  DATABASE_ERROR("SYS_003", HttpStatus.INTERNAL_SERVER_ERROR, "Database operation failed");
+  
+  private final String code;
+  private final HttpStatus httpStatus;
+  private final String defaultMessage;
+  
+  /**
+   * Constructor for ErrorCode enum.
+   * 
+   * @param code the error code string
+   * @param httpStatus the HTTP status code
+   * @param defaultMessage the default error message
+   */
+  ErrorCode(String code, HttpStatus httpStatus, String defaultMessage) {
+    this.code = code;
+    this.httpStatus = httpStatus;
+    this.defaultMessage = defaultMessage;
+  }
+}
