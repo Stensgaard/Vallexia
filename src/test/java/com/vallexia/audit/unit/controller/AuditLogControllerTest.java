@@ -59,6 +59,7 @@ class AuditLogControllerTest {
   
   // ==================== getMyAuditLogs() Tests ====================
   
+  @SuppressWarnings("null")
   @Test
   @DisplayName("Should retrieve audit logs for current user with default pagination")
   void shouldRetrieveAuditLogsForCurrentUserWithDefaultPagination() {
@@ -81,6 +82,7 @@ class AuditLogControllerTest {
     verify(authenticationHelper).getCurrentUserId();
   }
   
+  @SuppressWarnings("null")
   @Test
   @DisplayName("Should retrieve audit logs for current user with custom pagination")
   void shouldRetrieveAuditLogsForCurrentUserWithCustomPagination() {
@@ -107,6 +109,7 @@ class AuditLogControllerTest {
     verify(auditService).getUserAuditLogs(currentUserId, pageable);
   }
   
+  @SuppressWarnings("null")
   @Test
   @DisplayName("Should return empty page when user has no audit logs")
   void shouldReturnEmptyPageWhenUserHasNoAuditLogs() {
@@ -131,6 +134,7 @@ class AuditLogControllerTest {
   
   // ==================== getUserAuditLogs() Tests ====================
   
+  @SuppressWarnings("null")
   @Test
   @DisplayName("Should retrieve audit logs for specific user as admin")
   void shouldRetrieveAuditLogsForSpecificUserAsAdmin() {
@@ -151,6 +155,7 @@ class AuditLogControllerTest {
     verify(auditService).getUserAuditLogs(eq(userId), any(Pageable.class));
   }
   
+  @SuppressWarnings("null")
   @Test
   @DisplayName("Should retrieve audit logs for specific user with pagination")
   void shouldRetrieveAuditLogsForSpecificUserWithPagination() {
@@ -178,6 +183,7 @@ class AuditLogControllerTest {
   
   // ==================== getAllAuditLogs() Tests ====================
   
+  @SuppressWarnings("null")
   @Test
   @DisplayName("Should retrieve all audit logs with default pagination")
   void shouldRetrieveAllAuditLogsWithDefaultPagination() {
@@ -200,6 +206,7 @@ class AuditLogControllerTest {
     verify(auditService).getAuditLogs(any(Pageable.class));
   }
   
+  @SuppressWarnings("null")
   @Test
   @DisplayName("Should retrieve all audit logs with custom pagination")
   void shouldRetrieveAllAuditLogsWithCustomPagination() {
@@ -223,6 +230,7 @@ class AuditLogControllerTest {
     verify(auditService).getAuditLogs(pageable);
   }
   
+  @SuppressWarnings("null")
   @Test
   @DisplayName("Should return empty page when no audit logs exist")
   void shouldReturnEmptyPageWhenNoAuditLogsExist() {
@@ -246,6 +254,7 @@ class AuditLogControllerTest {
   
   // ==================== getFailedLoginAttempts() Tests ====================
   
+  @SuppressWarnings("null")
   @Test
   @DisplayName("Should retrieve failed login attempts for username")
   void shouldRetrieveFailedLoginAttemptsForUsername() {
@@ -274,6 +283,7 @@ class AuditLogControllerTest {
     verify(auditService).getFailedLoginAttempts(eq(username), any(Pageable.class));
   }
   
+  @SuppressWarnings("null")
   @Test
   @DisplayName("Should return empty page when no failed login attempts exist")
   void shouldReturnEmptyPageWhenNoFailedLoginAttemptsExist() {
@@ -298,6 +308,7 @@ class AuditLogControllerTest {
   
   // ==================== getSecurityViolations() Tests ====================
   
+  @SuppressWarnings("null")
   @Test
   @DisplayName("Should retrieve security violations")
   void shouldRetrieveSecurityViolations() {
@@ -324,6 +335,7 @@ class AuditLogControllerTest {
     verify(auditService).getSecurityViolations(any(Pageable.class));
   }
   
+  @SuppressWarnings("null")
   @Test
   @DisplayName("Should return empty page when no security violations exist")
   void shouldReturnEmptyPageWhenNoSecurityViolationsExist() {
@@ -347,6 +359,7 @@ class AuditLogControllerTest {
   
   // ==================== getAuditLogsByDateRange() Tests ====================
   
+  @SuppressWarnings("null")
   @Test
   @DisplayName("Should retrieve audit logs within date range")
   void shouldRetrieveAuditLogsWithinDateRange() {
@@ -372,6 +385,7 @@ class AuditLogControllerTest {
     verify(auditService).getAuditLogsByDateRange(eq(start), eq(end), any(Pageable.class));
   }
   
+  @SuppressWarnings("null")
   @Test
   @DisplayName("Should retrieve audit logs with custom pagination in date range")
   void shouldRetrieveAuditLogsWithCustomPaginationInDateRange() {
@@ -398,6 +412,7 @@ class AuditLogControllerTest {
     verify(auditService).getAuditLogsByDateRange(start, end, pageable);
   }
   
+  @SuppressWarnings("null")
   @Test
   @DisplayName("Should return empty page when no logs in date range")
   void shouldReturnEmptyPageWhenNoLogsInDateRange() {
