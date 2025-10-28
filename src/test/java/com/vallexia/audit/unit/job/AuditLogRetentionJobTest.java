@@ -39,9 +39,13 @@ class AuditLogRetentionJobTest {
   
   private static final int RETENTION_DAYS = 90;
   
+  private com.vallexia.config.audit.AuditProperties auditProperties;
+
   @BeforeEach
   void setUp() {
-    retentionJob = new AuditLogRetentionJob(auditLogRepository, RETENTION_DAYS);
+    auditProperties = new com.vallexia.config.audit.AuditProperties();
+    auditProperties.setRetentionDays(RETENTION_DAYS);
+    retentionJob = new AuditLogRetentionJob(auditLogRepository, auditProperties);
   }
   
   // ==================== cleanupOldAuditLogs() Tests ====================
@@ -169,10 +173,13 @@ class AuditLogRetentionJobTest {
   void shouldAcceptCustomRetentionPeriodInConstructor() {
     // Given
     int customRetentionDays = 30;
+    com.vallexia.config.audit.AuditProperties customProperties = 
+        new com.vallexia.config.audit.AuditProperties();
+    customProperties.setRetentionDays(customRetentionDays);
     
     // When
     AuditLogRetentionJob customJob = new AuditLogRetentionJob(
-        auditLogRepository, customRetentionDays);
+        auditLogRepository, customProperties);
     
     // Then
     assertThat(customJob.getRetentionDays()).isEqualTo(customRetentionDays);

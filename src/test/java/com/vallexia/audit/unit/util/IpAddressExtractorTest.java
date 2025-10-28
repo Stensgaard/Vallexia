@@ -2,6 +2,7 @@ package com.vallexia.audit.unit.util;
 
 import com.vallexia.audit.fixtures.AuditLogTestFixtures;
 import com.vallexia.audit.util.IpAddressExtractor;
+import com.vallexia.config.audit.AuditProperties;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,9 @@ class IpAddressExtractorTest {
   @DisplayName("Should return remote address when no proxy is configured")
   void shouldReturnRemoteAddressWhenNoProxyIsConfigured() {
     // Given
-    IpAddressExtractor extractor = new IpAddressExtractor("");
+    AuditProperties auditProperties = new AuditProperties();
+    auditProperties.setTrustedProxies("");
+    IpAddressExtractor extractor = new IpAddressExtractor(auditProperties);
     HttpServletRequest request = AuditLogTestFixtures.createMockRequest(
         CLIENT_IP, "Mozilla/5.0", "/test", "GET"
     );
@@ -45,7 +48,9 @@ class IpAddressExtractorTest {
   @DisplayName("Should return forwarded IP from trusted proxy")
   void shouldReturnForwardedIpFromTrustedProxy() {
     // Given
-    IpAddressExtractor extractor = new IpAddressExtractor(TRUSTED_PROXY);
+    AuditProperties auditProperties = new AuditProperties();
+    auditProperties.setTrustedProxies(TRUSTED_PROXY);
+    IpAddressExtractor extractor = new IpAddressExtractor(auditProperties);
     HttpServletRequest request = AuditLogTestFixtures.createMockRequestWithProxy(
         TRUSTED_PROXY,
         CLIENT_IP,
@@ -63,7 +68,9 @@ class IpAddressExtractorTest {
   @DisplayName("Should return real IP from trusted proxy")
   void shouldReturnRealIpFromTrustedProxy() {
     // Given
-    IpAddressExtractor extractor = new IpAddressExtractor(TRUSTED_PROXY);
+    AuditProperties auditProperties = new AuditProperties();
+    auditProperties.setTrustedProxies(TRUSTED_PROXY);
+    IpAddressExtractor extractor = new IpAddressExtractor(auditProperties);
     HttpServletRequest request = AuditLogTestFixtures.createMockRequestWithProxy(
         TRUSTED_PROXY,
         null,
@@ -81,7 +88,9 @@ class IpAddressExtractorTest {
   @DisplayName("Should ignore forwarded IP from untrusted proxy")
   void shouldIgnoreForwardedIpFromUntrustedProxy() {
     // Given
-    IpAddressExtractor extractor = new IpAddressExtractor(TRUSTED_PROXY);
+    AuditProperties auditProperties = new AuditProperties();
+    auditProperties.setTrustedProxies(TRUSTED_PROXY);
+    IpAddressExtractor extractor = new IpAddressExtractor(auditProperties);
     HttpServletRequest request = AuditLogTestFixtures.createMockRequestWithProxy(
         UNTRUSTED_PROXY,
         CLIENT_IP,
@@ -99,7 +108,9 @@ class IpAddressExtractorTest {
   @DisplayName("Should return first IP when multiple IPs are forwarded")
   void shouldReturnFirstIpWhenMultipleIpsAreForwarded() {
     // Given
-    IpAddressExtractor extractor = new IpAddressExtractor(TRUSTED_PROXY);
+    AuditProperties auditProperties = new AuditProperties();
+    auditProperties.setTrustedProxies(TRUSTED_PROXY);
+    IpAddressExtractor extractor = new IpAddressExtractor(auditProperties);
     String multipleIps = CLIENT_IP + ", 10.0.0.2, 10.0.0.3";
     HttpServletRequest request = AuditLogTestFixtures.createMockRequestWithProxy(
         TRUSTED_PROXY,
@@ -118,7 +129,9 @@ class IpAddressExtractorTest {
   @DisplayName("Should return remote address when no trusted proxies are configured")
   void shouldReturnRemoteAddressWhenNoTrustedProxiesAreConfigured() {
     // Given
-    IpAddressExtractor extractor = new IpAddressExtractor("");
+    AuditProperties auditProperties = new AuditProperties();
+    auditProperties.setTrustedProxies("");
+    IpAddressExtractor extractor = new IpAddressExtractor(auditProperties);
     HttpServletRequest request = AuditLogTestFixtures.createMockRequestWithProxy(
         TRUSTED_PROXY,
         CLIENT_IP,
@@ -138,7 +151,9 @@ class IpAddressExtractorTest {
   @DisplayName("Should extract full IP info with proxy details")
   void shouldExtractFullIpInfoWithProxyDetails() {
     // Given
-    IpAddressExtractor extractor = new IpAddressExtractor(TRUSTED_PROXY);
+    AuditProperties auditProperties = new AuditProperties();
+    auditProperties.setTrustedProxies(TRUSTED_PROXY);
+    IpAddressExtractor extractor = new IpAddressExtractor(auditProperties);
     HttpServletRequest request = AuditLogTestFixtures.createMockRequestWithProxy(
         TRUSTED_PROXY,
         CLIENT_IP,
@@ -158,7 +173,9 @@ class IpAddressExtractorTest {
   @DisplayName("Should return simple remote address when no proxy")
   void shouldReturnSimpleRemoteAddressWhenNoProxy() {
     // Given
-    IpAddressExtractor extractor = new IpAddressExtractor("");
+    AuditProperties auditProperties = new AuditProperties();
+    auditProperties.setTrustedProxies("");
+    IpAddressExtractor extractor = new IpAddressExtractor(auditProperties);
     HttpServletRequest request = AuditLogTestFixtures.createMockRequest(
         CLIENT_IP, "Mozilla/5.0", "/test", "GET"
     );
@@ -177,7 +194,9 @@ class IpAddressExtractorTest {
   @DisplayName("Should return remote address when forwarded IP is invalid")
   void shouldReturnRemoteAddressWhenForwardedIpIsInvalid() {
     // Given
-    IpAddressExtractor extractor = new IpAddressExtractor(TRUSTED_PROXY);
+    AuditProperties auditProperties = new AuditProperties();
+    auditProperties.setTrustedProxies(TRUSTED_PROXY);
+    IpAddressExtractor extractor = new IpAddressExtractor(auditProperties);
     HttpServletRequest request = AuditLogTestFixtures.createMockRequestWithProxy(
         TRUSTED_PROXY,
         "invalid-ip",
@@ -197,7 +216,9 @@ class IpAddressExtractorTest {
   @DisplayName("Should handle IPv6 address correctly")
   void shouldHandleIpv6AddressCorrectly() {
     // Given
-    IpAddressExtractor extractor = new IpAddressExtractor(TRUSTED_PROXY);
+    AuditProperties auditProperties = new AuditProperties();
+    auditProperties.setTrustedProxies(TRUSTED_PROXY);
+    IpAddressExtractor extractor = new IpAddressExtractor(auditProperties);
     String ipv6 = "2001:0db8:85a3:0000:0000:8a2e:0370:7334";
     HttpServletRequest request = AuditLogTestFixtures.createMockRequestWithProxy(
         TRUSTED_PROXY,
@@ -218,9 +239,9 @@ class IpAddressExtractorTest {
   @DisplayName("Should parse multiple trusted proxies from configuration")
   void shouldParseMultipleTrustedProxiesFromConfiguration() {
     // Given & When
-    IpAddressExtractor extractor = new IpAddressExtractor(
-        "10.0.0.1, 10.0.0.2 , 10.0.0.3"
-    );
+    AuditProperties auditProperties = new AuditProperties();
+    auditProperties.setTrustedProxies("10.0.0.1, 10.0.0.2 , 10.0.0.3");
+    IpAddressExtractor extractor = new IpAddressExtractor(auditProperties);
     
     // Then - test by using the extractor
     HttpServletRequest request1 = AuditLogTestFixtures.createMockRequestWithProxy(
@@ -242,7 +263,9 @@ class IpAddressExtractorTest {
   @DisplayName("Should handle null trusted proxies configuration")
   void shouldHandleNullTrustedProxiesConfiguration() {
     // Given & When
-    IpAddressExtractor extractor = new IpAddressExtractor(null);
+    AuditProperties auditProperties = new AuditProperties();
+    auditProperties.setTrustedProxies(null);
+    IpAddressExtractor extractor = new IpAddressExtractor(auditProperties);
     
     // Then - should work without errors
     HttpServletRequest request = AuditLogTestFixtures.createMockRequest();
@@ -255,7 +278,9 @@ class IpAddressExtractorTest {
   @DisplayName("Should prefer X-Real-IP over remote address")
   void shouldPreferXRealIpOverRemoteAddress() {
     // Given
-    IpAddressExtractor extractor = new IpAddressExtractor(TRUSTED_PROXY);
+    AuditProperties auditProperties = new AuditProperties();
+    auditProperties.setTrustedProxies(TRUSTED_PROXY);
+    IpAddressExtractor extractor = new IpAddressExtractor(auditProperties);
     HttpServletRequest request = AuditLogTestFixtures.createMockRequestWithProxy(
         TRUSTED_PROXY,
         null,
@@ -273,7 +298,9 @@ class IpAddressExtractorTest {
   @DisplayName("Should prefer X-Forwarded-For over X-Real-IP")
   void shouldPreferXForwardedForOverXRealIp() {
     // Given
-    IpAddressExtractor extractor = new IpAddressExtractor(TRUSTED_PROXY);
+    AuditProperties auditProperties = new AuditProperties();
+    auditProperties.setTrustedProxies(TRUSTED_PROXY);
+    IpAddressExtractor extractor = new IpAddressExtractor(auditProperties);
     String forwardedIp = "203.0.113.50";
     HttpServletRequest request = AuditLogTestFixtures.createMockRequestWithProxy(
         TRUSTED_PROXY,
