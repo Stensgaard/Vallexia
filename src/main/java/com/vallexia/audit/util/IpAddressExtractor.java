@@ -1,8 +1,8 @@
 package com.vallexia.audit.util;
 
+import com.vallexia.config.audit.AuditProperties;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -26,12 +26,12 @@ public class IpAddressExtractor {
   /**
    * Constructor with configurable trusted proxies.
    * 
-   * @param trustedProxiesConfig comma-separated list of trusted proxy IPs
+   * @param auditProperties audit configuration properties
    */
-  public IpAddressExtractor(
-      @Value("${app.audit.trusted-proxies:}") String trustedProxiesConfig) {
+  public IpAddressExtractor(AuditProperties auditProperties) {
     this.trustedProxies = new HashSet<>();
     
+    String trustedProxiesConfig = auditProperties.getTrustedProxies();
     if (trustedProxiesConfig != null && !trustedProxiesConfig.isEmpty()) {
       Arrays.stream(trustedProxiesConfig.split(","))
           .map(String::trim)

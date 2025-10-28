@@ -1,8 +1,8 @@
 package com.vallexia.audit.job;
 
 import com.vallexia.audit.repository.AuditLogRepository;
+import com.vallexia.config.audit.AuditProperties;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,13 +28,13 @@ public class AuditLogRetentionJob {
    * Constructor with configurable retention period.
    * 
    * @param auditLogRepository the audit log repository
-   * @param retentionDays number of days to retain audit logs (default: 90)
+   * @param auditProperties audit configuration properties
    */
   public AuditLogRetentionJob(
       AuditLogRepository auditLogRepository,
-      @Value("${app.audit.retention-days:90}") int retentionDays) {
+      AuditProperties auditProperties) {
     this.auditLogRepository = auditLogRepository;
-    this.retentionDays = retentionDays;
+    this.retentionDays = auditProperties.getRetentionDays();
     log.info("Audit log retention job initialized with {} days retention period", retentionDays);
   }
   

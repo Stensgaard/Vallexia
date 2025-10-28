@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import com.vallexia.config.security.AccountSecurityProperties;
 import com.vallexia.config.security.JwtProperties;
 import com.vallexia.config.web.CorsProperties;
+import com.vallexia.config.audit.AuditProperties;
 
 /**
  * Main Spring Boot application class for Vallexia Smart Meal Planning App.
@@ -20,7 +21,8 @@ import com.vallexia.config.web.CorsProperties;
 @EnableConfigurationProperties({
     CorsProperties.class,
     JwtProperties.class,
-    AccountSecurityProperties.class
+    AccountSecurityProperties.class,
+    AuditProperties.class
 })
 public class VallexiaApplication {
     public static void main(String[] args) {
