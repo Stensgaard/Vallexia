@@ -72,6 +72,13 @@
       "description": "Audit log retention period in days. Audit logs older than this will be automatically deleted.",
       "defaultValue": 90,
       "sourceType": "com.vallexia.config.audit.AuditProperties"
+    },
+    {
+      "name": "app.audit.fallback-log-path",
+      "type": "java.lang.String",
+      "description": "Path for audit fallback log file. Used when database audit logging fails.",
+      "defaultValue": "logs/audit-fallback.log",
+      "sourceType": "com.vallexia.config.audit.AuditProperties"
     }
   ]
 }
