@@ -30,19 +30,16 @@ public class NutritionalGoalsDto {
     @DecimalMax(value = "10000.0", message = "Daily calories must not exceed 10000")
     private BigDecimal dailyCalories;
     
-    @NotNull(message = "Daily protein is required")
-    @DecimalMin(value = "0.0", inclusive = false, message = "Daily protein must be greater than 0")
+    @DecimalMin(value = "0.0", message = "Daily protein must be 0 or greater")
     @DecimalMax(value = "1000.0", message = "Daily protein must not exceed 1000 grams")
     private BigDecimal dailyProtein;
     
-    @NotNull(message = "Daily carbs is required")
-    @DecimalMin(value = "0.0", inclusive = false, message = "Daily carbs must be greater than 0")
-    @DecimalMax(value = "1000.0", message = "Daily carbs must not exceed 1000 grams")
+    @DecimalMin(value = "0.0", message = "Daily carbs must be 0 or greater")
+    @DecimalMax(value = "1500.0", message = "Daily carbs must not exceed 1500 grams")
     private BigDecimal dailyCarbs;
     
-    @NotNull(message = "Daily fats is required")
-    @DecimalMin(value = "0.0", inclusive = false, message = "Daily fats must be greater than 0")
-    @DecimalMax(value = "1000.0", message = "Daily fats must not exceed 1000 grams")
+    @DecimalMin(value = "0.0", message = "Daily fats must be 0 or greater")
+    @DecimalMax(value = "500.0", message = "Daily fats must not exceed 500 grams")
     private BigDecimal dailyFats;
     
     @DecimalMin(value = "0.0", message = "Protein percentage must be 0 or greater")

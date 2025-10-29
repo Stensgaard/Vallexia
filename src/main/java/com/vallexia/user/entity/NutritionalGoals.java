@@ -41,22 +41,19 @@ public class NutritionalGoals {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal dailyCalories;
     
-    @NotNull
     @DecimalMin("0.0")
     @DecimalMax(value = "1000.0")
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(nullable = true, precision = 10, scale = 2)
     private BigDecimal dailyProtein; // in grams
     
-    @NotNull
     @DecimalMin("0.0")
-    @DecimalMax(value = "1000.0")
-    @Column(nullable = false, precision = 10, scale = 2)
+    @DecimalMax(value = "1500.0")
+    @Column(nullable = true, precision = 10, scale = 2)
     private BigDecimal dailyCarbs; // in grams
     
-    @NotNull
     @DecimalMin("0.0")
-    @DecimalMax(value = "1000.0")
-    @Column(nullable = false, precision = 10, scale = 2)
+    @DecimalMax(value = "500.0")
+    @Column(nullable = true, precision = 10, scale = 2)
     private BigDecimal dailyFats; // in grams
     
     @DecimalMin(value = "0.0")

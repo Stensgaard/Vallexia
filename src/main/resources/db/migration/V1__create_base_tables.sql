@@ -152,9 +152,9 @@ CREATE TABLE nutritional_goals (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL UNIQUE,
     daily_calories DECIMAL(10,2) NOT NULL,
-    daily_protein DECIMAL(10,2) NOT NULL,
-    daily_carbs DECIMAL(10,2) NOT NULL,
-    daily_fats DECIMAL(10,2) NOT NULL,
+    daily_protein DECIMAL(10,2),
+    daily_carbs DECIMAL(10,2),
+    daily_fats DECIMAL(10,2),
     protein_percentage DECIMAL(5,2),
     carbs_percentage DECIMAL(5,2),
     fats_percentage DECIMAL(5,2),
@@ -169,9 +169,9 @@ CREATE TABLE nutritional_goals (
 
 COMMENT ON TABLE nutritional_goals IS 'User daily nutritional targets and goals';
 COMMENT ON COLUMN nutritional_goals.daily_calories IS 'Daily target calories';
-COMMENT ON COLUMN nutritional_goals.daily_protein IS 'Daily target protein in grams';
-COMMENT ON COLUMN nutritional_goals.daily_carbs IS 'Daily target carbohydrates in grams';
-COMMENT ON COLUMN nutritional_goals.daily_fats IS 'Daily target fats in grams';
+COMMENT ON COLUMN nutritional_goals.daily_protein IS 'Daily target protein in grams (optional)';
+COMMENT ON COLUMN nutritional_goals.daily_carbs IS 'Daily target carbohydrates in grams (optional, max 1500g)';
+COMMENT ON COLUMN nutritional_goals.daily_fats IS 'Daily target fats in grams (optional)';
 COMMENT ON COLUMN nutritional_goals.protein_percentage IS 'Target protein percentage of total calories (0-100)';
 COMMENT ON COLUMN nutritional_goals.carbs_percentage IS 'Target carbs percentage of total calories (0-100)';
 COMMENT ON COLUMN nutritional_goals.fats_percentage IS 'Target fats percentage of total calories (0-100)';
