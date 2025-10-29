@@ -24,6 +24,7 @@ Desktop.ini
 
 # Logs
 logs/
+deployment/logs/
 *.log
 
 # Package files

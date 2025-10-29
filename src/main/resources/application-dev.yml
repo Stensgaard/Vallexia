@@ -50,6 +50,7 @@ app:
   audit:
     trusted-proxies: ${TRUSTED_PROXIES:}
     retention-days: ${AUDIT_RETENTION_DAYS:90}
+    fallback-log-path: ${AUDIT_FALLBACK_LOG_PATH:deployment/logs/audit-fallback.log}
   cors:
     allowed-origins: 
       - "http://localhost:5173"
@@ -75,3 +76,10 @@ logging:
     '[org.springframework.security]': DEBUG
     '[org.hibernate.SQL]': DEBUG
     '[org.hibernate.type.descriptor.sql.BasicBinder]': DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: ${LOG_FILE_PATH:deployment/logs/vallexia.log}
+    max-size: 10MB
+    max-history: 30
