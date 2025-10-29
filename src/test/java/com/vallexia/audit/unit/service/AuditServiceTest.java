@@ -6,6 +6,7 @@ import com.vallexia.audit.fixtures.AuditLogTestFixtures;
 import com.vallexia.audit.repository.AuditLogRepository;
 import com.vallexia.audit.service.AuditService;
 import com.vallexia.audit.util.IpAddressExtractor;
+import com.vallexia.config.audit.AuditProperties;
 import com.vallexia.security.AuthenticationHelper;
 import com.vallexia.security.util.InputSanitizer;
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,6 +60,9 @@ class AuditServiceTest {
   @Mock
   private AuthenticationHelper authenticationHelper;
   
+  @Mock
+  private AuditProperties auditProperties;
+  
   @InjectMocks
   private AuditService auditService;
   
@@ -78,6 +82,9 @@ class AuditServiceTest {
     // Default IP extractor behavior
     when(ipAddressExtractor.extractClientIp(any(HttpServletRequest.class)))
         .thenReturn(AuditLogTestFixtures.TEST_IP_ADDRESS);
+    
+    // Default audit properties behavior
+    when(auditProperties.getFallbackLogPath()).thenReturn("logs/audit-fallback.log");
   }
   
   // ==================== logAuthenticationEvent() Tests ====================
