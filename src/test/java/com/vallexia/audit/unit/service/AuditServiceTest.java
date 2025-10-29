@@ -84,7 +84,7 @@ class AuditServiceTest {
         .thenReturn(AuditLogTestFixtures.TEST_IP_ADDRESS);
     
     // Default audit properties behavior
-    when(auditProperties.getFallbackLogPath()).thenReturn("logs/audit-fallback.log");
+    when(auditProperties.getFallbackLogPath()).thenReturn("deployment/logs/audit-fallback.log");
   }
   
   // ==================== logAuthenticationEvent() Tests ====================

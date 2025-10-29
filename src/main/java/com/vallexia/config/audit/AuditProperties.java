@@ -31,7 +31,7 @@ public class AuditProperties {
   /**
    * Path for audit fallback log file.
    * Used when database audit logging fails.
-   * Default: logs/audit-fallback.log
+   * Default: deployment/logs/audit-fallback.log
    */
-  private String fallbackLogPath = "logs/audit-fallback.log";
+  private String fallbackLogPath = "deployment/logs/audit-fallback.log";
 }
