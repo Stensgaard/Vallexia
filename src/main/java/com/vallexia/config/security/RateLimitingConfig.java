@@ -48,6 +48,15 @@ public class RateLimitingConfig {
   }
   
   /**
+   * Storage for per-IP rate limiting buckets for refresh token requests.
+   * Uses ConcurrentHashMap for thread-safe access.
+   */
+  @Bean
+  public Map<String, Bucket> refreshRateLimitBuckets() {
+    return new ConcurrentHashMap<>();
+  }
+  
+  /**
    * Creates a rate limiting bucket for login attempts.
    * Allows 5 requests per minute per IP address.
    * 
@@ -80,6 +89,19 @@ public class RateLimitingConfig {
   public Bucket createGeneralApiBucket() {
     return Bucket.builder()
         .addLimit(Bandwidth.classic(100, Refill.intervally(100, Duration.ofMinutes(1))))
+        .build();
+  }
+  
+  /**
+   * Creates a rate limiting bucket for refresh token attempts.
+   * Allows 10 requests per 5 minutes per IP address.
+   * Stricter than general API to prevent refresh token brute force attacks.
+   * 
+   * @return Bucket instance for refresh token rate limiting
+   */
+  public Bucket createRefreshBucket() {
+    return Bucket.builder()
+        .addLimit(Bandwidth.classic(10, Refill.intervally(10, Duration.ofMinutes(5))))
         .build();
   }
 }

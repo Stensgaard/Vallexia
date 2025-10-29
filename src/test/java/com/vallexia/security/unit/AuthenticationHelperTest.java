@@ -1,0 +1,228 @@
+package com.vallexia.security.unit;
+
+import com.vallexia.auth.exception.AuthenticationException;
+import com.vallexia.security.AuthenticationHelper;
+import com.vallexia.security.UserPrincipal;
+import com.vallexia.user.entity.User;
+import com.vallexia.user.fixtures.UserTestFixtures;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collections;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+/**
+ * Unit tests for AuthenticationHelper.
+ * Tests type safety, null handling, and authentication context extraction.
+ * 
+ * @author Vallexia Team
+ * @version 1.0
+ * @since 2024-01-01
+ */
+@DisplayName("AuthenticationHelper Unit Tests")
+class AuthenticationHelperTest {
+  
+  private AuthenticationHelper authenticationHelper;
+  
+  @BeforeEach
+  void setUp() {
+    authenticationHelper = new AuthenticationHelper();
+    SecurityContextHolder.clearContext();
+  }
+  
+  // ==================== Type Safety Tests ====================
+  
+  @Test
+  @DisplayName("Should throw AuthenticationException when principal is not UserPrincipal in getCurrentUserId")
+  void shouldThrowExceptionWhenPrincipalIsNotUserPrincipalInGetCurrentUserId() {
+    // Given - authentication with non-UserPrincipal
+    UserDetails userDetails = new org.springframework.security.core.userdetails.User(
+        "testuser", "password", Collections.emptyList());
+    Authentication auth = new UsernamePasswordAuthenticationToken(
+        userDetails, null, Collections.emptyList());
+    
+    // When/Then
+    assertThatThrownBy(() -> authenticationHelper.getCurrentUserId(auth))
+        .isInstanceOf(AuthenticationException.class)
+        .hasMessageContaining("Invalid authentication principal type");
+  }
+  
+  @Test
+  @DisplayName("Should throw AuthenticationException when principal is not UserPrincipal in getCurrentUserPrincipal")
+  void shouldThrowExceptionWhenPrincipalIsNotUserPrincipalInGetCurrentUserPrincipal() {
+    // Given - authentication with non-UserPrincipal
+    UserDetails userDetails = new org.springframework.security.core.userdetails.User(
+        "testuser", "password", Collections.emptyList());
+    Authentication auth = new UsernamePasswordAuthenticationToken(
+        userDetails, null, Collections.emptyList());
+    
+    // When/Then
+    assertThatThrownBy(() -> authenticationHelper.getCurrentUserPrincipal(auth))
+        .isInstanceOf(AuthenticationException.class)
+        .hasMessageContaining("Invalid authentication principal type");
+  }
+  
+  @Test
+  @DisplayName("Should successfully extract UserPrincipal when principal type is correct")
+  void shouldSuccessfullyExtractUserPrincipalWhenTypeIsCorrect() {
+    // Given
+    User user = UserTestFixtures.createUser();
+    UserPrincipal userPrincipal = UserPrincipal.create(user);
+    Authentication auth = new UsernamePasswordAuthenticationToken(
+        userPrincipal, null, userPrincipal.getAuthorities());
+    
+    // When
+    UserPrincipal result = authenticationHelper.getCurrentUserPrincipal(auth);
+    
+    // Then
+    assertThat(result).isNotNull();
+    assertThat(result.getId()).isEqualTo(user.getId());
+    assertThat(result.getUsername()).isEqualTo(user.getUsername());
+  }
+  
+  // ==================== Null Handling Tests ====================
+  
+  @Test
+  @DisplayName("Should throw AuthenticationException when authentication is null in getCurrentUserId")
+  void shouldThrowExceptionWhenAuthenticationIsNullInGetCurrentUserId() {
+    // When/Then
+    assertThatThrownBy(() -> authenticationHelper.getCurrentUserId(null))
+        .isInstanceOf(AuthenticationException.class)
+        .hasMessageContaining("User not authenticated");
+  }
+  
+  @Test
+  @DisplayName("Should throw AuthenticationException when principal is null in getCurrentUserId")
+  void shouldThrowExceptionWhenPrincipalIsNullInGetCurrentUserId() {
+    // Given - authentication with null principal
+    Authentication auth = new UsernamePasswordAuthenticationToken(
+        null, null, Collections.emptyList());
+    
+    // When/Then
+    assertThatThrownBy(() -> authenticationHelper.getCurrentUserId(auth))
+        .isInstanceOf(AuthenticationException.class)
+        .hasMessageContaining("User not authenticated");
+  }
+  
+  @Test
+  @DisplayName("Should return null when not authenticated in getCurrentUserId")
+  void shouldReturnNullWhenNotAuthenticatedInGetCurrentUserId() {
+    // When - no authentication in context
+    Long userId = authenticationHelper.getCurrentUserId();
+    
+    // Then
+    assertThat(userId).isNull();
+  }
+  
+  @Test
+  @DisplayName("Should return null when not authenticated in getCurrentUsername")
+  void shouldReturnNullWhenNotAuthenticatedInGetCurrentUsername() {
+    // When - no authentication in context
+    String username = authenticationHelper.getCurrentUsername();
+    
+    // Then
+    assertThat(username).isNull();
+  }
+  
+  // ==================== Role Checking Tests ====================
+  
+  @Test
+  @DisplayName("Should return true when user has the specified role")
+  void shouldReturnTrueWhenUserHasRole() {
+    // Given
+    User user = UserTestFixtures.createUser();
+    UserPrincipal userPrincipal = UserPrincipal.create(user);
+    Authentication auth = new UsernamePasswordAuthenticationToken(
+        userPrincipal, null, userPrincipal.getAuthorities());
+    SecurityContextHolder.getContext().setAuthentication(auth);
+    
+    // When
+    boolean hasRole = authenticationHelper.hasRole("ROLE_USER");
+    
+    // Then
+    assertThat(hasRole).isTrue();
+  }
+  
+  @Test
+  @DisplayName("Should return false when user does not have the specified role")
+  void shouldReturnFalseWhenUserDoesNotHaveRole() {
+    // Given
+    User user = UserTestFixtures.createUser();
+    UserPrincipal userPrincipal = UserPrincipal.create(user);
+    Authentication auth = new UsernamePasswordAuthenticationToken(
+        userPrincipal, null, userPrincipal.getAuthorities());
+    SecurityContextHolder.getContext().setAuthentication(auth);
+    
+    // When
+    boolean hasRole = authenticationHelper.hasRole("ROLE_ADMIN");
+    
+    // Then
+    assertThat(hasRole).isFalse();
+  }
+  
+  @Test
+  @DisplayName("Should return false when not authenticated in hasRole")
+  void shouldReturnFalseWhenNotAuthenticatedInHasRole() {
+    // When - no authentication in context
+    boolean hasRole = authenticationHelper.hasRole("ROLE_USER");
+    
+    // Then
+    assertThat(hasRole).isFalse();
+  }
+  
+  // ==================== Authentication Status Tests ====================
+  
+  @Test
+  @DisplayName("Should return true when user is authenticated")
+  void shouldReturnTrueWhenAuthenticated() {
+    // Given
+    User user = UserTestFixtures.createUser();
+    UserPrincipal userPrincipal = UserPrincipal.create(user);
+    // Constructor with authorities creates an authenticated token by default
+    Authentication auth = new UsernamePasswordAuthenticationToken(
+        userPrincipal, null, userPrincipal.getAuthorities());
+    SecurityContextHolder.getContext().setAuthentication(auth);
+    
+    // When
+    boolean authenticated = authenticationHelper.isAuthenticated();
+    
+    // Then
+    assertThat(authenticated).isTrue();
+  }
+  
+  @Test
+  @DisplayName("Should return false when user is not authenticated")
+  void shouldReturnFalseWhenNotAuthenticated() {
+    // When - no authentication in context
+    boolean authenticated = authenticationHelper.isAuthenticated();
+    
+    // Then
+    assertThat(authenticated).isFalse();
+  }
+  
+  // ==================== Username Extraction Tests ====================
+  
+  @Test
+  @DisplayName("Should successfully extract username from authentication")
+  void shouldSuccessfullyExtractUsername() {
+    // Given
+    User user = UserTestFixtures.createUser();
+    UserPrincipal userPrincipal = UserPrincipal.create(user);
+    Authentication auth = new UsernamePasswordAuthenticationToken(
+        userPrincipal, null, userPrincipal.getAuthorities());
+    
+    // When
+    String username = authenticationHelper.getCurrentUsername(auth);
+    
+    // Then
+    assertThat(username).isEqualTo(user.getUsername());
+  }
+}
+

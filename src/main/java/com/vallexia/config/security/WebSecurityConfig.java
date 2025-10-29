@@ -1,15 +1,15 @@
 package com.vallexia.config.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vallexia.auth.service.TokenBlacklistService;
 import com.vallexia.config.web.CorsConfig;
+import com.vallexia.exception.ErrorResponseMapper;
 import com.vallexia.security.AuthEntryPointJwt;
 import com.vallexia.security.AuthTokenFilter;
 import com.vallexia.security.JwtUtils;
 import com.vallexia.security.RateLimitingFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -34,6 +34,8 @@ public class WebSecurityConfig {
   private final RateLimitingFilter rateLimitingFilter;
   private final JwtUtils jwtUtils;
   private final TokenBlacklistService tokenBlacklistService;
+  private final ErrorResponseMapper errorResponseMapper;
+  private final ObjectMapper objectMapper;
   
   /**
    * Constructor with dependency injection.
@@ -43,29 +45,29 @@ public class WebSecurityConfig {
    * @param rateLimitingFilter rate limiting filter
    * @param jwtUtils JWT utility for token operations
    * @param tokenBlacklistService service for checking token blacklist
+   * @param errorResponseMapper mapper for standardized error responses
+   * @param objectMapper JSON object mapper
    */
   public WebSecurityConfig(
       AuthEntryPointJwt unauthorizedHandler,
       CorsConfig corsConfig,
       RateLimitingFilter rateLimitingFilter,
       JwtUtils jwtUtils,
-      TokenBlacklistService tokenBlacklistService) {
+      TokenBlacklistService tokenBlacklistService,
+      ErrorResponseMapper errorResponseMapper,
+      ObjectMapper objectMapper) {
     this.unauthorizedHandler = unauthorizedHandler;
     this.corsConfig = corsConfig;
     this.rateLimitingFilter = rateLimitingFilter;
     this.jwtUtils = jwtUtils;
     this.tokenBlacklistService = tokenBlacklistService;
+    this.errorResponseMapper = errorResponseMapper;
+    this.objectMapper = objectMapper;
   }
   
   @Bean
   public AuthTokenFilter authenticationJwtTokenFilter() {
-    return new AuthTokenFilter(jwtUtils, tokenBlacklistService);
-  }
-  
-  @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig)
-      throws Exception {
-    return authConfig.getAuthenticationManager();
+    return new AuthTokenFilter(jwtUtils, tokenBlacklistService, errorResponseMapper, objectMapper);
   }
   
   @Bean
