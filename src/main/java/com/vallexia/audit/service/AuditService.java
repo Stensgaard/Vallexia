@@ -4,6 +4,7 @@ import com.vallexia.audit.entity.AuditLog;
 import com.vallexia.audit.entity.EventType;
 import com.vallexia.audit.repository.AuditLogRepository;
 import com.vallexia.audit.util.IpAddressExtractor;
+import com.vallexia.config.audit.AuditProperties;
 import com.vallexia.security.AuthenticationHelper;
 import com.vallexia.security.util.InputSanitizer;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,8 +40,8 @@ public class AuditService {
   private final InputSanitizer inputSanitizer;
   private final IpAddressExtractor ipAddressExtractor;
   private final AuthenticationHelper authenticationHelper;
+  private final AuditProperties auditProperties;
   
-  private static final String FALLBACK_LOG_FILE = "logs/audit-fallback.log";
   private static final DateTimeFormatter TIMESTAMP_FORMATTER = 
       DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
   
@@ -51,16 +52,19 @@ public class AuditService {
    * @param inputSanitizer input sanitization utility
    * @param ipAddressExtractor IP address extraction utility
    * @param authenticationHelper authentication helper for access control
+   * @param auditProperties audit configuration properties
    */
   public AuditService(
       AuditLogRepository auditLogRepository,
       InputSanitizer inputSanitizer,
       IpAddressExtractor ipAddressExtractor,
-      AuthenticationHelper authenticationHelper) {
+      AuthenticationHelper authenticationHelper,
+      AuditProperties auditProperties) {
     this.auditLogRepository = auditLogRepository;
     this.inputSanitizer = inputSanitizer;
     this.ipAddressExtractor = ipAddressExtractor;
     this.authenticationHelper = authenticationHelper;
+    this.auditProperties = auditProperties;
   }
   
   /**
@@ -410,7 +414,8 @@ public class AuditService {
       Boolean success,
       Exception error) {
     try {
-      Path logPath = Paths.get(FALLBACK_LOG_FILE);
+      String fallbackLogPath = auditProperties.getFallbackLogPath();
+      Path logPath = Paths.get(fallbackLogPath);
       
       // Create parent directories if they don't exist
       if (logPath.getParent() != null) {
@@ -435,7 +440,7 @@ public class AuditService {
           StandardOpenOption.APPEND
       );
       
-      log.warn("Audit log written to fallback file: {}", FALLBACK_LOG_FILE);
+      log.warn("Audit log written to fallback file: {}", fallbackLogPath);
       
     } catch (IOException ioException) {
       log.error("Failed to write to fallback audit log file: {}", 
