@@ -117,12 +117,12 @@ class JwtUtilsTest {
   }
   
   @Test
-  @DisplayName("Should throw IllegalArgumentException when token is null in getExpirationDateFromToken")
-  void shouldThrowExceptionWhenTokenIsNullInGetExpirationDate() {
-    // When/Then
-    assertThatThrownBy(() -> jwtUtils.getExpirationDateFromToken(null))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessageContaining("Token cannot be null or empty");
+  @DisplayName("Should return null when token is null in getExpirationDateFromToken")
+  void shouldReturnNullWhenTokenIsNullInGetExpirationDate() {
+    // When
+    java.util.Date result = jwtUtils.getExpirationDateFromToken(null);
+    // Then
+    assertThat(result).isNull();
   }
   
   // ==================== Token Generation Tests ====================

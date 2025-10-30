@@ -238,21 +238,23 @@ public class JwtUtils {
      * Get token expiration date.
      * 
      * @param token JWT token
-     * @return expiration date
-     * @throws IllegalArgumentException if token is null or empty
+     * @return expiration date, or null if invalid
      */
     public Date getExpirationDateFromToken(String token) {
         if (token == null || token.trim().isEmpty()) {
-            throw new IllegalArgumentException("Token cannot be null or empty");
+            return null;
         }
-        
-        SecretKey key = getSecretKey();
-        
-        return Jwts.parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getExpiration();
+        try {
+            SecretKey key = getSecretKey();
+            return Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getExpiration();
+        } catch (Exception e) {
+            log.error("Error extracting expiration from token: {}", e.getMessage());
+            return null;
+        }
     }
 }

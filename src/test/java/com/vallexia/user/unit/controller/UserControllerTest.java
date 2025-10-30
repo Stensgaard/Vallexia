@@ -97,7 +97,7 @@ class UserControllerTest {
   
   // ==================== getCurrentUserProfile() Tests ====================
   
-  @SuppressWarnings("null")
+@SuppressWarnings("null")
 @Test
   @DisplayName("Should retrieve profile for authenticated user successfully")
   void shouldRetrieveProfileForAuthenticatedUserSuccessfully() {
@@ -124,7 +124,7 @@ class UserControllerTest {
     verify(userService).getUserProfile(userId);
   }
   
-  @SuppressWarnings("null")
+@SuppressWarnings("null")
 @Test
   @DisplayName("Should return 200 OK with correct profile data")
   void shouldReturnOkWithCorrectProfileData() {
@@ -175,7 +175,7 @@ class UserControllerTest {
   
   // ==================== updateCurrentUserProfile() Tests ====================
   
-  @SuppressWarnings("null")
+@SuppressWarnings("null")
 @Test
   @DisplayName("Should update profile successfully with valid data")
   void shouldUpdateProfileSuccessfullyWithValidData() {
@@ -246,7 +246,7 @@ class UserControllerTest {
     verify(userService, times(1)).updateUserProfile(eq(userId), eq(updateDto));
   }
   
-  @SuppressWarnings("null")
+@SuppressWarnings("null")
 @Test
   @DisplayName("Should update profile with all fields")
   void shouldUpdateProfileWithAllFields() {
