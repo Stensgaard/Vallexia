@@ -133,8 +133,6 @@ class UserControllerTest {
     UserProfileDto expectedDto = UserTestFixtures.createUserProfileDto();
     expectedDto.setId(userId);
     expectedDto.setEmail("test@example.com");
-    expectedDto.setFirstName("Test");
-    expectedDto.setLastName("User");
     
     when(authenticationHelper.getCurrentUserId(mockAuthentication))
         .thenReturn(userId);
@@ -149,8 +147,6 @@ class UserControllerTest {
     UserProfileDto body = response.getBody();
     assertThat(body).isNotNull();
     assertThat(body.getEmail()).isEqualTo("test@example.com");
-    assertThat(body.getFirstName()).isEqualTo("Test");
-    assertThat(body.getLastName()).isEqualTo("User");
   }
   
   @Test
@@ -197,7 +193,6 @@ class UserControllerTest {
     UserProfileDto body = response.getBody();
     assertThat(body).isNotNull();
     assertThat(body.getEmail()).isEqualTo("updated@example.com");
-    assertThat(body.getFirstName()).isEqualTo("Updated");
     
     verify(authenticationHelper).getCurrentUserId(mockAuthentication);
     verify(userService).updateUserProfile(userId, updateDto);
@@ -268,8 +263,6 @@ class UserControllerTest {
     UserProfileDto body = response.getBody();
     assertThat(body).isNotNull();
     assertThat(body.getEmail()).isEqualTo("updated@example.com");
-    assertThat(body.getFirstName()).isEqualTo("Updated");
-    assertThat(body.getLastName()).isEqualTo("Name");
     assertThat(body.getProfilePictureUrl()).isEqualTo("https://example.com/updated.jpg");
     assertThat(body.getHouseholdSize()).isEqualTo(4);
     assertThat(body.getMealsPerDay()).isEqualTo(5);
@@ -282,7 +275,6 @@ class UserControllerTest {
     Long userId = 1L;
     UserProfileDto updateDto = UserTestFixtures.createUserProfileDto();
     updateDto.setEmail("newemail@example.com");
-    updateDto.setFirstName(null); // Partial update
     
     UserProfileDto expectedDto = UserTestFixtures.createUserProfileDto();
     
@@ -299,4 +291,3 @@ class UserControllerTest {
     verify(userService).updateUserProfile(eq(userId), eq(updateDto));
   }
 }
-

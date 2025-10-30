@@ -61,8 +61,6 @@ public interface AuthMapper {
         .id(user.getId())
         .username(user.getUsername())
         .email(user.getEmail())
-        .firstName(user.getFirstName())
-        .lastName(user.getLastName())
         .expiresAt(expiresAt)
         .build();
   }

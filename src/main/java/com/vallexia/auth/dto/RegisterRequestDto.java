@@ -46,12 +46,6 @@ public class RegisterRequestDto {
     @NotBlank(message = "Password confirmation is required")
     private String confirmPassword;
     
-    @Size(max = 50, message = "First name must not exceed 50 characters")
-    private String firstName;
-    
-    @Size(max = 50, message = "Last name must not exceed 50 characters")
-    private String lastName;
-    
     @Min(value = 1, message = "Household size must be at least 1")
     @Max(value = 20, message = "Household size cannot exceed 20")
     private Integer householdSize = 1;

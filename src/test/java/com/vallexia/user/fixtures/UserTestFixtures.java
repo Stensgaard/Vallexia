@@ -49,8 +49,6 @@ public class UserTestFixtures {
     user.setUsername(TEST_USERNAME);
     user.setEmail(TEST_EMAIL);
     user.setPasswordHash(TEST_PASSWORD_HASH);
-    user.setFirstName(TEST_FIRST_NAME);
-    user.setLastName(TEST_LAST_NAME);
     user.setProfilePictureUrl(TEST_PROFILE_PICTURE_URL);
     user.setHouseholdSize(TEST_HOUSEHOLD_SIZE);
     user.setMealsPerDay(TEST_MEALS_PER_DAY);
@@ -79,8 +77,6 @@ public class UserTestFixtures {
    */
   public static User createUserWithProfile() {
     User user = createUser();
-    user.setFirstName("John");
-    user.setLastName("Doe");
     user.setProfilePictureUrl("https://example.com/johndoe.jpg");
     user.setHouseholdSize(3);
     user.setMealsPerDay(4);
@@ -96,8 +92,6 @@ public class UserTestFixtures {
     user.setUsername(TEST_ADMIN_USERNAME);
     user.setEmail(TEST_ADMIN_EMAIL);
     user.setPasswordHash(TEST_PASSWORD_HASH);
-    user.setFirstName("Admin");
-    user.setLastName("User");
     user.setProfilePictureUrl(null);
     user.setHouseholdSize(1);
     user.setMealsPerDay(2);
@@ -157,8 +151,6 @@ public class UserTestFixtures {
     dto.setId(TEST_USER_ID);
     dto.setUsername(TEST_USERNAME);
     dto.setEmail(TEST_EMAIL);
-    dto.setFirstName(TEST_FIRST_NAME);
-    dto.setLastName(TEST_LAST_NAME);
     dto.setProfilePictureUrl(TEST_PROFILE_PICTURE_URL);
     dto.setEnabled(true);
     dto.setHouseholdSize(TEST_HOUSEHOLD_SIZE);
@@ -185,8 +177,6 @@ public class UserTestFixtures {
     dto.setId(TEST_USER_ID);
     dto.setUsername(TEST_USERNAME); // Username is immutable
     dto.setEmail("updated@example.com");
-    dto.setFirstName("Updated");
-    dto.setLastName("Name");
     dto.setProfilePictureUrl("https://example.com/updated.jpg");
     dto.setEnabled(true);
     dto.setHouseholdSize(4);
@@ -202,8 +192,6 @@ public class UserTestFixtures {
   public static UserProfileDto createInvalidUserProfileDto() {
     UserProfileDto dto = new UserProfileDto();
     dto.setEmail("invalid-email"); // Invalid email format
-    dto.setFirstName("This is a very long first name that exceeds the maximum allowed length of fifty characters");
-    dto.setLastName("This is a very long last name that exceeds the maximum allowed length of fifty characters");
     dto.setProfilePictureUrl("This is a very long profile picture URL that exceeds the maximum allowed length of five hundred characters and contains way too many characters to be considered valid in the system and should fail validation checks by the framework");
     dto.setHouseholdSize(25); // Exceeds max of 20
     dto.setMealsPerDay(15); // Exceeds max of 10
@@ -218,8 +206,6 @@ public class UserTestFixtures {
     dto.setId(TEST_USER_ID);
     dto.setUsername(TEST_USERNAME);
     dto.setEmail("a@b.co"); // Minimum valid email
-    dto.setFirstName("A"); // Minimum length
-    dto.setLastName("B"); // Minimum length
     dto.setProfilePictureUrl("http://x.co"); // Minimum length
     dto.setEnabled(true);
     dto.setHouseholdSize(1); // Minimum value
@@ -237,9 +223,3 @@ public class UserTestFixtures {
     return dto;
   }
 }
-
-
-
-
-
-

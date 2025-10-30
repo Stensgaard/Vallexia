@@ -126,8 +126,6 @@ class UserServiceTest {
     UserProfileDto updateDto = UserTestFixtures.createUpdatedUserProfileDto();
     User updatedUser = UserTestFixtures.createUser();
     updatedUser.setEmail(updateDto.getEmail());
-    updatedUser.setFirstName(updateDto.getFirstName());
-    updatedUser.setLastName(updateDto.getLastName());
     updatedUser.setProfilePictureUrl(updateDto.getProfilePictureUrl());
     updatedUser.setHouseholdSize(updateDto.getHouseholdSize());
     updatedUser.setMealsPerDay(updateDto.getMealsPerDay());
@@ -149,8 +147,6 @@ class UserServiceTest {
     // Then
     assertThat(result).isNotNull();
     assertThat(result.getEmail()).isEqualTo("updated@example.com");
-    assertThat(result.getFirstName()).isEqualTo("Updated");
-    assertThat(result.getLastName()).isEqualTo("Name");
     
     verify(userRepository).findById(UserTestFixtures.TEST_USER_ID);
     verify(userRepository).existsByEmail(updateDto.getEmail());
@@ -212,8 +208,6 @@ class UserServiceTest {
     
     User updatedUser = UserTestFixtures.createUser();
     updatedUser.setEmail(updateDto.getEmail());
-    updatedUser.setFirstName(updateDto.getFirstName());
-    updatedUser.setLastName(updateDto.getLastName());
     
     UserProfileDto expectedDto = UserTestFixtures.createUpdatedUserProfileDto();
     
@@ -266,8 +260,6 @@ class UserServiceTest {
     
     User savedUser = userCaptor.getValue();
     assertThat(savedUser.getEmail()).isEqualTo(updateDto.getEmail());
-    assertThat(savedUser.getFirstName()).isEqualTo(updateDto.getFirstName());
-    assertThat(savedUser.getLastName()).isEqualTo(updateDto.getLastName());
     assertThat(savedUser.getProfilePictureUrl()).isEqualTo(updateDto.getProfilePictureUrl());
     assertThat(savedUser.getHouseholdSize()).isEqualTo(updateDto.getHouseholdSize());
     assertThat(savedUser.getMealsPerDay()).isEqualTo(updateDto.getMealsPerDay());
@@ -388,12 +380,10 @@ class UserServiceTest {
     User existingUser = UserTestFixtures.createUser();
     UserProfileDto updateDto = new UserProfileDto();
     updateDto.setEmail("partial@example.com");
-    updateDto.setFirstName("Partial");
     // Other fields remain null
     
     User updatedUser = UserTestFixtures.createUser();
     updatedUser.setEmail("partial@example.com");
-    updatedUser.setFirstName("Partial");
     
     UserProfileDto expectedDto = UserTestFixtures.createUserProfileDto();
     
@@ -414,4 +404,3 @@ class UserServiceTest {
     verify(userRepository).save(any(User.class));
   }
 }
-

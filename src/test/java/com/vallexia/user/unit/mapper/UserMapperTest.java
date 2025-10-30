@@ -49,8 +49,6 @@ class UserMapperTest {
     assertThat(dto.getId()).isEqualTo(user.getId());
     assertThat(dto.getUsername()).isEqualTo(user.getUsername());
     assertThat(dto.getEmail()).isEqualTo(user.getEmail());
-    assertThat(dto.getFirstName()).isEqualTo(user.getFirstName());
-    assertThat(dto.getLastName()).isEqualTo(user.getLastName());
     assertThat(dto.getProfilePictureUrl()).isEqualTo(user.getProfilePictureUrl());
     assertThat(dto.getEnabled()).isEqualTo(user.getEnabled());
     assertThat(dto.getHouseholdSize()).isEqualTo(user.getHouseholdSize());
@@ -87,8 +85,6 @@ class UserMapperTest {
     assertThat(dto.getId()).isEqualTo(1L);
     assertThat(dto.getUsername()).isEqualTo("testuser");
     assertThat(dto.getEmail()).isEqualTo("test@example.com");
-    assertThat(dto.getFirstName()).isNull();
-    assertThat(dto.getLastName()).isNull();
     assertThat(dto.getProfilePictureUrl()).isNull();
   }
   
@@ -133,8 +129,6 @@ class UserMapperTest {
     user.setId(1L);
     user.setUsername("testuser");
     user.setEmail("test@example.com");
-    user.setFirstName(null);
-    user.setLastName(null);
     user.setProfilePictureUrl(null);
     user.setHouseholdSize(1);
     user.setMealsPerDay(3);
@@ -145,8 +139,6 @@ class UserMapperTest {
     UserProfileDto dto = userMapper.toUserProfileDto(user);
     
     // Then
-    assertThat(dto.getFirstName()).isNull();
-    assertThat(dto.getLastName()).isNull();
     assertThat(dto.getProfilePictureUrl()).isNull();
     assertThat(dto.getSubscriptionStatus()).isEqualTo("FREE");
     assertThat(dto.getSubscriptionExpiresAt()).isNull();
@@ -239,8 +231,6 @@ class UserMapperTest {
     // Given
     UserProfileDto dto = UserTestFixtures.createUserProfileDto();
     dto.setEmail("new@example.com");
-    dto.setFirstName("New");
-    dto.setLastName("Name");
     dto.setProfilePictureUrl("https://example.com/new.jpg");
     dto.setHouseholdSize(4);
     dto.setMealsPerDay(5);
@@ -250,8 +240,6 @@ class UserMapperTest {
     
     // Then
     assertThat(user.getEmail()).isEqualTo("new@example.com");
-    assertThat(user.getFirstName()).isEqualTo("New");
-    assertThat(user.getLastName()).isEqualTo("Name");
     assertThat(user.getProfilePictureUrl()).isEqualTo("https://example.com/new.jpg");
     assertThat(user.getHouseholdSize()).isEqualTo(4);
     assertThat(user.getMealsPerDay()).isEqualTo(5);
@@ -285,8 +273,6 @@ class UserMapperTest {
     // Then
     assertThat(user).isNotNull();
     assertThat(user.getEmail()).isEqualTo("test@example.com");
-    assertThat(user.getFirstName()).isNull();
-    assertThat(user.getLastName()).isNull();
     assertThat(user.getProfilePictureUrl()).isNull();
   }
   
@@ -302,11 +288,8 @@ class UserMapperTest {
     // Then
     assertThat(user).isNotNull();
     assertThat(user.getEmail()).isEqualTo("updated@example.com");
-    assertThat(user.getFirstName()).isEqualTo("Updated");
-    assertThat(user.getLastName()).isEqualTo("Name");
     assertThat(user.getProfilePictureUrl()).isEqualTo("https://example.com/updated.jpg");
     assertThat(user.getHouseholdSize()).isEqualTo(4);
     assertThat(user.getMealsPerDay()).isEqualTo(5);
   }
 }
-

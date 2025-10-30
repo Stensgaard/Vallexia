@@ -53,12 +53,6 @@ public class User {
     @Column(nullable = false)
     private String passwordHash;
     
-    @Size(max = 50)
-    private String firstName;
-    
-    @Size(max = 50)
-    private String lastName;
-    
     @Size(max = 500)
     private String profilePictureUrl;
     
@@ -112,18 +106,6 @@ public class User {
     @UpdateTimestamp
     @Column(nullable = false)
     private LocalDateTime updatedAt;
-    
-    // Helper methods
-    public String getFullName() {
-        if (firstName != null && lastName != null) {
-            return firstName + " " + lastName;
-        } else if (firstName != null) {
-            return firstName;
-        } else if (lastName != null) {
-            return lastName;
-        }
-        return username;
-    }
     
     public void addRole(Role role) {
         this.roles.add(role);

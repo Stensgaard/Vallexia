@@ -41,8 +41,6 @@ public class AuthTestFixtures {
     dto.setEmail(UserTestFixtures.TEST_EMAIL);
     dto.setPassword(TEST_PASSWORD);
     dto.setConfirmPassword(TEST_PASSWORD);
-    dto.setFirstName(UserTestFixtures.TEST_FIRST_NAME);
-    dto.setLastName(UserTestFixtures.TEST_LAST_NAME);
     dto.setHouseholdSize(UserTestFixtures.TEST_HOUSEHOLD_SIZE);
     dto.setMealsPerDay(UserTestFixtures.TEST_MEALS_PER_DAY);
     return dto;
@@ -124,8 +122,6 @@ public class AuthTestFixtures {
         .id(UserTestFixtures.TEST_USER_ID)
         .username(UserTestFixtures.TEST_USERNAME)
         .email(UserTestFixtures.TEST_EMAIL)
-        .firstName(UserTestFixtures.TEST_FIRST_NAME)
-        .lastName(UserTestFixtures.TEST_LAST_NAME)
         .expiresAt(TEST_TOKEN_EXPIRES_AT)
         .build();
   }
@@ -171,5 +167,3 @@ public class AuthTestFixtures {
     return user;
   }
 }
-
-
