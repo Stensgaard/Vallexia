@@ -30,4 +30,5 @@ public class JwtResponseDto {
     private String username;
     private String email;
     private LocalDateTime expiresAt;
+    private String subscriptionStatus;
 }

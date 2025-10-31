@@ -1,5 +1,5 @@
 # Vallexia Makefile - Docker Compose Management
-.PHONY: help dev dev-up dev-down dev-stop dev-logs dev-restart dev-db dev-clean prod prod-up prod-down prod-stop prod-logs prod-restart prod-clean clean
+.PHONY: help dev dev-up dev-build dev-down dev-stop dev-logs dev-restart dev-db dev-clean prod prod-up prod-build prod-down prod-stop prod-logs prod-restart prod-clean clean
 
 # Default target
 .DEFAULT_GOAL := help
@@ -16,6 +16,18 @@ dev-up: ## Start all development services
 	@echo "Starting development environment..."
 	$(COMPOSE_DEV) up -d
 	@echo "Development environment started!"
+	@echo "  - Backend: http://localhost:8080"
+	@echo "  - Frontend: http://localhost:5173"
+	@echo "  - PostgreSQL: localhost:5432"
+	@echo "  - Redis: localhost:6379"
+
+dev-build: ## Build and start all development services (rebuilds images, clears volumes)
+	@echo "Building and starting development environment..."
+	@echo "Clearing volumes to ensure clean database state..."
+	$(COMPOSE_DEV) down -v
+	@echo "Building and starting services..."
+	$(COMPOSE_DEV) up --build -d
+	@echo "Development environment built and started!"
 	@echo "  - Backend: http://localhost:8080"
 	@echo "  - Frontend: http://localhost:5173"
 	@echo "  - PostgreSQL: localhost:5432"
@@ -54,6 +66,13 @@ prod-up: ## Start all production services
 	@echo "Starting production environment..."
 	$(COMPOSE_PROD) up -d
 	@echo "Production environment started!"
+	@echo "  - Application: http://localhost:80"
+	@echo "  - Backend API: http://localhost:80/api"
+
+prod-build: ## Build and start all production services (rebuilds images)
+	@echo "Building and starting production environment..."
+	$(COMPOSE_PROD) up --build -d
+	@echo "Production environment built and started!"
 	@echo "  - Application: http://localhost:80"
 	@echo "  - Backend API: http://localhost:80/api"
 
@@ -96,6 +115,7 @@ help: ## Display this help message
 	@echo.
 	@echo Development Environment:
 	@echo   make dev         - Start development environment
+	@echo   make dev-build   - Build and start development environment (rebuilds images)
 	@echo   make dev-db      - Start only database and Redis
 	@echo   make dev-stop    - Stop development services
 	@echo   make dev-logs    - View development logs
@@ -104,6 +124,7 @@ help: ## Display this help message
 	@echo.
 	@echo Production Environment:
 	@echo   make prod        - Start production environment
+	@echo   make prod-build  - Build and start production environment (rebuilds images)
 	@echo   make prod-stop   - Stop production services
 	@echo   make prod-logs   - View production logs
 	@echo   make prod-restart - Restart production environment

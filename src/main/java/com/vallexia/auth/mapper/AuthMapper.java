@@ -62,6 +62,7 @@ public interface AuthMapper {
         .username(user.getUsername())
         .email(user.getEmail())
         .expiresAt(expiresAt)
+        .subscriptionStatus(user.getSubscriptionStatus() != null ? user.getSubscriptionStatus().name() : null)
         .build();
   }
 }
