@@ -1,0 +1,161 @@
+/**
+ * Constants matching backend enums and configurations.
+ * 
+ * @author Vallexia Team
+ * @version 1.0
+ * @since 2024-01-01
+ */
+
+// Dietary Restrictions
+export const DIETARY_RESTRICTIONS = {
+  VEGETARIAN: 'VEGETARIAN',
+  VEGAN: 'VEGAN',
+  GLUTEN_FREE: 'GLUTEN_FREE',
+  DAIRY_FREE: 'DAIRY_FREE',
+  NUT_FREE: 'NUT_FREE',
+  KETO: 'KETO',
+  PALEO: 'PALEO',
+  LOW_CARB: 'LOW_CARB',
+  LOW_SODIUM: 'LOW_SODIUM',
+  HALAL: 'HALAL',
+  KOSHER: 'KOSHER'
+}
+
+// Dietary Restrictions Labels
+export const DIETARY_RESTRICTIONS_LABELS = {
+  [DIETARY_RESTRICTIONS.VEGETARIAN]: 'Vegetarian',
+  [DIETARY_RESTRICTIONS.VEGAN]: 'Vegan',
+  [DIETARY_RESTRICTIONS.GLUTEN_FREE]: 'Gluten-Free',
+  [DIETARY_RESTRICTIONS.DAIRY_FREE]: 'Dairy-Free',
+  [DIETARY_RESTRICTIONS.NUT_FREE]: 'Nut-Free',
+  [DIETARY_RESTRICTIONS.KETO]: 'Keto',
+  [DIETARY_RESTRICTIONS.PALEO]: 'Paleo',
+  [DIETARY_RESTRICTIONS.LOW_CARB]: 'Low Carb',
+  [DIETARY_RESTRICTIONS.LOW_SODIUM]: 'Low Sodium',
+  [DIETARY_RESTRICTIONS.HALAL]: 'Halal',
+  [DIETARY_RESTRICTIONS.KOSHER]: 'Kosher'
+}
+
+// Allergies
+export const ALLERGIES = {
+  PEANUTS: 'PEANUTS',
+  TREE_NUTS: 'TREE_NUTS',
+  MILK: 'MILK',
+  EGGS: 'EGGS',
+  WHEAT: 'WHEAT',
+  SOY: 'SOY',
+  FISH: 'FISH',
+  SHELLFISH: 'SHELLFISH',
+  SESAME: 'SESAME'
+}
+
+// Allergy Labels
+export const ALLERGIES_LABELS = {
+  [ALLERGIES.PEANUTS]: 'Peanuts',
+  [ALLERGIES.TREE_NUTS]: 'Tree Nuts',
+  [ALLERGIES.MILK]: 'Milk',
+  [ALLERGIES.EGGS]: 'Eggs',
+  [ALLERGIES.WHEAT]: 'Wheat',
+  [ALLERGIES.SOY]: 'Soy',
+  [ALLERGIES.FISH]: 'Fish',
+  [ALLERGIES.SHELLFISH]: 'Shellfish',
+  [ALLERGIES.SESAME]: 'Sesame'
+}
+
+// Cuisine Types
+export const CUISINE_TYPES = {
+  ITALIAN: 'ITALIAN',
+  MEXICAN: 'MEXICAN',
+  CHINESE: 'CHINESE',
+  JAPANESE: 'JAPANESE',
+  INDIAN: 'INDIAN',
+  THAI: 'THAI',
+  MEDITERRANEAN: 'MEDITERRANEAN',
+  AMERICAN: 'AMERICAN',
+  FRENCH: 'FRENCH',
+  GREEK: 'GREEK',
+  KOREAN: 'KOREAN',
+  VIETNAMESE: 'VIETNAMESE'
+}
+
+// Cuisine Labels
+export const CUISINE_TYPES_LABELS = {
+  [CUISINE_TYPES.ITALIAN]: 'Italian',
+  [CUISINE_TYPES.MEXICAN]: 'Mexican',
+  [CUISINE_TYPES.CHINESE]: 'Chinese',
+  [CUISINE_TYPES.JAPANESE]: 'Japanese',
+  [CUISINE_TYPES.INDIAN]: 'Indian',
+  [CUISINE_TYPES.THAI]: 'Thai',
+  [CUISINE_TYPES.MEDITERRANEAN]: 'Mediterranean',
+  [CUISINE_TYPES.AMERICAN]: 'American',
+  [CUISINE_TYPES.FRENCH]: 'French',
+  [CUISINE_TYPES.GREEK]: 'Greek',
+  [CUISINE_TYPES.KOREAN]: 'Korean',
+  [CUISINE_TYPES.VIETNAMESE]: 'Vietnamese'
+}
+
+// Serving Size Preferences
+export const SERVING_SIZE_PREFERENCES = {
+  SMALL: 'SMALL',
+  MEDIUM: 'MEDIUM',
+  LARGE: 'LARGE',
+  EXTRA_LARGE: 'EXTRA_LARGE'
+}
+
+// Serving Size Labels
+export const SERVING_SIZE_PREFERENCES_LABELS = {
+  [SERVING_SIZE_PREFERENCES.SMALL]: 'Small',
+  [SERVING_SIZE_PREFERENCES.MEDIUM]: 'Medium',
+  [SERVING_SIZE_PREFERENCES.LARGE]: 'Large',
+  [SERVING_SIZE_PREFERENCES.EXTRA_LARGE]: 'Extra Large'
+}
+
+// Goal Types
+export const GOAL_TYPES = {
+  WEIGHT_LOSS: 'WEIGHT_LOSS',
+  MAINTENANCE: 'MAINTENANCE',
+  MUSCLE_GAIN: 'MUSCLE_GAIN',
+  HEALTH_IMPROVEMENT: 'HEALTH_IMPROVEMENT'
+}
+
+// Goal Type Labels
+export const GOAL_TYPES_LABELS = {
+  [GOAL_TYPES.WEIGHT_LOSS]: 'Weight Loss',
+  [GOAL_TYPES.MAINTENANCE]: 'Maintenance',
+  [GOAL_TYPES.MUSCLE_GAIN]: 'Muscle Gain',
+  [GOAL_TYPES.HEALTH_IMPROVEMENT]: 'Health Improvement'
+}
+
+// Subscription Status
+// TODO NOT USED YET
+export const SUBSCRIPTION_STATUS = {
+  FREE: 'FREE',
+  PREMIUM: 'PREMIUM',
+  FAMILY: 'FAMILY',
+  CANCELLED: 'CANCELLED',
+  EXPIRED: 'EXPIRED'
+}
+
+// Subscription Status Labels
+// TODO NOT USED YET
+export const SUBSCRIPTION_STATUS_LABELS = {
+  [SUBSCRIPTION_STATUS.FREE]: 'Free',
+  [SUBSCRIPTION_STATUS.PREMIUM]: 'Premium',
+  [SUBSCRIPTION_STATUS.FAMILY]: 'Family',
+  [SUBSCRIPTION_STATUS.CANCELLED]: 'Cancelled',
+  [SUBSCRIPTION_STATUS.EXPIRED]: 'Expired'
+}
+
+// Validation Constants
+// TODO NOT USED YET
+export const VALIDATION_LIMITS = {
+  HOUSEHOLD_SIZE: { MIN: 1, MAX: 20 },
+  MEALS_PER_DAY: { MIN: 1, MAX: 10 },
+  DAILY_CALORIES: { MIN: 800, MAX: 5000 },
+  DAILY_PROTEIN: { MIN: 0, MAX: 500 },
+  DAILY_CARBS: { MIN: 0, MAX: 1000 },
+  DAILY_FATS: { MIN: 0, MAX: 500 },
+  DAILY_FIBER: { MIN: 0, MAX: 100 },
+  DAILY_SODIUM: { MIN: 0, MAX: 10000 },
+  DAILY_SUGAR: { MIN: 0, MAX: 200 }
+}
