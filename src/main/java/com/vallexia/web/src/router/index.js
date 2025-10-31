@@ -11,30 +11,24 @@ const router = createRouter({
       meta: { requiresGuest: true }
     },
     {
-      path: '/auth',
-      component: () => import('@/views/auth/AuthLayout.vue'),
-      children: [
-        {
-          path: 'login',
-          name: 'Login',
-          component: () => import('@/views/auth/LoginView.vue'),
-          meta: {
-            requiresGuest: true,
-            title: 'Sign in to your account',
-            subtitle: 'Welcome back! Please sign in to continue.'
-          }
-        },
-        {
-          path: 'register',
-          name: 'Register',
-          component: () => import('@/views/auth/RegisterView.vue'),
-          meta: {
-            requiresGuest: true,
-            title: 'Create your account',
-            subtitle: 'Join Vallexia and start planning your meals today!'
-          }
-        }
-      ]
+      path: '/login',
+      name: 'Login',
+      component: () => import('@/views/auth/LoginView.vue'),
+      meta: {
+        requiresGuest: true,
+        title: 'Sign in to your account',
+        subtitle: 'Welcome back! Please sign in to continue.'
+      }
+    },
+    {
+      path: '/register',
+      name: 'Register',
+      component: () => import('@/views/auth/RegisterView.vue'),
+      meta: {
+        requiresGuest: true,
+        title: 'Create your account',
+        subtitle: 'Join Vallexia and start planning your meals today!'
+      }
     },
     {
       path: '/home',
@@ -89,7 +83,7 @@ router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
   
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next('/auth/login')
+    next('/login')
   } else if (to.meta.requiresGuest && authStore.isAuthenticated) {
     next('/home')
   } else {

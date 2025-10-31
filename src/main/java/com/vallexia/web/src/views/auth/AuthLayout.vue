@@ -18,17 +18,17 @@
 
       <!-- Form Container -->
       <div class="bg-white py-8 px-6 shadow-lg rounded-lg">
-        <RouterView />
+        <slot />
       </div>
 
       <!-- Footer Links -->
       <div class="text-center">
         <slot name="footer">
           <p class="text-sm text-gray-600">
-            <RouterLink v-if="showLoginLink" to="/auth/login" class="font-medium text-blue-600 hover:text-blue-500">
+            <RouterLink v-if="showLoginLink" to="/login" class="font-medium text-blue-600 hover:text-blue-500">
               Already have an account? Sign in
             </RouterLink>
-            <RouterLink v-if="showRegisterLink" to="/auth/register" class="font-medium text-blue-600 hover:text-blue-500">
+            <RouterLink v-if="showRegisterLink" to="/register" class="font-medium text-blue-600 hover:text-blue-500">
               Don't have an account? Sign up
             </RouterLink>
           </p>
@@ -40,7 +40,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useRoute, RouterView, RouterLink } from 'vue-router'
+import { useRoute, RouterLink } from 'vue-router'
 
 const route = useRoute()
 

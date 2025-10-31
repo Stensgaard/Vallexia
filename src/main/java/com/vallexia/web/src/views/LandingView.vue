@@ -14,10 +14,10 @@
           </div>
           
           <div class="flex items-center space-x-4">
-            <RouterLink to="/auth/login" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+            <RouterLink to="/login" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
               Sign In
             </RouterLink>
-            <RouterLink to="/auth/register" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+            <RouterLink to="/register" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
               Get Started
             </RouterLink>
           </div>
@@ -38,10 +38,10 @@
             Transform your cooking routine with Vallexia.
           </p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <RouterLink to="/auth/register" class="bg-white text-blue-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-gray-50 transition-colors">
+            <RouterLink to="/register" class="bg-white text-blue-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-gray-50 transition-colors">
               Start Planning Today
             </RouterLink>
-            <RouterLink to="/auth/login" class="border-2 border-white text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
+            <RouterLink to="/login" class="border-2 border-white text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
               Sign In
             </RouterLink>
           </div>
@@ -160,7 +160,7 @@
               </svg>
               <h3 class="text-2xl font-bold text-gray-900 mb-4">Ready to Get Started?</h3>
               <p class="text-gray-600 mb-6">Join thousands of users who have transformed their meal planning with Vallexia.</p>
-              <RouterLink to="/auth/register" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+              <RouterLink to="/register" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
                 Create Your Account
               </RouterLink>
             </div>

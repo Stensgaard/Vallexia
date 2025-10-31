@@ -1,5 +1,6 @@
 <template>
-  <form @submit.prevent="handleSubmit" class="space-y-6">
+  <AuthLayout>
+    <form @submit.prevent="handleSubmit" class="space-y-6">
       <!-- Global Error Message -->
       <ErrorMessage
         v-if="authStore.error"
@@ -68,12 +69,14 @@
         </button>
       </div>
   </form>
+  </AuthLayout>
 </template>
 
 <script setup>
 import { reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import AuthLayout from '@/views/auth/AuthLayout.vue'
 import FormInput from '@/components/common/FormInput.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ErrorMessage from '@/components/common/ErrorMessage.vue'

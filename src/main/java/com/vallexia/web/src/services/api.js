@@ -47,7 +47,7 @@ api.interceptors.response.use(
         // Refresh failed, redirect to login
         const authStore = useAuthStore()
         authStore.clearAuthData()
-        router.push('/auth/login')
+        router.push('/login')
         return Promise.reject(refreshError)
       }
     }
