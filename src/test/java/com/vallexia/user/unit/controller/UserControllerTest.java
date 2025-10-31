@@ -263,9 +263,13 @@ class UserControllerTest {
     UserProfileDto body = response.getBody();
     assertThat(body).isNotNull();
     assertThat(body.getEmail()).isEqualTo("updated@example.com");
-    assertThat(body.getProfilePictureUrl()).isEqualTo("https://example.com/updated.jpg");
     assertThat(body.getHouseholdSize()).isEqualTo(4);
-    assertThat(body.getMealsPerDay()).isEqualTo(5);
+    assertThat(body.getMealTypes()).containsExactlyInAnyOrder(
+        com.vallexia.user.entity.MealType.BREAKFAST,
+        com.vallexia.user.entity.MealType.LUNCH,
+        com.vallexia.user.entity.MealType.DINNER,
+        com.vallexia.user.entity.MealType.SNACK
+    );
   }
   
   @Test

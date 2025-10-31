@@ -82,9 +82,8 @@ public class UserService {
         
         // Update user fields (username is immutable and not updated)
         user.setEmail(userProfileDto.getEmail());
-        user.setProfilePictureUrl(userProfileDto.getProfilePictureUrl());
         user.setHouseholdSize(userProfileDto.getHouseholdSize());
-        user.setMealsPerDay(userProfileDto.getMealsPerDay());
+        user.setMealTypes(userProfileDto.getMealTypes());
         
         User updatedUser = userRepository.save(user);
         

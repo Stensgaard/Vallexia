@@ -1,14 +1,19 @@
 package com.vallexia.auth.dto;
 
+import com.vallexia.user.entity.MealType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Data Transfer Object for user registration request.
@@ -50,7 +55,6 @@ public class RegisterRequestDto {
     @Max(value = 20, message = "Household size cannot exceed 20")
     private Integer householdSize = 1;
     
-    @Min(value = 1, message = "Meals per day must be at least 1")
-    @Max(value = 10, message = "Meals per day cannot exceed 10")
-    private Integer mealsPerDay = 3;
+    @NotEmpty(message = "At least one meal type must be selected")
+    private Set<MealType> mealTypes = new HashSet<>(Set.of(MealType.BREAKFAST, MealType.LUNCH, MealType.DINNER));
 }

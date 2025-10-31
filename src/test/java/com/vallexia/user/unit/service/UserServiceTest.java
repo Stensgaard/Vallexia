@@ -126,9 +126,8 @@ class UserServiceTest {
     UserProfileDto updateDto = UserTestFixtures.createUpdatedUserProfileDto();
     User updatedUser = UserTestFixtures.createUser();
     updatedUser.setEmail(updateDto.getEmail());
-    updatedUser.setProfilePictureUrl(updateDto.getProfilePictureUrl());
     updatedUser.setHouseholdSize(updateDto.getHouseholdSize());
-    updatedUser.setMealsPerDay(updateDto.getMealsPerDay());
+    updatedUser.setMealTypes(updateDto.getMealTypes());
     
     UserProfileDto expectedDto = UserTestFixtures.createUpdatedUserProfileDto();
     
@@ -260,9 +259,8 @@ class UserServiceTest {
     
     User savedUser = userCaptor.getValue();
     assertThat(savedUser.getEmail()).isEqualTo(updateDto.getEmail());
-    assertThat(savedUser.getProfilePictureUrl()).isEqualTo(updateDto.getProfilePictureUrl());
     assertThat(savedUser.getHouseholdSize()).isEqualTo(updateDto.getHouseholdSize());
-    assertThat(savedUser.getMealsPerDay()).isEqualTo(updateDto.getMealsPerDay());
+    assertThat(savedUser.getMealTypes()).isEqualTo(updateDto.getMealTypes());
   }
   
   @Test

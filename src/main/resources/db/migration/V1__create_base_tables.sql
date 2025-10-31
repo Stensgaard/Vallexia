@@ -16,7 +16,6 @@ CREATE TABLE users (
     password_hash VARCHAR(255) NOT NULL,
     first_name VARCHAR(50),
     last_name VARCHAR(50),
-    profile_picture_url VARCHAR(500),
     enabled BOOLEAN NOT NULL DEFAULT TRUE,
     account_non_expired BOOLEAN NOT NULL DEFAULT TRUE,
     account_non_locked BOOLEAN NOT NULL DEFAULT TRUE,
@@ -25,7 +24,6 @@ CREATE TABLE users (
     account_locked_until TIMESTAMP,
     -- Household and meal planning fields
     household_size INTEGER NOT NULL DEFAULT 1,
-    meals_per_day INTEGER NOT NULL DEFAULT 3,
     -- Subscription management fields
     subscription_status VARCHAR(50) NOT NULL DEFAULT 'FREE',
     subscription_expires_at TIMESTAMP,
@@ -33,7 +31,6 @@ CREATE TABLE users (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     -- Constraints
     CONSTRAINT chk_household_size CHECK (household_size >= 1 AND household_size <= 20),
-    CONSTRAINT chk_meals_per_day CHECK (meals_per_day >= 1 AND meals_per_day <= 10),
     CONSTRAINT chk_subscription_status CHECK (subscription_status IN ('FREE', 'PREMIUM', 'FAMILY', 'CANCELLED', 'EXPIRED'))
 );
 
@@ -46,7 +43,6 @@ COMMENT ON COLUMN users.account_non_locked IS 'Whether the account is locked due
 COMMENT ON COLUMN users.failed_login_attempts IS 'Number of consecutive failed login attempts';
 COMMENT ON COLUMN users.account_locked_until IS 'Timestamp until which the account is locked (null if not locked)';
 COMMENT ON COLUMN users.household_size IS 'Number of people in the household (1-20)';
-COMMENT ON COLUMN users.meals_per_day IS 'Number of meals planned per day (1-10)';
 COMMENT ON COLUMN users.subscription_status IS 'Subscription status: FREE, PREMIUM, FAMILY, CANCELLED, or EXPIRED';
 COMMENT ON COLUMN users.subscription_expires_at IS 'Timestamp when subscription expires (null for FREE tier)';
 
@@ -64,6 +60,21 @@ CREATE TABLE user_roles (
 
 COMMENT ON TABLE user_roles IS 'User roles for authorization (ElementCollection mapping)';
 COMMENT ON COLUMN user_roles.role IS 'Role name (enum value)';
+
+-- ============================================================================
+-- USER MEAL TYPES TABLE (ElementCollection)
+-- ============================================================================
+-- Stores meal types that each user wants to track.
+-- ============================================================================
+CREATE TABLE user_meal_types (
+    user_id BIGINT NOT NULL,
+    meal_type VARCHAR(50) NOT NULL,
+    PRIMARY KEY (user_id, meal_type),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+COMMENT ON TABLE user_meal_types IS 'Meal types that users want to track (ElementCollection mapping)';
+COMMENT ON COLUMN user_meal_types.meal_type IS 'Meal type: BREAKFAST, LUNCH, DINNER, or SNACK';
 
 -- ============================================================================
 -- DIETARY PREFERENCES TABLE
@@ -227,6 +238,9 @@ CREATE INDEX idx_users_enabled ON users(enabled);
 CREATE INDEX idx_users_created_at ON users(created_at);
 CREATE INDEX idx_users_subscription_status ON users(subscription_status);
 CREATE INDEX idx_users_subscription_expires ON users(subscription_expires_at);
+
+-- User meal types indexes
+CREATE INDEX idx_user_meal_types_user_id ON user_meal_types(user_id);
 
 -- Dietary preferences indexes
 CREATE INDEX idx_dietary_preferences_user_id ON dietary_preferences(user_id);

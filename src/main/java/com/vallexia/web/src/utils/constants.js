@@ -146,11 +146,26 @@ export const SUBSCRIPTION_STATUS_LABELS = {
   [SUBSCRIPTION_STATUS.EXPIRED]: 'Expired'
 }
 
+// Meal Types
+export const MEAL_TYPES = {
+  BREAKFAST: 'BREAKFAST',
+  LUNCH: 'LUNCH',
+  DINNER: 'DINNER',
+  SNACK: 'SNACK'
+}
+
+// Meal Type Labels
+export const MEAL_TYPES_LABELS = {
+  [MEAL_TYPES.BREAKFAST]: 'Breakfast',
+  [MEAL_TYPES.LUNCH]: 'Lunch',
+  [MEAL_TYPES.DINNER]: 'Dinner',
+  [MEAL_TYPES.SNACK]: 'Snack'
+}
+
 // Validation Constants
 // TODO NOT USED YET
 export const VALIDATION_LIMITS = {
   HOUSEHOLD_SIZE: { MIN: 1, MAX: 20 },
-  MEALS_PER_DAY: { MIN: 1, MAX: 10 },
   DAILY_CALORIES: { MIN: 800, MAX: 5000 },
   DAILY_PROTEIN: { MIN: 0, MAX: 500 },
   DAILY_CARBS: { MIN: 0, MAX: 1000 },

@@ -49,10 +49,9 @@ class UserMapperTest {
     assertThat(dto.getId()).isEqualTo(user.getId());
     assertThat(dto.getUsername()).isEqualTo(user.getUsername());
     assertThat(dto.getEmail()).isEqualTo(user.getEmail());
-    assertThat(dto.getProfilePictureUrl()).isEqualTo(user.getProfilePictureUrl());
     assertThat(dto.getEnabled()).isEqualTo(user.getEnabled());
     assertThat(dto.getHouseholdSize()).isEqualTo(user.getHouseholdSize());
-    assertThat(dto.getMealsPerDay()).isEqualTo(user.getMealsPerDay());
+    assertThat(dto.getMealTypes()).isEqualTo(user.getMealTypes());
     assertThat(dto.getSubscriptionStatus()).isEqualTo(user.getSubscriptionStatus().name());
     assertThat(dto.getSubscriptionExpiresAt()).isEqualTo(user.getSubscriptionExpiresAt());
   }
@@ -85,7 +84,6 @@ class UserMapperTest {
     assertThat(dto.getId()).isEqualTo(1L);
     assertThat(dto.getUsername()).isEqualTo("testuser");
     assertThat(dto.getEmail()).isEqualTo("test@example.com");
-    assertThat(dto.getProfilePictureUrl()).isNull();
   }
   
   @Test
@@ -106,19 +104,25 @@ class UserMapperTest {
   }
   
   @Test
-  @DisplayName("Should map household size and meals per day")
-  void shouldMapHouseholdSizeAndMealsPerDay() {
+  @DisplayName("Should map household size and meal types")
+  void shouldMapHouseholdSizeAndMealTypes() {
     // Given
     User user = UserTestFixtures.createUserWithProfile();
     user.setHouseholdSize(5);
-    user.setMealsPerDay(6);
+    user.setMealTypes(new java.util.HashSet<>(java.util.Set.of(
+        com.vallexia.user.entity.MealType.BREAKFAST,
+        com.vallexia.user.entity.MealType.LUNCH
+    )));
     
     // When
     UserProfileDto dto = userMapper.toUserProfileDto(user);
     
     // Then
     assertThat(dto.getHouseholdSize()).isEqualTo(5);
-    assertThat(dto.getMealsPerDay()).isEqualTo(6);
+    assertThat(dto.getMealTypes()).containsExactlyInAnyOrder(
+        com.vallexia.user.entity.MealType.BREAKFAST,
+        com.vallexia.user.entity.MealType.LUNCH
+    );
   }
   
   @Test
@@ -129,9 +133,12 @@ class UserMapperTest {
     user.setId(1L);
     user.setUsername("testuser");
     user.setEmail("test@example.com");
-    user.setProfilePictureUrl(null);
     user.setHouseholdSize(1);
-    user.setMealsPerDay(3);
+    user.setMealTypes(new java.util.HashSet<>(java.util.Set.of(
+        com.vallexia.user.entity.MealType.BREAKFAST,
+        com.vallexia.user.entity.MealType.LUNCH,
+        com.vallexia.user.entity.MealType.DINNER
+    )));
     user.setEnabled(true);
     user.setSubscriptionStatus(SubscriptionStatus.FREE);
     
@@ -139,7 +146,6 @@ class UserMapperTest {
     UserProfileDto dto = userMapper.toUserProfileDto(user);
     
     // Then
-    assertThat(dto.getProfilePictureUrl()).isNull();
     assertThat(dto.getSubscriptionStatus()).isEqualTo("FREE");
     assertThat(dto.getSubscriptionExpiresAt()).isNull();
   }
@@ -231,18 +237,26 @@ class UserMapperTest {
     // Given
     UserProfileDto dto = UserTestFixtures.createUserProfileDto();
     dto.setEmail("new@example.com");
-    dto.setProfilePictureUrl("https://example.com/new.jpg");
     dto.setHouseholdSize(4);
-    dto.setMealsPerDay(5);
+    dto.setMealTypes(new java.util.HashSet<>(java.util.Set.of(
+        com.vallexia.user.entity.MealType.BREAKFAST,
+        com.vallexia.user.entity.MealType.LUNCH,
+        com.vallexia.user.entity.MealType.DINNER,
+        com.vallexia.user.entity.MealType.SNACK
+    )));
     
     // When
     User user = userMapper.toUser(dto);
     
     // Then
     assertThat(user.getEmail()).isEqualTo("new@example.com");
-    assertThat(user.getProfilePictureUrl()).isEqualTo("https://example.com/new.jpg");
     assertThat(user.getHouseholdSize()).isEqualTo(4);
-    assertThat(user.getMealsPerDay()).isEqualTo(5);
+    assertThat(user.getMealTypes()).containsExactlyInAnyOrder(
+        com.vallexia.user.entity.MealType.BREAKFAST,
+        com.vallexia.user.entity.MealType.LUNCH,
+        com.vallexia.user.entity.MealType.DINNER,
+        com.vallexia.user.entity.MealType.SNACK
+    );
   }
   
   @Test
@@ -273,7 +287,6 @@ class UserMapperTest {
     // Then
     assertThat(user).isNotNull();
     assertThat(user.getEmail()).isEqualTo("test@example.com");
-    assertThat(user.getProfilePictureUrl()).isNull();
   }
   
   @Test
@@ -288,8 +301,12 @@ class UserMapperTest {
     // Then
     assertThat(user).isNotNull();
     assertThat(user.getEmail()).isEqualTo("updated@example.com");
-    assertThat(user.getProfilePictureUrl()).isEqualTo("https://example.com/updated.jpg");
     assertThat(user.getHouseholdSize()).isEqualTo(4);
-    assertThat(user.getMealsPerDay()).isEqualTo(5);
+    assertThat(user.getMealTypes()).containsExactlyInAnyOrder(
+        com.vallexia.user.entity.MealType.BREAKFAST,
+        com.vallexia.user.entity.MealType.LUNCH,
+        com.vallexia.user.entity.MealType.DINNER,
+        com.vallexia.user.entity.MealType.SNACK
+    );
   }
 }

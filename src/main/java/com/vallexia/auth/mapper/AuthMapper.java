@@ -28,7 +28,6 @@ public interface AuthMapper {
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "passwordHash", ignore = true)  // Handle separately for encoding
   @Mapping(target = "roles", ignore = true)         // Handle separately
-  @Mapping(target = "profilePictureUrl", ignore = true)
   @Mapping(target = "dietaryPreferences", ignore = true)
   @Mapping(target = "nutritionalGoals", ignore = true)
   @Mapping(target = "enabled", constant = "true")

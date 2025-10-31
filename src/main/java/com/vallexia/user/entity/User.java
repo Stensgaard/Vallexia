@@ -53,9 +53,6 @@ public class User {
     @Column(nullable = false)
     private String passwordHash;
     
-    @Size(max = 500)
-    private String profilePictureUrl;
-    
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private DietaryPreferences dietaryPreferences;
     
@@ -89,8 +86,11 @@ public class User {
     @Column(nullable = false)
     private Integer householdSize = 1;
     
-    @Column(nullable = false)
-    private Integer mealsPerDay = 3;
+    @ElementCollection(fetch = FetchType.LAZY)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "user_meal_types", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "meal_type")
+    private Set<MealType> mealTypes = new HashSet<>();
     
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

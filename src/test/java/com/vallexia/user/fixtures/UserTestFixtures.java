@@ -1,6 +1,7 @@
 package com.vallexia.user.fixtures;
 
 import com.vallexia.user.dto.UserProfileDto;
+import com.vallexia.user.entity.MealType;
 import com.vallexia.user.entity.Role;
 import com.vallexia.user.entity.SubscriptionStatus;
 import com.vallexia.user.entity.User;
@@ -29,9 +30,8 @@ public class UserTestFixtures {
   public static final String TEST_PASSWORD_HASH = "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy";
   public static final String TEST_FIRST_NAME = "Test";
   public static final String TEST_LAST_NAME = "User";
-  public static final String TEST_PROFILE_PICTURE_URL = "https://example.com/profile.jpg";
   public static final Integer TEST_HOUSEHOLD_SIZE = 2;
-  public static final Integer TEST_MEALS_PER_DAY = 3;
+  public static final Set<MealType> TEST_MEAL_TYPES = Set.of(MealType.BREAKFAST, MealType.LUNCH, MealType.DINNER);
   
   /**
    * Creates a standard test user.
@@ -49,9 +49,8 @@ public class UserTestFixtures {
     user.setUsername(TEST_USERNAME);
     user.setEmail(TEST_EMAIL);
     user.setPasswordHash(TEST_PASSWORD_HASH);
-    user.setProfilePictureUrl(TEST_PROFILE_PICTURE_URL);
     user.setHouseholdSize(TEST_HOUSEHOLD_SIZE);
-    user.setMealsPerDay(TEST_MEALS_PER_DAY);
+    user.setMealTypes(new HashSet<>(TEST_MEAL_TYPES));
     user.setEnabled(true);
     user.setAccountNonExpired(true);
     user.setAccountNonLocked(true);
@@ -77,9 +76,8 @@ public class UserTestFixtures {
    */
   public static User createUserWithProfile() {
     User user = createUser();
-    user.setProfilePictureUrl("https://example.com/johndoe.jpg");
     user.setHouseholdSize(3);
-    user.setMealsPerDay(4);
+    user.setMealTypes(new HashSet<>(Set.of(MealType.BREAKFAST, MealType.LUNCH, MealType.DINNER, MealType.SNACK)));
     return user;
   }
   
@@ -92,9 +90,8 @@ public class UserTestFixtures {
     user.setUsername(TEST_ADMIN_USERNAME);
     user.setEmail(TEST_ADMIN_EMAIL);
     user.setPasswordHash(TEST_PASSWORD_HASH);
-    user.setProfilePictureUrl(null);
     user.setHouseholdSize(1);
-    user.setMealsPerDay(2);
+    user.setMealTypes(new HashSet<>(Set.of(MealType.BREAKFAST, MealType.DINNER)));
     user.setEnabled(true);
     user.setAccountNonExpired(true);
     user.setAccountNonLocked(true);
@@ -151,10 +148,9 @@ public class UserTestFixtures {
     dto.setId(TEST_USER_ID);
     dto.setUsername(TEST_USERNAME);
     dto.setEmail(TEST_EMAIL);
-    dto.setProfilePictureUrl(TEST_PROFILE_PICTURE_URL);
     dto.setEnabled(true);
     dto.setHouseholdSize(TEST_HOUSEHOLD_SIZE);
-    dto.setMealsPerDay(TEST_MEALS_PER_DAY);
+    dto.setMealTypes(new HashSet<>(TEST_MEAL_TYPES));
     dto.setSubscriptionStatus("FREE");
     dto.setSubscriptionExpiresAt(null);
     return dto;
@@ -177,10 +173,9 @@ public class UserTestFixtures {
     dto.setId(TEST_USER_ID);
     dto.setUsername(TEST_USERNAME); // Username is immutable
     dto.setEmail("updated@example.com");
-    dto.setProfilePictureUrl("https://example.com/updated.jpg");
     dto.setEnabled(true);
     dto.setHouseholdSize(4);
-    dto.setMealsPerDay(5);
+    dto.setMealTypes(new HashSet<>(Set.of(MealType.BREAKFAST, MealType.LUNCH, MealType.DINNER, MealType.SNACK)));
     dto.setSubscriptionStatus("PREMIUM");
     dto.setSubscriptionExpiresAt(LocalDateTime.now().plusMonths(1));
     return dto;
@@ -192,9 +187,8 @@ public class UserTestFixtures {
   public static UserProfileDto createInvalidUserProfileDto() {
     UserProfileDto dto = new UserProfileDto();
     dto.setEmail("invalid-email"); // Invalid email format
-    dto.setProfilePictureUrl("This is a very long profile picture URL that exceeds the maximum allowed length of five hundred characters and contains way too many characters to be considered valid in the system and should fail validation checks by the framework");
     dto.setHouseholdSize(25); // Exceeds max of 20
-    dto.setMealsPerDay(15); // Exceeds max of 10
+    dto.setMealTypes(new HashSet<>()); // Empty set should fail @NotEmpty validation
     return dto;
   }
   
@@ -206,10 +200,9 @@ public class UserTestFixtures {
     dto.setId(TEST_USER_ID);
     dto.setUsername(TEST_USERNAME);
     dto.setEmail("a@b.co"); // Minimum valid email
-    dto.setProfilePictureUrl("http://x.co"); // Minimum length
     dto.setEnabled(true);
     dto.setHouseholdSize(1); // Minimum value
-    dto.setMealsPerDay(1); // Minimum value
+    dto.setMealTypes(new HashSet<>(Set.of(MealType.BREAKFAST))); // Minimum - one meal type
     dto.setSubscriptionStatus("FREE");
     return dto;
   }

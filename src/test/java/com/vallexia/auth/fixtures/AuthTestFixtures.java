@@ -42,7 +42,7 @@ public class AuthTestFixtures {
     dto.setPassword(TEST_PASSWORD);
     dto.setConfirmPassword(TEST_PASSWORD);
     dto.setHouseholdSize(UserTestFixtures.TEST_HOUSEHOLD_SIZE);
-    dto.setMealsPerDay(UserTestFixtures.TEST_MEALS_PER_DAY);
+    dto.setMealTypes(new HashSet<>(UserTestFixtures.TEST_MEAL_TYPES));
     return dto;
   }
   
