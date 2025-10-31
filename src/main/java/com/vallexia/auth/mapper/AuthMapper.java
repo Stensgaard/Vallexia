@@ -38,6 +38,8 @@ public interface AuthMapper {
   @Mapping(target = "accountLockedUntil", ignore = true)
   @Mapping(target = "subscriptionStatus", constant = "FREE")
   @Mapping(target = "subscriptionExpiresAt", ignore = true)
+  @Mapping(target = "householdSize", ignore = true)  // Set to default (1) in User entity
+  @Mapping(target = "mealTypes", ignore = true)      // Set to default (BREAKFAST, LUNCH, DINNER) in User entity
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
   User toUser(RegisterRequestDto dto);
