@@ -34,8 +34,6 @@ export const useAuthStore = defineStore('auth', () => {
         id: response.id,
         username: response.username,
         email: response.email,
-        householdSize: response.householdSize,
-        mealsPerDay: response.mealsPerDay,
         subscriptionStatus: response.subscriptionStatus
       }
 
@@ -66,8 +64,6 @@ export const useAuthStore = defineStore('auth', () => {
         id: response.id,
         username: response.username,
         email: response.email,
-        householdSize: response.householdSize,
-        mealsPerDay: response.mealsPerDay,
         subscriptionStatus: response.subscriptionStatus
       }
 
@@ -144,8 +140,6 @@ export const useAuthStore = defineStore('auth', () => {
           id: payload.sub,
           username: payload.sub,
           email: payload.email || '',
-          householdSize: payload.householdSize || 1,
-          mealsPerDay: payload.mealsPerDay || 3,
           subscriptionStatus: payload.subscriptionStatus || 'FREE'
         }
       } catch (err) {

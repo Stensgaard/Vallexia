@@ -22,8 +22,13 @@
       </div>
 
       <!-- Footer Links -->
-      <div class="text-center">
+      <div class="text-center space-y-2">
         <slot name="footer">
+          <p class="text-sm text-gray-600">
+            <RouterLink to="/" class="font-medium text-blue-600 hover:text-blue-500">
+              ← Back to Home
+            </RouterLink>
+          </p>
           <p class="text-sm text-gray-600">
             <RouterLink v-if="showLoginLink" to="/login" class="font-medium text-blue-600 hover:text-blue-500">
               Already have an account? Sign in
