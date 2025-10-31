@@ -9,6 +9,7 @@ import com.vallexia.user.service.DietaryPreferencesService;
 import com.vallexia.user.service.NutritionalGoalsService;
 import com.vallexia.audit.entity.EventType;
 import com.vallexia.audit.service.AuditService;
+import com.vallexia.exception.ErrorCode;
 import com.vallexia.exception.ValidationException;
 import com.vallexia.auth.exception.UserAlreadyExistsException;
 import com.vallexia.auth.exception.AuthenticationException;
@@ -168,7 +169,7 @@ public class AuthService {
         }
         
         if (userOpt.isEmpty()) {
-            throw new AuthenticationException("Invalid username/email or password");
+            throw new AuthenticationException(ErrorCode.INVALID_CREDENTIALS, "Invalid username/email or password");
         }
         
         User user = userOpt.get();
@@ -196,7 +197,7 @@ public class AuthService {
             }
             
             userRepository.save(user);
-            throw new AuthenticationException("Invalid username/email or password");
+            throw new AuthenticationException(ErrorCode.INVALID_CREDENTIALS, "Invalid username/email or password");
         }
         
         // Reset failed login attempts on successful login

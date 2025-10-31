@@ -32,5 +32,15 @@ public class AuthenticationException extends VallexiaException {
   public AuthenticationException(String message, Throwable cause) {
     super(ErrorCode.AUTHENTICATION_ERROR, message, cause);
   }
+  
+  /**
+   * Constructs a new AuthenticationException with a custom error code and message.
+   * 
+   * @param errorCode the specific error code to use
+   * @param message the detail message
+   */
+  public AuthenticationException(ErrorCode errorCode, String message) {
+    super(errorCode, message);
+  }
 }
 
