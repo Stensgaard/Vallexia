@@ -79,6 +79,97 @@
       "description": "Path for audit fallback log file. Used when database audit logging fails.",
       "defaultValue": "logs/audit-fallback.log",
       "sourceType": "com.vallexia.config.audit.AuditProperties"
+    },
+    {
+      "name": "app.rate-limiting.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Global flag to enable/disable all rate limiting. When false, rate limiting is completely bypassed.",
+      "defaultValue": true,
+      "sourceType": "com.vallexia.config.security.RateLimitingProperties"
+    },
+    {
+      "name": "app.rate-limiting.login.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable/disable rate limiting for login endpoint.",
+      "defaultValue": true,
+      "sourceType": "com.vallexia.config.security.RateLimitingProperties"
+    },
+    {
+      "name": "app.rate-limiting.login.requests",
+      "type": "java.lang.Integer",
+      "description": "Number of login requests allowed per time window.",
+      "defaultValue": 5,
+      "sourceType": "com.vallexia.config.security.RateLimitingProperties"
+    },
+    {
+      "name": "app.rate-limiting.login.duration-minutes",
+      "type": "java.lang.Integer",
+      "description": "Time window duration in minutes for login rate limiting.",
+      "defaultValue": 1,
+      "sourceType": "com.vallexia.config.security.RateLimitingProperties"
+    },
+    {
+      "name": "app.rate-limiting.registration.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable/disable rate limiting for registration endpoint.",
+      "defaultValue": true,
+      "sourceType": "com.vallexia.config.security.RateLimitingProperties"
+    },
+    {
+      "name": "app.rate-limiting.registration.requests",
+      "type": "java.lang.Integer",
+      "description": "Number of registration requests allowed per time window.",
+      "defaultValue": 3,
+      "sourceType": "com.vallexia.config.security.RateLimitingProperties"
+    },
+    {
+      "name": "app.rate-limiting.registration.duration-minutes",
+      "type": "java.lang.Integer",
+      "description": "Time window duration in minutes for registration rate limiting.",
+      "defaultValue": 5,
+      "sourceType": "com.vallexia.config.security.RateLimitingProperties"
+    },
+    {
+      "name": "app.rate-limiting.general-api.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable/disable rate limiting for general API endpoints.",
+      "defaultValue": true,
+      "sourceType": "com.vallexia.config.security.RateLimitingProperties"
+    },
+    {
+      "name": "app.rate-limiting.general-api.requests",
+      "type": "java.lang.Integer",
+      "description": "Number of general API requests allowed per time window.",
+      "defaultValue": 100,
+      "sourceType": "com.vallexia.config.security.RateLimitingProperties"
+    },
+    {
+      "name": "app.rate-limiting.general-api.duration-minutes",
+      "type": "java.lang.Integer",
+      "description": "Time window duration in minutes for general API rate limiting.",
+      "defaultValue": 1,
+      "sourceType": "com.vallexia.config.security.RateLimitingProperties"
+    },
+    {
+      "name": "app.rate-limiting.refresh.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable/disable rate limiting for refresh token endpoint.",
+      "defaultValue": true,
+      "sourceType": "com.vallexia.config.security.RateLimitingProperties"
+    },
+    {
+      "name": "app.rate-limiting.refresh.requests",
+      "type": "java.lang.Integer",
+      "description": "Number of refresh token requests allowed per time window.",
+      "defaultValue": 10,
+      "sourceType": "com.vallexia.config.security.RateLimitingProperties"
+    },
+    {
+      "name": "app.rate-limiting.refresh.duration-minutes",
+      "type": "java.lang.Integer",
+      "description": "Time window duration in minutes for refresh token rate limiting.",
+      "defaultValue": 5,
+      "sourceType": "com.vallexia.config.security.RateLimitingProperties"
     }
   ]
 }
