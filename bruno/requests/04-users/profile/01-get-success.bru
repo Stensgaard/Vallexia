@@ -1,0 +1,35 @@
+meta {
+  name: Get User Profile - Success
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/users/profile
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("Status is 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response contains user ID", function() {
+    expect(res.body).to.have.property("id");
+    expect(res.body.id).to.be.a("number");
+  });
+
+  test("Response contains email", function() {
+    expect(res.body).to.have.property("email");
+    expect(res.body.email).to.be.a("string");
+  });
+
+  test("Response contains household size", function() {
+    expect(res.body).to.have.property("householdSize");
+  });
+}

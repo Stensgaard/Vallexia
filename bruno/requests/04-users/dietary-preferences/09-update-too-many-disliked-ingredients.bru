@@ -1,0 +1,35 @@
+meta {
+  name: Update Dietary Preferences - Too Many Disliked Ingredients
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{baseUrl}}/api/v1/users/dietary-preferences
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "dislikedIngredients": ["ingredient1", "ingredient2", "ingredient3", "ingredient4", "ingredient5", "ingredient6", "ingredient7", "ingredient8", "ingredient9", "ingredient10", "ingredient11", "ingredient12", "ingredient13", "ingredient14", "ingredient15", "ingredient16", "ingredient17", "ingredient18", "ingredient19", "ingredient20", "ingredient21", "ingredient22", "ingredient23", "ingredient24", "ingredient25", "ingredient26", "ingredient27", "ingredient28", "ingredient29", "ingredient30", "ingredient31", "ingredient32", "ingredient33", "ingredient34", "ingredient35", "ingredient36", "ingredient37", "ingredient38", "ingredient39", "ingredient40", "ingredient41", "ingredient42", "ingredient43", "ingredient44", "ingredient45", "ingredient46", "ingredient47", "ingredient48", "ingredient49", "ingredient50", "ingredient51"],
+    "servingSizePreference": "MEDIUM"
+  }
+}
+
+tests {
+  test("Status is 400 Bad Request", function() {
+    expect(res.status).to.equal(400);
+  });
+
+  test("Disliked ingredients validation error for too many", function() {
+    expect(res.body.details).to.have.property("dislikedIngredients");
+    expect(res.body.details.dislikedIngredients).to.satisfy(msg => 
+      msg.includes("50") || msg.includes("Maximum") || msg.includes("exceed")
+    );
+  });
+}

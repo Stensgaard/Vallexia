@@ -90,7 +90,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "user_meal_types", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "meal_type")
-    private Set<MealType> mealTypes = new HashSet<>();
+    private Set<MealType> mealTypes = new HashSet<>(Set.of(MealType.BREAKFAST, MealType.LUNCH, MealType.DINNER));
     
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

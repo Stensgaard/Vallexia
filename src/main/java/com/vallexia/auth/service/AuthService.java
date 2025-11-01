@@ -9,6 +9,7 @@ import com.vallexia.user.service.DietaryPreferencesService;
 import com.vallexia.user.service.NutritionalGoalsService;
 import com.vallexia.audit.entity.EventType;
 import com.vallexia.audit.service.AuditService;
+import com.vallexia.exception.ErrorCode;
 import com.vallexia.exception.ValidationException;
 import com.vallexia.auth.exception.UserAlreadyExistsException;
 import com.vallexia.auth.exception.AuthenticationException;
@@ -168,7 +169,7 @@ public class AuthService {
         }
         
         if (userOpt.isEmpty()) {
-            throw new AuthenticationException("Invalid username/email or password");
+            throw new AuthenticationException(ErrorCode.INVALID_CREDENTIALS, "Invalid username/email or password");
         }
         
         User user = userOpt.get();
@@ -196,7 +197,7 @@ public class AuthService {
             }
             
             userRepository.save(user);
-            throw new AuthenticationException("Invalid username/email or password");
+            throw new AuthenticationException(ErrorCode.INVALID_CREDENTIALS, "Invalid username/email or password");
         }
         
         // Reset failed login attempts on successful login
@@ -245,22 +246,34 @@ public class AuthService {
     public JwtResponseDto refreshToken(String refreshToken) {
         // Validate token format
         if (refreshToken == null || refreshToken.trim().isEmpty()) {
-            throw new AuthenticationException("Refresh token is required");
+            throw new AuthenticationException(ErrorCode.INVALID_TOKEN, "Refresh token is required");
         }
         
+        // Check if token is valid first
+        // If validation fails, try to determine if it's expired (valid format) vs invalid (malformed)
+        Date expirationDate = jwtUtils.getExpirationDateFromToken(refreshToken);
+        if (expirationDate != null) {
+            // Token format is valid (we could extract expiration), check if expired
+            if (expirationDate.before(new Date())) {
+                throw new AuthenticationException(ErrorCode.TOKEN_EXPIRED, "Refresh token has expired");
+            }
+        }
+        
+        // If we couldn't get expiration or token validation fails, check validation
         if (!jwtUtils.validateJwtToken(refreshToken)) {
-            throw new AuthenticationException("Invalid refresh token");
+            // Token is invalid - malformed, wrong signature, etc.
+            throw new AuthenticationException(ErrorCode.INVALID_TOKEN, "Invalid refresh token");
         }
         
         // Check if refresh token is already blacklisted
         if (tokenBlacklistService.isTokenBlacklisted(refreshToken)) {
             log.warn("Attempted to use blacklisted refresh token");
-            throw new AuthenticationException("Refresh token has been revoked");
+            throw new AuthenticationException(ErrorCode.INVALID_TOKEN, "Refresh token has been revoked");
         }
         
         String username = jwtUtils.getUsernameFromJwtToken(refreshToken);
         User user = userRepository.findByUsernameAndEnabledTrue(username)
-                .orElseThrow(() -> new AuthenticationException("User not found"));
+                .orElseThrow(() -> new AuthenticationException(ErrorCode.INVALID_TOKEN, "User not found"));
         
         // Check if account is locked
         if (user.isAccountLocked()) {

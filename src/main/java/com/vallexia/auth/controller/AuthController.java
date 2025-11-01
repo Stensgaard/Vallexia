@@ -172,8 +172,8 @@ public class AuthController {
             description = "Logout successful - no content"
         ),
         @ApiResponse(
-            responseCode = "401",
-            description = "Not authenticated"
+            responseCode = "403",
+            description = "Access denied - authentication required"
         ),
         @ApiResponse(
             responseCode = "500",

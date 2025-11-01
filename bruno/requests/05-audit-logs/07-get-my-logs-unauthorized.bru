@@ -1,0 +1,17 @@
+meta {
+  name: Get My Audit Logs - Unauthorized
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/api/v1/audit-logs/me?page=0&size=20
+  body: none
+  auth: none
+}
+
+tests {
+  test("Status is 401 Unauthorized", function() {
+    expect(res.status).to.equal(401);
+  });
+}

@@ -41,8 +41,6 @@ public class AuthTestFixtures {
     dto.setEmail(UserTestFixtures.TEST_EMAIL);
     dto.setPassword(TEST_PASSWORD);
     dto.setConfirmPassword(TEST_PASSWORD);
-    dto.setHouseholdSize(UserTestFixtures.TEST_HOUSEHOLD_SIZE);
-    dto.setMealTypes(new HashSet<>(UserTestFixtures.TEST_MEAL_TYPES));
     return dto;
   }
   

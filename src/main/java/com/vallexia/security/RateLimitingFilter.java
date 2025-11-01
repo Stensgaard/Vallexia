@@ -2,6 +2,7 @@ package com.vallexia.security;
 
 import com.vallexia.audit.util.IpAddressExtractor;
 import com.vallexia.config.security.RateLimitingConfig;
+import com.vallexia.config.security.RateLimitingProperties;
 import com.vallexia.security.job.RateLimitingBucketCleanupJob;
 import io.github.bucket4j.Bucket;
 import jakarta.servlet.FilterChain;
@@ -37,6 +38,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
   private final Map<String, Bucket> generalApiRateLimitBuckets;
   private final Map<String, Bucket> refreshRateLimitBuckets;
   private final RateLimitingConfig rateLimitingConfig;
+  private final RateLimitingProperties rateLimitingProperties;
   private final IpAddressExtractor ipAddressExtractor;
   private final RateLimitingBucketCleanupJob bucketCleanupJob;
   
@@ -48,6 +50,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
    * @param generalApiRateLimitBuckets bucket storage for general API requests
    * @param refreshRateLimitBuckets bucket storage for refresh token requests
    * @param rateLimitingConfig configuration for creating new buckets
+   * @param rateLimitingProperties rate limiting configuration properties
    * @param ipAddressExtractor secure IP address extraction with proxy validation
    * @param bucketCleanupJob cleanup job for tracking bucket access (optional, may be null)
    */
@@ -57,6 +60,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
       Map<String, Bucket> generalApiRateLimitBuckets,
       Map<String, Bucket> refreshRateLimitBuckets,
       RateLimitingConfig rateLimitingConfig,
+      RateLimitingProperties rateLimitingProperties,
       IpAddressExtractor ipAddressExtractor,
       @Nullable RateLimitingBucketCleanupJob bucketCleanupJob) {
     this.loginRateLimitBuckets = loginRateLimitBuckets;
@@ -64,6 +68,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     this.generalApiRateLimitBuckets = generalApiRateLimitBuckets;
     this.refreshRateLimitBuckets = refreshRateLimitBuckets;
     this.rateLimitingConfig = rateLimitingConfig;
+    this.rateLimitingProperties = rateLimitingProperties;
     this.ipAddressExtractor = ipAddressExtractor;
     this.bucketCleanupJob = bucketCleanupJob;
   }
@@ -73,6 +78,13 @@ public class RateLimitingFilter extends OncePerRequestFilter {
       @NonNull HttpServletRequest request,
       @NonNull HttpServletResponse response,
       @NonNull FilterChain filterChain) throws ServletException, IOException {
+    
+    // Check if rate limiting is globally disabled
+    if (!rateLimitingProperties.isEnabled()) {
+      log.debug("Rate limiting is globally disabled, skipping rate limit check");
+      filterChain.doFilter(request, response);
+      return;
+    }
     
     String requestURI = request.getRequestURI();
     String clientIp = ipAddressExtractor.extractClientIp(request);
@@ -121,18 +133,34 @@ public class RateLimitingFilter extends OncePerRequestFilter {
    */
   private BucketWithType getBucketForRequest(String requestURI, String clientIp) {
     if (requestURI.contains("/api/v1/auth/login")) {
+      if (!rateLimitingProperties.getLogin().isEnabled()) {
+        log.debug("Rate limiting disabled for login endpoint");
+        return null;
+      }
       Bucket bucket = loginRateLimitBuckets.computeIfAbsent(
           clientIp, k -> rateLimitingConfig.createLoginBucket());
       return new BucketWithType(bucket, "login");
     } else if (requestURI.contains("/api/v1/auth/register")) {
+      if (!rateLimitingProperties.getRegistration().isEnabled()) {
+        log.debug("Rate limiting disabled for registration endpoint");
+        return null;
+      }
       Bucket bucket = registrationRateLimitBuckets.computeIfAbsent(
           clientIp, k -> rateLimitingConfig.createRegistrationBucket());
       return new BucketWithType(bucket, "registration");
     } else if (requestURI.contains("/api/v1/auth/refresh")) {
+      if (!rateLimitingProperties.getRefresh().isEnabled()) {
+        log.debug("Rate limiting disabled for refresh endpoint");
+        return null;
+      }
       Bucket bucket = refreshRateLimitBuckets.computeIfAbsent(
           clientIp, k -> rateLimitingConfig.createRefreshBucket());
       return new BucketWithType(bucket, "refresh");
     } else if (requestURI.startsWith("/api/")) {
+      if (!rateLimitingProperties.getGeneralApi().isEnabled()) {
+        log.debug("Rate limiting disabled for general API endpoints");
+        return null;
+      }
       // Rate limit actuator endpoints as well
       Bucket bucket = generalApiRateLimitBuckets.computeIfAbsent(
           clientIp, k -> rateLimitingConfig.createGeneralApiBucket());

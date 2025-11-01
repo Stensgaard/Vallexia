@@ -129,11 +129,16 @@ public class NutritionalGoalsService {
         goals.setDailySugar(nutritionalGoalsDto.getDailySugar());
         goals.setGoalType(nutritionalGoalsDto.getGoalType());
         
-        // Calculate percentages using NutritionalCalculator
-        nutritionalCalculator.calculateMacroPercentages(goals);
-        
-        // Validate macro percentages add up to approximately 100%
-        validateMacroPercentages(goals);
+        try {
+            // Calculate percentages using NutritionalCalculator
+            nutritionalCalculator.calculateMacroPercentages(goals);
+            
+            // Validate macro percentages add up to approximately 100%
+            validateMacroPercentages(goals);
+        } catch (Exception e) {
+            log.error("Error calculating or validating macro percentages for user ID {}: {}", userId, e.getMessage(), e);
+            throw e; // Re-throw to let exception handler process it
+        }
         
         NutritionalGoals updatedGoals = nutritionalGoalsRepository.save(goals);
         

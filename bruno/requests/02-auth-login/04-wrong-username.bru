@@ -1,0 +1,34 @@
+meta {
+  name: Login - Wrong Username
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/v1/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "usernameOrEmail": "nonexistent@example.com",
+    "password": "{{testPassword}}"
+  }
+}
+
+tests {
+  test("Status is 401 Unauthorized", function() {
+    expect(res.status).to.equal(401);
+  });
+
+  test("Error code is AUTH_002", function() {
+    expect(res.body.code).to.equal("AUTH_002");
+  });
+
+  test("Error message indicates invalid credentials", function() {
+    expect(res.body.message).to.satisfy(msg => 
+      msg.includes("Invalid username") || msg.includes("Invalid") || msg.includes("password")
+    );
+  });
+}

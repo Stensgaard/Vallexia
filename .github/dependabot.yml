@@ -1,0 +1,29 @@
+version: 2
+updates:
+  # Maven (Java) dependencies
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 15
+    labels:
+      - "dependencies"
+      - "java"
+      - "maven"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+
+  # npm (Vue.js) dependencies
+  - package-ecosystem: "npm"
+    directory: "/src/main/java/com/vallexia/web"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 15
+    labels:
+      - "dependencies"
+      - "javascript"
+      - "npm"
+    commit-message:
+      prefix: "chore"
+      include: "scope"

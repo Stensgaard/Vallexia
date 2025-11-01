@@ -2,6 +2,7 @@ package com.vallexia.security.unit;
 
 import com.vallexia.audit.util.IpAddressExtractor;
 import com.vallexia.config.security.RateLimitingConfig;
+import com.vallexia.config.security.RateLimitingProperties;
 import com.vallexia.security.RateLimitingFilter;
 import com.vallexia.security.job.RateLimitingBucketCleanupJob;
 import io.github.bucket4j.Bucket;
@@ -37,6 +38,7 @@ class RateLimitingFilterTest {
   
   private RateLimitingFilter rateLimitingFilter;
   private RateLimitingConfig rateLimitingConfig;
+  private RateLimitingProperties rateLimitingProperties;
   
   @Mock
   private Map<String, Bucket> loginRateLimitBuckets;
@@ -67,7 +69,15 @@ class RateLimitingFilterTest {
   
   @BeforeEach
   void setUp() {
-    rateLimitingConfig = new RateLimitingConfig();
+    // Create rate limiting properties with default enabled values
+    rateLimitingProperties = new RateLimitingProperties();
+    rateLimitingProperties.setEnabled(true);
+    rateLimitingProperties.getLogin().setEnabled(true);
+    rateLimitingProperties.getRegistration().setEnabled(true);
+    rateLimitingProperties.getGeneralApi().setEnabled(true);
+    rateLimitingProperties.getRefresh().setEnabled(true);
+    
+    rateLimitingConfig = new RateLimitingConfig(rateLimitingProperties);
     
     // Initialize maps
     Map<String, Bucket> loginBuckets = new HashMap<>();
@@ -81,6 +91,7 @@ class RateLimitingFilterTest {
         generalApiBuckets,
         refreshBuckets,
         rateLimitingConfig,
+        rateLimitingProperties,
         ipAddressExtractor,
         bucketCleanupJob
     );

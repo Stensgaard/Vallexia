@@ -78,6 +78,25 @@ app:
       - Accept
       - X-Requested-With
     allow-credentials: true
+  rate-limiting:
+    # Global flag to enable/disable all rate limiting
+    enabled: true
+    login:
+      enabled: true
+      requests: 5
+      duration-minutes: 1
+    registration:
+      enabled: true
+      requests: 3
+      duration-minutes: 15
+    general-api:
+      enabled: true
+      requests: 200
+      duration-minutes: 1
+    refresh:
+      enabled: true
+      requests: 10
+      duration-minutes: 5
 
 logging:
   level:

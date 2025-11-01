@@ -1,0 +1,25 @@
+meta {
+  name: Get Failed Login Attempts - Admin Success
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/v1/audit-logs/failed-logins?username=testuser&page=0&size=20
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminAccessToken}}
+}
+
+tests {
+  test("Status is 200 OK (requires ADMIN role)", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response contains failed login attempts", function() {
+    expect(res.body).to.have.property("content");
+  });
+}

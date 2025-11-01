@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.scheduling.annotation.EnableScheduling;
 import com.vallexia.config.security.AccountSecurityProperties;
 import com.vallexia.config.security.JwtProperties;
+import com.vallexia.config.security.RateLimitingProperties;
 import com.vallexia.config.web.CorsProperties;
 import com.vallexia.config.audit.AuditProperties;
 
@@ -22,7 +23,8 @@ import com.vallexia.config.audit.AuditProperties;
     CorsProperties.class,
     JwtProperties.class,
     AccountSecurityProperties.class,
-    AuditProperties.class
+    AuditProperties.class,
+    RateLimitingProperties.class
 })
 public class VallexiaApplication {
     public static void main(String[] args) {

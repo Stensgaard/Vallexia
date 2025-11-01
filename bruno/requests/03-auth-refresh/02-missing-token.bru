@@ -1,0 +1,27 @@
+meta {
+  name: Refresh Token - Missing Token
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/auth/refresh
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+  }
+}
+
+tests {
+  test("Status is 400 Bad Request", function() {
+    expect(res.status).to.equal(400);
+  });
+
+  test("Refresh token validation error in details", function() {
+    expect(res.body.details).to.have.property("refreshToken");
+    expect(res.body.details.refreshToken).to.include("required");
+  });
+}

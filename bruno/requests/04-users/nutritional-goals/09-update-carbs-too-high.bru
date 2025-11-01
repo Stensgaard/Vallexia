@@ -1,0 +1,37 @@
+meta {
+  name: Update Nutritional Goals - Carbs Too High
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{baseUrl}}/api/v1/users/nutritional-goals
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "dailyCalories": 2000.0,
+    "dailyProtein": 150.0,
+    "dailyCarbs": 1501.0,
+    "dailyFats": 65.0
+  }
+}
+
+tests {
+  test("Status is 400 Bad Request", function() {
+    expect(res.status).to.equal(400);
+  });
+
+  test("Carbs validation error for too high", function() {
+    expect(res.body.details).to.have.property("dailyCarbs");
+    expect(res.body.details.dailyCarbs).to.satisfy(msg => 
+      msg.includes("1500") || msg.includes("exceed") || msg.includes("not exceed")
+    );
+  });
+}
