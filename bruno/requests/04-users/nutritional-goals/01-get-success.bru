@@ -1,0 +1,29 @@
+meta {
+  name: Get Nutritional Goals - Success
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/users/nutritional-goals
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("Status is 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response contains dailyCalories", function() {
+    expect(res.body).to.have.property("dailyCalories");
+  });
+
+  test("Response contains userId", function() {
+    expect(res.body).to.have.property("userId");
+  });
+}

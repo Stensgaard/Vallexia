@@ -1,0 +1,33 @@
+meta {
+  name: Update User Profile - Missing Email
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/v1/users/profile
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "householdSize": 2,
+    "mealTypes": ["BREAKFAST", "LUNCH", "DINNER"]
+  }
+}
+
+tests {
+  test("Status is 400 Bad Request", function() {
+    expect(res.status).to.equal(400);
+  });
+
+  test("Email validation error in details", function() {
+    expect(res.body.details).to.have.property("email");
+    expect(res.body.details.email).to.include("required");
+  });
+}

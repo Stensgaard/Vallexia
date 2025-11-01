@@ -1,0 +1,38 @@
+meta {
+  name: Update Nutritional Goals - Negative Values
+  type: http
+  seq: 17
+}
+
+put {
+  url: {{baseUrl}}/api/v1/users/nutritional-goals
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "dailyCalories": 2000.0,
+    "dailyProtein": -10.0,
+    "dailyCarbs": -5.0,
+    "dailyFats": -2.0
+  }
+}
+
+tests {
+  test("Status is 400 Bad Request", function() {
+    expect(res.status).to.equal(400);
+  });
+
+  test("Validation errors for negative values", function() {
+    expect(res.body.details).to.satisfy(details => {
+      return (details.hasOwnProperty("dailyProtein") && details.dailyProtein.includes("0")) ||
+             (details.hasOwnProperty("dailyCarbs") && details.dailyCarbs.includes("0")) ||
+             (details.hasOwnProperty("dailyFats") && details.dailyFats.includes("0"));
+    });
+  });
+}
