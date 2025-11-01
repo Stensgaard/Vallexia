@@ -4,15 +4,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.vallexia.exception.util.ErrorMessageExtractor.extractReadableErrorMessage;
+import static com.vallexia.exception.util.ErrorMessageExtractor.extractValidationErrors;
 
 /**
  * Global exception handler for REST controllers.
@@ -122,6 +126,116 @@ public class GlobalExceptionHandler {
   }
   
   /**
+   * Handle HTTP message not readable exceptions (invalid JSON/enum deserialization).
+   * Provides consistent error responses for malformed request bodies.
+   * 
+   * @param ex HttpMessageNotReadableException
+   * @param request WebRequest
+   * @return ErrorResponseDto
+   */
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  public ResponseEntity<ErrorResponseDto> handleHttpMessageNotReadableException(
+      HttpMessageNotReadableException ex, WebRequest request) {
+    String requestId = errorResponseMapper.generateRequestId();
+    log.error("HTTP message not readable [requestId={}]: {}", requestId, ex.getMessage());
+    
+    String errorMessage = extractReadableErrorMessage(ex);
+    Map<String, String> errors = new HashMap<>();
+    errors.put("requestBody", errorMessage);
+    
+    ErrorResponseDto error = errorResponseMapper.toValidationErrorResponse(
+        ErrorCode.INVALID_INPUT,
+        errors,
+        request,
+        requestId
+    );
+    
+    return ResponseEntity.badRequest().body(error);
+  }
+  
+  /**
+   * Handle method argument type mismatch exceptions (invalid parameter types).
+   * Provides consistent error responses for type conversion failures.
+   * 
+   * @param ex MethodArgumentTypeMismatchException
+   * @param request WebRequest
+   * @return ErrorResponseDto
+   */
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  public ResponseEntity<ErrorResponseDto> handleMethodArgumentTypeMismatchException(
+      MethodArgumentTypeMismatchException ex, WebRequest request) {
+    String requestId = errorResponseMapper.generateRequestId();
+    log.error("Method argument type mismatch [requestId={}]: {}", requestId, ex.getMessage());
+    
+    String parameterName = ex.getName();
+    Class<?> requiredType = ex.getRequiredType();
+    Object value = ex.getValue();
+    
+    String expectedType = requiredType != null ? requiredType.getSimpleName() : "unknown";
+    String actualValue = value != null ? value.toString() : "null";
+    
+    String errorMessage = String.format(
+        "Invalid value for parameter '%s': '%s'. Expected type: %s",
+        parameterName, actualValue, expectedType
+    );
+    
+    // Provide specific message for date format errors
+    if (requiredType != null && requiredType.getName().contains("LocalDateTime")) {
+      errorMessage = String.format(
+          "Invalid date format for parameter '%s': '%s'. Expected ISO 8601 format: YYYY-MM-DDTHH:mm:ss (e.g., 2024-01-01T00:00:00)",
+          parameterName, actualValue
+      );
+    }
+    
+    Map<String, String> errors = new HashMap<>();
+    errors.put(parameterName, errorMessage);
+    
+    ErrorResponseDto error = errorResponseMapper.toValidationErrorResponse(
+        ErrorCode.INVALID_INPUT,
+        errors,
+        request,
+        requestId
+    );
+    
+    return ResponseEntity.badRequest().body(error);
+  }
+  
+  /**
+   * Handle missing servlet request parameter exceptions.
+   * Provides consistent error responses for missing required parameters.
+   * 
+   * @param ex MissingServletRequestParameterException
+   * @param request WebRequest
+   * @return ErrorResponseDto
+   */
+  @ExceptionHandler(MissingServletRequestParameterException.class)
+  public ResponseEntity<ErrorResponseDto> handleMissingServletRequestParameterException(
+      MissingServletRequestParameterException ex, WebRequest request) {
+    String requestId = errorResponseMapper.generateRequestId();
+    log.error("Missing servlet request parameter [requestId={}]: {}", requestId, ex.getMessage());
+    
+    String parameterName = ex.getParameterName();
+    String parameterType = ex.getParameterType();
+    
+    String errorMessage = String.format(
+        "Required parameter '%s' of type '%s' is missing",
+        parameterName, parameterType
+    );
+    
+    Map<String, String> errors = new HashMap<>();
+    errors.put(parameterName, errorMessage);
+    
+    ErrorResponseDto error = errorResponseMapper.toValidationErrorResponse(
+        ErrorCode.MISSING_REQUIRED_FIELD,
+        errors,
+        request,
+        requestId
+    );
+    
+    return ResponseEntity.badRequest().body(error);
+  }
+  
+  /**
    * Handle generic exceptions.
    * Provides security-safe error messages without leaking internal details.
    * 
@@ -141,33 +255,5 @@ public class GlobalExceptionHandler {
     ErrorResponseDto error = errorResponseMapper.toGenericErrorResponse(ex, request, requestId);
     
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-  }
-  
-  /**
-   * Extracts validation errors from MethodArgumentNotValidException.
-   * Safely handles both FieldError and ObjectError types.
-   * 
-   * @param ex the validation exception
-   * @return map of field/object names to error messages
-   */
-  private Map<String, String> extractValidationErrors(MethodArgumentNotValidException ex) {
-    Map<String, String> errors = new HashMap<>();
-    
-    ex.getBindingResult().getAllErrors().forEach((error) -> {
-      // Safe type checking before casting
-      if (error instanceof FieldError) {
-        FieldError fieldError = (FieldError) error;
-        String fieldName = fieldError.getField();
-        String errorMessage = error.getDefaultMessage();
-        errors.put(fieldName, errorMessage);
-      } else if (error instanceof ObjectError) {
-        ObjectError objectError = (ObjectError) error;
-        String objectName = objectError.getObjectName();
-        String errorMessage = error.getDefaultMessage();
-        errors.put(objectName, errorMessage);
-      }
-    });
-    
-    return errors;
   }
 }

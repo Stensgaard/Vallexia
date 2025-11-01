@@ -26,6 +26,7 @@ public interface NutritionalGoalsMapper {
     
     /**
      * Convert NutritionalGoalsDto to NutritionalGoals entity.
+     * Note: Percentage fields are ignored as they are calculated, not set directly.
      * 
      * @param nutritionalGoalsDto NutritionalGoalsDto
      * @return NutritionalGoals entity
@@ -34,5 +35,8 @@ public interface NutritionalGoalsMapper {
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "proteinPercentage", ignore = true)
+    @Mapping(target = "carbsPercentage", ignore = true)
+    @Mapping(target = "fatsPercentage", ignore = true)
     NutritionalGoals toNutritionalGoals(NutritionalGoalsDto nutritionalGoalsDto);
 }
