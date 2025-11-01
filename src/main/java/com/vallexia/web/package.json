@@ -25,7 +25,7 @@
     "vite": "^7.1.12",
     "esbuild": "^0.25.0",
     "eslint": "^9.39.0",
-    "eslint-plugin-vue": "^9.30.0",
+    "eslint-plugin-vue": "^10.5.1",
     "@eslint/config-array": "^0.21.1",
     "@eslint/object-schema": "^2.1.4",
     "@vue/eslint-config-prettier": "^10.2.0",
