@@ -14,8 +14,8 @@ export const userService = {
    * Update current user profile
    * @param {Object} profileData - Updated profile data
    * @param {string} profileData.email - Email
-   * @param {string} profileData.firstName - First name
-   * @param {string} profileData.lastName - Last name
+   * @param {number} profileData.householdSize - Household size
+   * @param {Array} profileData.mealTypes - Meal types
    * @returns {Promise<Object>} Updated user profile
    */
   async updateProfile(profileData) {

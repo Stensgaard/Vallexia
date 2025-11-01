@@ -28,24 +28,6 @@
           
           <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <FormInput
-              id="firstName"
-              v-model="personalForm.firstName"
-              type="text"
-              label="First Name"
-              placeholder="Enter your first name"
-              :error="personalErrors.firstName"
-            />
-            
-            <FormInput
-              id="lastName"
-              v-model="personalForm.lastName"
-              type="text"
-              label="Last Name"
-              placeholder="Enter your last name"
-              :error="personalErrors.lastName"
-            />
-            
-            <FormInput
               id="email"
               v-model="personalForm.email"
               type="email"
@@ -362,8 +344,6 @@ const tabs = [
 
 // Personal Info Form
 const personalForm = reactive({
-  firstName: '',
-  lastName: '',
   email: '',
   householdSize: 1,
   mealTypes: [],
@@ -372,8 +352,6 @@ const personalForm = reactive({
 })
 
 const personalErrors = reactive({
-  firstName: '',
-  lastName: '',
   email: '',
   householdSize: '',
   mealTypes: ''
@@ -521,8 +499,6 @@ onMounted(async () => {
   try {
     // Load personal profile
     const profile = await userService.getProfile()
-    personalForm.firstName = profile.firstName || ''
-    personalForm.lastName = profile.lastName || ''
     personalForm.email = profile.email || ''
     personalForm.householdSize = profile.householdSize || 1
     personalForm.mealTypes = profile.mealTypes || [MEAL_TYPES.BREAKFAST, MEAL_TYPES.LUNCH, MEAL_TYPES.DINNER]
