@@ -10,9 +10,7 @@ COMPOSE_PROD := docker compose --project-directory deployment/docker -f deployme
 
 ##@ Development Environment
 
-dev: dev-up ## Start development environment (alias for dev-up)
-
-dev-up: ## Start all development services
+dev: ## Start all development services
 	@echo "Starting development environment..."
 	$(COMPOSE_DEV) up -d
 	@echo "Development environment started!"
@@ -32,8 +30,6 @@ dev-build: ## Build and start all development services (rebuilds images, clears 
 	@echo "  - Frontend: http://localhost:5173"
 	@echo "  - PostgreSQL: localhost:5432"
 	@echo "  - Redis: localhost:6379"
-
-dev-down: dev-stop ## Stop development environment (alias for dev-stop)
 
 dev-stop: ## Stop all development services
 	@echo "Stopping development environment..."
@@ -60,9 +56,7 @@ dev-clean: ## Stop and remove all development containers and volumes (WARNING: d
 
 ##@ Production Environment
 
-prod: prod-up ## Start production environment (alias for prod-up)
-
-prod-up: ## Start all production services
+prod: ## Start all production services
 	@echo "Starting production environment..."
 	$(COMPOSE_PROD) up -d
 	@echo "Production environment started!"
@@ -75,8 +69,6 @@ prod-build: ## Build and start all production services (rebuilds images)
 	@echo "Production environment built and started!"
 	@echo "  - Application: http://localhost:80"
 	@echo "  - Backend API: http://localhost:80/api"
-
-prod-down: prod-stop ## Stop production environment (alias for prod-stop)
 
 prod-stop: ## Stop all production services
 	@echo "Stopping production environment..."
