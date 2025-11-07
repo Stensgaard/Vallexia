@@ -1,0 +1,24 @@
+meta {
+  name: Update Recipe - Unauthorized
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/api/v1/recipes/{{createdRecipeId}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Updated Recipe"
+  }
+}
+
+tests {
+  test("Status is 401 Unauthorized", function() {
+    expect(res.status).to.equal(401);
+  });
+}
+

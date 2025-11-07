@@ -1,0 +1,40 @@
+meta {
+  name: Get Favorites - Success
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/api/v1/recipes/favorites?page=0&size=20
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("Status is 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response contains content array", function() {
+    expect(res.body).to.have.property("content");
+    expect(res.body.content).to.be.an("array");
+  });
+
+  test("Response contains pagination info", function() {
+    expect(res.body).to.have.property("totalElements");
+    expect(res.body).to.have.property("totalPages");
+  });
+
+  test("All recipes are marked as favorite", function() {
+    if (res.body.content.length > 0) {
+      res.body.content.forEach(function(recipe) {
+        expect(recipe.isFavorite).to.equal(true);
+      });
+    }
+  });
+}
+
