@@ -1,5 +1,5 @@
 -- Migration: Seed sample recipes for development
--- Version: V6 (Dev migration)
+-- Version: V7 (Dev migration)
 -- Description: Seeds database with diverse sample recipes for testing and development.
 --              Recipes are created by the admin user and marked as public.
 --              Includes ingredients, nutritional info, and tags for completeness.
@@ -89,6 +89,16 @@ BEGIN
         INSERT INTO recipe_tags (recipe_id, tag) VALUES 
             (v_recipe_id, 'vegetarian'), (v_recipe_id, 'italian'), (v_recipe_id, 'quick'), (v_recipe_id, 'family-friendly')
         ON CONFLICT DO NOTHING;
+        
+        -- Dietary restrictions
+        INSERT INTO recipe_dietary_restrictions (recipe_id, restriction) VALUES 
+            (v_recipe_id, 'VEGETARIAN')
+        ON CONFLICT DO NOTHING;
+        
+        -- Allergens
+        INSERT INTO recipe_allergens (recipe_id, allergy) VALUES 
+            (v_recipe_id, 'MILK'), (v_recipe_id, 'WHEAT')
+        ON CONFLICT DO NOTHING;
     END IF;
 
     -- ========================================================================
@@ -156,6 +166,16 @@ BEGIN
         INSERT INTO recipe_tags (recipe_id, tag) VALUES 
             (v_recipe_id, 'protein'), (v_recipe_id, 'healthy'), (v_recipe_id, 'low-carb'), (v_recipe_id, 'grilled')
         ON CONFLICT DO NOTHING;
+        
+        -- Dietary restrictions
+        INSERT INTO recipe_dietary_restrictions (recipe_id, restriction) VALUES 
+            (v_recipe_id, 'HIGH_PROTEIN'), (v_recipe_id, 'LOW_CARB')
+        ON CONFLICT DO NOTHING;
+        
+        -- Allergens
+        INSERT INTO recipe_allergens (recipe_id, allergy) VALUES 
+            (v_recipe_id, 'FISH')
+        ON CONFLICT DO NOTHING;
     END IF;
 
     -- ========================================================================
@@ -218,6 +238,16 @@ BEGIN
 
         INSERT INTO recipe_tags (recipe_id, tag) VALUES 
             (v_recipe_id, 'make-ahead'), (v_recipe_id, 'healthy'), (v_recipe_id, 'vegetarian'), (v_recipe_id, 'no-cook')
+        ON CONFLICT DO NOTHING;
+        
+        -- Dietary restrictions
+        INSERT INTO recipe_dietary_restrictions (recipe_id, restriction) VALUES 
+            (v_recipe_id, 'VEGETARIAN')
+        ON CONFLICT DO NOTHING;
+        
+        -- Allergens
+        INSERT INTO recipe_allergens (recipe_id, allergy) VALUES 
+            (v_recipe_id, 'MILK'), (v_recipe_id, 'TREE_NUTS')
         ON CONFLICT DO NOTHING;
     END IF;
 
@@ -291,6 +321,16 @@ BEGIN
         INSERT INTO recipe_tags (recipe_id, tag) VALUES 
             (v_recipe_id, 'asian'), (v_recipe_id, 'spicy'), (v_recipe_id, 'stir-fry'), (v_recipe_id, 'protein')
         ON CONFLICT DO NOTHING;
+        
+        -- Dietary restrictions
+        INSERT INTO recipe_dietary_restrictions (recipe_id, restriction) VALUES 
+            (v_recipe_id, 'HIGH_PROTEIN')
+        ON CONFLICT DO NOTHING;
+        
+        -- Allergens
+        INSERT INTO recipe_allergens (recipe_id, allergy) VALUES 
+            (v_recipe_id, 'EGGS'), (v_recipe_id, 'PEANUTS'), (v_recipe_id, 'SOY'), (v_recipe_id, 'FISH')
+        ON CONFLICT DO NOTHING;
     END IF;
 
     -- ========================================================================
@@ -361,6 +401,16 @@ BEGIN
 
         INSERT INTO recipe_tags (recipe_id, tag) VALUES 
             (v_recipe_id, 'dessert'), (v_recipe_id, 'baking'), (v_recipe_id, 'sweet'), (v_recipe_id, 'family-friendly')
+        ON CONFLICT DO NOTHING;
+        
+        -- Dietary restrictions
+        INSERT INTO recipe_dietary_restrictions (recipe_id, restriction) VALUES 
+            (v_recipe_id, 'VEGETARIAN')
+        ON CONFLICT DO NOTHING;
+        
+        -- Allergens
+        INSERT INTO recipe_allergens (recipe_id, allergy) VALUES 
+            (v_recipe_id, 'EGGS'), (v_recipe_id, 'MILK'), (v_recipe_id, 'WHEAT')
         ON CONFLICT DO NOTHING;
     END IF;
 
@@ -433,6 +483,16 @@ BEGIN
 
         INSERT INTO recipe_tags (recipe_id, tag) VALUES 
             (v_recipe_id, 'salad'), (v_recipe_id, 'vegetarian'), (v_recipe_id, 'quick'), (v_recipe_id, 'healthy')
+        ON CONFLICT DO NOTHING;
+        
+        -- Dietary restrictions
+        INSERT INTO recipe_dietary_restrictions (recipe_id, restriction) VALUES 
+            (v_recipe_id, 'VEGETARIAN')
+        ON CONFLICT DO NOTHING;
+        
+        -- Allergens
+        INSERT INTO recipe_allergens (recipe_id, allergy) VALUES 
+            (v_recipe_id, 'EGGS'), (v_recipe_id, 'MILK'), (v_recipe_id, 'FISH'), (v_recipe_id, 'WHEAT')
         ON CONFLICT DO NOTHING;
     END IF;
 

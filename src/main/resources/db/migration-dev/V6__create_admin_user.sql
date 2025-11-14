@@ -1,5 +1,5 @@
 -- Migration: Create default admin user
--- Version: V5 (Dev migration)
+-- Version: V6 (Dev migration)
 -- Description: Creates a default admin user for development and testing purposes.
 --              Admin user has both USER and ADMIN roles.
 --              Password: AdminPass123! (BCrypt hash with strength 12)

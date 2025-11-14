@@ -83,14 +83,12 @@ COMMENT ON COLUMN user_meal_types.meal_type IS 'Meal type: BREAKFAST, LUNCH, DIN
 CREATE TABLE dietary_preferences (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL UNIQUE,
-    serving_size_preference VARCHAR(50) NOT NULL DEFAULT 'MEDIUM',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 COMMENT ON TABLE dietary_preferences IS 'User dietary preferences and restrictions';
-COMMENT ON COLUMN dietary_preferences.serving_size_preference IS 'Preferred serving size: SMALL, MEDIUM, LARGE, or EXTRA_LARGE';
 
 -- ============================================================================
 -- DIETARY RESTRICTIONS TABLE (ElementCollection)
@@ -137,20 +135,6 @@ CREATE TABLE cuisine_preferences (
 COMMENT ON TABLE cuisine_preferences IS 'Preferred cuisine types (ElementCollection mapping)';
 COMMENT ON COLUMN cuisine_preferences.cuisine IS 'Cuisine type (enum value)';
 
--- ============================================================================
--- DISLIKED INGREDIENTS TABLE (ElementCollection)
--- ============================================================================
--- Stores user-disliked ingredients associated with dietary preferences.
--- ============================================================================
-CREATE TABLE disliked_ingredients (
-    preferences_id BIGINT NOT NULL,
-    ingredient VARCHAR(255) NOT NULL,
-    PRIMARY KEY (preferences_id, ingredient),
-    FOREIGN KEY (preferences_id) REFERENCES dietary_preferences(id) ON DELETE CASCADE
-);
-
-COMMENT ON TABLE disliked_ingredients IS 'Disliked ingredients (ElementCollection mapping)';
-COMMENT ON COLUMN disliked_ingredients.ingredient IS 'Ingredient name (stored in lowercase)';
 
 -- ============================================================================
 -- NUTRITIONAL GOALS TABLE
