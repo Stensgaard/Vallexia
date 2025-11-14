@@ -37,7 +37,38 @@
 
       <!-- Cuisine Type -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Cuisine</label>
+        <div class="flex items-center gap-1 mb-1">
+          <label class="block text-sm font-medium text-gray-700">Cuisine</label>
+          <div class="relative group">
+            <button
+              type="button"
+              class="inline-flex items-center justify-center w-4 h-4 rounded-full text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+              aria-label="Cuisine filter information"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </button>
+            <!-- Tooltip -->
+            <div
+              class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-2 w-72 text-xs text-white bg-gray-900 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none z-50"
+            >
+              If left empty and you have preferred cuisines set in your profile, only those will be shown. Otherwise, all cuisines will be shown.
+              <!-- Tooltip arrow -->
+              <div class="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+            </div>
+          </div>
+        </div>
         <select
           v-model="localCriteria.cuisineType"
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
