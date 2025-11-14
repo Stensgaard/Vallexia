@@ -201,7 +201,6 @@ const handleSubmit = async () => {
     router.push('/dashboard')
   } catch (error) {
     // Error is handled by the store and displayed in the template
-    console.error('Registration error:', error)
   }
 }
 

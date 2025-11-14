@@ -12,8 +12,11 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 
-// Initialize auth state from localStorage before mounting
+// Initialize auth state from localStorage and validate with backend
 const authStore = useAuthStore()
-authStore.initializeAuth()
-
-app.mount('#app')
+authStore.initializeAuth().then(() => {
+  app.mount('#app')
+}).catch((err) => {
+  console.error('Failed to initialize auth:', err)
+  app.mount('#app')
+})
