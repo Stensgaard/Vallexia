@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Immutable;
+import com.vallexia.audit.entity.enums.EventType;
 
 import java.time.LocalDateTime;
 

@@ -1,7 +1,7 @@
 package com.vallexia.audit.repository;
 
 import com.vallexia.audit.entity.AuditLog;
-import com.vallexia.audit.entity.EventType;
+import com.vallexia.audit.entity.enums.EventType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -76,25 +76,25 @@ public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
     /**
      * Find failed login attempts for a user.
      */
-    @Query("SELECT a FROM AuditLog a WHERE a.eventType = com.vallexia.audit.entity.EventType.LOGIN_FAILURE AND a.username = :username ORDER BY a.timestamp DESC")
+    @Query("SELECT a FROM AuditLog a WHERE a.eventType = com.vallexia.audit.entity.enums.EventType.LOGIN_FAILURE AND a.username = :username ORDER BY a.timestamp DESC")
     List<AuditLog> findFailedLoginAttempts(@Param("username") String username);
     
     /**
      * Find failed login attempts for a user with pagination.
      */
-    @Query("SELECT a FROM AuditLog a WHERE a.eventType = com.vallexia.audit.entity.EventType.LOGIN_FAILURE AND a.username = :username ORDER BY a.timestamp DESC")
+    @Query("SELECT a FROM AuditLog a WHERE a.eventType = com.vallexia.audit.entity.enums.EventType.LOGIN_FAILURE AND a.username = :username ORDER BY a.timestamp DESC")
     Page<AuditLog> findFailedLoginAttempts(@Param("username") String username, Pageable pageable);
     
     /**
      * Find security violations.
      */
-    @Query("SELECT a FROM AuditLog a WHERE a.eventType = com.vallexia.audit.entity.EventType.SECURITY_VIOLATION ORDER BY a.timestamp DESC")
+    @Query("SELECT a FROM AuditLog a WHERE a.eventType = com.vallexia.audit.entity.enums.EventType.SECURITY_VIOLATION ORDER BY a.timestamp DESC")
     List<AuditLog> findSecurityViolations();
     
     /**
      * Find security violations with pagination.
      */
-    @Query("SELECT a FROM AuditLog a WHERE a.eventType = com.vallexia.audit.entity.EventType.SECURITY_VIOLATION ORDER BY a.timestamp DESC")
+    @Query("SELECT a FROM AuditLog a WHERE a.eventType = com.vallexia.audit.entity.enums.EventType.SECURITY_VIOLATION ORDER BY a.timestamp DESC")
     Page<AuditLog> findSecurityViolations(Pageable pageable);
     
     /**

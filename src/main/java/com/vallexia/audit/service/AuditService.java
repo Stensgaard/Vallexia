@@ -1,7 +1,7 @@
 package com.vallexia.audit.service;
 
 import com.vallexia.audit.entity.AuditLog;
-import com.vallexia.audit.entity.EventType;
+import com.vallexia.audit.entity.enums.EventType;
 import com.vallexia.audit.repository.AuditLogRepository;
 import com.vallexia.audit.util.IpAddressExtractor;
 import com.vallexia.config.audit.AuditProperties;

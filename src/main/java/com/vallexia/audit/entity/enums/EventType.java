@@ -1,4 +1,4 @@
-package com.vallexia.audit.entity;
+package com.vallexia.audit.entity.enums;
 
 /**
  * Enum representing different types of audit events tracked in the system.
