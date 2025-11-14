@@ -9,7 +9,7 @@
   >
     <div
       v-if="show"
-      class="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden"
+      class="max-w-xl w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden"
     >
       <div class="p-4">
         <div class="flex items-start">
@@ -79,9 +79,9 @@
             </svg>
           </div>
           
-          <div class="ml-3 w-0 flex-1 pt-0.5">
+          <div class="ml-3 flex-1 pt-0.5">
             <p class="text-sm font-medium text-gray-900">{{ title }}</p>
-            <p v-if="message" class="mt-1 text-sm text-gray-500">{{ message }}</p>
+            <p v-if="message" class="mt-1 text-sm text-gray-500 whitespace-pre-line">{{ message }}</p>
           </div>
           
           <div v-if="dismissible" class="ml-4 flex-shrink-0 flex">

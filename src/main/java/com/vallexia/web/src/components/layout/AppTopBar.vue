@@ -111,7 +111,7 @@ const handleLogout = async () => {
     await authStore.logout()
     router.push('/login')
   } catch (error) {
-    console.error('Logout error:', error)
+    // Logout errors are non-critical, silently fail
   }
   userMenuOpen.value = false
 }
