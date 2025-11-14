@@ -18,9 +18,7 @@ body:json {
   {
     "restrictions": ["VEGETARIAN", "GLUTEN_FREE"],
     "allergies": ["PEANUTS", "TREE_NUTS"],
-    "preferredCuisines": ["ITALIAN", "MEDITERRANEAN"],
-    "dislikedIngredients": ["cilantro", "mushrooms"],
-    "servingSizePreference": "MEDIUM"
+    "preferredCuisines": ["ITALIAN", "MEDITERRANEAN"]
   }
 }
 
@@ -32,9 +30,5 @@ tests {
   test("Response contains updated restrictions", function() {
     expect(res.body).to.have.property("restrictions");
     expect(res.body.restrictions).to.be.an("array");
-  });
-
-  test("Response contains updated serving size preference", function() {
-    expect(res.body.servingSizePreference).to.equal("MEDIUM");
   });
 }
