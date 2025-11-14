@@ -38,8 +38,6 @@ export const userService = {
    * @param {Array} preferencesData.restrictions - Dietary restrictions
    * @param {Array} preferencesData.allergies - Allergies
    * @param {Array} preferencesData.preferredCuisines - Preferred cuisines
-   * @param {Array} preferencesData.dislikedIngredients - Disliked ingredients
-   * @param {string} preferencesData.servingSizePreference - Serving size preference
    * @returns {Promise<Object>} Updated dietary preferences
    */
   async updateDietaryPreferences(preferencesData) {
