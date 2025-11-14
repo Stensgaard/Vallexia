@@ -5,6 +5,7 @@ import com.vallexia.recipe.entity.IngredientNutrition;
 import com.vallexia.recipe.entity.NutritionalInfo;
 import com.vallexia.recipe.entity.Recipe;
 import com.vallexia.recipe.entity.RecipeIngredient;
+import com.vallexia.recipe.exception.InvalidRecipeServingsException;
 import com.vallexia.recipe.exception.RecipeValidationException;
 import com.vallexia.recipe.repository.IngredientNutritionRepository;
 import com.vallexia.recipe.repository.NutritionalInfoRepository;
@@ -72,8 +73,23 @@ public class NutritionalCalculationService {
         
         for (RecipeIngredient recipeIngredient : ingredients) {
             if (recipeIngredient.getIngredient() == null || recipeIngredient.getQuantity() == null) {
-                // TODO maybe add which ingredient is null and was skipped?
-                log.debug("Skipping ingredient with null data");
+                // Build informative log message with available data
+                String ingredientInfo = recipeIngredient.getId() != null 
+                    ? "RecipeIngredient ID: " + recipeIngredient.getId()
+                    : "RecipeIngredient (unsaved)";
+                String missingField = recipeIngredient.getIngredient() == null 
+                    ? "ingredient" 
+                    : "quantity";
+                StringBuilder details = new StringBuilder();
+                if (recipeIngredient.getUnit() != null) {
+                    details.append(", unit: ").append(recipeIngredient.getUnit());
+                }
+                if (recipeIngredient.getDisplayOrder() != null) {
+                    details.append(", display order: ").append(recipeIngredient.getDisplayOrder());
+                }
+                
+                log.debug("Skipping {} - missing {} field{}", 
+                    ingredientInfo, missingField, details.toString());
                 continue;
             }
             
@@ -228,11 +244,13 @@ public class NutritionalCalculationService {
      * @param totalInfo total nutritional info
      * @param servings number of servings
      * @return per-serving nutritional info
+     * @throws InvalidRecipeServingsException if servings is invalid
      */
     public NutritionalInfo calculatePerServingNutrition(NutritionalInfo totalInfo, Integer servings) {
         if (servings == null || servings <= 0) {
-            // TODO throw an custom exception instead of IllegalArgumentException
-            throw new IllegalArgumentException("Servings must be greater than 0");
+            throw new InvalidRecipeServingsException(
+                "Servings must be greater than 0, but was: " + servings
+            );
         }
         
         BigDecimal servingsBigDecimal = BigDecimal.valueOf(servings);
@@ -290,6 +308,7 @@ public class NutritionalCalculationService {
     /**
      * Update recipe nutritional information.
      * Recalculates and saves nutritional info for a recipe.
+     * Automatically converts total nutrition to per-serving values.
      * 
      * @param recipe the recipe to update
      */
@@ -299,27 +318,35 @@ public class NutritionalCalculationService {
         // If recipe has ingredients, calculate from them
         // Otherwise, keep existing nutritional info if present
         if (recipe.getIngredients() != null && !recipe.getIngredients().isEmpty()) {
-            NutritionalInfo calculatedInfo = calculateRecipeNutrition(recipe.getIngredients());
-            calculatedInfo.setRecipe(recipe);
+            NutritionalInfo calculatedTotalInfo = calculateRecipeNutrition(recipe.getIngredients());
+            
+            // Convert to per-serving nutrition
+            Integer servings = recipe.getServings() != null && recipe.getServings() > 0 
+                ? recipe.getServings() 
+                : 1; // Default to 1 serving if not specified
+            
+            NutritionalInfo perServingInfo = calculatePerServingNutrition(calculatedTotalInfo, servings);
+            perServingInfo.setRecipe(recipe);
             
             // Check if nutritional info already exists
             NutritionalInfo existingInfo = recipe.getNutritionalInfo();
             if (existingInfo != null) {
                 // Update existing
-                existingInfo.setCalories(calculatedInfo.getCalories());
-                existingInfo.setProtein(calculatedInfo.getProtein());
-                existingInfo.setCarbs(calculatedInfo.getCarbs());
-                existingInfo.setFats(calculatedInfo.getFats());
-                existingInfo.setFiber(calculatedInfo.getFiber());
-                existingInfo.setSodium(calculatedInfo.getSodium());
-                existingInfo.setSugar(calculatedInfo.getSugar());
+                existingInfo.setCalories(perServingInfo.getCalories());
+                existingInfo.setProtein(perServingInfo.getProtein());
+                existingInfo.setCarbs(perServingInfo.getCarbs());
+                existingInfo.setFats(perServingInfo.getFats());
+                existingInfo.setFiber(perServingInfo.getFiber());
+                existingInfo.setSodium(perServingInfo.getSodium());
+                existingInfo.setSugar(perServingInfo.getSugar());
+                existingInfo.setPerServing(true); // Mark as per serving
                 nutritionalInfoRepository.save(existingInfo);
             } else {
                 // Create new
-                nutritionalInfoRepository.save(calculatedInfo);
+                nutritionalInfoRepository.save(perServingInfo);
             }
         }
         
-        log.debug("Nutrition updated for recipe ID {}", recipe.getId());
+        log.debug("Nutrition updated for recipe ID {} (per serving)", recipe.getId());
     }
 }

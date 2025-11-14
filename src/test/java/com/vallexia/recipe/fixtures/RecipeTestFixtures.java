@@ -5,7 +5,9 @@ import com.vallexia.recipe.dto.IngredientDto;
 import com.vallexia.recipe.dto.NutritionalInfoDto;
 import com.vallexia.recipe.dto.UpdateRecipeDto;
 import com.vallexia.recipe.entity.*;
-import com.vallexia.user.entity.CuisineType;
+import com.vallexia.recipe.entity.enums.DifficultyLevel;
+import com.vallexia.recipe.entity.enums.RecipeCategory;
+import com.vallexia.user.entity.enums.CuisineType;
 import com.vallexia.user.entity.User;
 import com.vallexia.user.fixtures.UserTestFixtures;
 

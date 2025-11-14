@@ -6,6 +6,7 @@ import com.vallexia.recipe.dto.RecipeDto;
 import com.vallexia.recipe.entity.NutritionalInfo;
 import com.vallexia.recipe.entity.Recipe;
 import com.vallexia.recipe.entity.RecipeIngredient;
+import com.vallexia.recipe.exception.InvalidRecipeServingsException;
 import com.vallexia.recipe.exception.RecipeNotFoundException;
 import com.vallexia.recipe.fixtures.RecipeTestFixtures;
 import com.vallexia.recipe.mapper.RecipeMapper;
@@ -89,7 +90,7 @@ class RecipeScalingServiceTest {
   }
   
   @Test
-  @DisplayName("Should throw IllegalArgumentException when target servings is invalid")
+  @DisplayName("Should throw InvalidRecipeServingsException when target servings is invalid")
   void shouldThrowIllegalArgumentExceptionWhenTargetServingsIsInvalid() {
     // Given
     Recipe recipe = RecipeTestFixtures.createRecipe();
@@ -99,7 +100,7 @@ class RecipeScalingServiceTest {
     
     // When & Then
     assertThatThrownBy(() -> recipeScalingService.scaleRecipe(RecipeTestFixtures.TEST_RECIPE_ID, 0, 1L))
-        .isInstanceOf(IllegalArgumentException.class)
+        .isInstanceOf(InvalidRecipeServingsException.class)
         .hasMessageContaining("Target servings must be greater than 0");
   }
   

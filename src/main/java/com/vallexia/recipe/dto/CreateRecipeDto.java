@@ -1,11 +1,14 @@
 package com.vallexia.recipe.dto;
 
-import com.vallexia.recipe.entity.DifficultyLevel;
-import com.vallexia.recipe.entity.RecipeCategory;
-import com.vallexia.user.entity.CuisineType;
+import com.vallexia.recipe.entity.enums.DifficultyLevel;
+import com.vallexia.recipe.entity.enums.RecipeCategory;
+import com.vallexia.user.entity.enums.Allergy;
+import com.vallexia.user.entity.enums.CuisineType;
+import com.vallexia.user.entity.enums.DietaryRestriction;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -45,15 +48,10 @@ public class CreateRecipeDto {
     @Min(value = 0, message = "Cook time must be 0 or greater")
     private Integer cookTimeMinutes;
     
-    // TODO: Calculate total time based on prep time and cook time
-    @Min(value = 0, message = "Total time must be 0 or greater")
-    private Integer totalTimeMinutes;
-    
     @NotNull(message = "Servings is required")
     @Min(value = 1, message = "Servings must be at least 1")
     private Integer servings;
     
-    // TODO: enforce difficulty level based on the available options in DifficultyLevel enum
     private DifficultyLevel difficultyLevel;
     
     @NotNull(message = "Category is required")
@@ -72,5 +70,11 @@ public class CreateRecipeDto {
     @Valid
     private NutritionalInfoDto nutritionalInfo;
     
+    @NotEmpty(message = "At least one tag is required")
     private Set<String> tags = new HashSet<>();
+    
+    @NotEmpty(message = "At least one dietary restriction is required")
+    private Set<DietaryRestriction> dietaryRestrictions = new HashSet<>();
+    
+    private Set<Allergy> allergens = new HashSet<>();
 }

@@ -1,8 +1,10 @@
 package com.vallexia.recipe.dto;
 
-import com.vallexia.recipe.entity.DifficultyLevel;
-import com.vallexia.recipe.entity.RecipeCategory;
-import com.vallexia.user.entity.CuisineType;
+import com.vallexia.recipe.entity.enums.DifficultyLevel;
+import com.vallexia.recipe.entity.enums.RecipeCategory;
+import com.vallexia.user.entity.enums.Allergy;
+import com.vallexia.user.entity.enums.CuisineType;
+import com.vallexia.user.entity.enums.DietaryRestriction;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
@@ -46,13 +48,10 @@ public class UpdateRecipeDto {
     @Min(value = 1, message = "Servings must be at least 1")
     private Integer servings;
     
-    // TODO: make sure it is a valid difficulty
     private DifficultyLevel difficultyLevel;
     
-    // TODO: make sure it is a valid category
     private RecipeCategory category;
     
-    // TODO: make sure it is a valid cuisinetype
     private CuisineType cuisineType;
     
     @Size(max = 500, message = "Image URL must not exceed 500 characters")
@@ -67,4 +66,8 @@ public class UpdateRecipeDto {
     private NutritionalInfoDto nutritionalInfo;
     
     private Set<String> tags;
+    
+    private Set<DietaryRestriction> dietaryRestrictions;
+    
+    private Set<Allergy> allergens;
 }

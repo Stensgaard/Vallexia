@@ -1,8 +1,10 @@
 package com.vallexia.recipe.dto;
 
-import com.vallexia.recipe.entity.DifficultyLevel;
-import com.vallexia.recipe.entity.RecipeCategory;
-import com.vallexia.user.entity.CuisineType;
+import com.vallexia.recipe.entity.enums.DifficultyLevel;
+import com.vallexia.recipe.entity.enums.RecipeCategory;
+import com.vallexia.user.entity.enums.Allergy;
+import com.vallexia.user.entity.enums.CuisineType;
+import com.vallexia.user.entity.enums.DietaryRestriction;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -60,6 +62,10 @@ public class RecipeDto {
     private List<IngredientDto> ingredients = new ArrayList<>();
     
     private Set<String> tags = new HashSet<>();
+    
+    private Set<DietaryRestriction> dietaryRestrictions = new HashSet<>();
+    
+    private Set<Allergy> allergens = new HashSet<>();
     
     private Boolean isFavorite;
     

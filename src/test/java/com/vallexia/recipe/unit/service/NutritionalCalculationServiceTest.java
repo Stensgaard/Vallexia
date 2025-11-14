@@ -6,6 +6,7 @@ import com.vallexia.recipe.entity.IngredientNutrition;
 import com.vallexia.recipe.entity.NutritionalInfo;
 import com.vallexia.recipe.entity.Recipe;
 import com.vallexia.recipe.entity.RecipeIngredient;
+import com.vallexia.recipe.exception.InvalidRecipeServingsException;
 import com.vallexia.recipe.exception.RecipeValidationException;
 import com.vallexia.recipe.fixtures.RecipeTestFixtures;
 import com.vallexia.recipe.repository.IngredientNutritionRepository;
@@ -133,18 +134,18 @@ class NutritionalCalculationServiceTest {
   }
   
   @Test
-  @DisplayName("Should throw IllegalArgumentException when servings is invalid")
+  @DisplayName("Should throw InvalidRecipeServingsException when servings is invalid")
   void shouldThrowIllegalArgumentExceptionWhenServingsIsInvalid() {
     // Given
     NutritionalInfo totalInfo = RecipeTestFixtures.createNutritionalInfo();
     
     // When & Then
     assertThatThrownBy(() -> nutritionalCalculationService.calculatePerServingNutrition(totalInfo, 0))
-        .isInstanceOf(IllegalArgumentException.class)
+        .isInstanceOf(InvalidRecipeServingsException.class)
         .hasMessageContaining("Servings must be greater than 0");
     
     assertThatThrownBy(() -> nutritionalCalculationService.calculatePerServingNutrition(totalInfo, -1))
-        .isInstanceOf(IllegalArgumentException.class);
+        .isInstanceOf(InvalidRecipeServingsException.class);
   }
   
   @Test

@@ -1,6 +1,6 @@
 package com.vallexia.recipe.unit.service;
 
-import com.vallexia.audit.entity.EventType;
+import com.vallexia.audit.entity.enums.EventType;
 import com.vallexia.audit.service.AuditService;
 import com.vallexia.recipe.dto.CreateRecipeDto;
 import com.vallexia.recipe.dto.RecipeDto;
@@ -349,35 +349,28 @@ class RecipeServiceTest {
   // ==================== updateRecipe() Tests ====================
   
   @Test
-  @DisplayName("Should update recipe successfully as owner")
-  void shouldUpdateRecipeSuccessfullyAsOwner() {
+  @DisplayName("Should throw AccessDeniedException when non-admin user tries to update recipe")
+  void shouldThrowAccessDeniedExceptionWhenNonAdminTriesToUpdateRecipe() {
     // Given
     Recipe existingRecipe = RecipeTestFixtures.createRecipe();
     UpdateRecipeDto dto = RecipeTestFixtures.createUpdateRecipeDto();
-    RecipeDto expectedDto = new RecipeDto();
     
     when(recipeRepository.findById(RecipeTestFixtures.TEST_RECIPE_ID))
         .thenReturn(Optional.of(existingRecipe));
     when(authenticationHelper.hasRole("ROLE_ADMIN"))
-        .thenReturn(false); // User is not admin, but is owner
-    when(recipeRepository.save(any(Recipe.class)))
-        .thenReturn(existingRecipe);
-    when(favoriteRecipeService.isFavorite(any(), any()))
-        .thenReturn(false);
-    when(recipeMapper.toRecipeDto(any(), any()))
-        .thenReturn(expectedDto);
+        .thenReturn(false); // User is not admin
     
-    // When
-    RecipeDto result = recipeService.updateRecipe(RecipeTestFixtures.TEST_RECIPE_ID, dto, UserTestFixtures.TEST_USER_ID);
+    // When & Then
+    assertThatThrownBy(() -> recipeService.updateRecipe(RecipeTestFixtures.TEST_RECIPE_ID, dto, UserTestFixtures.TEST_USER_ID))
+        .isInstanceOf(AccessDeniedException.class)
+        .hasMessageContaining("You do not have permission to update this recipe");
     
-    // Then
-    assertThat(result).isNotNull();
-    verify(recipeRepository, atLeastOnce()).save(any(Recipe.class));
-    verify(auditService).logEvent(eq(EventType.RECIPE_UPDATED), eq(UserTestFixtures.TEST_USER_ID), any(String.class));
+    verify(recipeRepository, never()).save(any(Recipe.class));
+    verify(auditService, never()).logEvent(any(), any(), any());
   }
   
   @Test
-  @DisplayName("Should update recipe successfully as admin even if not owner")
+  @DisplayName("Should update recipe successfully as admin")
   void shouldUpdateRecipeSuccessfullyAsAdmin() {
     // Given
     Recipe recipe = RecipeTestFixtures.createRecipe();
@@ -390,7 +383,7 @@ class RecipeServiceTest {
     when(recipeRepository.findById(RecipeTestFixtures.TEST_RECIPE_ID))
         .thenReturn(Optional.of(recipe));
     when(authenticationHelper.hasRole("ROLE_ADMIN"))
-        .thenReturn(true); // Admin can update any recipe
+        .thenReturn(true); // Admin role allows updating any recipe
     when(recipeRepository.save(any(Recipe.class)))
         .thenReturn(recipe);
     when(favoriteRecipeService.isFavorite(any(), any()))
@@ -408,7 +401,7 @@ class RecipeServiceTest {
   }
   
   @Test
-  @DisplayName("Should throw AccessDeniedException when updating recipe as non-owner and non-admin")
+  @DisplayName("Should throw AccessDeniedException when non-admin tries to update recipe")
   void shouldThrowAccessDeniedExceptionWhenUpdatingRecipeAsNonOwnerAndNonAdmin() {
     // Given
     Recipe recipe = RecipeTestFixtures.createRecipe();
@@ -420,7 +413,7 @@ class RecipeServiceTest {
     when(recipeRepository.findById(RecipeTestFixtures.TEST_RECIPE_ID))
         .thenReturn(Optional.of(recipe));
     when(authenticationHelper.hasRole("ROLE_ADMIN"))
-        .thenReturn(false); // User is neither owner nor admin
+        .thenReturn(false); // User is not admin
     
     // When & Then
     assertThatThrownBy(() -> recipeService.updateRecipe(RecipeTestFixtures.TEST_RECIPE_ID, dto, UserTestFixtures.TEST_USER_ID))
@@ -431,27 +424,27 @@ class RecipeServiceTest {
   // ==================== deleteRecipe() Tests ====================
   
   @Test
-  @DisplayName("Should delete recipe successfully as owner")
-  void shouldDeleteRecipeSuccessfullyAsOwner() {
+  @DisplayName("Should throw AccessDeniedException when non-admin user tries to delete recipe")
+  void shouldThrowAccessDeniedExceptionWhenNonAdminTriesToDeleteRecipe() {
     // Given
     Recipe recipe = RecipeTestFixtures.createRecipe();
     
     when(recipeRepository.findById(RecipeTestFixtures.TEST_RECIPE_ID))
         .thenReturn(Optional.of(recipe));
     when(authenticationHelper.hasRole("ROLE_ADMIN"))
-        .thenReturn(false); // User is not admin, but is owner
-    doNothing().when(recipeRepository).delete(recipe);
+        .thenReturn(false); // User is not admin
     
-    // When
-    recipeService.deleteRecipe(RecipeTestFixtures.TEST_RECIPE_ID, UserTestFixtures.TEST_USER_ID);
+    // When & Then
+    assertThatThrownBy(() -> recipeService.deleteRecipe(RecipeTestFixtures.TEST_RECIPE_ID, UserTestFixtures.TEST_USER_ID))
+        .isInstanceOf(AccessDeniedException.class)
+        .hasMessageContaining("You do not have permission to delete this recipe");
     
-    // Then
-    verify(recipeRepository).delete(recipe);
-    verify(auditService).logEvent(eq(EventType.RECIPE_DELETED), eq(UserTestFixtures.TEST_USER_ID), any(String.class));
+    verify(recipeRepository, never()).delete(any(Recipe.class));
+    verify(auditService, never()).logEvent(any(), any(), any());
   }
   
   @Test
-  @DisplayName("Should delete recipe successfully as admin even if not owner")
+  @DisplayName("Should delete recipe successfully as admin")
   void shouldDeleteRecipeSuccessfullyAsAdmin() {
     // Given
     Recipe recipe = RecipeTestFixtures.createRecipe();
@@ -462,7 +455,7 @@ class RecipeServiceTest {
     when(recipeRepository.findById(RecipeTestFixtures.TEST_RECIPE_ID))
         .thenReturn(Optional.of(recipe));
     when(authenticationHelper.hasRole("ROLE_ADMIN"))
-        .thenReturn(true); // Admin can delete any recipe
+        .thenReturn(true); // Admin role allows deleting any recipe
     doNothing().when(recipeRepository).delete(recipe);
     
     // When
@@ -474,7 +467,7 @@ class RecipeServiceTest {
   }
   
   @Test
-  @DisplayName("Should throw AccessDeniedException when deleting recipe as non-owner and non-admin")
+  @DisplayName("Should throw AccessDeniedException when non-admin tries to delete recipe")
   void shouldThrowAccessDeniedExceptionWhenDeletingRecipeAsNonOwnerAndNonAdmin() {
     // Given
     Recipe recipe = RecipeTestFixtures.createRecipe();
@@ -485,7 +478,7 @@ class RecipeServiceTest {
     when(recipeRepository.findById(RecipeTestFixtures.TEST_RECIPE_ID))
         .thenReturn(Optional.of(recipe));
     when(authenticationHelper.hasRole("ROLE_ADMIN"))
-        .thenReturn(false); // User is neither owner nor admin
+        .thenReturn(false); // User is not admin
     
     // When & Then
     assertThatThrownBy(() -> recipeService.deleteRecipe(RecipeTestFixtures.TEST_RECIPE_ID, UserTestFixtures.TEST_USER_ID))
@@ -507,15 +500,18 @@ class RecipeServiceTest {
     
     when(recipeRepository.findByIsPublicTrue(pageable))
         .thenReturn(recipePage);
+    when(favoriteRecipeService.isFavorite(any(Long.class), eq(1L)))
+        .thenReturn(false);
     when(recipeMapper.toRecipeDto(recipe, false))
         .thenReturn(recipeDto);
     
     // When
-    Page<RecipeDto> result = recipeService.getPublicRecipes(pageable);
+    Page<RecipeDto> result = recipeService.getPublicRecipes(pageable, 1L);
     
     // Then
     assertThat(result).isNotNull();
     assertThat(result.getContent()).hasSize(1);
     verify(recipeRepository).findByIsPublicTrue(pageable);
+    verify(favoriteRecipeService).isFavorite(any(Long.class), eq(1L));
   }
 }

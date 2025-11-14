@@ -1,11 +1,12 @@
 package com.vallexia.recipe.service;
 
-import com.vallexia.audit.entity.EventType;
+import com.vallexia.audit.entity.enums.EventType;
 import com.vallexia.audit.service.AuditService;
 import com.vallexia.recipe.dto.CreateRecipeDto;
 import com.vallexia.recipe.dto.RecipeDto;
 import com.vallexia.recipe.dto.UpdateRecipeDto;
 import com.vallexia.recipe.entity.*;
+import com.vallexia.exception.ValidationException;
 import com.vallexia.recipe.exception.RecipeNotFoundException;
 import com.vallexia.recipe.mapper.RecipeMapper;
 import com.vallexia.recipe.repository.*;
@@ -103,7 +104,7 @@ public class RecipeService {
             recipe.setIngredients(recipeIngredients);
         }
         
-        // Handle tags
+        // Handle tags (validation ensures at least 1 via @NotEmpty)
         if (dto.getTags() != null && !dto.getTags().isEmpty()) {
             for (String tag : dto.getTags()) {
                 recipe.addTag(tag);
@@ -168,7 +169,7 @@ public class RecipeService {
      * 
      * @param id recipe ID
      * @param dto update DTO
-     * @param userId user ID (must be creator or admin)
+     * @param userId user ID (must be admin)
      * @return updated recipe DTO
      */
     public RecipeDto updateRecipe(Long id, UpdateRecipeDto dto, Long userId) {
@@ -177,12 +178,9 @@ public class RecipeService {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new RecipeNotFoundException("Recipe not found with id: " + id));
         
-        // Check ownership or admin role
-        boolean isOwner = recipe.getCreator().getId().equals(userId);
+        // Only admins can update recipes (enforced at controller level)
         boolean isAdmin = authenticationHelper.hasRole("ROLE_ADMIN");
-        
-        // TODO: users cant make their own anymore, so it is only admin now
-        if (!isOwner && !isAdmin) {
+        if (!isAdmin) {
             throw new AccessDeniedException("You do not have permission to update this recipe");
         }
         
@@ -206,10 +204,21 @@ public class RecipeService {
         
         // Update tags if provided
         if (dto.getTags() != null) {
+            if (dto.getTags().isEmpty()) {
+                throw new ValidationException("At least one tag is required");
+            }
             recipe.getTags().clear();
             for (String tag : dto.getTags()) {
                 recipe.addTag(tag);
             }
+        }
+        
+        // Update dietary restrictions if provided
+        if (dto.getDietaryRestrictions() != null) {
+            if (dto.getDietaryRestrictions().isEmpty()) {
+                throw new ValidationException("At least one dietary restriction is required");
+            }
+            // MapStruct automatically updates dietaryRestrictions from DTO to entity
         }
         
         // Update nutritional info if provided
@@ -257,7 +266,7 @@ public class RecipeService {
      * Delete a recipe.
      * 
      * @param id recipe ID
-     * @param userId user ID (must be creator or admin)
+     * @param userId user ID (must be admin)
      */
     public void deleteRecipe(Long id, Long userId) {
         log.info("Deleting recipe ID {} by user ID {}", id, userId);
@@ -265,12 +274,9 @@ public class RecipeService {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new RecipeNotFoundException("Recipe not found with id: " + id));
         
-        // Check ownership or admin role
-        // TODO: users cant make their own anymore, so it is only admin now
-        boolean isOwner = recipe.getCreator().getId().equals(userId);
+        // Only admins can delete recipes (enforced at controller level)
         boolean isAdmin = authenticationHelper.hasRole("ROLE_ADMIN");
-        
-        if (!isOwner && !isAdmin) {
+        if (!isAdmin) {
             throw new AccessDeniedException("You do not have permission to delete this recipe");
         }
         
@@ -291,17 +297,37 @@ public class RecipeService {
      * Get public recipes.
      * 
      * @param pageable pagination information
+     * @param userId current user ID (for favorite check, can be null)
      * @return page of public recipes
      */
     @Transactional(readOnly = true)
-    public Page<RecipeDto> getPublicRecipes(Pageable pageable) {
-        log.debug("Getting public recipes");
+    public Page<RecipeDto> getPublicRecipes(Pageable pageable, Long userId) {
+        log.debug("Getting public recipes for user ID {}", userId);
         
         Page<Recipe> recipes = recipeRepository.findByIsPublicTrue(pageable);
-        return recipes.map(recipe -> recipeMapper.toRecipeDto(recipe, false));
+        return recipes.map(recipe -> {
+            boolean isFavorite = userId != null && favoriteRecipeService.isFavorite(recipe.getId(), userId);
+            return recipeMapper.toRecipeDto(recipe, isFavorite);
+        });
     }
     
-    // TODO: add a method to get all private recipes for an admin
+    /**
+     * Get all recipes (including private) for admin users.
+     * 
+     * @param pageable pagination information
+     * @param userId current user ID (for favorite check)
+     * @return page of all recipes
+     */
+    @Transactional(readOnly = true)
+    public Page<RecipeDto> getAllRecipesForAdmin(Pageable pageable, Long userId) {
+        log.debug("Getting all recipes for admin user ID {}", userId);
+        
+        Page<Recipe> recipes = recipeRepository.findAll(pageable);
+        return recipes.map(recipe -> {
+            boolean isFavorite = userId != null && favoriteRecipeService.isFavorite(recipe.getId(), userId);
+            return recipeMapper.toRecipeDto(recipe, isFavorite);
+        });
+    }
 
     /**
      * Process ingredients from DTO - find or create ingredients and create recipe ingredients.

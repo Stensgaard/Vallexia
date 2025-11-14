@@ -1,9 +1,12 @@
 package com.vallexia.recipe.dto;
 
-import com.vallexia.recipe.entity.DifficultyLevel;
-import com.vallexia.recipe.entity.RecipeCategory;
-import com.vallexia.user.entity.CuisineType;
-import com.vallexia.user.entity.DietaryRestriction;
+import com.vallexia.recipe.entity.enums.DifficultyLevel;
+import com.vallexia.recipe.entity.enums.RecipeCategory;
+import com.vallexia.recipe.entity.enums.RecipeSortBy;
+import com.vallexia.recipe.entity.enums.RecipeSortOrder;
+import com.vallexia.recipe.entity.enums.RestrictionMatchMode;
+import com.vallexia.user.entity.enums.CuisineType;
+import com.vallexia.user.entity.enums.DietaryRestriction;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -56,23 +59,11 @@ public class RecipeSearchCriteria {
     
     private List<String> ingredients = new ArrayList<>(); // Search by ingredient names
     
-    private SortBy sortBy = SortBy.CREATED_DATE;
+    private RestrictionMatchMode restrictionMatchMode = RestrictionMatchMode.OR;
     
-    private SortOrder sortOrder = SortOrder.DESC;
+    private Boolean excludeAllergens = true; // Auto-hide recipes with user's allergies
     
-    // TODO extract these enums to a separate class
-    public enum SortBy {
-        NAME,
-        CREATED_DATE,
-        PREP_TIME,
-        COOK_TIME,
-        TOTAL_TIME,
-        CALORIES,
-        SERVINGS
-    }
+    private RecipeSortBy sortBy = RecipeSortBy.CREATED_DATE;
     
-    public enum SortOrder {
-        ASC,
-        DESC
-    }
+    private RecipeSortOrder sortOrder = RecipeSortOrder.DESC;
 }

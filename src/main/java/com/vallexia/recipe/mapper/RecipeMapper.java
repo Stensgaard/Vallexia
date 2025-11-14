@@ -61,8 +61,10 @@ public interface RecipeMapper {
     @Mapping(target = "nutritionalInfo", ignore = true)
     @Mapping(target = "tags", ignore = true)
     @Mapping(target = "favoriteRecipes", ignore = true)
+    @Mapping(target = "totalTimeMinutes", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    // dietaryRestrictions and allergens are automatically mapped by MapStruct
     Recipe toRecipe(CreateRecipeDto dto);
     
     /**
@@ -79,6 +81,7 @@ public interface RecipeMapper {
     @Mapping(target = "favoriteRecipes", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    // dietaryRestrictions and allergens are automatically mapped by MapStruct
     void updateRecipeFromDto(UpdateRecipeDto dto, @MappingTarget Recipe recipe);
     
     /**

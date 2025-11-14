@@ -1,10 +1,11 @@
 package com.vallexia.recipe.service;
 
-import com.vallexia.audit.entity.EventType;
+import com.vallexia.audit.entity.enums.EventType;
 import com.vallexia.audit.service.AuditService;
 import com.vallexia.recipe.dto.RecipeDto;
 import com.vallexia.recipe.entity.FavoriteRecipe;
 import com.vallexia.recipe.entity.Recipe;
+import com.vallexia.recipe.exception.RecipeAlreadyFavoritedException;
 import com.vallexia.recipe.exception.RecipeNotFoundException;
 import com.vallexia.recipe.mapper.RecipeMapper;
 import com.vallexia.recipe.repository.FavoriteRecipeRepository;
@@ -77,8 +78,9 @@ public class FavoriteRecipeService {
         // Check if already favorited
         if (favoriteRecipeRepository.existsByUserIdAndRecipeId(userId, recipeId)) {
             log.debug("Recipe ID {} already in favorites for user ID {}", recipeId, userId);
-            // TODO throw a error message back that it already is a favorite?
-            return;
+            throw new RecipeAlreadyFavoritedException(
+                "Recipe with ID " + recipeId + " is already in your favorites"
+            );
         }
         
         FavoriteRecipe favoriteRecipe = new FavoriteRecipe();

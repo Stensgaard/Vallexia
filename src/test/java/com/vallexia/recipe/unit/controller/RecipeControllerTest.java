@@ -79,11 +79,11 @@ class RecipeControllerTest {
     RecipeDto recipeDto = new RecipeDto();
     Page<RecipeDto> recipePage = new PageImpl<>(List.of(recipeDto), pageable, 1);
     
-    when(recipeService.getPublicRecipes(pageable))
+    when(recipeService.getPublicRecipes(pageable, 1L))
         .thenReturn(recipePage);
     
     // When
-    ResponseEntity<Page<RecipeDto>> response = recipeController.getAllRecipes(0, 20);
+    ResponseEntity<Page<RecipeDto>> response = recipeController.getAllRecipes(0, 20, mockAuthentication);
     
     // Then
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -187,15 +187,22 @@ class RecipeControllerTest {
     Pageable pageable = PageRequest.of(0, 20);
     RecipeSearchResponseDto responseDto = new RecipeSearchResponseDto();
     
-    when(recipeSearchService.searchRecipes(criteria, pageable))
+    // Create UserSearchPreferences object with null allergies and preferred cuisines
+    RecipeSearchService.UserSearchPreferences userPreferences = 
+        new RecipeSearchService.UserSearchPreferences(null, null, criteria);
+    
+    when(recipeSearchService.prepareSearchCriteriaWithUserPreferences(criteria, 1L))
+        .thenReturn(userPreferences);
+    when(recipeSearchService.searchRecipes(criteria, pageable, 1L, null, null))
         .thenReturn(responseDto);
     
     // When
-    ResponseEntity<RecipeSearchResponseDto> response = recipeController.searchRecipes(criteria, 0, 20);
+    ResponseEntity<RecipeSearchResponseDto> response = recipeController.searchRecipes(criteria, 0, 20, mockAuthentication);
     
     // Then
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    verify(recipeSearchService).searchRecipes(criteria, pageable);
+    verify(recipeSearchService).prepareSearchCriteriaWithUserPreferences(criteria, 1L);
+    verify(recipeSearchService).searchRecipes(criteria, pageable, 1L, null, null);
   }
   
   // ==================== scaleRecipe() Tests ====================

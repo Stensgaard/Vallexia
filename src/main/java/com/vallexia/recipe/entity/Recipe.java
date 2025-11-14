@@ -1,6 +1,10 @@
 package com.vallexia.recipe.entity;
 
-import com.vallexia.user.entity.CuisineType;
+import com.vallexia.recipe.entity.enums.DifficultyLevel;
+import com.vallexia.recipe.entity.enums.RecipeCategory;
+import com.vallexia.user.entity.enums.Allergy;
+import com.vallexia.user.entity.enums.CuisineType;
+import com.vallexia.user.entity.enums.DietaryRestriction;
 import com.vallexia.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -100,6 +104,20 @@ public class Recipe {
     @Column(name = "tag", length = 100)
     private Set<String> tags = new HashSet<>();
     
+    @ElementCollection(fetch = FetchType.LAZY)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "recipe_dietary_restrictions", 
+                   joinColumns = @JoinColumn(name = "recipe_id"))
+    @Column(name = "restriction", length = 50)
+    private Set<DietaryRestriction> dietaryRestrictions = new HashSet<>();
+    
+    @ElementCollection(fetch = FetchType.LAZY)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "recipe_allergens", 
+                   joinColumns = @JoinColumn(name = "recipe_id"))
+    @Column(name = "allergy", length = 50)
+    private Set<Allergy> allergens = new HashSet<>();
+    
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<FavoriteRecipe> favoriteRecipes = new ArrayList<>();
     
@@ -111,7 +129,6 @@ public class Recipe {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
     
-    // TODO: move the helper methods to a separate class?
     /**
      * Helper method to calculate total time if prep and cook times are set.
      */
@@ -152,6 +169,42 @@ public class Recipe {
     public void removeTag(String tag) {
         if (tag != null) {
             this.tags.remove(tag.toLowerCase().trim());
+        }
+    }
+    
+    /**
+     * Add a dietary restriction to the recipe.
+     */
+    public void addDietaryRestriction(DietaryRestriction restriction) {
+        if (restriction != null) {
+            this.dietaryRestrictions.add(restriction);
+        }
+    }
+    
+    /**
+     * Remove a dietary restriction from the recipe.
+     */
+    public void removeDietaryRestriction(DietaryRestriction restriction) {
+        if (restriction != null) {
+            this.dietaryRestrictions.remove(restriction);
+        }
+    }
+    
+    /**
+     * Add an allergen to the recipe.
+     */
+    public void addAllergen(Allergy allergen) {
+        if (allergen != null) {
+            this.allergens.add(allergen);
+        }
+    }
+    
+    /**
+     * Remove an allergen from the recipe.
+     */
+    public void removeAllergen(Allergy allergen) {
+        if (allergen != null) {
+            this.allergens.remove(allergen);
         }
     }
 }

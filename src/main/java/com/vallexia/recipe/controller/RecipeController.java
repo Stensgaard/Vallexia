@@ -1,8 +1,13 @@
 package com.vallexia.recipe.controller;
 
 import com.vallexia.recipe.dto.*;
+import com.vallexia.recipe.entity.enums.DifficultyLevel;
+import com.vallexia.recipe.entity.enums.RecipeCategory;
 import com.vallexia.recipe.service.*;
+import com.vallexia.recipe.util.EnumPropertyEditor;
 import com.vallexia.security.AuthenticationHelper;
+import com.vallexia.user.entity.enums.CuisineType;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -55,21 +61,40 @@ public class RecipeController {
     }
     
     /**
+     * Initialize data binder to handle empty strings for enum fields.
+     * Converts empty strings to null for enum fields in RecipeSearchCriteria,
+     * ensuring that "All Levels", "All Categories", and "All Cuisines" options
+     * are treated as "no filter" rather than causing binding errors.
+     * 
+     * @param binder the data binder
+     */
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        // Register custom property editors for enum fields
+        binder.registerCustomEditor(DifficultyLevel.class, new EnumPropertyEditor<>(DifficultyLevel.class));
+        binder.registerCustomEditor(RecipeCategory.class, new EnumPropertyEditor<>(RecipeCategory.class));
+        binder.registerCustomEditor(CuisineType.class, new EnumPropertyEditor<>(CuisineType.class));
+    }
+    
+    /**
      * List all public recipes with pagination.
      */
-    @Operation(summary = "List public recipes", description = "Get a paginated list of all public recipes")
+    @Operation(summary = "List public recipes", description = "Get a paginated list of all public recipes (requires authentication)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Recipes retrieved successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
     @GetMapping
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Page<RecipeDto>> getAllRecipes(
             @Parameter(description = "Page number (0-indexed)") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size) {
+            @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size,
+            Authentication authentication) {
         log.debug("Getting all public recipes - page: {}, size: {}", page, size);
         
+        Long userId = authenticationHelper.getCurrentUserId(authentication);
         Pageable pageable = PageRequest.of(page, size);
-        Page<RecipeDto> recipes = recipeService.getPublicRecipes(pageable);
+        Page<RecipeDto> recipes = recipeService.getPublicRecipes(pageable, userId);
         
         return ResponseEntity.ok(recipes);
     }
@@ -77,19 +102,21 @@ public class RecipeController {
     /**
      * Get recipe by ID.
      */
-    @Operation(summary = "Get recipe by ID", description = "Retrieve a specific recipe by its ID")
+    @Operation(summary = "Get recipe by ID", description = "Retrieve a specific recipe by its ID (requires authentication)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Recipe retrieved successfully"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "404", description = "Recipe not found"),
         @ApiResponse(responseCode = "403", description = "Access denied")
     })
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<RecipeDto> getRecipeById(
             @Parameter(description = "Recipe ID") @PathVariable Long id,
             Authentication authentication) {
         log.debug("Getting recipe ID {}", id);
         
-        Long userId = authentication != null ? authenticationHelper.getCurrentUserId(authentication) : null;
+        Long userId = authenticationHelper.getCurrentUserId(authentication);
         RecipeDto recipe = recipeService.getRecipeById(id, userId);
         
         return ResponseEntity.ok(recipe);
@@ -167,22 +194,60 @@ public class RecipeController {
     }
     
     /**
+     * Get all recipes (including private) - Admin only.
+     */
+    @Operation(summary = "Get all recipes", description = "Get all recipes including private ones (requires admin role)")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Recipes retrieved successfully"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "403", description = "Forbidden - Admin role required")
+    })
+    @GetMapping("/admin/all")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<RecipeDto>> getAllRecipesForAdmin(
+            @Parameter(description = "Page number (0-indexed)") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size,
+            Authentication authentication) {
+        log.debug("Admin getting all recipes - page: {}, size: {}", page, size);
+        
+        Long userId = authenticationHelper.getCurrentUserId(authentication);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<RecipeDto> recipes = recipeService.getAllRecipesForAdmin(pageable, userId);
+        
+        return ResponseEntity.ok(recipes);
+    }
+    
+    /**
      * Advanced recipe search with multiple filters.
      */
-    @Operation(summary = "Search recipes", description = "Search recipes with advanced filtering and sorting")
+    @Operation(summary = "Search recipes", description = "Search recipes with advanced filtering and sorting (requires authentication)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Search completed successfully"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "400", description = "Invalid search criteria")
     })
     @GetMapping("/search")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<RecipeSearchResponseDto> searchRecipes(
             @ModelAttribute RecipeSearchCriteria criteria,
             @Parameter(description = "Page number (0-indexed)") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size) {
+            @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size,
+            Authentication authentication) {
         log.debug("Searching recipes with criteria: {}", criteria);
         
+        Long userId = authenticationHelper.getCurrentUserId(authentication);
         Pageable pageable = PageRequest.of(page, size);
-        RecipeSearchResponseDto response = recipeSearchService.searchRecipes(criteria, pageable);
+        
+        // Prepare search criteria with user's dietary preferences
+        RecipeSearchService.UserSearchPreferences preferences = 
+                recipeSearchService.prepareSearchCriteriaWithUserPreferences(criteria, userId);
+        
+        RecipeSearchResponseDto response = recipeSearchService.searchRecipes(
+                preferences.criteria(), 
+                pageable, 
+                userId, 
+                preferences.userAllergies(), 
+                preferences.preferredCuisines());
         
         return ResponseEntity.ok(response);
     }
@@ -190,20 +255,22 @@ public class RecipeController {
     /**
      * Get scaled recipe for a specific number of servings.
      */
-    @Operation(summary = "Scale recipe", description = "Get recipe scaled to a different number of servings")
+    @Operation(summary = "Scale recipe", description = "Get recipe scaled to a different number of servings (requires authentication)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Scaled recipe retrieved successfully"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "404", description = "Recipe not found"),
         @ApiResponse(responseCode = "400", description = "Invalid servings number")
     })
     @GetMapping("/{id}/scale")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<RecipeDto> scaleRecipe(
             @Parameter(description = "Recipe ID") @PathVariable Long id,
             @Parameter(description = "Target number of servings") @RequestParam Integer servings,
             Authentication authentication) {
         log.debug("Scaling recipe ID {} to {} servings", id, servings);
         
-        Long userId = authentication != null ? authenticationHelper.getCurrentUserId(authentication) : null;
+        Long userId = authenticationHelper.getCurrentUserId(authentication);
         RecipeDto scaledRecipe = recipeScalingService.scaleRecipe(id, servings, userId);
         
         return ResponseEntity.ok(scaledRecipe);

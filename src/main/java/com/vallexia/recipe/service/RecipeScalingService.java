@@ -6,6 +6,7 @@ import com.vallexia.recipe.dto.RecipeDto;
 import com.vallexia.recipe.entity.NutritionalInfo;
 import com.vallexia.recipe.entity.Recipe;
 import com.vallexia.recipe.entity.RecipeIngredient;
+import com.vallexia.recipe.exception.InvalidRecipeServingsException;
 import com.vallexia.recipe.exception.RecipeNotFoundException;
 import com.vallexia.recipe.mapper.RecipeMapper;
 import com.vallexia.recipe.repository.RecipeRepository;
@@ -54,6 +55,7 @@ public class RecipeScalingService {
      * @param userId the user ID (for favorite check)
      * @return scaled RecipeDto
      * @throws RecipeNotFoundException if recipe not found
+     * @throws InvalidRecipeServingsException if target servings is invalid
      */
     public RecipeDto scaleRecipe(Long recipeId, Integer targetServings, Long userId) {
         log.info("Scaling recipe ID {} from current servings to {} servings", recipeId, targetServings);
@@ -62,8 +64,9 @@ public class RecipeScalingService {
                 .orElseThrow(() -> new RecipeNotFoundException("Recipe not found with id: " + recipeId));
         
         if (targetServings <= 0) {
-            // TODO throw an custom exception instead of IllegalArgumentException
-            throw new IllegalArgumentException("Target servings must be greater than 0");
+            throw new InvalidRecipeServingsException(
+                "Target servings must be greater than 0, but was: " + targetServings
+            );
         }
         
         Integer currentServings = recipe.getServings();

@@ -1,9 +1,9 @@
 package com.vallexia.recipe.repository;
 
 import com.vallexia.recipe.entity.Recipe;
-import com.vallexia.recipe.entity.RecipeCategory;
-import com.vallexia.recipe.entity.DifficultyLevel;
-import com.vallexia.user.entity.CuisineType;
+import com.vallexia.recipe.entity.enums.DifficultyLevel;
+import com.vallexia.recipe.entity.enums.RecipeCategory;
+import com.vallexia.user.entity.enums.CuisineType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,4 +1,4 @@
-package com.vallexia.recipe.entity;
+package com.vallexia.recipe.entity.enums;
 
 import lombok.Getter;
 

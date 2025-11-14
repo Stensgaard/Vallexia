@@ -1,10 +1,11 @@
 package com.vallexia.recipe.unit.service;
 
-import com.vallexia.audit.entity.EventType;
+import com.vallexia.audit.entity.enums.EventType;
 import com.vallexia.audit.service.AuditService;
 import com.vallexia.recipe.dto.RecipeDto;
 import com.vallexia.recipe.entity.FavoriteRecipe;
 import com.vallexia.recipe.entity.Recipe;
+import com.vallexia.recipe.exception.RecipeAlreadyFavoritedException;
 import com.vallexia.recipe.exception.RecipeNotFoundException;
 import com.vallexia.recipe.fixtures.RecipeTestFixtures;
 import com.vallexia.recipe.mapper.RecipeMapper;
@@ -95,7 +96,7 @@ class FavoriteRecipeServiceTest {
   }
   
   @Test
-  @DisplayName("Should not add duplicate favorite")
+  @DisplayName("Should throw RecipeAlreadyFavoritedException when adding duplicate favorite")
   void shouldNotAddDuplicateFavorite() {
     // Given
     Recipe recipe = RecipeTestFixtures.createRecipe();
@@ -108,10 +109,11 @@ class FavoriteRecipeServiceTest {
     when(favoriteRecipeRepository.existsByUserIdAndRecipeId(UserTestFixtures.TEST_USER_ID, RecipeTestFixtures.TEST_RECIPE_ID))
         .thenReturn(true); // Already favorited
     
-    // When
-    favoriteRecipeService.addFavorite(RecipeTestFixtures.TEST_RECIPE_ID, UserTestFixtures.TEST_USER_ID);
+    // When & Then
+    assertThatThrownBy(() -> favoriteRecipeService.addFavorite(RecipeTestFixtures.TEST_RECIPE_ID, UserTestFixtures.TEST_USER_ID))
+        .isInstanceOf(RecipeAlreadyFavoritedException.class)
+        .hasMessageContaining("Recipe with ID " + RecipeTestFixtures.TEST_RECIPE_ID + " is already in your favorites");
     
-    // Then
     verify(favoriteRecipeRepository, never()).save(any());
   }
   
