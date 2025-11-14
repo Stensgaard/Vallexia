@@ -98,7 +98,7 @@
       </div>
     </div>
 
-    <div class="flex gap-2 mt-4">
+    <div class="flex items-center gap-2 mt-4">
       <button
         @click="applySearch"
         class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
@@ -111,6 +111,12 @@
       >
         Clear Filters
       </button>
+      <span
+        v-if="totalResults > 0"
+        class="text-sm text-gray-600 ml-2"
+      >
+        {{ totalResults }} {{ totalResults === 1 ? 'recipe' : 'recipes' }} found
+      </span>
     </div>
   </div>
 </template>
@@ -121,16 +127,34 @@ import { ref, watch } from 'vue'
 const props = defineProps({
   criteria: {
     type: Object,
-    default: () => ({})
+    default: () => ({
+      category: '',
+      cuisineType: '',
+      difficultyLevel: ''
+    })
+  },
+  totalResults: {
+    type: Number,
+    default: 0
   }
 })
 
 const emit = defineEmits(['search', 'criteria-changed'])
 
-const localCriteria = ref({ ...props.criteria })
+const localCriteria = ref({
+  category: '',
+  cuisineType: '',
+  difficultyLevel: '',
+  ...props.criteria
+})
 
 watch(() => props.criteria, (newVal) => {
-  localCriteria.value = { ...newVal }
+  localCriteria.value = {
+    category: '',
+    cuisineType: '',
+    difficultyLevel: '',
+    ...newVal
+  }
 }, { deep: true })
 
 const updateCriteria = () => {
@@ -142,8 +166,12 @@ const applySearch = () => {
 }
 
 const clearFilters = () => {
-  localCriteria.value = {}
-  emit('criteria-changed', {})
-  emit('search', {})
+  localCriteria.value = {
+    category: '',
+    cuisineType: '',
+    difficultyLevel: ''
+  }
+  emit('criteria-changed', { ...localCriteria.value })
+  emit('search', { ...localCriteria.value })
 }
 </script>
