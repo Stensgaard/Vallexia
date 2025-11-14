@@ -1,5 +1,8 @@
 package com.vallexia.user.entity;
 
+import com.vallexia.user.entity.enums.Allergy;
+import com.vallexia.user.entity.enums.CuisineType;
+import com.vallexia.user.entity.enums.DietaryRestriction;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -51,14 +54,6 @@ public class DietaryPreferences {
     @Column(name = "cuisine")
     private Set<CuisineType> preferredCuisines = new HashSet<>();
     
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "disliked_ingredients", joinColumns = @JoinColumn(name = "preferences_id"))
-    @Column(name = "ingredient")
-    private Set<String> dislikedIngredients = new HashSet<>();
-    
-    @Enumerated(EnumType.STRING)
-    private ServingSizePreference servingSizePreference = ServingSizePreference.MEDIUM;
-    
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -90,13 +85,5 @@ public class DietaryPreferences {
     
     public void removePreferredCuisine(CuisineType cuisine) {
         this.preferredCuisines.remove(cuisine);
-    }
-    
-    public void addDislikedIngredient(String ingredient) {
-        this.dislikedIngredients.add(ingredient.toLowerCase());
-    }
-    
-    public void removeDislikedIngredient(String ingredient) {
-        this.dislikedIngredients.remove(ingredient.toLowerCase());
     }
 }

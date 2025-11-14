@@ -1,7 +1,7 @@
 package com.vallexia.user.unit.mapper;
 
 import com.vallexia.user.dto.UserProfileDto;
-import com.vallexia.user.entity.SubscriptionStatus;
+import com.vallexia.user.entity.enums.SubscriptionStatus;
 import com.vallexia.user.entity.User;
 import com.vallexia.user.fixtures.UserTestFixtures;
 import com.vallexia.user.mapper.UserMapper;
@@ -110,8 +110,8 @@ class UserMapperTest {
     User user = UserTestFixtures.createUserWithProfile();
     user.setHouseholdSize(5);
     user.setMealTypes(new java.util.HashSet<>(java.util.Set.of(
-        com.vallexia.user.entity.MealType.BREAKFAST,
-        com.vallexia.user.entity.MealType.LUNCH
+        com.vallexia.user.entity.enums.MealType.BREAKFAST,
+        com.vallexia.user.entity.enums.MealType.LUNCH
     )));
     
     // When
@@ -120,8 +120,8 @@ class UserMapperTest {
     // Then
     assertThat(dto.getHouseholdSize()).isEqualTo(5);
     assertThat(dto.getMealTypes()).containsExactlyInAnyOrder(
-        com.vallexia.user.entity.MealType.BREAKFAST,
-        com.vallexia.user.entity.MealType.LUNCH
+        com.vallexia.user.entity.enums.MealType.BREAKFAST,
+        com.vallexia.user.entity.enums.MealType.LUNCH
     );
   }
   
@@ -135,9 +135,9 @@ class UserMapperTest {
     user.setEmail("test@example.com");
     user.setHouseholdSize(1);
     user.setMealTypes(new java.util.HashSet<>(java.util.Set.of(
-        com.vallexia.user.entity.MealType.BREAKFAST,
-        com.vallexia.user.entity.MealType.LUNCH,
-        com.vallexia.user.entity.MealType.DINNER
+        com.vallexia.user.entity.enums.MealType.BREAKFAST,
+        com.vallexia.user.entity.enums.MealType.LUNCH,
+        com.vallexia.user.entity.enums.MealType.DINNER
     )));
     user.setEnabled(true);
     user.setSubscriptionStatus(SubscriptionStatus.FREE);
@@ -239,10 +239,10 @@ class UserMapperTest {
     dto.setEmail("new@example.com");
     dto.setHouseholdSize(4);
     dto.setMealTypes(new java.util.HashSet<>(java.util.Set.of(
-        com.vallexia.user.entity.MealType.BREAKFAST,
-        com.vallexia.user.entity.MealType.LUNCH,
-        com.vallexia.user.entity.MealType.DINNER,
-        com.vallexia.user.entity.MealType.SNACK
+        com.vallexia.user.entity.enums.MealType.BREAKFAST,
+        com.vallexia.user.entity.enums.MealType.LUNCH,
+        com.vallexia.user.entity.enums.MealType.DINNER,
+        com.vallexia.user.entity.enums.MealType.SNACK
     )));
     
     // When
@@ -252,10 +252,10 @@ class UserMapperTest {
     assertThat(user.getEmail()).isEqualTo("new@example.com");
     assertThat(user.getHouseholdSize()).isEqualTo(4);
     assertThat(user.getMealTypes()).containsExactlyInAnyOrder(
-        com.vallexia.user.entity.MealType.BREAKFAST,
-        com.vallexia.user.entity.MealType.LUNCH,
-        com.vallexia.user.entity.MealType.DINNER,
-        com.vallexia.user.entity.MealType.SNACK
+        com.vallexia.user.entity.enums.MealType.BREAKFAST,
+        com.vallexia.user.entity.enums.MealType.LUNCH,
+        com.vallexia.user.entity.enums.MealType.DINNER,
+        com.vallexia.user.entity.enums.MealType.SNACK
     );
   }
   
@@ -303,10 +303,10 @@ class UserMapperTest {
     assertThat(user.getEmail()).isEqualTo("updated@example.com");
     assertThat(user.getHouseholdSize()).isEqualTo(4);
     assertThat(user.getMealTypes()).containsExactlyInAnyOrder(
-        com.vallexia.user.entity.MealType.BREAKFAST,
-        com.vallexia.user.entity.MealType.LUNCH,
-        com.vallexia.user.entity.MealType.DINNER,
-        com.vallexia.user.entity.MealType.SNACK
+        com.vallexia.user.entity.enums.MealType.BREAKFAST,
+        com.vallexia.user.entity.enums.MealType.LUNCH,
+        com.vallexia.user.entity.enums.MealType.DINNER,
+        com.vallexia.user.entity.enums.MealType.SNACK
     );
   }
 }

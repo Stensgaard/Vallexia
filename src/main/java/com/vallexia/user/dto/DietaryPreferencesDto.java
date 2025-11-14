@@ -1,11 +1,8 @@
 package com.vallexia.user.dto;
 
-import com.vallexia.user.entity.Allergy;
-import com.vallexia.user.entity.CuisineType;
-import com.vallexia.user.entity.DietaryRestriction;
-import com.vallexia.user.entity.ServingSizePreference;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import com.vallexia.user.entity.enums.Allergy;
+import com.vallexia.user.entity.enums.CuisineType;
+import com.vallexia.user.entity.enums.DietaryRestriction;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -37,10 +34,4 @@ public class DietaryPreferencesDto {
     
     @Size(max = 20, message = "Maximum 20 preferred cuisines allowed")
     private Set<CuisineType> preferredCuisines;
-    
-    @Size(max = 50, message = "Maximum 50 disliked ingredients allowed")
-    private Set<@NotBlank(message = "Disliked ingredient cannot be blank") @Size(max = 100, message = "Ingredient name must not exceed 100 characters") String> dislikedIngredients;
-    
-    @NotNull(message = "Serving size preference is required")
-    private ServingSizePreference servingSizePreference;
 }

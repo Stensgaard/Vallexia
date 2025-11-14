@@ -1,4 +1,4 @@
-package com.vallexia.user.entity;
+package com.vallexia.user.entity.enums;
 
 /**
  * Enum representing different subscription statuses for users.

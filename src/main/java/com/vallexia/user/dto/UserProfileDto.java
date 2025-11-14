@@ -1,11 +1,12 @@
 package com.vallexia.user.dto;
 
-import com.vallexia.user.entity.MealType;
+import com.vallexia.user.entity.enums.MealType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,6 +40,7 @@ public class UserProfileDto {
     
     private Boolean enabled;
     
+    @NotNull(message = "Household size is required")
     @Min(value = 1, message = "Household size must be at least 1")
     @Max(value = 20, message = "Household size cannot exceed 20")
     private Integer householdSize;
