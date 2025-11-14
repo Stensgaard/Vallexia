@@ -1,7 +1,7 @@
 package com.vallexia.audit.fixtures;
 
 import com.vallexia.audit.entity.AuditLog;
-import com.vallexia.audit.entity.EventType;
+import com.vallexia.audit.entity.enums.EventType;
 import jakarta.servlet.http.HttpServletRequest;
 import org.mockito.Mockito;
 

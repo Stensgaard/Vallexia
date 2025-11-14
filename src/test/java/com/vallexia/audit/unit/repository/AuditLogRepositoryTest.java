@@ -1,7 +1,7 @@
 package com.vallexia.audit.unit.repository;
 
 import com.vallexia.audit.entity.AuditLog;
-import com.vallexia.audit.entity.EventType;
+import com.vallexia.audit.entity.enums.EventType;
 import com.vallexia.audit.fixtures.AuditLogTestFixtures;
 import com.vallexia.audit.repository.AuditLogRepository;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,6 +1,6 @@
 package com.vallexia.auth.unit.service;
 
-import com.vallexia.audit.entity.EventType;
+import com.vallexia.audit.entity.enums.EventType;
 import com.vallexia.audit.service.AuditService;
 import com.vallexia.auth.dto.*;
 import com.vallexia.auth.exception.AccountLockedException;
@@ -14,7 +14,7 @@ import com.vallexia.auth.service.TokenBlacklistService;
 import com.vallexia.config.security.AccountSecurityProperties;
 import com.vallexia.exception.ValidationException;
 import com.vallexia.security.JwtUtils;
-import com.vallexia.user.entity.Role;
+import com.vallexia.user.entity.enums.Role;
 import com.vallexia.user.entity.User;
 import com.vallexia.user.fixtures.UserTestFixtures;
 import com.vallexia.user.repository.UserRepository;

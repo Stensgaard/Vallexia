@@ -1,0 +1,41 @@
+# Test profile configuration
+spring:
+  config:
+    activate:
+      on-profile: test
+  # Use in-memory database for tests
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format-sql: false
+
+app:
+  audit:
+    trusted-proxies: 
+    retention-days: 90
+    fallback-log-path: ${AUDIT_FALLBACK_LOG_PATH:deployment/logs/audit-fallback.log}
+  jwt:
+    secret: test-jwt-secret-key-minimum-32-characters-long-for-testing
+    access-token-expiration: 900000
+    refresh-token-expiration: 86400000
+  auth:
+    lockout:
+      max-failed-attempts: 5
+      duration-minutes: 15
+  rate-limiting:
+    enabled: false  # Disable rate limiting during automated tests
+
+logging:
+  level:
+    '[com.vallexia]': INFO
+    '[org.springframework]': WARN
+    root: WARN
+

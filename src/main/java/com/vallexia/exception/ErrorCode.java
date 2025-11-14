@@ -43,6 +43,8 @@ public enum ErrorCode {
   RECIPE_VALIDATION_ERROR("REC_002", HttpStatus.BAD_REQUEST, "Invalid recipe data provided"),
   RECIPE_ACCESS_DENIED("REC_003", HttpStatus.FORBIDDEN, "You do not have permission to access this recipe"),
   INGREDIENT_NOT_FOUND("REC_004", HttpStatus.NOT_FOUND, "Ingredient not found"),
+  RECIPE_ALREADY_FAVORITED("REC_005", HttpStatus.CONFLICT, "Recipe is already in favorites"),
+  INVALID_RECIPE_SERVINGS("REC_006", HttpStatus.BAD_REQUEST, "Invalid recipe servings value"),
   
   // Resource Errors (4xx)
   RESOURCE_NOT_FOUND("RES_001", HttpStatus.NOT_FOUND, "Requested resource not found"),
