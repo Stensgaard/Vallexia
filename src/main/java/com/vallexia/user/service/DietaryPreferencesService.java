@@ -1,6 +1,6 @@
 package com.vallexia.user.service;
 
-import com.vallexia.audit.entity.EventType;
+import com.vallexia.audit.entity.enums.EventType;
 import com.vallexia.audit.service.AuditService;
 import com.vallexia.user.dto.DietaryPreferencesDto;
 import com.vallexia.user.entity.DietaryPreferences;
@@ -97,8 +97,6 @@ public class DietaryPreferencesService {
         preferences.setRestrictions(dietaryPreferencesDto.getRestrictions());
         preferences.setAllergies(dietaryPreferencesDto.getAllergies());
         preferences.setPreferredCuisines(dietaryPreferencesDto.getPreferredCuisines());
-        preferences.setDislikedIngredients(dietaryPreferencesDto.getDislikedIngredients());
-        preferences.setServingSizePreference(dietaryPreferencesDto.getServingSizePreference());
         
         DietaryPreferences updatedPreferences = dietaryPreferencesRepository.save(preferences);
         

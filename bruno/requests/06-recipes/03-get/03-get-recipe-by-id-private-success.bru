@@ -1,0 +1,30 @@
+meta {
+  name: Get Recipe By ID - Private Recipe Success
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/recipes/{{privateRecipeId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminAccessToken}}
+}
+
+tests {
+  test("Status is 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response contains recipe data", function() {
+    expect(res.body).to.have.property("id");
+    expect(res.body).to.have.property("name");
+  });
+  
+  test("Recipe is private", function() {
+    expect(res.body.isPublic).to.equal(false);
+  });
+}

@@ -1,7 +1,7 @@
 package com.vallexia.audit.unit.controller;
 
 import com.vallexia.audit.entity.AuditLog;
-import com.vallexia.audit.entity.EventType;
+import com.vallexia.audit.entity.enums.EventType;
 import com.vallexia.audit.fixtures.AuditLogTestFixtures;
 import com.vallexia.audit.service.AuditService;
 import com.vallexia.security.AuthenticationHelper;

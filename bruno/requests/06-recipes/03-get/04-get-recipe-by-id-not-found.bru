@@ -1,0 +1,31 @@
+meta {
+  name: Get Recipe By ID - Not Found
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/v1/recipes/999999
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("Status is 404 Not Found", function() {
+    expect(res.status).to.equal(404);
+  });
+  
+  test("Error code is REC_001", function() {
+    expect(res.body.code).to.equal("REC_001");
+  });
+  
+  test("Error message indicates recipe not found", function() {
+    expect(res.body.message).to.satisfy(msg => 
+      msg.includes("Recipe") || msg.includes("not found")
+    );
+  });
+}

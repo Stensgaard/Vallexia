@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { authService } from '@/services/authService'
+import { getErrorMessage } from '@/utils/errorUtils'
 
 export const useAuthStore = defineStore('auth', () => {
   // State
@@ -34,12 +35,13 @@ export const useAuthStore = defineStore('auth', () => {
         id: response.id,
         username: response.username,
         email: response.email,
-        subscriptionStatus: response.subscriptionStatus
+        subscriptionStatus: response.subscriptionStatus,
+        householdSize: response.householdSize || 1
       }
 
       return response
     } catch (err) {
-      error.value = err.response?.data?.message || 'Login failed'
+      error.value = getErrorMessage(err)
       throw err
     } finally {
       isLoading.value = false
@@ -64,12 +66,13 @@ export const useAuthStore = defineStore('auth', () => {
         id: response.id,
         username: response.username,
         email: response.email,
-        subscriptionStatus: response.subscriptionStatus
+        subscriptionStatus: response.subscriptionStatus,
+        householdSize: response.householdSize || 1
       }
 
       return response
     } catch (err) {
-      error.value = err.response?.data?.message || 'Registration failed'
+      error.value = getErrorMessage(err)
       throw err
     } finally {
       isLoading.value = false
@@ -83,7 +86,7 @@ export const useAuthStore = defineStore('auth', () => {
         await authService.logout()
       }
     } catch (err) {
-      console.error('Logout error:', err)
+      // Logout errors are non-critical, silently fail
     } finally {
       // Clear local state regardless of API call success
       clearAuthData()
@@ -124,28 +127,38 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null
   }
 
-  const initializeAuth = () => {
+  const initializeAuth = async () => {
     // Check if we have tokens in localStorage
     const storedAccessToken = localStorage.getItem('accessToken')
     const storedRefreshToken = localStorage.getItem('refreshToken')
     
-    if (storedAccessToken && storedRefreshToken) {
-      accessToken.value = storedAccessToken
-      refreshToken.value = storedRefreshToken
+    if (!storedAccessToken || !storedRefreshToken) {
+      // No tokens, ensure clean state
+      clearAuthData()
+      return
+    }
+    
+    // Set tokens in store
+    accessToken.value = storedAccessToken
+    refreshToken.value = storedRefreshToken
+    
+    // Validate token by fetching user profile from backend
+    try {
+      const { userService } = await import('@/services/userService')
+      const profile = await userService.getProfile()
       
-      // Try to decode user info from token (basic implementation)
-      try {
-        const payload = JSON.parse(atob(storedAccessToken.split('.')[1]))
-        user.value = {
-          id: payload.sub,
-          username: payload.sub,
-          email: payload.email || '',
-          subscriptionStatus: payload.subscriptionStatus || 'FREE'
-        }
-      } catch (err) {
-        console.error('Error decoding token:', err)
-        clearAuthData()
+      // Token is valid, update user state with actual profile data
+      user.value = {
+        id: profile.id,
+        username: profile.username,
+        email: profile.email,
+        subscriptionStatus: profile.subscriptionStatus || 'FREE',
+        householdSize: profile.householdSize || 1
       }
+    } catch (err) {
+      // Token is invalid (401) or user doesn't exist (404)
+      // Clear auth data - router guard will handle navigation
+      clearAuthData()
     }
   }
 

@@ -38,6 +38,14 @@ public enum ErrorCode {
   INVALID_NUTRITIONAL_DATA("NUT_001", HttpStatus.BAD_REQUEST, "Invalid nutritional data provided"),
   NUTRITIONAL_CALCULATION_ERROR("NUT_002", HttpStatus.INTERNAL_SERVER_ERROR, "Error calculating nutritional information"),
   
+  // Recipe Errors (4xx)
+  RECIPE_NOT_FOUND("REC_001", HttpStatus.NOT_FOUND, "Recipe not found"),
+  RECIPE_VALIDATION_ERROR("REC_002", HttpStatus.BAD_REQUEST, "Invalid recipe data provided"),
+  RECIPE_ACCESS_DENIED("REC_003", HttpStatus.FORBIDDEN, "You do not have permission to access this recipe"),
+  INGREDIENT_NOT_FOUND("REC_004", HttpStatus.NOT_FOUND, "Ingredient not found"),
+  RECIPE_ALREADY_FAVORITED("REC_005", HttpStatus.CONFLICT, "Recipe is already in favorites"),
+  INVALID_RECIPE_SERVINGS("REC_006", HttpStatus.BAD_REQUEST, "Invalid recipe servings value"),
+  
   // Resource Errors (4xx)
   RESOURCE_NOT_FOUND("RES_001", HttpStatus.NOT_FOUND, "Requested resource not found"),
   RESOURCE_CONFLICT("RES_002", HttpStatus.CONFLICT, "Resource conflict detected"),

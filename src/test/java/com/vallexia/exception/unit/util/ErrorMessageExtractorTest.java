@@ -49,7 +49,7 @@ class ErrorMessageExtractorTest {
   @DisplayName("Should extract enum deserialization error message with invalid value and accepted values")
   void shouldExtractEnumDeserializationErrorMessage() {
     // Given
-    String errorMessage = "Cannot deserialize value of type `com.vallexia.user.entity.GoalType` " +
+    String errorMessage = "Cannot deserialize value of type `com.vallexia.user.entity.enums.GoalType` " +
         "from String \"MAINTAIN\": not one of the values accepted for Enum class: " +
         "[ATHLETIC_PERFORMANCE, MAINTENANCE, WEIGHT_GAIN, WEIGHT_LOSS, MUSCLE_GAIN, GENERAL_HEALTH]";
     
@@ -217,8 +217,8 @@ class ErrorMessageExtractorTest {
     // Given
     TestObject testObject = new TestObject();
     BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(testObject, "testObject");
-    bindingResult.addError(new FieldError("testObject", "dislikedIngredients[0]", "", false, 
-        new String[]{"NotBlank.dislikedIngredients[]"}, new Object[0], "Disliked ingredient cannot be blank"));
+    bindingResult.addError(new FieldError("testObject", "preferredCuisines[0]", "", false, 
+        new String[]{"NotNull.preferredCuisines[]"}, new Object[0], "Preferred cuisine cannot be null"));
     
     MethodArgumentNotValidException ex = new MethodArgumentNotValidException(createMockMethodParameter(), bindingResult);
     
@@ -227,9 +227,9 @@ class ErrorMessageExtractorTest {
     
     // Then
     assertThat(errors).hasSize(1);
-    assertThat(errors).containsKey("dislikedIngredients");
-    assertThat(errors).doesNotContainKey("dislikedIngredients[0]");
-    assertThat(errors.get("dislikedIngredients")).isEqualTo("Disliked ingredient cannot be blank");
+    assertThat(errors).containsKey("preferredCuisines");
+    assertThat(errors).doesNotContainKey("preferredCuisines[0]");
+    assertThat(errors.get("preferredCuisines")).isEqualTo("Preferred cuisine cannot be null");
   }
   
   @Test

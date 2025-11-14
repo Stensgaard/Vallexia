@@ -4,7 +4,7 @@ import com.vallexia.auth.dto.JwtResponseDto;
 import com.vallexia.auth.dto.LoginRequestDto;
 import com.vallexia.auth.dto.RefreshTokenRequestDto;
 import com.vallexia.auth.dto.RegisterRequestDto;
-import com.vallexia.user.entity.Role;
+import com.vallexia.user.entity.enums.Role;
 import com.vallexia.user.entity.User;
 import com.vallexia.user.fixtures.UserTestFixtures;
 

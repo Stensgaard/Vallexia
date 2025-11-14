@@ -1,9 +1,9 @@
 package com.vallexia.user.fixtures;
 
 import com.vallexia.user.dto.UserProfileDto;
-import com.vallexia.user.entity.MealType;
-import com.vallexia.user.entity.Role;
-import com.vallexia.user.entity.SubscriptionStatus;
+import com.vallexia.user.entity.enums.MealType;
+import com.vallexia.user.entity.enums.Role;
+import com.vallexia.user.entity.enums.SubscriptionStatus;
 import com.vallexia.user.entity.User;
 
 import java.time.LocalDateTime;
@@ -175,7 +175,7 @@ public class UserTestFixtures {
     dto.setEmail("updated@example.com");
     dto.setEnabled(true);
     dto.setHouseholdSize(4);
-    dto.setMealTypes(new HashSet<>(Set.of(MealType.BREAKFAST, MealType.LUNCH, MealType.DINNER, MealType.SNACK)));
+    dto.setMealTypes(Set.of(MealType.BREAKFAST, MealType.LUNCH, MealType.DINNER, MealType.SNACK));
     dto.setSubscriptionStatus("PREMIUM");
     dto.setSubscriptionExpiresAt(LocalDateTime.now().plusMonths(1));
     return dto;
@@ -202,7 +202,7 @@ public class UserTestFixtures {
     dto.setEmail("a@b.co"); // Minimum valid email
     dto.setEnabled(true);
     dto.setHouseholdSize(1); // Minimum value
-    dto.setMealTypes(new HashSet<>(Set.of(MealType.BREAKFAST))); // Minimum - one meal type
+    dto.setMealTypes(Set.of(MealType.BREAKFAST)); // Minimum - one meal type
     dto.setSubscriptionStatus("FREE");
     return dto;
   }

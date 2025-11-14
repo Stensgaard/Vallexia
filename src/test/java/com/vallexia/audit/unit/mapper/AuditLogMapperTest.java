@@ -2,7 +2,7 @@ package com.vallexia.audit.unit.mapper;
 
 import com.vallexia.audit.dto.AuditLogDto;
 import com.vallexia.audit.entity.AuditLog;
-import com.vallexia.audit.entity.EventType;
+import com.vallexia.audit.entity.enums.EventType;
 import com.vallexia.audit.fixtures.AuditLogTestFixtures;
 import com.vallexia.audit.mapper.AuditLogMapper;
 import org.junit.jupiter.api.DisplayName;

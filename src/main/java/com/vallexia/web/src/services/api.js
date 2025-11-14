@@ -1,6 +1,5 @@
 import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
-import router from '@/router'
 
 // Create axios instance
 const api = axios.create({
@@ -10,6 +9,24 @@ const api = axios.create({
     'Content-Type': 'application/json'
   }
 })
+
+// Flag to track if refresh is in progress
+let isRefreshing = false
+// Queue to store failed requests during refresh
+let failedQueue = []
+
+// Process queued requests after successful refresh
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error)
+    } else {
+      prom.resolve(token)
+    }
+  })
+  
+  failedQueue = []
+}
 
 // Request interceptor to add auth token
 api.interceptors.request.use(
@@ -33,21 +50,59 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config
     
+    // Check if this is a 401 error and not already retried
     if (error.response?.status === 401 && !originalRequest._retry) {
+      // Check if this is the refresh request itself (using custom flag or URL check)
+      // If so, don't try to refresh - just clear tokens
+      const isRefreshRequest = originalRequest._skipAuthRefresh || 
+                               originalRequest.url?.includes('/auth/refresh') || 
+                               originalRequest.url?.includes('/v1/auth/refresh')
+      
+      if (isRefreshRequest) {
+        // Refresh token itself failed - clear auth data
+        // Router guard will handle navigation
+        const authStore = useAuthStore()
+        authStore.clearAuthData()
+        return Promise.reject(error)
+      }
+      
+      // If refresh is already in progress, queue this request
+      if (isRefreshing) {
+        originalRequest._retry = true
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject })
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`
+            return api(originalRequest)
+          })
+          .catch((err) => {
+            return Promise.reject(err)
+          })
+      }
+      
       originalRequest._retry = true
+      isRefreshing = true
       
       try {
         const authStore = useAuthStore()
-        await authStore.refreshAccessToken()
+        const newToken = await authStore.refreshAccessToken()
+        
+        // Process queued requests with new token
+        processQueue(null, newToken)
+        isRefreshing = false
         
         // Retry the original request
-        originalRequest.headers.Authorization = `Bearer ${authStore.accessToken}`
+        originalRequest.headers.Authorization = `Bearer ${newToken}`
         return api(originalRequest)
       } catch (refreshError) {
-        // Refresh failed, redirect to login
+        // Refresh failed - clear auth data
+        // Router guard will handle navigation
+        isRefreshing = false
+        processQueue(refreshError, null)
+        
         const authStore = useAuthStore()
         authStore.clearAuthData()
-        router.push('/login')
         return Promise.reject(refreshError)
       }
     }

@@ -1,0 +1,25 @@
+meta {
+  name: Delete Recipe - Not Found
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/recipes/999999
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminAccessToken}}
+}
+
+tests {
+  test("Status is 404 Not Found", function() {
+    expect(res.status).to.equal(404);
+  });
+  
+  test("Error code is REC_001", function() {
+    expect(res.body.code).to.equal("REC_001");
+  });
+}

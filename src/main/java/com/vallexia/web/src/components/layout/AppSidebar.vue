@@ -6,10 +6,8 @@
 
   <!-- Sidebar -->
   <div :class="[
-    'w-64 bg-white shadow-lg lg:shadow-none',
-    'fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out',
-    'lg:relative lg:z-auto lg:transform-none lg:transition-none',
-    isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+    'fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0',
+    isOpen ? 'translate-x-0' : '-translate-x-full'
   ]">
     <div class="flex flex-col h-full">
       <!-- Logo -->

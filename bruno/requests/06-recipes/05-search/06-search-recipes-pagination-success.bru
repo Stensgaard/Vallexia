@@ -1,0 +1,35 @@
+meta {
+  name: Search Recipes - Pagination Success
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/v1/recipes/search?query=recipe&page=1&size=5
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("Status is 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response has correct page size", function() {
+    expect(res.body.pagination.size).to.equal(5);
+  });
+
+  test("Response has correct page number", function() {
+    expect(res.body.pagination.page).to.equal(1);
+  });
+
+  test("Recipes array size matches page size", function() {
+    expect(res.body).to.have.property("recipes");
+    expect(res.body.recipes.length).to.be.at.most(5);
+  });
+}
+

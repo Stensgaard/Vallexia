@@ -1,6 +1,6 @@
 package com.vallexia.user.unit.service;
 
-import com.vallexia.audit.entity.EventType;
+import com.vallexia.audit.entity.enums.EventType;
 import com.vallexia.audit.service.AuditService;
 import com.vallexia.exception.ValidationException;
 import com.vallexia.user.dto.UserProfileDto;

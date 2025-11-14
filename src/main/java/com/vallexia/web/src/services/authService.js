@@ -34,7 +34,10 @@ export const authService = {
    * @returns {Promise<Object>} New JWT response
    */
   async refreshToken(refreshToken) {
-    const response = await api.post('/v1/auth/refresh', { refreshToken })
+    // Mark this request to skip refresh retry in interceptor
+    const response = await api.post('/v1/auth/refresh', { refreshToken }, {
+      _skipAuthRefresh: true
+    })
     return response.data
   },
 

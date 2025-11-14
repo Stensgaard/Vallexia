@@ -1,0 +1,39 @@
+meta {
+  name: Update Recipe - Invalid Servings
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{baseUrl}}/api/v1/recipes/{{createdRecipeId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminAccessToken}}
+}
+
+body:json {
+  {
+    "servings": 0
+  }
+}
+
+tests {
+  test("Status is 400 Bad Request", function() {
+    expect(res.status).to.equal(400);
+  });
+
+  test("Error code is VAL_001", function() {
+    expect(res.body.code).to.equal("VAL_001");
+  });
+
+  test("Servings validation error in details", function() {
+    expect(res.body.details).to.have.property("servings");
+    expect(res.body.details.servings).to.satisfy(msg => 
+      msg.includes("at least 1") || msg.includes("minimum")
+    );
+  });
+}
+

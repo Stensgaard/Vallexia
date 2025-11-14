@@ -94,22 +94,6 @@ export const CUISINE_TYPES_LABELS = {
   [CUISINE_TYPES.VIETNAMESE]: 'Vietnamese'
 }
 
-// Serving Size Preferences
-export const SERVING_SIZE_PREFERENCES = {
-  SMALL: 'SMALL',
-  MEDIUM: 'MEDIUM',
-  LARGE: 'LARGE',
-  EXTRA_LARGE: 'EXTRA_LARGE'
-}
-
-// Serving Size Labels
-export const SERVING_SIZE_PREFERENCES_LABELS = {
-  [SERVING_SIZE_PREFERENCES.SMALL]: 'Small',
-  [SERVING_SIZE_PREFERENCES.MEDIUM]: 'Medium',
-  [SERVING_SIZE_PREFERENCES.LARGE]: 'Large',
-  [SERVING_SIZE_PREFERENCES.EXTRA_LARGE]: 'Extra Large'
-}
-
 // Goal Types
 export const GOAL_TYPES = {
   WEIGHT_LOSS: 'WEIGHT_LOSS',

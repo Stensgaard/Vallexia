@@ -30,7 +30,6 @@
             </svg>
             {{ getLabel(value) }}
           </div>
-          <div v-if="getSeverity(value)" class="text-red-600 font-medium">{{ getSeverity(value) }}</div>
         </div>
       </label>
     </div>
@@ -104,23 +103,7 @@ const getLabel = (value) => {
   return ALLERGIES_LABELS[value] || value
 }
 
-const getSeverity = (value) => {
-  const severities = {
-    [ALLERGIES.PEANUTS]: 'Severe',
-    [ALLERGIES.TREE_NUTS]: 'Severe',
-    [ALLERGIES.MILK]: 'Moderate',
-    [ALLERGIES.EGGS]: 'Moderate',
-    [ALLERGIES.WHEAT]: 'Moderate',
-    [ALLERGIES.SOY]: 'Mild',
-    [ALLERGIES.FISH]: 'Severe',
-    [ALLERGIES.SHELLFISH]: 'Severe',
-    [ALLERGIES.SESAME]: 'Moderate'
-  }
-  return severities[value] || ''
-}
-
 const handleChange = () => {
   emit('update:modelValue', [...selectedValues.value])
 }
 </script>
-

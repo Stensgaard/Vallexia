@@ -125,36 +125,6 @@
             :error="dietaryErrors.preferredCuisines"
           />
           
-          <TagInput
-            id="disliked-ingredients"
-            v-model="dietaryForm.dislikedIngredients"
-            label="Disliked Ingredients"
-            placeholder="Type ingredient and press Enter..."
-            :error="dietaryErrors.dislikedIngredients"
-            hint="Add ingredients you don't like or want to avoid"
-          />
-          
-          <div class="space-y-3">
-            <label class="block text-sm font-medium text-gray-700">Serving Size Preference</label>
-            <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <label
-                v-for="(value, key) in servingSizeOptions"
-                :key="key"
-                class="relative flex flex-col items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50"
-                :class="{ 'bg-blue-50 border-blue-300': dietaryForm.servingSizePreference === value }"
-              >
-                <input
-                  :id="`serving-size-${key}`"
-                  v-model="dietaryForm.servingSizePreference"
-                  :value="value"
-                  type="radio"
-                  class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                />
-                <div class="mt-2 text-sm font-medium text-gray-900">{{ getServingSizeLabel(value) }}</div>
-              </label>
-            </div>
-          </div>
-          
           <div class="flex justify-end">
             <button
               @click="updateDietaryPreferences"
@@ -183,7 +153,7 @@
               :error="nutritionErrors.dailyCalories"
             />
             
-            <div class="space-y-3">
+            <div class="space-y-1">
               <label class="block text-sm font-medium text-gray-700">Goal Type</label>
               <select
                 v-model="nutritionForm.goalType"
@@ -284,7 +254,7 @@
     </div>
     
     <!-- Toast Notifications -->
-    <div class="fixed bottom-4 right-4 z-50">
+    <div class="fixed top-4 right-4 z-50">
       <Toast
         :show="toast.show"
         :type="toast.type"
@@ -311,14 +281,13 @@ import CuisinePreferencesSelector from '@/components/profile/CuisinePreferencesS
 import NutritionGoalInput from '@/components/profile/NutritionGoalInput.vue'
 import Toast from '@/components/common/Toast.vue'
 import { 
-  SERVING_SIZE_PREFERENCES, 
-  SERVING_SIZE_PREFERENCES_LABELS,
   GOAL_TYPES,
   GOAL_TYPES_LABELS,
   SUBSCRIPTION_STATUS_LABELS,
   MEAL_TYPES,
   MEAL_TYPES_LABELS
 } from '@/utils/constants'
+import { getErrorMessage } from '@/utils/errorUtils'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -361,17 +330,13 @@ const personalErrors = reactive({
 const dietaryForm = reactive({
   restrictions: [],
   allergies: [],
-  preferredCuisines: [],
-  dislikedIngredients: [],
-  servingSizePreference: 'MEDIUM'
+  preferredCuisines: []
 })
 
 const dietaryErrors = reactive({
   restrictions: '',
   allergies: '',
-  preferredCuisines: '',
-  dislikedIngredients: '',
-  servingSizePreference: ''
+  preferredCuisines: ''
 })
 
 // Nutritional Goals Form
@@ -398,7 +363,6 @@ const nutritionErrors = reactive({
 })
 
 // Options
-const servingSizeOptions = SERVING_SIZE_PREFERENCES
 const goalTypeOptions = GOAL_TYPES
 
 // Computed properties
@@ -433,10 +397,6 @@ const tabClasses = (tabId) => {
   return `${baseClasses} ${activeTab.value === tabId ? activeClasses : inactiveClasses}`
 }
 
-const getServingSizeLabel = (value) => {
-  return SERVING_SIZE_PREFERENCES_LABELS[value] || value
-}
-
 const getGoalTypeLabel = (value) => {
   return GOAL_TYPES_LABELS[value] || value
 }
@@ -460,8 +420,8 @@ const updatePersonalInfo = async () => {
     await userService.updateProfile(personalForm)
     showToast('success', 'Success', 'Personal information updated successfully')
   } catch (error) {
-    console.error('Profile update error:', error)
-    showToast('error', 'Error', 'Failed to update personal information')
+    const errorMessage = getErrorMessage(error)
+    showToast('error', 'Error', errorMessage)
   } finally {
     isPersonalLoading.value = false
   }
@@ -474,8 +434,8 @@ const updateDietaryPreferences = async () => {
     await userService.updateDietaryPreferences(dietaryForm)
     showToast('success', 'Success', 'Dietary preferences updated successfully')
   } catch (error) {
-    console.error('Dietary preferences update error:', error)
-    showToast('error', 'Error', 'Failed to update dietary preferences')
+    const errorMessage = getErrorMessage(error)
+    showToast('error', 'Error', errorMessage)
   } finally {
     isDietaryLoading.value = false
   }
@@ -488,8 +448,8 @@ const updateNutritionalGoals = async () => {
     await userService.updateNutritionalGoals(nutritionForm)
     showToast('success', 'Success', 'Nutritional goals updated successfully')
   } catch (error) {
-    console.error('Nutritional goals update error:', error)
-    showToast('error', 'Error', 'Failed to update nutritional goals')
+    const errorMessage = getErrorMessage(error)
+    showToast('error', 'Error', errorMessage)
   } finally {
     isNutritionLoading.value = false
   }
@@ -510,8 +470,6 @@ onMounted(async () => {
     dietaryForm.restrictions = dietaryPreferences.restrictions || []
     dietaryForm.allergies = dietaryPreferences.allergies || []
     dietaryForm.preferredCuisines = dietaryPreferences.preferredCuisines || []
-    dietaryForm.dislikedIngredients = dietaryPreferences.dislikedIngredients || []
-    dietaryForm.servingSizePreference = dietaryPreferences.servingSizePreference || 'MEDIUM'
     
     // Load nutritional goals
     const nutritionalGoals = await userService.getNutritionalGoals()
@@ -524,8 +482,8 @@ onMounted(async () => {
     nutritionForm.dailySugar = nutritionalGoals.dailySugar || 50
     nutritionForm.goalType = nutritionalGoals.goalType || 'MAINTENANCE'
   } catch (error) {
-    console.error('Error loading profile data:', error)
-    showToast('error', 'Error', 'Failed to load profile data')
+    const errorMessage = getErrorMessage(error)
+    showToast('error', 'Error', errorMessage)
   }
 })
 </script>

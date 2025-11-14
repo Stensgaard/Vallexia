@@ -11,6 +11,10 @@ import lombok.AllArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.vallexia.user.entity.enums.MealType;
+import com.vallexia.user.entity.enums.Role;
+import com.vallexia.user.entity.enums.SubscriptionStatus;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;

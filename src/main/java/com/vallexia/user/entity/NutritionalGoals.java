@@ -1,5 +1,6 @@
 package com.vallexia.user.entity;
 
+import com.vallexia.user.entity.enums.GoalType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;

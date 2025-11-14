@@ -1,0 +1,42 @@
+meta {
+  name: Update Recipe - Partial Success
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/api/v1/recipes/{{createdRecipeId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminAccessToken}}
+}
+
+body:json {
+  {
+    "name": "Partially Updated Recipe",
+    "servings": 8
+  }
+}
+
+tests {
+  test("Status is 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response contains updated name", function() {
+    expect(res.body.name).to.equal("Partially Updated Recipe");
+  });
+
+  test("Response contains updated servings", function() {
+    expect(res.body.servings).to.equal(8);
+  });
+
+  test("Other fields remain unchanged", function() {
+    expect(res.body).to.have.property("instructions");
+    expect(res.body).to.have.property("category");
+  });
+}
+

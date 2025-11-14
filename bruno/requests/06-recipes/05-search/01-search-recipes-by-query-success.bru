@@ -1,0 +1,33 @@
+meta {
+  name: Search Recipes - By Query Success
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/recipes/search?query=pasta&page=0&size=20
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("Status is 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response contains recipes", function() {
+    expect(res.body).to.have.property("recipes");
+    expect(res.body.recipes).to.be.an("array");
+  });
+
+  test("Response contains pagination info", function() {
+    expect(res.body).to.have.property("pagination");
+    expect(res.body.pagination).to.have.property("totalElements");
+    expect(res.body.pagination).to.have.property("totalPages");
+  });
+}
+
