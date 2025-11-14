@@ -32,39 +32,35 @@
       <!-- Recipe detail -->
       <RecipeDetail
         :recipe="recipeStore.currentRecipe"
+        :target-servings="targetServings"
+        :scaling="scaling"
         @favorite-toggled="handleFavoriteToggle"
+        @scale-recipe="handleScale"
+        @update-target-servings="handleUpdateTargetServings"
       />
-
-      <!-- Scaling section -->
-      <div v-if="recipeStore.currentRecipe.servings" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="text-lg font-semibold mb-4">Scale Recipe</h3>
-        <div class="flex items-center gap-4">
-          <label class="text-sm font-medium text-gray-700">Servings:</label>
-          <input
-            v-model.number="targetServings"
-            type="number"
-            min="1"
-            class="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            @click="handleScale"
-            :disabled="scaling || targetServings === recipeStore.currentRecipe.servings"
-            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Scale
-          </button>
-        </div>
-      </div>
     </div>
+  </div>
+
+  <!-- Toast Notifications -->
+  <div class="fixed top-4 right-4 z-50">
+    <Toast
+      :show="toast.show"
+      :type="toast.type"
+      :title="toast.title"
+      :message="toast.message"
+      @dismiss="toast.show = false"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useRecipeStore } from '@/stores/recipe'
 import { useAuthStore } from '@/stores/auth'
 import RecipeDetail from '@/components/Recipe/RecipeDetail.vue'
+import Toast from '@/components/common/Toast.vue'
+import { getErrorMessage } from '@/utils/errorUtils'
 
 const route = useRoute()
 const router = useRouter()
@@ -74,6 +70,20 @@ const authStore = useAuthStore()
 const recipeId = computed(() => Number(route.params.id))
 const targetServings = ref(null)
 const scaling = ref(false)
+
+const toast = reactive({
+  show: false,
+  type: 'success',
+  title: '',
+  message: ''
+})
+
+const showToast = (type, title, message) => {
+  toast.type = type
+  toast.title = title
+  toast.message = message
+  toast.show = true
+}
 
 // Edit/Delete functionality removed - only admins can manage recipes
 
@@ -89,16 +99,22 @@ const handleFavoriteToggle = async (recipeId) => {
   await recipeStore.toggleFavorite(recipeId)
 }
 
-const handleScale = async () => {
-  if (!targetServings.value || targetServings.value < 1) return
+const handleUpdateTargetServings = (value) => {
+  targetServings.value = value
+}
+
+const handleScale = async (newServings) => {
+  if (!newServings || newServings < 1) return
   
   try {
     scaling.value = true
-    const scaledRecipe = await recipeStore.scaleRecipe(recipeId.value, targetServings.value)
+    const scaledRecipe = await recipeStore.scaleRecipe(recipeId.value, newServings)
     // Update current recipe with scaled data
     recipeStore.currentRecipe = scaledRecipe
+    showToast('success', 'Success', 'Recipe scaled successfully')
   } catch (error) {
-    console.error('Failed to scale recipe:', error)
+    const errorMessage = getErrorMessage(error)
+    showToast('error', 'Error', errorMessage)
   } finally {
     scaling.value = false
   }

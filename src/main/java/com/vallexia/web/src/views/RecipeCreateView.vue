@@ -18,27 +18,53 @@
       @submit="handleSubmit"
       @cancel="router.back()"
     />
+  </div>
 
-    <div v-if="recipeStore.error" class="bg-red-50 border border-red-200 rounded-lg p-4">
-      <p class="text-red-800">{{ recipeStore.error }}</p>
-    </div>
+  <!-- Toast Notifications -->
+  <div class="fixed top-4 right-4 z-50">
+    <Toast
+      :show="toast.show"
+      :type="toast.type"
+      :title="toast.title"
+      :message="toast.message"
+      @dismiss="toast.show = false"
+    />
   </div>
 </template>
 
 <script setup>
+import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRecipeStore } from '@/stores/recipe'
 import RecipeForm from '@/components/Recipe/RecipeForm.vue'
+import Toast from '@/components/common/Toast.vue'
+import { getErrorMessage } from '@/utils/errorUtils'
 
 const router = useRouter()
 const recipeStore = useRecipeStore()
 
+const toast = reactive({
+  show: false,
+  type: 'success',
+  title: '',
+  message: ''
+})
+
+const showToast = (type, title, message) => {
+  toast.type = type
+  toast.title = title
+  toast.message = message
+  toast.show = true
+}
+
 const handleSubmit = async (formData) => {
   try {
     await recipeStore.createRecipe(formData)
+    showToast('success', 'Success', 'Recipe created successfully')
     router.push(`/recipes/${recipeStore.currentRecipe.id}`)
   } catch (error) {
-    console.error('Failed to create recipe:', error)
+    const errorMessage = getErrorMessage(error)
+    showToast('error', 'Error', errorMessage)
   }
 }
 </script>

@@ -10,6 +10,7 @@
     <!-- Search and filters -->
     <RecipeSearch
       :criteria="recipeStore.searchCriteria"
+      :total-results="recipeStore.pagination.totalElements"
       @search="handleSearch"
       @criteria-changed="handleCriteriaChanged"
     />
@@ -49,7 +50,8 @@ const router = useRouter()
 const recipeStore = useRecipeStore()
 
 onMounted(async () => {
-  await recipeStore.fetchRecipes()
+  // Perform initial search with default criteria (all categories, cuisines, and difficulty levels)
+  await recipeStore.searchRecipes(recipeStore.searchCriteria, 0, 20)
 })
 
 const handleSearch = async (criteria) => {
@@ -70,10 +72,7 @@ const handleFavoriteToggle = async (recipeId) => {
 }
 
 const handlePageChange = async (page) => {
-  if (Object.keys(recipeStore.searchCriteria).length > 0) {
-    await recipeStore.searchRecipes(recipeStore.searchCriteria, page, 20)
-  } else {
-    await recipeStore.fetchRecipes(page, 20)
-  }
+  // Always use searchRecipes since we default to "all" criteria
+  await recipeStore.searchRecipes(recipeStore.searchCriteria, page, 20)
 }
 </script>

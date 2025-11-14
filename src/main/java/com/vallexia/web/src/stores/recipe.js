@@ -1,13 +1,18 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { recipeService } from '@/services/recipeService'
+import { getErrorMessage } from '@/utils/errorUtils'
 
 export const useRecipeStore = defineStore('recipe', () => {
   // State
   const recipes = ref([])
   const currentRecipe = ref(null)
   const favorites = ref([])
-  const searchCriteria = ref({})
+  const searchCriteria = ref({
+    category: '',
+    cuisineType: '',
+    difficultyLevel: ''
+  })
   const isLoading = ref(false)
   const error = ref(null)
   const pagination = ref({
@@ -48,7 +53,7 @@ export const useRecipeStore = defineStore('recipe', () => {
 
       return response
     } catch (err) {
-      error.value = err.response?.data?.message || 'Failed to fetch recipes'
+      error.value = getErrorMessage(err)
       throw err
     } finally {
       isLoading.value = false
@@ -73,7 +78,7 @@ export const useRecipeStore = defineStore('recipe', () => {
 
       return recipe
     } catch (err) {
-      error.value = err.response?.data?.message || 'Failed to fetch recipe'
+      error.value = getErrorMessage(err)
       throw err
     } finally {
       isLoading.value = false
@@ -97,7 +102,7 @@ export const useRecipeStore = defineStore('recipe', () => {
 
       return recipe
     } catch (err) {
-      error.value = err.message || err.response?.data?.message || 'Failed to create recipe. Admin role required.'
+      error.value = getErrorMessage(err)
       throw err
     } finally {
       isLoading.value = false
@@ -128,7 +133,7 @@ export const useRecipeStore = defineStore('recipe', () => {
 
       return recipe
     } catch (err) {
-      error.value = err.message || err.response?.data?.message || 'Failed to update recipe. Admin role required.'
+      error.value = getErrorMessage(err)
       throw err
     } finally {
       isLoading.value = false
@@ -157,7 +162,7 @@ export const useRecipeStore = defineStore('recipe', () => {
       // Remove from favorites if present
       favorites.value = favorites.value.filter(f => f.id !== id)
     } catch (err) {
-      error.value = err.message || err.response?.data?.message || 'Failed to delete recipe. Admin role required.'
+      error.value = getErrorMessage(err)
       throw err
     } finally {
       isLoading.value = false
@@ -172,7 +177,7 @@ export const useRecipeStore = defineStore('recipe', () => {
 
       const response = await recipeService.searchRecipes(criteria, page, size)
       
-      recipes.value = response.recipes?.content || []
+      recipes.value = response.recipes || []
       pagination.value = {
         page: response.pagination?.page || page,
         size: response.pagination?.size || size,
@@ -182,7 +187,7 @@ export const useRecipeStore = defineStore('recipe', () => {
 
       return response
     } catch (err) {
-      error.value = err.response?.data?.message || 'Search failed'
+      error.value = getErrorMessage(err)
       throw err
     } finally {
       isLoading.value = false
@@ -197,7 +202,7 @@ export const useRecipeStore = defineStore('recipe', () => {
       const scaledRecipe = await recipeService.scaleRecipe(id, servings)
       return scaledRecipe
     } catch (err) {
-      error.value = err.response?.data?.message || 'Failed to scale recipe'
+      error.value = getErrorMessage(err)
       throw err
     } finally {
       isLoading.value = false
@@ -237,7 +242,7 @@ export const useRecipeStore = defineStore('recipe', () => {
         }
       }
     } catch (err) {
-      error.value = err.response?.data?.message || 'Failed to update favorite'
+      error.value = getErrorMessage(err)
       throw err
     } finally {
       isLoading.value = false
@@ -261,7 +266,7 @@ export const useRecipeStore = defineStore('recipe', () => {
 
       return response
     } catch (err) {
-      error.value = err.response?.data?.message || 'Failed to fetch favorites'
+      error.value = getErrorMessage(err)
       throw err
     } finally {
       isLoading.value = false
@@ -279,7 +284,11 @@ export const useRecipeStore = defineStore('recipe', () => {
   const clearRecipes = () => {
     recipes.value = []
     currentRecipe.value = null
-    searchCriteria.value = {}
+    searchCriteria.value = {
+      category: '',
+      cuisineType: '',
+      difficultyLevel: ''
+    }
   }
 
   return {
