@@ -157,14 +157,8 @@ export const useAuthStore = defineStore('auth', () => {
       }
     } catch (err) {
       // Token is invalid (401) or user doesn't exist (404)
-      // Clear auth data and redirect to login
+      // Clear auth data - router guard will handle navigation
       clearAuthData()
-      
-      // Only redirect if we're not already on a guest route
-      const router = (await import('@/router')).default
-      if (router.currentRoute.value.meta?.requiresAuth) {
-        router.push('/')
-      }
     }
   }
 

@@ -1,6 +1,5 @@
 import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
-import router from '@/router'
 
 // Create axios instance
 const api = axios.create({
@@ -54,16 +53,16 @@ api.interceptors.response.use(
     // Check if this is a 401 error and not already retried
     if (error.response?.status === 401 && !originalRequest._retry) {
       // Check if this is the refresh request itself (using custom flag or URL check)
-      // If so, don't try to refresh - just clear tokens and redirect
+      // If so, don't try to refresh - just clear tokens
       const isRefreshRequest = originalRequest._skipAuthRefresh || 
                                originalRequest.url?.includes('/auth/refresh') || 
                                originalRequest.url?.includes('/v1/auth/refresh')
       
       if (isRefreshRequest) {
-        // Refresh token itself failed - clear auth and redirect
+        // Refresh token itself failed - clear auth data
+        // Router guard will handle navigation
         const authStore = useAuthStore()
         authStore.clearAuthData()
-        router.push('/login')
         return Promise.reject(error)
       }
       
@@ -97,13 +96,13 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newToken}`
         return api(originalRequest)
       } catch (refreshError) {
-        // Refresh failed - clear auth and redirect
+        // Refresh failed - clear auth data
+        // Router guard will handle navigation
         isRefreshing = false
         processQueue(refreshError, null)
         
         const authStore = useAuthStore()
         authStore.clearAuthData()
-        router.push('/login')
         return Promise.reject(refreshError)
       }
     }

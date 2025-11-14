@@ -88,13 +88,24 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
   
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next('/login')
-  } else if (to.meta.requiresGuest && authStore.isAuthenticated) {
-    next('/home')
-  } else {
-    next()
+  // Check auth state directly from raw values to avoid computed property timing issues
+  const hasAuth = !!(authStore.accessToken && authStore.user)
+  
+  // If trying to access a protected route without auth, redirect to homepage
+  // This handles token expiration scenarios - user goes to homepage instead of being forced to login
+  if (to.meta.requiresAuth && !hasAuth) {
+    next('/')
+    return
   }
+  
+  // If authenticated user tries to access guest route, redirect to home
+  if (to.meta.requiresGuest && hasAuth) {
+    next('/home')
+    return
+  }
+  
+  // Allow navigation
+  next()
 })
 
 export default router
