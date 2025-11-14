@@ -533,35 +533,6 @@ class RecipeSearchServiceTest {
     verify(recipeRepository).findAll(any(Specification.class), any(Pageable.class));
   }
   
-  // ==================== Ingredient Search Tests ====================
-  
-  @Test
-  @DisplayName("Should search recipes by ingredient names")
-  void shouldSearchRecipesByIngredientNames() {
-    // Given
-    RecipeSearchCriteria criteria = new RecipeSearchCriteria();
-    criteria.setIngredients(List.of("tomato", "basil"));
-    Pageable pageable = PageRequest.of(0, 20);
-    
-    Recipe recipe = RecipeTestFixtures.createRecipe();
-    Page<Recipe> recipePage = new PageImpl<>(List.of(recipe), pageable, 1);
-    RecipeDto recipeDto = new RecipeDto();
-    
-    when(recipeRepository.findAll(any(Specification.class), any(Pageable.class)))
-        .thenReturn(recipePage);
-    when(favoriteRecipeService.isFavorite(any(Long.class), any(Long.class)))
-        .thenReturn(false);
-    when(recipeMapper.toRecipeDto(any(Recipe.class), eq(false)))
-        .thenReturn(recipeDto);
-    
-    // When
-    RecipeSearchResponseDto result = recipeSearchService.searchRecipes(criteria, pageable, 1L, null, null);
-    
-    // Then
-    assertThat(result).isNotNull();
-    verify(recipeRepository).findAll(any(Specification.class), any(Pageable.class));
-  }
-  
   // ==================== Sorting Tests ====================
   
   @Test
@@ -664,7 +635,6 @@ class RecipeSearchServiceTest {
     criteria.setDifficultyLevel(DifficultyLevel.MEDIUM);
     criteria.setDietaryRestrictions(List.of(DietaryRestriction.VEGETARIAN));
     criteria.setRestrictionMatchMode(RestrictionMatchMode.OR);
-    criteria.setIngredients(List.of("tomato"));
     criteria.setMinCalories(BigDecimal.valueOf(200.0));
     criteria.setMaxCalories(BigDecimal.valueOf(500.0));
     criteria.setExcludeAllergens(true);

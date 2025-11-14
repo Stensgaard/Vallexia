@@ -57,8 +57,6 @@ public class RecipeSearchCriteria {
     
     private Integer maxServings;
     
-    private List<String> ingredients = new ArrayList<>(); // Search by ingredient names
-    
     private RestrictionMatchMode restrictionMatchMode = RestrictionMatchMode.OR;
     
     private Boolean excludeAllergens = true; // Auto-hide recipes with user's allergies

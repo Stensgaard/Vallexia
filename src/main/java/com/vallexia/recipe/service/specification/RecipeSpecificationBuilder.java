@@ -109,11 +109,6 @@ public final class RecipeSpecificationBuilder {
             spec = spec.and(caloriesFilter(criteria.getMinCalories(), criteria.getMaxCalories()));
         }
         
-        // Ingredient search
-        if (criteria.getIngredients() != null && !criteria.getIngredients().isEmpty()) {
-            spec = spec.and(ingredientSearch(criteria.getIngredients()));
-        }
-        
         // Dietary restrictions filter
         if (criteria.getDietaryRestrictions() != null && !criteria.getDietaryRestrictions().isEmpty()) {
             spec = spec.and(DietaryRestrictionFilter.filter(
@@ -170,29 +165,6 @@ public final class RecipeSpecificationBuilder {
             }
             
             return cb.and(predicates.toArray(new Predicate[0]));
-        };
-    }
-    
-    /**
-     * Ingredient search specification.
-     * 
-     * @param ingredientNames list of ingredient names to search for
-     * @return Specification for ingredient search
-     */
-    private static Specification<Recipe> ingredientSearch(List<String> ingredientNames) {
-        return (root, queryBuilder, cb) -> {
-            Join<Recipe, com.vallexia.recipe.entity.RecipeIngredient> recipeIngredientJoin = 
-                    root.join("ingredients", JoinType.INNER);
-            Join<com.vallexia.recipe.entity.RecipeIngredient, com.vallexia.recipe.entity.Ingredient> ingredientJoin = 
-                    recipeIngredientJoin.join("ingredient", JoinType.INNER);
-            
-            List<Predicate> predicates = new ArrayList<>();
-            for (String ingredientName : ingredientNames) {
-                String searchPattern = "%" + ingredientName.toLowerCase() + "%";
-                predicates.add(cb.like(cb.lower(ingredientJoin.get("name")), searchPattern));
-            }
-            
-            return cb.or(predicates.toArray(new Predicate[0]));
         };
     }
     
