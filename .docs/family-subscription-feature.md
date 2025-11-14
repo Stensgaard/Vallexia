@@ -278,4 +278,3 @@ public boolean canAccessFamilyFeatures(Long userId) {
 - `src/main/java/com/vallexia/user/entity/enums/SubscriptionStatus.java` - Subscription enum
 - `src/main/java/com/vallexia/web/src/views/NutritionView.vue` - Nutrition tracking view
 - `src/main/java/com/vallexia/web/src/utils/subscriptionUtils.js` - Subscription utilities
-

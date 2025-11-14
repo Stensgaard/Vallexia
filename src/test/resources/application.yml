@@ -38,4 +38,3 @@ logging:
     '[com.vallexia]': INFO
     '[org.springframework]': WARN
     root: WARN
-
