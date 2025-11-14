@@ -1,4 +1,5 @@
 # Test profile configuration
+# TODO should maybe be moved to resources/test/application.yml?
 spring:
   config:
     activate:

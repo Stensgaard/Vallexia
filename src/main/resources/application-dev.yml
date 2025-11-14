@@ -27,7 +27,7 @@ spring:
     baseline-on-migrate: true
     locations: 
       - classpath:db/migration
-      - classpath:db/migration-dev
+      - classpath:db/migration-dev  # Dev-only migrations (e.g., V5 admin user)
     validate-on-migrate: true
     clean-disabled: false
   

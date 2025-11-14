@@ -63,5 +63,30 @@ public enum EventType {
   /**
    * Security policy violation detected.
    */
-  SECURITY_VIOLATION
+  SECURITY_VIOLATION,
+  
+  /**
+   * Recipe created.
+   */
+  RECIPE_CREATED,
+  
+  /**
+   * Recipe updated.
+   */
+  RECIPE_UPDATED,
+  
+  /**
+   * Recipe deleted.
+   */
+  RECIPE_DELETED,
+  
+  /**
+   * Recipe favorited.
+   */
+  RECIPE_FAVORITED,
+  
+  /**
+   * Recipe unfavorited.
+   */
+  RECIPE_UNFAVORITED
 }

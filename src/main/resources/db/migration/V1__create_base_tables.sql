@@ -189,6 +189,9 @@ COMMENT ON COLUMN nutritional_goals.daily_sodium IS 'Daily target sodium in mill
 COMMENT ON COLUMN nutritional_goals.daily_sugar IS 'Daily target sugar in grams';
 COMMENT ON COLUMN nutritional_goals.goal_type IS 'Nutritional goal type: MAINTENANCE, WEIGHT_LOSS, WEIGHT_GAIN, etc.';
 
+
+
+-- TODO: move this to v2? together with the other audit log indexes?
 -- ============================================================================
 -- AUDIT LOGS TABLE
 -- ============================================================================

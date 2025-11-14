@@ -32,5 +32,3 @@ COMMENT ON TABLE audit_logs IS 'Immutable audit log table for security event tra
 COMMENT ON COLUMN audit_logs.event_type IS 'Type of security event (enum)';
 COMMENT ON COLUMN audit_logs.ip_address IS 'Client IP address extracted from request with proxy validation';
 COMMENT ON COLUMN audit_logs.timestamp IS 'Timestamp when the event was logged (immutable)';
-
-

@@ -236,6 +236,33 @@ public class GlobalExceptionHandler {
   }
   
   /**
+   * Handle illegal argument exceptions (validation errors).
+   * Provides consistent error responses for invalid argument values.
+   * 
+   * @param ex IllegalArgumentException
+   * @param request WebRequest
+   * @return ErrorResponseDto
+   */
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<ErrorResponseDto> handleIllegalArgumentException(
+      IllegalArgumentException ex, WebRequest request) {
+    String requestId = errorResponseMapper.generateRequestId();
+    log.error("Illegal argument [requestId={}]: {}", requestId, ex.getMessage());
+    
+    Map<String, String> errors = new HashMap<>();
+    errors.put("argument", ex.getMessage());
+    
+    ErrorResponseDto error = errorResponseMapper.toValidationErrorResponse(
+        ErrorCode.VALIDATION_ERROR,
+        errors,
+        request,
+        requestId
+    );
+    
+    return ResponseEntity.badRequest().body(error);
+  }
+  
+  /**
    * Handle generic exceptions.
    * Provides security-safe error messages without leaking internal details.
    * 
