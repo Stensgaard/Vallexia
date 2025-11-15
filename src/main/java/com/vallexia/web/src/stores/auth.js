@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { authService } from '@/services/authService'
 import { getErrorMessage } from '@/utils/errorUtils'
+import { SUBSCRIPTION_STATUS } from '@/utils/constants'
 
 export const useAuthStore = defineStore('auth', () => {
   // State
@@ -10,6 +11,7 @@ export const useAuthStore = defineStore('auth', () => {
   const refreshToken = ref(localStorage.getItem('refreshToken'))
   const isLoading = ref(false)
   const error = ref(null)
+  const isInitialized = ref(false)
 
   // Getters
   const isAuthenticated = computed(() => {
@@ -127,39 +129,64 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null
   }
 
+  // Track initialization promise to avoid multiple concurrent calls
+  let initializationPromise = null
+
   const initializeAuth = async () => {
-    // Check if we have tokens in localStorage
-    const storedAccessToken = localStorage.getItem('accessToken')
-    const storedRefreshToken = localStorage.getItem('refreshToken')
-    
-    if (!storedAccessToken || !storedRefreshToken) {
-      // No tokens, ensure clean state
-      clearAuthData()
+    // If already initialized, return immediately
+    if (isInitialized.value) {
       return
     }
-    
-    // Set tokens in store
-    accessToken.value = storedAccessToken
-    refreshToken.value = storedRefreshToken
-    
-    // Validate token by fetching user profile from backend
-    try {
-      const { userService } = await import('@/services/userService')
-      const profile = await userService.getProfile()
-      
-      // Token is valid, update user state with actual profile data
-      user.value = {
-        id: profile.id,
-        username: profile.username,
-        email: profile.email,
-        subscriptionStatus: profile.subscriptionStatus || 'FREE',
-        householdSize: profile.householdSize || 1
-      }
-    } catch (err) {
-      // Token is invalid (401) or user doesn't exist (404)
-      // Clear auth data - router guard will handle navigation
-      clearAuthData()
+
+    // If initialization is in progress, wait for it
+    if (initializationPromise) {
+      return initializationPromise
     }
+
+    // Start initialization
+    initializationPromise = (async () => {
+      try {
+        // Check if we have tokens in localStorage
+        const storedAccessToken = localStorage.getItem('accessToken')
+        const storedRefreshToken = localStorage.getItem('refreshToken')
+        
+        if (!storedAccessToken || !storedRefreshToken) {
+          // No tokens, ensure clean state
+          clearAuthData()
+          isInitialized.value = true
+          return
+        }
+        
+        // Set tokens in store
+        accessToken.value = storedAccessToken
+        refreshToken.value = storedRefreshToken
+        
+        // Validate token by fetching user profile from backend
+        try {
+          const { userService } = await import('@/services/userService')
+          const profile = await userService.getProfile()
+          
+          // Token is valid, update user state with actual profile data
+          user.value = {
+            id: profile.id,
+            username: profile.username,
+            email: profile.email,
+            subscriptionStatus: profile.subscriptionStatus || SUBSCRIPTION_STATUS.FREE,
+            householdSize: profile.householdSize || 1
+          }
+        } catch (err) {
+          // Token is invalid (401) or user doesn't exist (404)
+          // Clear auth data - router guard will handle navigation
+          clearAuthData()
+        }
+      } finally {
+        // Mark as initialized regardless of success or failure
+        isInitialized.value = true
+        initializationPromise = null
+      }
+    })()
+
+    return initializationPromise
   }
 
   return {
@@ -169,6 +196,7 @@ export const useAuthStore = defineStore('auth', () => {
     refreshToken,
     isLoading,
     error,
+    isInitialized,
     
     // Getters
     isAuthenticated,
