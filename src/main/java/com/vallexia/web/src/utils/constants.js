@@ -1,160 +1,253 @@
 /**
- * Constants matching backend enums and configurations.
+ * Constants configurations.
  * 
  * @author Vallexia Team
  * @version 1.0
  * @since 2024-01-01
  */
 
-// Dietary Restrictions
-export const DIETARY_RESTRICTIONS = {
-  VEGETARIAN: 'VEGETARIAN',
-  VEGAN: 'VEGAN',
-  GLUTEN_FREE: 'GLUTEN_FREE',
-  DAIRY_FREE: 'DAIRY_FREE',
-  NUT_FREE: 'NUT_FREE',
-  KETO: 'KETO',
-  PALEO: 'PALEO',
-  LOW_CARB: 'LOW_CARB',
-  LOW_SODIUM: 'LOW_SODIUM',
-  HALAL: 'HALAL',
-  KOSHER: 'KOSHER'
+/**
+ * Helper function to create enum and labels from a single source of truth.
+ * The labels object keys become the enum values, and values become display labels.
+ * 
+ * @param {Object} labels - Object where keys are enum values and values are display labels
+ * @returns {Object} Object with 'enum' and 'labels' properties
+ */
+function createEnumWithLabels(labels) {
+  const enumObj = {}
+  Object.keys(labels).forEach(key => {
+    enumObj[key] = key
+  })
+  return {
+    enum: enumObj,
+    labels: labels
+  }
 }
 
 // Dietary Restrictions Labels
-export const DIETARY_RESTRICTIONS_LABELS = {
-  [DIETARY_RESTRICTIONS.VEGETARIAN]: 'Vegetarian',
-  [DIETARY_RESTRICTIONS.VEGAN]: 'Vegan',
-  [DIETARY_RESTRICTIONS.GLUTEN_FREE]: 'Gluten-Free',
-  [DIETARY_RESTRICTIONS.DAIRY_FREE]: 'Dairy-Free',
-  [DIETARY_RESTRICTIONS.NUT_FREE]: 'Nut-Free',
-  [DIETARY_RESTRICTIONS.KETO]: 'Keto',
-  [DIETARY_RESTRICTIONS.PALEO]: 'Paleo',
-  [DIETARY_RESTRICTIONS.LOW_CARB]: 'Low Carb',
-  [DIETARY_RESTRICTIONS.LOW_SODIUM]: 'Low Sodium',
-  [DIETARY_RESTRICTIONS.HALAL]: 'Halal',
-  [DIETARY_RESTRICTIONS.KOSHER]: 'Kosher'
+const DIETARY_RESTRICTIONS_LABELS_DATA = {
+  VEGETARIAN: 'Vegetarian',
+  VEGAN: 'Vegan',
+  GLUTEN_FREE: 'Gluten-Free',
+  DAIRY_FREE: 'Dairy-Free',
+  NUT_FREE: 'Nut-Free',
+  SOY_FREE: 'Soy-Free',
+  EGG_FREE: 'Egg-Free',
+  LOW_CARB: 'Low-Carb',
+  KETO: 'Keto',
+  PALEO: 'Paleo',
+  MEDITERRANEAN: 'Mediterranean',
+  LOW_SODIUM: 'Low-Sodium',
+  LOW_FAT: 'Low-Fat',
+  HIGH_PROTEIN: 'High-Protein',
+  HALAL: 'Halal',
+  KOSHER: 'Kosher'
 }
 
-// Allergies
-export const ALLERGIES = {
-  PEANUTS: 'PEANUTS',
-  TREE_NUTS: 'TREE_NUTS',
-  MILK: 'MILK',
-  EGGS: 'EGGS',
-  WHEAT: 'WHEAT',
-  SOY: 'SOY',
-  FISH: 'FISH',
-  SHELLFISH: 'SHELLFISH',
-  SESAME: 'SESAME'
+const dietaryRestrictionsData = createEnumWithLabels(DIETARY_RESTRICTIONS_LABELS_DATA)
+export const DIETARY_RESTRICTIONS = dietaryRestrictionsData.enum
+export const DIETARY_RESTRICTIONS_LABELS = dietaryRestrictionsData.labels
+
+// Allergies Labels
+const ALLERGIES_LABELS_DATA = {
+  PEANUTS: 'Peanuts',
+  TREE_NUTS: 'Tree Nuts',
+  MILK: 'Milk',
+  EGGS: 'Eggs',
+  FISH: 'Fish',
+  SHELLFISH: 'Shellfish',
+  SOY: 'Soy',
+  WHEAT: 'Wheat',
+  SESAME: 'Sesame',
+  MUSTARD: 'Mustard',
+  CELERY: 'Celery',
+  LUPIN: 'Lupin',
+  SULFITES: 'Sulfites'
 }
 
-// Allergy Labels
-export const ALLERGIES_LABELS = {
-  [ALLERGIES.PEANUTS]: 'Peanuts',
-  [ALLERGIES.TREE_NUTS]: 'Tree Nuts',
-  [ALLERGIES.MILK]: 'Milk',
-  [ALLERGIES.EGGS]: 'Eggs',
-  [ALLERGIES.WHEAT]: 'Wheat',
-  [ALLERGIES.SOY]: 'Soy',
-  [ALLERGIES.FISH]: 'Fish',
-  [ALLERGIES.SHELLFISH]: 'Shellfish',
-  [ALLERGIES.SESAME]: 'Sesame'
+const allergiesData = createEnumWithLabels(ALLERGIES_LABELS_DATA)
+export const ALLERGIES = allergiesData.enum
+export const ALLERGIES_LABELS = allergiesData.labels
+
+// Cuisine Types Labels
+const CUISINE_TYPES_LABELS_DATA = {
+  AMERICAN: 'American',
+  ITALIAN: 'Italian',
+  MEXICAN: 'Mexican',
+  CHINESE: 'Chinese',
+  JAPANESE: 'Japanese',
+  THAI: 'Thai',
+  INDIAN: 'Indian',
+  FRENCH: 'French',
+  MEDITERRANEAN: 'Mediterranean',
+  GREEK: 'Greek',
+  SPANISH: 'Spanish',
+  GERMAN: 'German',
+  BRITISH: 'British',
+  KOREAN: 'Korean',
+  VIETNAMESE: 'Vietnamese',
+  MIDDLE_EASTERN: 'Middle Eastern',
+  CARIBBEAN: 'Caribbean',
+  AFRICAN: 'African',
+  SOUTH_AMERICAN: 'South American'
 }
 
-// Cuisine Types
-export const CUISINE_TYPES = {
-  ITALIAN: 'ITALIAN',
-  MEXICAN: 'MEXICAN',
-  CHINESE: 'CHINESE',
-  JAPANESE: 'JAPANESE',
-  INDIAN: 'INDIAN',
-  THAI: 'THAI',
-  MEDITERRANEAN: 'MEDITERRANEAN',
-  AMERICAN: 'AMERICAN',
-  FRENCH: 'FRENCH',
-  GREEK: 'GREEK',
-  KOREAN: 'KOREAN',
-  VIETNAMESE: 'VIETNAMESE'
+const cuisineTypesData = createEnumWithLabels(CUISINE_TYPES_LABELS_DATA)
+export const CUISINE_TYPES = cuisineTypesData.enum
+export const CUISINE_TYPES_LABELS = cuisineTypesData.labels
+
+// Recipe Categories Labels
+const RECIPE_CATEGORIES_LABELS_DATA = {
+  BREAKFAST: 'Breakfast',
+  LUNCH: 'Lunch',
+  DINNER: 'Dinner',
+  SNACK: 'Snack',
+  DESSERT: 'Dessert',
+  APPETIZER: 'Appetizer',
+  BEVERAGE: 'Beverage'
 }
 
-// Cuisine Labels
-export const CUISINE_TYPES_LABELS = {
-  [CUISINE_TYPES.ITALIAN]: 'Italian',
-  [CUISINE_TYPES.MEXICAN]: 'Mexican',
-  [CUISINE_TYPES.CHINESE]: 'Chinese',
-  [CUISINE_TYPES.JAPANESE]: 'Japanese',
-  [CUISINE_TYPES.INDIAN]: 'Indian',
-  [CUISINE_TYPES.THAI]: 'Thai',
-  [CUISINE_TYPES.MEDITERRANEAN]: 'Mediterranean',
-  [CUISINE_TYPES.AMERICAN]: 'American',
-  [CUISINE_TYPES.FRENCH]: 'French',
-  [CUISINE_TYPES.GREEK]: 'Greek',
-  [CUISINE_TYPES.KOREAN]: 'Korean',
-  [CUISINE_TYPES.VIETNAMESE]: 'Vietnamese'
+const recipeCategoriesData = createEnumWithLabels(RECIPE_CATEGORIES_LABELS_DATA)
+export const RECIPE_CATEGORIES = recipeCategoriesData.enum
+export const RECIPE_CATEGORIES_LABELS = recipeCategoriesData.labels
+
+// Difficulty Levels Labels
+const DIFFICULTY_LEVELS_LABELS_DATA = {
+  EASY: 'Easy',
+  MEDIUM: 'Medium',
+  HARD: 'Hard',
+  EXPERT: 'Expert'
 }
 
-// Goal Types
-export const GOAL_TYPES = {
-  WEIGHT_LOSS: 'WEIGHT_LOSS',
-  MAINTENANCE: 'MAINTENANCE',
-  MUSCLE_GAIN: 'MUSCLE_GAIN',
-  HEALTH_IMPROVEMENT: 'HEALTH_IMPROVEMENT'
+const difficultyLevelsData = createEnumWithLabels(DIFFICULTY_LEVELS_LABELS_DATA)
+export const DIFFICULTY_LEVELS = difficultyLevelsData.enum
+export const DIFFICULTY_LEVELS_LABELS = difficultyLevelsData.labels
+
+// Goal Types Labels
+const GOAL_TYPES_LABELS_DATA = {
+  WEIGHT_LOSS: 'Weight Loss',
+  WEIGHT_GAIN: 'Weight Gain',
+  MUSCLE_GAIN: 'Muscle Gain',
+  MAINTENANCE: 'Maintenance',
+  ATHLETIC_PERFORMANCE: 'Athletic Performance',
+  GENERAL_HEALTH: 'General Health'
 }
 
-// Goal Type Labels
-export const GOAL_TYPES_LABELS = {
-  [GOAL_TYPES.WEIGHT_LOSS]: 'Weight Loss',
-  [GOAL_TYPES.MAINTENANCE]: 'Maintenance',
-  [GOAL_TYPES.MUSCLE_GAIN]: 'Muscle Gain',
-  [GOAL_TYPES.HEALTH_IMPROVEMENT]: 'Health Improvement'
-}
-
-// Subscription Status
-// TODO NOT USED YET
-export const SUBSCRIPTION_STATUS = {
-  FREE: 'FREE',
-  PREMIUM: 'PREMIUM',
-  FAMILY: 'FAMILY',
-  CANCELLED: 'CANCELLED',
-  EXPIRED: 'EXPIRED'
-}
+const goalTypesData = createEnumWithLabels(GOAL_TYPES_LABELS_DATA)
+export const GOAL_TYPES = goalTypesData.enum
+export const GOAL_TYPES_LABELS = goalTypesData.labels
 
 // Subscription Status Labels
-// TODO NOT USED YET
-export const SUBSCRIPTION_STATUS_LABELS = {
-  [SUBSCRIPTION_STATUS.FREE]: 'Free',
-  [SUBSCRIPTION_STATUS.PREMIUM]: 'Premium',
-  [SUBSCRIPTION_STATUS.FAMILY]: 'Family',
-  [SUBSCRIPTION_STATUS.CANCELLED]: 'Cancelled',
-  [SUBSCRIPTION_STATUS.EXPIRED]: 'Expired'
+const SUBSCRIPTION_STATUS_LABELS_DATA = {
+  FREE: 'Free',
+  PREMIUM: 'Premium',
+  FAMILY: 'Family',
+  CANCELLED: 'Cancelled',
+  EXPIRED: 'Expired'
 }
 
-// Meal Types
-export const MEAL_TYPES = {
-  BREAKFAST: 'BREAKFAST',
-  LUNCH: 'LUNCH',
-  DINNER: 'DINNER',
-  SNACK: 'SNACK'
+const subscriptionStatusData = createEnumWithLabels(SUBSCRIPTION_STATUS_LABELS_DATA)
+export const SUBSCRIPTION_STATUS = subscriptionStatusData.enum
+export const SUBSCRIPTION_STATUS_LABELS = subscriptionStatusData.labels
+
+// Meal Types Labels
+const MEAL_TYPES_LABELS_DATA = {
+  BREAKFAST: 'Breakfast',
+  LUNCH: 'Lunch',
+  DINNER: 'Dinner',
+  SNACK: 'Snack'
 }
 
-// Meal Type Labels
-export const MEAL_TYPES_LABELS = {
-  [MEAL_TYPES.BREAKFAST]: 'Breakfast',
-  [MEAL_TYPES.LUNCH]: 'Lunch',
-  [MEAL_TYPES.DINNER]: 'Dinner',
-  [MEAL_TYPES.SNACK]: 'Snack'
+const mealTypesData = createEnumWithLabels(MEAL_TYPES_LABELS_DATA)
+export const MEAL_TYPES = mealTypesData.enum
+export const MEAL_TYPES_LABELS = mealTypesData.labels
+
+// Date Formats Labels
+const DATE_FORMATS_LABELS_DATA = {
+  MM_DD_YYYY: 'MM/DD/YYYY',
+  DD_MM_YYYY: 'DD/MM/YYYY',
+  YYYY_MM_DD: 'YYYY-MM-DD',
+  DD_MM_YYYY_DOT: 'DD.MM.YYYY'
 }
 
-// Validation Constants
-// TODO NOT USED YET
-export const VALIDATION_LIMITS = {
-  HOUSEHOLD_SIZE: { MIN: 1, MAX: 20 },
-  DAILY_CALORIES: { MIN: 800, MAX: 5000 },
-  DAILY_PROTEIN: { MIN: 0, MAX: 500 },
-  DAILY_CARBS: { MIN: 0, MAX: 1000 },
-  DAILY_FATS: { MIN: 0, MAX: 500 },
-  DAILY_FIBER: { MIN: 0, MAX: 100 },
-  DAILY_SODIUM: { MIN: 0, MAX: 10000 },
-  DAILY_SUGAR: { MIN: 0, MAX: 200 }
+const dateFormatsData = createEnumWithLabels(DATE_FORMATS_LABELS_DATA)
+export const DATE_FORMATS = dateFormatsData.enum
+export const DATE_FORMATS_LABELS = dateFormatsData.labels
+
+// Measurement Systems Labels
+const MEASUREMENT_SYSTEMS_LABELS_DATA = {
+  METRIC: 'Metric',
+  IMPERIAL: 'Imperial'
+}
+
+const measurementSystemsData = createEnumWithLabels(MEASUREMENT_SYSTEMS_LABELS_DATA)
+export const MEASUREMENT_SYSTEMS = measurementSystemsData.enum
+export const MEASUREMENT_SYSTEMS_LABELS = measurementSystemsData.labels
+
+// First Day of Week Labels
+const FIRST_DAY_OF_WEEK_LABELS_DATA = {
+  SUNDAY: 'Sunday',
+  MONDAY: 'Monday'
+}
+
+const firstDayOfWeekData = createEnumWithLabels(FIRST_DAY_OF_WEEK_LABELS_DATA)
+export const FIRST_DAY_OF_WEEK = firstDayOfWeekData.enum
+export const FIRST_DAY_OF_WEEK_LABELS = firstDayOfWeekData.labels
+
+// Common Timezones (IANA timezone identifiers)
+export const COMMON_TIMEZONES = [
+  { value: 'UTC', label: 'UTC (Coordinated Universal Time)' },
+  { value: 'America/New_York', label: 'Eastern Time (US & Canada)' },
+  { value: 'America/Chicago', label: 'Central Time (US & Canada)' },
+  { value: 'America/Denver', label: 'Mountain Time (US & Canada)' },
+  { value: 'America/Los_Angeles', label: 'Pacific Time (US & Canada)' },
+  { value: 'Europe/Copenhagen', label: 'Copenhagen' }
+]
+
+// Countries (ISO 3166-1 alpha-2 codes with names)
+export const COUNTRIES = [
+  { code: 'US', name: 'United States' },
+  { code: 'DK', name: 'Denmark' }
+]
+
+// Currencies (ISO 4217 currency codes)
+export const CURRENCIES = [
+  { code: 'USD', name: 'US Dollar' },
+  { code: 'DKK', name: 'Danish Krone' }
+]
+
+// Weight Units
+export const WEIGHT_UNITS = {
+  // Metric
+  GRAM: 'g',
+  KILOGRAM: 'kg',
+  MILLIGRAM: 'mg',
+  // Imperial
+  OUNCE: 'oz',
+  POUND: 'lb'
+}
+
+// Volume Units (universal, no conversion needed)
+export const VOLUME_UNITS = {
+  CUP: 'cup',
+  TABLESPOON: 'tbsp',
+  TEASPOON: 'tsp',
+  MILLILITER: 'ml',
+  LITER: 'l',
+  FLUID_OUNCE: 'fl oz'
+}
+
+// Count Units (universal, no conversion needed)
+export const COUNT_UNITS = {
+  PIECE: 'piece',
+  ITEM: 'item',
+  WHOLE: 'whole'
+}
+
+// Unit Conversion Factors
+export const UNIT_CONVERSIONS = {
+  OUNCES_TO_GRAMS: 28.35,
+  POUNDS_TO_GRAMS: 453.59,
+  KILOGRAMS_TO_GRAMS: 1000.0,
+  MILLIGRAMS_TO_GRAMS: 0.001
 }

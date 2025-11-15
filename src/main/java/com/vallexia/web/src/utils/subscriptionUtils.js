@@ -7,13 +7,15 @@
  * @module subscriptionUtils
  */
 
+import { SUBSCRIPTION_STATUS } from '@/utils/constants'
+
 /**
  * Subscription tiers in order of access level
  */
 export const SUBSCRIPTION_TIERS = {
-  FREE: 0,
-  PREMIUM: 1,
-  FAMILY: 2
+  [SUBSCRIPTION_STATUS.FREE]: 0,
+  [SUBSCRIPTION_STATUS.PREMIUM]: 1,
+  [SUBSCRIPTION_STATUS.FAMILY]: 2
 }
 
 /**
@@ -25,7 +27,7 @@ export const SUBSCRIPTION_TIERS = {
  */
 export function hasSubscriptionAccess(userSubscriptionStatus, requiredTier) {
   if (!userSubscriptionStatus) {
-    return requiredTier === 'FREE'
+    return requiredTier === SUBSCRIPTION_STATUS.FREE
   }
 
   const userTier = SUBSCRIPTION_TIERS[userSubscriptionStatus] || 0
@@ -41,7 +43,7 @@ export function hasSubscriptionAccess(userSubscriptionStatus, requiredTier) {
  * @returns {boolean} True if user has FAMILY subscription
  */
 export function canAccessFamilyFeatures(subscriptionStatus) {
-  return hasSubscriptionAccess(subscriptionStatus, 'FAMILY')
+  return hasSubscriptionAccess(subscriptionStatus, SUBSCRIPTION_STATUS.FAMILY)
 }
 
 /**
@@ -51,7 +53,7 @@ export function canAccessFamilyFeatures(subscriptionStatus) {
  * @returns {boolean} True if user has PREMIUM or FAMILY subscription
  */
 export function canAccessPremiumFeatures(subscriptionStatus) {
-  return hasSubscriptionAccess(subscriptionStatus, 'PREMIUM')
+  return hasSubscriptionAccess(subscriptionStatus, SUBSCRIPTION_STATUS.PREMIUM)
 }
 
 /**
@@ -68,10 +70,10 @@ export function shouldShowFamilyUpgrade(user) {
   }
 
   // Show banner to FREE and PREMIUM users (promote FAMILY tier)
-  return (user.subscriptionStatus === 'FREE' || 
-          user.subscriptionStatus === 'PREMIUM') &&
-         user.subscriptionStatus !== 'CANCELLED' &&
-         user.subscriptionStatus !== 'EXPIRED'
+  return (user.subscriptionStatus === SUBSCRIPTION_STATUS.FREE || 
+          user.subscriptionStatus === SUBSCRIPTION_STATUS.PREMIUM) &&
+         user.subscriptionStatus !== SUBSCRIPTION_STATUS.CANCELLED &&
+         user.subscriptionStatus !== SUBSCRIPTION_STATUS.EXPIRED
 }
 
 /**
