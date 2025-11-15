@@ -17,8 +17,7 @@ public enum RecipeCategory {
     SNACK("Snack"),
     DESSERT("Dessert"),
     APPETIZER("Appetizer"),
-    BEVERAGE("Beverage"),
-    OTHER("Other");
+    BEVERAGE("Beverage");
     
     private final String displayName;
     
