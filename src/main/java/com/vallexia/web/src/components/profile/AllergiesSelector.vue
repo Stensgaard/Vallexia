@@ -38,7 +38,7 @@
     <p v-if="error" class="text-sm text-red-600">{{ error }}</p>
     
     <!-- Hint -->
-    <p v-if="hint && !error" class="text-sm text-gray-500">{{ hint }}</p>
+    <p v-if="!error" class="text-sm text-gray-500">{{ hint || $t('profile.allergies.hint') }}</p>
     
     <!-- Warning -->
     <div v-if="selectedValues.length > 0" class="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
@@ -47,8 +47,8 @@
           <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
         </svg>
         <div class="text-sm text-yellow-800">
-          <p class="font-medium">Important:</p>
-          <p>Selected allergies will be used to filter recipes and ingredients. Please ensure accuracy for your safety.</p>
+          <p class="font-medium">{{ $t('profile.allergies.warning.title') }}</p>
+          <p>{{ $t('profile.allergies.warning.message') }}</p>
         </div>
       </div>
     </div>
@@ -57,7 +57,10 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import { ALLERGIES, ALLERGIES_LABELS } from '@/utils/constants'
+import { useI18n } from 'vue-i18n'
+import { ALLERGIES } from '@/utils/constants'
+
+const { t } = useI18n()
 
 const props = defineProps({
   id: {
@@ -78,7 +81,7 @@ const props = defineProps({
   },
   hint: {
     type: String,
-    default: 'Select any food allergies you have. This helps us avoid dangerous ingredients.'
+    default: ''
   },
   required: {
     type: Boolean,
@@ -100,7 +103,7 @@ watch(() => props.modelValue, (newValue) => {
 }, { deep: true })
 
 const getLabel = (value) => {
-  return ALLERGIES_LABELS[value] || value
+  return t(`constants.allergies.${value}`) || value
 }
 
 const handleChange = () => {

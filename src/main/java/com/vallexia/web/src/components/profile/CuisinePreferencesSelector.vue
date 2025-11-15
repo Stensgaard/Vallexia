@@ -24,7 +24,6 @@
         </div>
         
         <div class="text-center">
-          <div class="text-2xl mb-1">{{ getFlag(value) }}</div>
           <div class="text-sm font-medium text-gray-900">{{ getLabel(value) }}</div>
         </div>
       </label>
@@ -34,13 +33,16 @@
     <p v-if="error" class="text-sm text-red-600">{{ error }}</p>
     
     <!-- Hint -->
-    <p v-if="hint && !error" class="text-sm text-gray-500">{{ hint }}</p>
+    <p v-if="!error" class="text-sm text-gray-500">{{ hint || $t('profile.dietary.cuisinesHint') }}</p>
   </div>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue'
-import { CUISINE_TYPES, CUISINE_TYPES_LABELS } from '@/utils/constants'
+import { useI18n } from 'vue-i18n'
+import { CUISINE_TYPES } from '@/utils/constants'
+
+const { t } = useI18n()
 
 const props = defineProps({
   id: {
@@ -61,7 +63,7 @@ const props = defineProps({
   },
   hint: {
     type: String,
-    default: 'Select cuisines you enjoy to get personalized recipe recommendations.'
+    default: ''
   },
   required: {
     type: Boolean,
@@ -83,29 +85,10 @@ watch(() => props.modelValue, (newValue) => {
 }, { deep: true })
 
 const getLabel = (value) => {
-  return CUISINE_TYPES_LABELS[value] || value
-}
-
-const getFlag = (value) => {
-  const flags = {
-    [CUISINE_TYPES.ITALIAN]: '🇮🇹',
-    [CUISINE_TYPES.MEXICAN]: '🇲🇽',
-    [CUISINE_TYPES.CHINESE]: '🇨🇳',
-    [CUISINE_TYPES.JAPANESE]: '🇯🇵',
-    [CUISINE_TYPES.INDIAN]: '🇮🇳',
-    [CUISINE_TYPES.THAI]: '🇹🇭',
-    [CUISINE_TYPES.MEDITERRANEAN]: '🌊',
-    [CUISINE_TYPES.AMERICAN]: '🇺🇸',
-    [CUISINE_TYPES.FRENCH]: '🇫🇷',
-    [CUISINE_TYPES.GREEK]: '🇬🇷',
-    [CUISINE_TYPES.KOREAN]: '🇰🇷',
-    [CUISINE_TYPES.VIETNAMESE]: '🇻🇳'
-  }
-  return flags[value] || '🍽️'
+  return t(`constants.cuisineTypes.${value}`) || value
 }
 
 const handleChange = () => {
   emit('update:modelValue', [...selectedValues.value])
 }
 </script>
-

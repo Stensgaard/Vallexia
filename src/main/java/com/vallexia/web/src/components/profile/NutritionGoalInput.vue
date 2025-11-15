@@ -20,8 +20,8 @@
         @blur="handleBlur"
       />
       
-      <div v-if="unit" class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-        <span class="text-gray-500 text-sm">{{ unit }}</span>
+      <div v-if="displayUnit" class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+        <span class="text-gray-500 text-sm">{{ displayUnit }}</span>
       </div>
     </div>
     
@@ -33,13 +33,16 @@
     
     <!-- Percentage Display (for macro nutrients) -->
     <div v-if="showPercentage && percentage !== null" class="text-sm text-gray-600">
-      {{ percentage.toFixed(1) }}% of daily calories
+      {{ settingsStore.formatNumberFn(percentage, 1) }}{{ $t('profile.nutritional.percentageOfCalories') }}
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { useSettingsStore } from '@/stores/settings'
+
+const settingsStore = useSettingsStore()
 
 const props = defineProps({
   id: {
@@ -112,10 +115,22 @@ watch(() => props.modelValue, (newValue) => {
   inputValue.value = newValue
 })
 
+const displayUnit = computed(() => {
+  // If unit prop is provided, use it (allows override)
+  if (props.unit) {
+    return props.unit
+  }
+  
+  // Otherwise, determine unit based on measurement system
+  // For nutritional goals (protein, carbs, fats), use g/oz
+  // This assumes the component is used for weight-based nutritional values
+  return settingsStore.measurementSystem === 'IMPERIAL' ? 'oz' : 'g'
+})
+
 const inputClasses = computed(() => {
   const baseClasses = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm'
   const errorClasses = props.error ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
-  const unitClasses = props.unit ? 'pr-16' : ''
+  const unitClasses = displayUnit.value ? 'pr-16' : ''
   const disabledClasses = props.disabled ? 'bg-gray-50 text-gray-500' : ''
   
   return `${baseClasses} ${errorClasses} ${unitClasses} ${disabledClasses}`
@@ -146,4 +161,3 @@ const handleBlur = () => {
   emit('update:modelValue', inputValue.value)
 }
 </script>
-

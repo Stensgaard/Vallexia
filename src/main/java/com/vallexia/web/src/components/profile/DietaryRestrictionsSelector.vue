@@ -34,13 +34,16 @@
     <p v-if="error" class="text-sm text-red-600">{{ error }}</p>
     
     <!-- Hint -->
-    <p v-if="hint && !error" class="text-sm text-gray-500">{{ hint }}</p>
+    <p v-if="!error" class="text-sm text-gray-500">{{ hint || $t('profile.dietary.restrictionsHint') }}</p>
   </div>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue'
-import { DIETARY_RESTRICTIONS, DIETARY_RESTRICTIONS_LABELS } from '@/utils/constants'
+import { useI18n } from 'vue-i18n'
+import { DIETARY_RESTRICTIONS } from '@/utils/constants'
+
+const { t } = useI18n()
 
 const props = defineProps({
   id: {
@@ -61,7 +64,7 @@ const props = defineProps({
   },
   hint: {
     type: String,
-    default: 'Select any dietary restrictions that apply to you.'
+    default: ''
   },
   required: {
     type: Boolean,
@@ -83,28 +86,15 @@ watch(() => props.modelValue, (newValue) => {
 }, { deep: true })
 
 const getLabel = (value) => {
-  return DIETARY_RESTRICTIONS_LABELS[value] || value
+  return t(`constants.dietaryRestrictions.${value}`) || value
 }
 
 const getDescription = (value) => {
-  const descriptions = {
-    [DIETARY_RESTRICTIONS.VEGETARIAN]: 'No meat or fish',
-    [DIETARY_RESTRICTIONS.VEGAN]: 'No animal products',
-    [DIETARY_RESTRICTIONS.GLUTEN_FREE]: 'No wheat, barley, rye',
-    [DIETARY_RESTRICTIONS.DAIRY_FREE]: 'No milk, cheese, yogurt',
-    [DIETARY_RESTRICTIONS.NUT_FREE]: 'No nuts or nut products',
-    [DIETARY_RESTRICTIONS.KETO]: 'Very low carb, high fat',
-    [DIETARY_RESTRICTIONS.PALEO]: 'Whole foods, no processed',
-    [DIETARY_RESTRICTIONS.LOW_CARB]: 'Reduced carbohydrate intake',
-    [DIETARY_RESTRICTIONS.LOW_SODIUM]: 'Reduced salt intake',
-    [DIETARY_RESTRICTIONS.HALAL]: 'Islamic dietary laws',
-    [DIETARY_RESTRICTIONS.KOSHER]: 'Jewish dietary laws'
-  }
-  return descriptions[value] || ''
+  if (!value) return ''
+  return t(`constants.dietaryRestrictions.descriptions.${value}`) || ''
 }
 
 const handleChange = () => {
   emit('update:modelValue', [...selectedValues.value])
 }
 </script>
-
