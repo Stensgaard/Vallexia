@@ -1,3 +1,9 @@
+-- Migration: Create recipe_dietary_restrictions and recipe_allergens tables
+-- Version: V12
+-- Description: Create recipe_dietary_restrictions and recipe_allergens tables for
+--              storing dietary restrictions and allergens associated with recipes.
+--              This depends on the recipes table.
+
 -- ============================================================================
 -- RECIPE DIETARY RESTRICTIONS TABLE
 -- ============================================================================
@@ -43,4 +49,3 @@ CREATE TABLE recipe_allergens (
 COMMENT ON TABLE recipe_allergens IS 'Allergens associated with recipes (ElementCollection mapping)';
 COMMENT ON COLUMN recipe_allergens.recipe_id IS 'Recipe this allergen belongs to';
 COMMENT ON COLUMN recipe_allergens.allergy IS 'Allergy enum value';
-

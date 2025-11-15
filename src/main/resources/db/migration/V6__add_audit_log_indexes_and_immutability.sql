@@ -1,5 +1,5 @@
 -- Migration: Add audit log indexes and immutability enforcement
--- Version: V2
+-- Version: V6
 -- Description: Add additional performance indexes for audit logs and enforce immutability
 --              through database triggers to maintain audit trail integrity.
 

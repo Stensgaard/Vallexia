@@ -1,7 +1,7 @@
--- Migration: Create ingredient nutrition table
--- Version: V4
--- Description: Add ingredient_nutrition table to store nutritional data per ingredient
---              for automatic recipe nutrition calculation.
+-- Migration: Create ingredient_nutrition table
+-- Version: V13
+-- Description: Create ingredient_nutrition table to store nutritional data per ingredient
+--              for automatic recipe nutrition calculation. This depends on the ingredients table.
 
 -- ============================================================================
 -- INGREDIENT_NUTRITION TABLE

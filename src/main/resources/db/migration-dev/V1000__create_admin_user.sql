@@ -1,5 +1,5 @@
 -- Migration: Create default admin user
--- Version: V6 (Dev migration)
+-- Version: V1000 (Dev migration)
 -- Description: Creates a default admin user for development and testing purposes.
 --              Admin user has both USER and ADMIN roles.
 --              Password: AdminPass123! (BCrypt hash with strength 12)
@@ -66,3 +66,4 @@ SELECT id, unnest(ARRAY['BREAKFAST', 'LUNCH', 'DINNER']::VARCHAR[])
 FROM users
 WHERE username = 'admin'
 ON CONFLICT (user_id, meal_type) DO NOTHING;
+
