@@ -1,11 +1,11 @@
 <template>
-  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex flex-col h-full">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-semibold text-gray-900">Today's Meals</h3>
+      <h3 class="text-lg font-semibold text-gray-900">{{ $t('dashboard.todaysMeals.title') }}</h3>
       <span class="text-sm text-gray-500">{{ todayDate }}</span>
     </div>
 
-    <div class="space-y-4">
+    <div class="flex-1 space-y-4">
       <div
         v-for="meal in todaysMeals"
         :key="meal.type"
@@ -23,15 +23,15 @@
         
         <div class="text-right">
           <div v-if="meal.nutrition" class="text-sm text-gray-600">
-            <div>{{ meal.nutrition.calories }} cal</div>
-            <div class="text-xs text-gray-500">{{ meal.nutrition.protein }}g protein</div>
+            <div>{{ formatNumber(meal.nutrition.calories, 0) }} cal</div>
+            <div class="text-xs text-gray-500">{{ formatNutritionalValue(meal.nutrition.protein) }} protein</div>
           </div>
           <button
             v-else
             @click="addMeal(meal.type)"
             class="text-blue-600 hover:text-blue-700 text-sm font-medium"
           >
-            Add Meal
+            {{ $t('dashboard.todaysMeals.addMeal') }}
           </button>
         </div>
       </div>
@@ -39,23 +39,23 @@
 
     <!-- Daily nutrition summary -->
     <div v-if="dailyNutrition" class="mt-6 pt-4 border-t border-gray-200">
-      <h4 class="text-sm font-medium text-gray-900 mb-3">Daily Nutrition</h4>
+      <h4 class="text-sm font-medium text-gray-900 mb-3">{{ $t('dashboard.todaysMeals.dailyNutrition') }}</h4>
       <div class="grid grid-cols-4 gap-4">
         <div class="text-center">
-          <div class="text-lg font-semibold text-gray-900">{{ dailyNutrition.calories }}</div>
-          <div class="text-xs text-gray-500">Calories</div>
+          <div class="text-lg font-semibold text-gray-900">{{ formatNumber(dailyNutrition.calories, 0) }}</div>
+          <div class="text-xs text-gray-500">{{ $t('dashboard.todaysMeals.calories') }}</div>
         </div>
         <div class="text-center">
-          <div class="text-lg font-semibold text-gray-900">{{ dailyNutrition.protein }}g</div>
-          <div class="text-xs text-gray-500">Protein</div>
+          <div class="text-lg font-semibold text-gray-900">{{ formatNutritionalValue(dailyNutrition.protein) }}</div>
+          <div class="text-xs text-gray-500">{{ $t('dashboard.todaysMeals.protein') }}</div>
         </div>
         <div class="text-center">
-          <div class="text-lg font-semibold text-gray-900">{{ dailyNutrition.carbs }}g</div>
-          <div class="text-xs text-gray-500">Carbs</div>
+          <div class="text-lg font-semibold text-gray-900">{{ formatNutritionalValue(dailyNutrition.carbs) }}</div>
+          <div class="text-xs text-gray-500">{{ $t('dashboard.todaysMeals.carbs') }}</div>
         </div>
         <div class="text-center">
-          <div class="text-lg font-semibold text-gray-900">{{ dailyNutrition.fat }}g</div>
-          <div class="text-xs text-gray-500">Fat</div>
+          <div class="text-lg font-semibold text-gray-900">{{ formatNutritionalValue(dailyNutrition.fat) }}</div>
+          <div class="text-xs text-gray-500">{{ $t('dashboard.todaysMeals.fat') }}</div>
         </div>
       </div>
     </div>
@@ -64,9 +64,32 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useSettingsStore } from '@/stores/settings'
+
+const { t } = useI18n()
+const settingsStore = useSettingsStore()
+
+const formatNumber = (number, decimals = 0) => {
+  return settingsStore.formatNumberFn(number, decimals)
+}
+
+const formatNutritionalValue = (value) => {
+  if (!value && value !== 0) {
+    return ''
+  }
+  
+  // Nutritional values are stored in grams, convert to ounces if imperial
+  const unit = settingsStore.measurementSystem === 'IMPERIAL' ? 'oz' : 'g'
+  const displayValue = unit === 'oz' 
+    ? settingsStore.convertWeightFn(value, 'g', 'oz')
+    : value
+  
+  return `${formatNumber(displayValue, 1)}${unit}`
+}
 
 const todayDate = computed(() => {
-  return new Date().toLocaleDateString('en-US', { 
+  return new Date().toLocaleDateString(settingsStore.locale, { 
     weekday: 'long', 
     year: 'numeric', 
     month: 'long', 
@@ -119,6 +142,5 @@ const dailyNutrition = computed(() => {
 
 const addMeal = (mealType) => {
   // TODO: Open meal selection modal
-  console.log('Add meal for', mealType)
 }
 </script>

@@ -44,7 +44,7 @@
       >
         {{ Math.abs(change) }}%
       </span>
-      <span class="text-sm text-gray-500 ml-1">from last week</span>
+      <span class="text-sm text-gray-500 ml-1">{{ $t('dashboard.stats.fromLastWeek') }}</span>
     </div>
     
     <div v-if="actionText" class="mt-4">
