@@ -18,7 +18,7 @@
           
           <div class="text-center">
             <h3 class="text-lg font-medium text-gray-900 mb-2">
-              {{ title }}
+              {{ displayTitle }}
             </h3>
             <p class="text-sm text-gray-500 mb-6">
               {{ message }}
@@ -30,14 +30,14 @@
                 class="btn btn-outline order-2 sm:order-1"
                 @click="$emit('cancel')"
               >
-                {{ cancelText }}
+                {{ displayCancelText }}
               </button>
               <button
                 type="button"
                 :class="confirmButtonClasses"
                 @click="$emit('confirm')"
               >
-                {{ confirmText }}
+                {{ displayConfirmText }}
               </button>
             </div>
           </div>
@@ -49,6 +49,9 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   show: {
@@ -57,7 +60,7 @@ const props = defineProps({
   },
   title: {
     type: String,
-    default: 'Confirm Action'
+    default: ''
   },
   message: {
     type: String,
@@ -65,11 +68,11 @@ const props = defineProps({
   },
   confirmText: {
     type: String,
-    default: 'Confirm'
+    default: ''
   },
   cancelText: {
     type: String,
-    default: 'Cancel'
+    default: ''
   },
   type: {
     type: String,
@@ -77,6 +80,10 @@ const props = defineProps({
     validator: (value) => ['danger', 'warning', 'info'].includes(value)
   }
 })
+
+const displayTitle = computed(() => props.title || t('common.confirmAction'))
+const displayConfirmText = computed(() => props.confirmText || t('common.confirm'))
+const displayCancelText = computed(() => props.cancelText || t('common.cancel'))
 
 const emit = defineEmits(['confirm', 'cancel'])
 
@@ -90,11 +97,3 @@ const confirmButtonClasses = computed(() => {
   return typeClasses[props.type]
 })
 </script>
-
-
-
-
-
-
-
-

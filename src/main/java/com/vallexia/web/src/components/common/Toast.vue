@@ -89,7 +89,7 @@
               @click="dismiss"
               class="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-              <span class="sr-only">Close</span>
+              <span class="sr-only">{{ $t('common.close') }}</span>
               <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path
                   fill-rule="evenodd"
@@ -106,7 +106,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { watch, onUnmounted } from 'vue'
 
 const props = defineProps({
   show: {
@@ -140,12 +140,22 @@ const emit = defineEmits(['dismiss'])
 
 let timeoutId = null
 
+const clearAutoDismissTimeout = () => {
+  if (timeoutId) {
+    clearTimeout(timeoutId)
+    timeoutId = null
+  }
+}
+
 const dismiss = () => {
+  clearAutoDismissTimeout()
   emit('dismiss')
 }
 
-onMounted(() => {
-  if (props.duration > 0) {
+watch(() => props.show, (newValue) => {
+  clearAutoDismissTimeout()
+  
+  if (newValue && props.duration > 0) {
     timeoutId = setTimeout(() => {
       dismiss()
     }, props.duration)
@@ -153,9 +163,6 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  if (timeoutId) {
-    clearTimeout(timeoutId)
-  }
+  clearAutoDismissTimeout()
 })
 </script>
-
