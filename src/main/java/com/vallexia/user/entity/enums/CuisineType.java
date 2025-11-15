@@ -29,8 +29,7 @@ public enum CuisineType {
     MIDDLE_EASTERN("Middle Eastern"),
     CARIBBEAN("Caribbean"),
     AFRICAN("African"),
-    SOUTH_AMERICAN("South American"),
-    FUSION("Fusion");
+    SOUTH_AMERICAN("South American");
     
     private final String displayName;
     

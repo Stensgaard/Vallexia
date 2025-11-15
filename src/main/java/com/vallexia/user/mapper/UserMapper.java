@@ -33,6 +33,7 @@ public interface UserMapper {
     @Mapping(target = "passwordHash", ignore = true)
     @Mapping(target = "dietaryPreferences", ignore = true)
     @Mapping(target = "nutritionalGoals", ignore = true)
+    @Mapping(target = "userSettings", ignore = true)
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "enabled", ignore = true)
     @Mapping(target = "accountNonExpired", ignore = true)
