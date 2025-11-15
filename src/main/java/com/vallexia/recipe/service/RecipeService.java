@@ -10,10 +10,13 @@ import com.vallexia.exception.ValidationException;
 import com.vallexia.recipe.exception.RecipeNotFoundException;
 import com.vallexia.recipe.mapper.RecipeMapper;
 import com.vallexia.recipe.repository.*;
+import com.vallexia.common.enums.SupportedLocale;
+import com.vallexia.recipe.dto.RecipeTranslationDto;
 import com.vallexia.security.AuthenticationHelper;
 import com.vallexia.user.entity.User;
 import com.vallexia.user.exception.UserNotFoundException;
 import com.vallexia.user.repository.UserRepository;
+import com.vallexia.user.service.UserSettingsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Service for managing recipe CRUD operations and business logic.
@@ -46,6 +50,9 @@ public class RecipeService {
     private final NutritionalCalculationService nutritionalCalculationService;
     private final AuditService auditService;
     private final AuthenticationHelper authenticationHelper;
+    private final UserSettingsService userSettingsService;
+    private final TranslationResolver translationResolver;
+    private final RecipeTranslationRepository recipeTranslationRepository;
     
     /**
      * Constructor for dependency injection.
@@ -60,7 +67,10 @@ public class RecipeService {
             FavoriteRecipeService favoriteRecipeService,
             NutritionalCalculationService nutritionalCalculationService,
             AuditService auditService,
-            AuthenticationHelper authenticationHelper) {
+            AuthenticationHelper authenticationHelper,
+            UserSettingsService userSettingsService,
+            TranslationResolver translationResolver,
+            RecipeTranslationRepository recipeTranslationRepository) {
         this.recipeRepository = recipeRepository;
         this.ingredientRepository = ingredientRepository;
         this.recipeIngredientRepository = recipeIngredientRepository;
@@ -71,6 +81,9 @@ public class RecipeService {
         this.nutritionalCalculationService = nutritionalCalculationService;
         this.auditService = auditService;
         this.authenticationHelper = authenticationHelper;
+        this.userSettingsService = userSettingsService;
+        this.translationResolver = translationResolver;
+        this.recipeTranslationRepository = recipeTranslationRepository;
     }
     
     /**
@@ -86,9 +99,17 @@ public class RecipeService {
         User creator = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
         
+        // Get admin's locale from settings for baseLocale
+        String adminLocale = userSettingsService.getUserSettings(userId).getLanguage();
+        // Validate locale using SupportedLocale enum
+        if (!SupportedLocale.isSupported(adminLocale)) {
+            adminLocale = SupportedLocale.EN.getCode(); // Default to English if invalid
+        }
+        
         // Convert DTO to entity
         Recipe recipe = recipeMapper.toRecipe(dto);
         recipe.setCreator(creator);
+        recipe.setBaseLocale(adminLocale); // Set base locale from admin's settings
         
         // Calculate total time if prep and cook times are provided
         if (dto.getPrepTimeMinutes() != null && dto.getCookTimeMinutes() != null) {
@@ -126,6 +147,20 @@ public class RecipeService {
         // Save final recipe
         recipe = recipeRepository.save(recipe);
         
+        // Handle translations if provided
+        if (dto.getTranslations() != null && !dto.getTranslations().isEmpty()) {
+            for (Map.Entry<String, RecipeTranslationDto> entry : dto.getTranslations().entrySet()) {
+                RecipeTranslationDto translationDto = entry.getValue();
+                RecipeTranslation translation = new RecipeTranslation();
+                translation.setRecipe(recipe);
+                translation.setLocale(translationDto.getLocale());
+                translation.setName(translationDto.getName());
+                translation.setDescription(translationDto.getDescription());
+                translation.setInstructions(translationDto.getInstructions());
+                recipeTranslationRepository.save(translation);
+            }
+        }
+        
         // Audit log
         auditService.logEvent(
             EventType.RECIPE_CREATED,
@@ -144,8 +179,8 @@ public class RecipeService {
      * Get recipe by ID.
      * 
      * @param id recipe ID
-     * @param userId current user ID (for favorite check)
-     * @return recipe DTO
+     * @param userId current user ID (for favorite check and locale resolution)
+     * @return recipe DTO with translated content based on user's locale
      * @throws RecipeNotFoundException if recipe not found
      */
     @Transactional(readOnly = true)
@@ -160,8 +195,45 @@ public class RecipeService {
             throw new AccessDeniedException("You do not have permission to access this recipe");
         }
         
+        // Get user's locale for translation resolution
+        String userLocale = SupportedLocale.EN.getCode(); // Default to English
+        if (userId != null) {
+            try {
+                String locale = userSettingsService.getUserSettings(userId).getLanguage();
+                if (SupportedLocale.isSupported(locale)) {
+                    userLocale = locale;
+                }
+            } catch (Exception e) {
+                log.debug("Could not fetch user locale for user ID {}: {}", userId, e.getMessage());
+            }
+        }
+        
+        // Resolve translations
+        TranslationResolver.RecipeContent content = translationResolver.resolveRecipeContent(recipe, userLocale);
+        
         boolean isFavorite = userId != null && favoriteRecipeService.isFavorite(id, userId);
-        return recipeMapper.toRecipeDto(recipe, isFavorite);
+        RecipeDto dto = recipeMapper.toRecipeDto(recipe, isFavorite);
+        
+        // Override with translated content
+        dto.setName(content.name());
+        dto.setDescription(content.description());
+        dto.setInstructions(content.instructions());
+        
+        // Resolve ingredient names
+        if (dto.getIngredients() != null) {
+            for (com.vallexia.recipe.dto.IngredientDto ingredientDto : dto.getIngredients()) {
+                if (ingredientDto.getIngredientId() != null) {
+                    Ingredient ingredient = ingredientRepository.findById(ingredientDto.getIngredientId())
+                        .orElse(null);
+                    if (ingredient != null) {
+                        String translatedName = translationResolver.resolveIngredientName(ingredient, userLocale);
+                        ingredientDto.setName(translatedName);
+                    }
+                }
+            }
+        }
+        
+        return dto;
     }
     
     /**
@@ -297,17 +369,58 @@ public class RecipeService {
      * Get public recipes.
      * 
      * @param pageable pagination information
-     * @param userId current user ID (for favorite check, can be null)
-     * @return page of public recipes
+     * @param userId current user ID (for favorite check and locale resolution, can be null)
+     * @return page of public recipes with translated content
      */
     @Transactional(readOnly = true)
     public Page<RecipeDto> getPublicRecipes(Pageable pageable, Long userId) {
         log.debug("Getting public recipes for user ID {}", userId);
         
-        Page<Recipe> recipes = recipeRepository.findByIsPublicTrue(pageable);
+        // Get user's locale for translation resolution
+        String userLocale = SupportedLocale.EN.getCode(); // Default to English
+        if (userId != null) {
+            try {
+                String locale = userSettingsService.getUserSettings(userId).getLanguage();
+                if (SupportedLocale.isSupported(locale)) {
+                    userLocale = locale;
+                }
+            } catch (Exception e) {
+                log.debug("Could not fetch user locale for user ID {}: {}", userId, e.getMessage());
+            }
+        }
+        final String finalUserLocale = userLocale;
+        
+        // Filter by public status only (no locale filtering)
+        Page<Recipe> recipes = recipeRepository.findAll(
+            (root, query, cb) -> cb.equal(root.get("isPublic"), true),
+            pageable
+        );
+        
         return recipes.map(recipe -> {
             boolean isFavorite = userId != null && favoriteRecipeService.isFavorite(recipe.getId(), userId);
-            return recipeMapper.toRecipeDto(recipe, isFavorite);
+            RecipeDto dto = recipeMapper.toRecipeDto(recipe, isFavorite);
+            
+            // Resolve translations
+            TranslationResolver.RecipeContent content = translationResolver.resolveRecipeContent(recipe, finalUserLocale);
+            dto.setName(content.name());
+            dto.setDescription(content.description());
+            dto.setInstructions(content.instructions());
+            
+            // Resolve ingredient names
+            if (dto.getIngredients() != null) {
+                for (com.vallexia.recipe.dto.IngredientDto ingredientDto : dto.getIngredients()) {
+                    if (ingredientDto.getIngredientId() != null) {
+                        Ingredient ingredient = ingredientRepository.findById(ingredientDto.getIngredientId())
+                            .orElse(null);
+                        if (ingredient != null) {
+                            String translatedName = translationResolver.resolveIngredientName(ingredient, finalUserLocale);
+                            ingredientDto.setName(translatedName);
+                        }
+                    }
+                }
+            }
+            
+            return dto;
         });
     }
     
@@ -315,17 +428,53 @@ public class RecipeService {
      * Get all recipes (including private) for admin users.
      * 
      * @param pageable pagination information
-     * @param userId current user ID (for favorite check)
-     * @return page of all recipes
+     * @param userId current user ID (for favorite check and locale resolution)
+     * @return page of all recipes with translated content
      */
     @Transactional(readOnly = true)
     public Page<RecipeDto> getAllRecipesForAdmin(Pageable pageable, Long userId) {
         log.debug("Getting all recipes for admin user ID {}", userId);
         
+        // Get user's locale for translation resolution
+        String userLocale = SupportedLocale.EN.getCode(); // Default to English
+        if (userId != null) {
+            try {
+                String locale = userSettingsService.getUserSettings(userId).getLanguage();
+                if (SupportedLocale.isSupported(locale)) {
+                    userLocale = locale;
+                }
+            } catch (Exception e) {
+                log.debug("Could not fetch user locale for user ID {}: {}", userId, e.getMessage());
+            }
+        }
+        final String finalUserLocale = userLocale;
+        
         Page<Recipe> recipes = recipeRepository.findAll(pageable);
         return recipes.map(recipe -> {
             boolean isFavorite = userId != null && favoriteRecipeService.isFavorite(recipe.getId(), userId);
-            return recipeMapper.toRecipeDto(recipe, isFavorite);
+            RecipeDto dto = recipeMapper.toRecipeDto(recipe, isFavorite);
+            
+            // Resolve translations
+            TranslationResolver.RecipeContent content = translationResolver.resolveRecipeContent(recipe, finalUserLocale);
+            dto.setName(content.name());
+            dto.setDescription(content.description());
+            dto.setInstructions(content.instructions());
+            
+            // Resolve ingredient names
+            if (dto.getIngredients() != null) {
+                for (com.vallexia.recipe.dto.IngredientDto ingredientDto : dto.getIngredients()) {
+                    if (ingredientDto.getIngredientId() != null) {
+                        Ingredient ingredient = ingredientRepository.findById(ingredientDto.getIngredientId())
+                            .orElse(null);
+                        if (ingredient != null) {
+                            String translatedName = translationResolver.resolveIngredientName(ingredient, finalUserLocale);
+                            ingredientDto.setName(translatedName);
+                        }
+                    }
+                }
+            }
+            
+            return dto;
         });
     }
 

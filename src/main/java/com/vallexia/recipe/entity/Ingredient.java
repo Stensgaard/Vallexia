@@ -37,6 +37,9 @@ public class Ingredient {
     @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RecipeIngredient> recipeIngredients = new ArrayList<>();
     
+    @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<IngredientTranslation> translations = new ArrayList<>();
+    
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

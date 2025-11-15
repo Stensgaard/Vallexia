@@ -4,8 +4,11 @@ import com.vallexia.recipe.dto.RecipeDto;
 import com.vallexia.recipe.dto.RecipeSearchCriteria;
 import com.vallexia.recipe.dto.RecipeSearchResponseDto;
 import com.vallexia.recipe.entity.Recipe;
+import com.vallexia.recipe.entity.Ingredient;
 import com.vallexia.recipe.mapper.RecipeMapper;
 import com.vallexia.recipe.repository.RecipeRepository;
+import com.vallexia.common.enums.SupportedLocale;
+import com.vallexia.recipe.repository.IngredientRepository;
 import com.vallexia.recipe.service.specification.RecipeSortHelper;
 import com.vallexia.recipe.service.specification.RecipeSpecificationBuilder;
 import com.vallexia.user.dto.DietaryPreferencesDto;
@@ -13,6 +16,7 @@ import com.vallexia.user.entity.enums.Allergy;
 import com.vallexia.user.entity.enums.CuisineType;
 import com.vallexia.user.entity.enums.DietaryRestriction;
 import com.vallexia.user.service.DietaryPreferencesService;
+import com.vallexia.user.service.UserSettingsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,27 +41,39 @@ import java.util.Set;
 public class RecipeSearchService {
     
     private final RecipeRepository recipeRepository;
+    private final IngredientRepository ingredientRepository;
     private final RecipeMapper recipeMapper;
     private final FavoriteRecipeService favoriteRecipeService;
     private final DietaryPreferencesService dietaryPreferencesService;
+    private final UserSettingsService userSettingsService;
+    private final TranslationResolver translationResolver;
     
     /**
      * Constructor for dependency injection.
      * 
      * @param recipeRepository the recipe repository
+     * @param ingredientRepository the ingredient repository
      * @param recipeMapper the recipe mapper
      * @param favoriteRecipeService the favorite recipe service
      * @param dietaryPreferencesService the dietary preferences service
+     * @param userSettingsService the user settings service (for locale resolution)
+     * @param translationResolver the translation resolver
      */
     public RecipeSearchService(
             RecipeRepository recipeRepository,
+            IngredientRepository ingredientRepository,
             RecipeMapper recipeMapper,
             FavoriteRecipeService favoriteRecipeService,
-            DietaryPreferencesService dietaryPreferencesService) {
+            DietaryPreferencesService dietaryPreferencesService,
+            UserSettingsService userSettingsService,
+            TranslationResolver translationResolver) {
         this.recipeRepository = recipeRepository;
+        this.ingredientRepository = ingredientRepository;
         this.recipeMapper = recipeMapper;
         this.favoriteRecipeService = favoriteRecipeService;
         this.dietaryPreferencesService = dietaryPreferencesService;
+        this.userSettingsService = userSettingsService;
+        this.translationResolver = translationResolver;
     }
     
     /**
@@ -117,7 +133,21 @@ public class RecipeSearchService {
     public RecipeSearchResponseDto searchRecipes(RecipeSearchCriteria criteria, Pageable pageable, Long userId, List<Allergy> userAllergies, Set<CuisineType> preferredCuisines) {
         log.debug("Searching recipes with criteria: {} for user ID {}", criteria, userId);
         
-        // Build specification from criteria
+        // Get user's locale for translation resolution
+        String userLocale = SupportedLocale.EN.getCode(); // Default to English
+        if (userId != null) {
+            try {
+                String locale = userSettingsService.getUserSettings(userId).getLanguage();
+                if (SupportedLocale.isSupported(locale)) {
+                    userLocale = locale;
+                }
+            } catch (Exception e) {
+                log.debug("Could not fetch user locale for user ID {}: {}", userId, e.getMessage());
+            }
+        }
+        final String finalUserLocale = userLocale;
+        
+        // Build specification from criteria (no locale filtering)
         Specification<Recipe> spec = RecipeSpecificationBuilder.buildSpecification(criteria, userAllergies, preferredCuisines);
         
         // Apply sorting
@@ -126,10 +156,32 @@ public class RecipeSearchService {
         // Execute search
         Page<Recipe> recipePage = recipeRepository.findAll(spec, sortedPageable);
         
-        // Convert to DTOs with favorite status
+        // Convert to DTOs with favorite status and resolve translations
         Page<RecipeDto> recipeDtoPage = recipePage.map(recipe -> {
             boolean isFavorite = userId != null && favoriteRecipeService.isFavorite(recipe.getId(), userId);
-            return recipeMapper.toRecipeDto(recipe, isFavorite);
+            RecipeDto dto = recipeMapper.toRecipeDto(recipe, isFavorite);
+            
+            // Resolve translations
+            TranslationResolver.RecipeContent content = translationResolver.resolveRecipeContent(recipe, finalUserLocale);
+            dto.setName(content.name());
+            dto.setDescription(content.description());
+            dto.setInstructions(content.instructions());
+            
+            // Resolve ingredient names
+            if (dto.getIngredients() != null) {
+                for (com.vallexia.recipe.dto.IngredientDto ingredientDto : dto.getIngredients()) {
+                    if (ingredientDto.getIngredientId() != null) {
+                        Ingredient ingredient = ingredientRepository.findById(ingredientDto.getIngredientId())
+                            .orElse(null);
+                        if (ingredient != null) {
+                            String translatedName = translationResolver.resolveIngredientName(ingredient, finalUserLocale);
+                            ingredientDto.setName(translatedName);
+                        }
+                    }
+                }
+            }
+            
+            return dto;
         });
         
         // Build response

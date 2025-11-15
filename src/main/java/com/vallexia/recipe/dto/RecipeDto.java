@@ -57,6 +57,8 @@ public class RecipeDto {
     
     private Boolean isPublic;
     
+    private String baseLocale;
+    
     private NutritionalInfoDto nutritionalInfo;
     
     private List<IngredientDto> ingredients = new ArrayList<>();

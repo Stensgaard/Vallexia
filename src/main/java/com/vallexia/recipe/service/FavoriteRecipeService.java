@@ -5,14 +5,18 @@ import com.vallexia.audit.service.AuditService;
 import com.vallexia.recipe.dto.RecipeDto;
 import com.vallexia.recipe.entity.FavoriteRecipe;
 import com.vallexia.recipe.entity.Recipe;
+import com.vallexia.recipe.entity.Ingredient;
 import com.vallexia.recipe.exception.RecipeAlreadyFavoritedException;
 import com.vallexia.recipe.exception.RecipeNotFoundException;
 import com.vallexia.recipe.mapper.RecipeMapper;
 import com.vallexia.recipe.repository.FavoriteRecipeRepository;
 import com.vallexia.recipe.repository.RecipeRepository;
+import com.vallexia.common.enums.SupportedLocale;
+import com.vallexia.recipe.repository.IngredientRepository;
 import com.vallexia.user.entity.User;
 import com.vallexia.user.exception.UserNotFoundException;
 import com.vallexia.user.repository.UserRepository;
+import com.vallexia.user.service.UserSettingsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,30 +37,42 @@ public class FavoriteRecipeService {
     
     private final FavoriteRecipeRepository favoriteRecipeRepository;
     private final RecipeRepository recipeRepository;
+    private final IngredientRepository ingredientRepository;
     private final UserRepository userRepository;
     private final RecipeMapper recipeMapper;
     private final AuditService auditService;
+    private final UserSettingsService userSettingsService;
+    private final TranslationResolver translationResolver;
     
     /**
      * Constructor for dependency injection.
      * 
      * @param favoriteRecipeRepository the favorite recipe repository
      * @param recipeRepository the recipe repository
+     * @param ingredientRepository the ingredient repository
      * @param userRepository the user repository
      * @param recipeMapper the recipe mapper
      * @param auditService the audit service
+     * @param userSettingsService the user settings service (for locale resolution)
+     * @param translationResolver the translation resolver
      */
     public FavoriteRecipeService(
             FavoriteRecipeRepository favoriteRecipeRepository,
             RecipeRepository recipeRepository,
+            IngredientRepository ingredientRepository,
             UserRepository userRepository,
             RecipeMapper recipeMapper,
-            AuditService auditService) {
+            AuditService auditService,
+            UserSettingsService userSettingsService,
+            TranslationResolver translationResolver) {
         this.favoriteRecipeRepository = favoriteRecipeRepository;
         this.recipeRepository = recipeRepository;
+        this.ingredientRepository = ingredientRepository;
         this.userRepository = userRepository;
         this.recipeMapper = recipeMapper;
         this.auditService = auditService;
+        this.userSettingsService = userSettingsService;
+        this.translationResolver = translationResolver;
     }
     
     /**
@@ -125,17 +141,52 @@ public class FavoriteRecipeService {
      * 
      * @param userId the user ID
      * @param pageable pagination information
-     * @return Page of favorite recipes
+     * @return Page of favorite recipes with translated content
      */
     @Transactional(readOnly = true)
     public Page<RecipeDto> getUserFavorites(Long userId, Pageable pageable) {
         log.debug("Getting favorites for user ID {}", userId);
         
+        // Get user's locale for translation resolution
+        String userLocale = SupportedLocale.EN.getCode(); // Default to English
+        try {
+            String locale = userSettingsService.getUserSettings(userId).getLanguage();
+            if (SupportedLocale.isSupported(locale)) {
+                userLocale = locale;
+            }
+        } catch (Exception e) {
+            log.debug("Could not fetch user locale for user ID {}: {}", userId, e.getMessage());
+        }
+        final String finalUserLocale = userLocale;
+        
+        // Get favorites (no locale filtering)
         Page<FavoriteRecipe> favorites = favoriteRecipeRepository.findByUserId(userId, pageable);
         
         return favorites.map(favorite -> {
             Recipe recipe = favorite.getRecipe();
-            return recipeMapper.toRecipeDto(recipe, true); // Always true since these are favorites
+            RecipeDto dto = recipeMapper.toRecipeDto(recipe, true); // Always true since these are favorites
+            
+            // Resolve translations
+            TranslationResolver.RecipeContent content = translationResolver.resolveRecipeContent(recipe, finalUserLocale);
+            dto.setName(content.name());
+            dto.setDescription(content.description());
+            dto.setInstructions(content.instructions());
+            
+            // Resolve ingredient names
+            if (dto.getIngredients() != null) {
+                for (com.vallexia.recipe.dto.IngredientDto ingredientDto : dto.getIngredients()) {
+                    if (ingredientDto.getIngredientId() != null) {
+                        Ingredient ingredient = ingredientRepository.findById(ingredientDto.getIngredientId())
+                            .orElse(null);
+                        if (ingredient != null) {
+                            String translatedName = translationResolver.resolveIngredientName(ingredient, finalUserLocale);
+                            ingredientDto.setName(translatedName);
+                        }
+                    }
+                }
+            }
+            
+            return dto;
         });
     }
     

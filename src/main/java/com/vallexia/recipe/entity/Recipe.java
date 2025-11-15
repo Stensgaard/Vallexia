@@ -92,8 +92,14 @@ public class Recipe {
     @Column(name = "is_public", nullable = false)
     private Boolean isPublic = false;
     
+    @Column(name = "base_locale", nullable = false, length = 10)
+    private String baseLocale = "en";
+    
     @OneToOne(mappedBy = "recipe", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private NutritionalInfo nutritionalInfo;
+    
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<RecipeTranslation> translations = new ArrayList<>();
     
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @OrderBy("displayOrder ASC")

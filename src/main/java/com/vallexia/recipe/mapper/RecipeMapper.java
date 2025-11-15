@@ -62,6 +62,8 @@ public interface RecipeMapper {
     @Mapping(target = "tags", ignore = true)
     @Mapping(target = "favoriteRecipes", ignore = true)
     @Mapping(target = "totalTimeMinutes", ignore = true)
+    @Mapping(target = "baseLocale", ignore = true) // Base locale is set from admin's settings, not from DTO
+    @Mapping(target = "translations", ignore = true) // Translations are handled separately
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     // dietaryRestrictions and allergens are automatically mapped by MapStruct
@@ -79,6 +81,8 @@ public interface RecipeMapper {
     @Mapping(target = "nutritionalInfo", ignore = true)
     @Mapping(target = "tags", ignore = true)
     @Mapping(target = "favoriteRecipes", ignore = true)
+    @Mapping(target = "baseLocale", ignore = true) // Base locale is preserved from original recipe, not updated
+    @Mapping(target = "translations", ignore = true) // Translations are handled separately
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     // dietaryRestrictions and allergens are automatically mapped by MapStruct

@@ -16,8 +16,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -63,6 +65,13 @@ public class CreateRecipeDto {
     private String imageUrl;
     
     private Boolean isPublic = false;
+    
+    /**
+     * Optional translations for the recipe in different locales.
+     * Key is the locale code (e.g., "en", "da"), value is the translation DTO.
+     */
+    @Valid
+    private Map<String, RecipeTranslationDto> translations = new HashMap<>();
     
     @Valid
     private List<IngredientDto> ingredients = new ArrayList<>();
