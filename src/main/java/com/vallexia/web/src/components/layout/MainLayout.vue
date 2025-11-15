@@ -11,7 +11,7 @@
       <!-- Page content -->
       <main class="flex-1 py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <RouterView />
+          <slot />
         </div>
       </main>
     </div>
@@ -20,7 +20,6 @@
 
 <script setup>
 import { ref } from 'vue'
-import { RouterView } from 'vue-router'
 import AppSidebar from '@/components/layout/AppSidebar.vue'
 import AppTopBar from '@/components/layout/AppTopBar.vue'
 

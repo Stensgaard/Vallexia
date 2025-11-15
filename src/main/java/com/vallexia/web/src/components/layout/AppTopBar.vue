@@ -17,7 +17,7 @@
         <!-- Center - Search bar -->
         <div class="flex-1 flex items-center justify-center px-2 lg:ml-6 lg:justify-end">
           <div class="max-w-lg w-full lg:max-w-xs">
-            <label for="search" class="sr-only">Search</label>
+            <label for="search" class="sr-only">{{ $t('layout.search') }}</label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -28,7 +28,7 @@
                 id="search"
                 v-model="searchQuery"
                 class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                placeholder="Search recipes, meals..."
+                :placeholder="$t('layout.searchPlaceholder')"
                 type="search"
               />
             </div>
@@ -45,9 +45,13 @@
           </button>
 
           <!-- User menu -->
-          <div ref="userMenuRef" class="relative">
+          <div
+            ref="userMenuRef"
+            class="relative"
+            @mouseenter="userMenuOpen = true"
+            @mouseleave="userMenuOpen = false"
+          >
             <button
-              @click="userMenuOpen = !userMenuOpen"
               class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
@@ -66,15 +70,14 @@
                 <RouterLink
                   to="/profile"
                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  @click="userMenuOpen = false"
                 >
-                  Your Profile
+                  {{ $t('layout.yourProfile') }}
                 </RouterLink>
                 <button
                   @click="handleLogout"
                   class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
-                  Sign out
+                  {{ $t('layout.signOut') }}
                 </button>
               </div>
             </div>
@@ -86,7 +89,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
@@ -109,25 +112,9 @@ const userInitials = computed(() => {
 const handleLogout = async () => {
   try {
     await authStore.logout()
-    router.push('/login')
+    router.push('/')
   } catch (error) {
     // Logout errors are non-critical, silently fail
   }
-  userMenuOpen.value = false
 }
-
-// Close menu when clicking outside
-const handleClickOutside = (event) => {
-  if (userMenuRef.value && !userMenuRef.value.contains(event.target)) {
-    userMenuOpen.value = false
-  }
-}
-
-onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
-})
-
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside)
-})
 </script>
