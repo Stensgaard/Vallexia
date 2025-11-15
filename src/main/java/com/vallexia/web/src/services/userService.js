@@ -70,5 +70,33 @@ export const userService = {
   async updateNutritionalGoals(goalsData) {
     const response = await api.put('/v1/users/nutritional-goals', goalsData)
     return response.data
+  },
+
+  /**
+   * Get current user's settings
+   * @returns {Promise<Object>} User settings data
+   */
+  async getSettings() {
+    const response = await api.get('/v1/users/settings')
+    return response.data
+  },
+
+  /**
+   * Update current user's settings
+   * @param {Object} settingsData - Updated settings data
+   * @param {string} settingsData.language - Language code
+   * @param {string} settingsData.country - Country code
+   * @param {string} settingsData.dateFormat - Date format
+   * @param {string} settingsData.timezone - Timezone
+   * @param {string} settingsData.firstDayOfWeek - First day of week
+   * @param {string} settingsData.measurementSystem - Measurement system
+   * @param {string} settingsData.numberDecimalSeparator - Decimal separator
+   * @param {string} settingsData.numberThousandsSeparator - Thousands separator
+   * @param {string} settingsData.currency - Currency code
+   * @returns {Promise<Object>} Updated user settings
+   */
+  async updateSettings(settingsData) {
+    const response = await api.put('/v1/users/settings', settingsData)
+    return response.data
   }
 }
