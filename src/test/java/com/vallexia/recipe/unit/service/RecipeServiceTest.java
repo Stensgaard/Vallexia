@@ -37,6 +37,9 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import org.mockito.ArgumentMatchers;
+import org.springframework.data.jpa.domain.Specification;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -85,6 +88,15 @@ class RecipeServiceTest {
   
   @Mock
   private AuthenticationHelper authenticationHelper;
+  
+  @Mock
+  private com.vallexia.user.service.UserSettingsService userSettingsService;
+  
+  @Mock
+  private com.vallexia.recipe.service.TranslationResolver translationResolver;
+  
+  @Mock
+  private com.vallexia.recipe.repository.RecipeTranslationRepository recipeTranslationRepository;
   
   @InjectMocks
   private RecipeService recipeService;
@@ -141,6 +153,12 @@ class RecipeServiceTest {
     when(nutritionalInfoRepository.save(any(NutritionalInfo.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
     doNothing().when(nutritionalCalculationService).updateRecipeNutrition(any(Recipe.class));
+    com.vallexia.user.dto.UserSettingsDto userSettings = new com.vallexia.user.dto.UserSettingsDto();
+    userSettings.setLanguage("en");
+    when(userSettingsService.getUserSettings(any(Long.class)))
+        .thenReturn(userSettings);
+    when(recipeTranslationRepository.save(any(com.vallexia.recipe.entity.RecipeTranslation.class)))
+        .thenAnswer(invocation -> invocation.getArgument(0));
     when(favoriteRecipeService.isFavorite(any(Long.class), eq(UserTestFixtures.TEST_USER_ID)))
         .thenReturn(false);
     when(recipeMapper.toRecipeDto(recipe, false))
@@ -220,6 +238,12 @@ class RecipeServiceTest {
     // CRITICAL: Must stub updateRecipeNutrition to prevent real execution
     doNothing().when(nutritionalCalculationService).updateRecipeNutrition(any(Recipe.class));
     doNothing().when(auditService).logEvent(any(EventType.class), any(Long.class), any(String.class));
+    com.vallexia.user.dto.UserSettingsDto userSettings = new com.vallexia.user.dto.UserSettingsDto();
+    userSettings.setLanguage("en");
+    when(userSettingsService.getUserSettings(any(Long.class)))
+        .thenReturn(userSettings);
+    when(recipeTranslationRepository.save(any(com.vallexia.recipe.entity.RecipeTranslation.class)))
+        .thenAnswer(invocation -> invocation.getArgument(0));
     when(favoriteRecipeService.isFavorite(any(), any()))
         .thenReturn(false);
     when(recipeMapper.toRecipeDto(any(), any()))
@@ -277,6 +301,12 @@ class RecipeServiceTest {
         });
     when(nutritionalInfoRepository.save(any(NutritionalInfo.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
+    com.vallexia.user.dto.UserSettingsDto userSettings = new com.vallexia.user.dto.UserSettingsDto();
+    userSettings.setLanguage("en");
+    when(userSettingsService.getUserSettings(any(Long.class)))
+        .thenReturn(userSettings);
+    when(recipeTranslationRepository.save(any(com.vallexia.recipe.entity.RecipeTranslation.class)))
+        .thenAnswer(invocation -> invocation.getArgument(0));
     when(favoriteRecipeService.isFavorite(any(), any()))
         .thenReturn(false);
     when(recipeMapper.toRecipeDto(any(), any()))
@@ -300,8 +330,26 @@ class RecipeServiceTest {
     RecipeDto expectedDto = new RecipeDto();
     expectedDto.setId(RecipeTestFixtures.TEST_RECIPE_ID);
     
+    com.vallexia.user.dto.UserSettingsDto userSettings = new com.vallexia.user.dto.UserSettingsDto();
+    userSettings.setLanguage("en");
+    
     when(recipeRepository.findById(RecipeTestFixtures.TEST_RECIPE_ID))
         .thenReturn(Optional.of(recipe));
+    when(userSettingsService.getUserSettings(any(Long.class)))
+        .thenReturn(userSettings);
+    when(translationResolver.resolveRecipeContent(any(Recipe.class), any(String.class)))
+        .thenAnswer(invocation -> {
+          Recipe r = invocation.getArgument(0);
+          return new com.vallexia.recipe.service.TranslationResolver.RecipeContent(
+              r.getName(), r.getDescription(), r.getInstructions());
+        });
+    when(translationResolver.resolveIngredientName(any(com.vallexia.recipe.entity.Ingredient.class), any(String.class)))
+        .thenAnswer(invocation -> {
+          com.vallexia.recipe.entity.Ingredient ing = invocation.getArgument(0);
+          return ing != null ? ing.getName() : null;
+        });
+    when(ingredientRepository.findById(any(Long.class)))
+        .thenReturn(Optional.empty());
     when(favoriteRecipeService.isFavorite(RecipeTestFixtures.TEST_RECIPE_ID, UserTestFixtures.TEST_USER_ID))
         .thenReturn(true);
     when(recipeMapper.toRecipeDto(recipe, true))
@@ -498,8 +546,26 @@ class RecipeServiceTest {
     Page<Recipe> recipePage = new PageImpl<>(recipes, pageable, 1);
     RecipeDto recipeDto = new RecipeDto();
     
-    when(recipeRepository.findByIsPublicTrue(pageable))
+    com.vallexia.user.dto.UserSettingsDto userSettings = new com.vallexia.user.dto.UserSettingsDto();
+    userSettings.setLanguage("en");
+    
+    when(recipeRepository.findAll(ArgumentMatchers.<Specification<Recipe>>any(), any(Pageable.class)))
         .thenReturn(recipePage);
+    when(userSettingsService.getUserSettings(any(Long.class)))
+        .thenReturn(userSettings);
+    when(translationResolver.resolveRecipeContent(any(Recipe.class), any(String.class)))
+        .thenAnswer(invocation -> {
+          Recipe r = invocation.getArgument(0);
+          return new com.vallexia.recipe.service.TranslationResolver.RecipeContent(
+              r.getName(), r.getDescription(), r.getInstructions());
+        });
+    when(translationResolver.resolveIngredientName(any(com.vallexia.recipe.entity.Ingredient.class), any(String.class)))
+        .thenAnswer(invocation -> {
+          com.vallexia.recipe.entity.Ingredient ing = invocation.getArgument(0);
+          return ing != null ? ing.getName() : null;
+        });
+    when(ingredientRepository.findById(any(Long.class)))
+        .thenReturn(Optional.empty());
     when(favoriteRecipeService.isFavorite(any(Long.class), eq(1L)))
         .thenReturn(false);
     when(recipeMapper.toRecipeDto(recipe, false))
@@ -511,7 +577,7 @@ class RecipeServiceTest {
     // Then
     assertThat(result).isNotNull();
     assertThat(result.getContent()).hasSize(1);
-    verify(recipeRepository).findByIsPublicTrue(pageable);
+    verify(recipeRepository).findAll(ArgumentMatchers.<Specification<Recipe>>any(), any(Pageable.class));
     verify(favoriteRecipeService).isFavorite(any(Long.class), eq(1L));
   }
 }

@@ -66,6 +66,15 @@ class FavoriteRecipeServiceTest {
   @Mock
   private AuditService auditService;
   
+  @Mock
+  private com.vallexia.user.service.UserSettingsService userSettingsService;
+  
+  @Mock
+  private com.vallexia.recipe.service.TranslationResolver translationResolver;
+  
+  @Mock
+  private com.vallexia.recipe.repository.IngredientRepository ingredientRepository;
+  
   @InjectMocks
   private FavoriteRecipeService favoriteRecipeService;
   
@@ -175,8 +184,26 @@ class FavoriteRecipeServiceTest {
     Page<FavoriteRecipe> favoritesPage = new PageImpl<>(favorites, pageable, 1);
     RecipeDto recipeDto = new RecipeDto();
     
+    com.vallexia.user.dto.UserSettingsDto userSettings = new com.vallexia.user.dto.UserSettingsDto();
+    userSettings.setLanguage("en");
+    
     when(favoriteRecipeRepository.findByUserId(UserTestFixtures.TEST_USER_ID, pageable))
         .thenReturn(favoritesPage);
+    when(userSettingsService.getUserSettings(any(Long.class)))
+        .thenReturn(userSettings);
+    when(translationResolver.resolveRecipeContent(any(Recipe.class), any(String.class)))
+        .thenAnswer(invocation -> {
+          Recipe r = invocation.getArgument(0);
+          return new com.vallexia.recipe.service.TranslationResolver.RecipeContent(
+              r.getName(), r.getDescription(), r.getInstructions());
+        });
+    when(translationResolver.resolveIngredientName(any(com.vallexia.recipe.entity.Ingredient.class), any(String.class)))
+        .thenAnswer(invocation -> {
+          com.vallexia.recipe.entity.Ingredient ing = invocation.getArgument(0);
+          return ing != null ? ing.getName() : null;
+        });
+    when(ingredientRepository.findById(any(Long.class)))
+        .thenReturn(Optional.empty());
     when(recipeMapper.toRecipeDto(recipe, true))
         .thenReturn(recipeDto);
     
