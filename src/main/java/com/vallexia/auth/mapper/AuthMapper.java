@@ -30,6 +30,7 @@ public interface AuthMapper {
   @Mapping(target = "roles", ignore = true)         // Handle separately
   @Mapping(target = "dietaryPreferences", ignore = true)
   @Mapping(target = "nutritionalGoals", ignore = true)
+  @Mapping(target = "userSettings", ignore = true)
   @Mapping(target = "enabled", constant = "true")
   @Mapping(target = "accountNonExpired", constant = "true")
   @Mapping(target = "accountNonLocked", constant = "true")
