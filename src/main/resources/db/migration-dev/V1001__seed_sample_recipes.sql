@@ -671,4 +671,3 @@ BEGIN
     ON CONFLICT (ingredient_id, locale) DO NOTHING;
 
 END $$;
-

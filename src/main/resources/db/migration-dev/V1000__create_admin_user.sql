@@ -66,4 +66,3 @@ SELECT id, unnest(ARRAY['BREAKFAST', 'LUNCH', 'DINNER']::VARCHAR[])
 FROM users
 WHERE username = 'admin'
 ON CONFLICT (user_id, meal_type) DO NOTHING;
-
