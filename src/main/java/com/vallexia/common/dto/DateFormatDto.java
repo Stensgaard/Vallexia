@@ -6,6 +6,13 @@ import lombok.Value;
 
 import java.util.List;
 
+/**
+ * DTO for date format options.
+ * 
+ * @author Vallexia Team
+ * @version 1.0
+ * @since 2024-01-01
+ */
 @Value
 @Builder
 @Schema(description = "Supported date format definition")

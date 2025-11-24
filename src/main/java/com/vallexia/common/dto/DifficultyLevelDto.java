@@ -4,6 +4,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Value;
 
+/**
+ * DTO for difficulty level options.
+ * 
+ * @author Vallexia Team
+ * @version 1.0
+ * @since 2024-01-01
+ */
 @Value
 @Builder
 @Schema(description = "Supported recipe difficulty level")
