@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Enumeration of supported countries in the application.
+ * Supported countries in the application.
  * 
  * @author Henrik Stensgaard
  * @version 1.0
