@@ -35,9 +35,9 @@ import java.util.stream.Collectors;
 /**
  * REST controller for locale-related configuration.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-20
  */
 @RestController
 @RequestMapping("/api/v1/locales")

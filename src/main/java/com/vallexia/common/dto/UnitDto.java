@@ -11,9 +11,9 @@ import lombok.Value;
  * <p>The conversion value expresses how many base units (grams or milliliters) the unit equals.
  * For pure count-based units the conversion can be {@code null}.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-24
  */
 @Value
 @Builder
