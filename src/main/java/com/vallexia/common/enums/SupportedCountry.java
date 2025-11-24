@@ -25,7 +25,7 @@ public enum SupportedCountry {
             SupportedMeasurementSystem.IMPERIAL,
             ".",
             ",",
-            SupportedCurrency.USD.getCode()
+            SupportedCurrency.USD
     ),
     DK(
             "DK",
@@ -37,7 +37,7 @@ public enum SupportedCountry {
             SupportedMeasurementSystem.METRIC,
             ",",
             ".",
-            SupportedCurrency.DKK.getCode()
+            SupportedCurrency.DKK
     );
 
     private final String countryCode;
@@ -49,7 +49,7 @@ public enum SupportedCountry {
     private final SupportedMeasurementSystem measurementSystem;
     private final String decimalSeparator;
     private final String thousandsSeparator;
-    private final String currencyCode;
+    private final SupportedCurrency currency;
 
     SupportedCountry(String countryCode,
                      String displayName,
@@ -60,7 +60,7 @@ public enum SupportedCountry {
                      SupportedMeasurementSystem measurementSystem,
                      String decimalSeparator,
                      String thousandsSeparator,
-                     String currencyCode) {
+                     SupportedCurrency currency) {
         this.countryCode = countryCode;
         this.displayName = displayName;
         this.locale = locale;
@@ -70,7 +70,15 @@ public enum SupportedCountry {
         this.measurementSystem = measurementSystem;
         this.decimalSeparator = decimalSeparator;
         this.thousandsSeparator = thousandsSeparator;
-        this.currencyCode = currencyCode;
+        this.currency = currency;
+    }
+
+    public String getCurrencyCode() {
+        return currency.getCode();
+    }
+
+    public String getCurrencyName() {
+        return currency.getName();
     }
 
     public static Optional<SupportedCountry> fromCountry(String countryCode) {

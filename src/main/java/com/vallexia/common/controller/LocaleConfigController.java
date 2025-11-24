@@ -22,6 +22,7 @@ import com.vallexia.user.entity.enums.MealType;
 import com.vallexia.common.mapper.LocaleConfigMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -43,6 +45,15 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/locales")
 @Tag(name = "Locale Configuration", description = "Localized configuration such as countries, currencies, timezones, and date formats")
 public class LocaleConfigController {
+
+    private static final CacheControl LOCALE_CACHE_CONTROL =
+            CacheControl.maxAge(6, TimeUnit.HOURS).cachePublic();
+
+    private final LocaleConfigDto cachedConfig;
+
+    public LocaleConfigController() {
+        this.cachedConfig = buildLocaleConfigSnapshot();
+    }
 
     @GetMapping
     @Operation(summary = "List supported locales")
@@ -143,7 +154,13 @@ public class LocaleConfigController {
     @GetMapping("/config")
     @Operation(summary = "Get the complete locale configuration bundle")
     public ResponseEntity<LocaleConfigDto> getLocaleConfig() {
-        LocaleConfigDto config = LocaleConfigMapper.buildConfig(
+        return ResponseEntity.ok()
+                .cacheControl(LOCALE_CACHE_CONTROL)
+                .body(cachedConfig);
+    }
+
+    private LocaleConfigDto buildLocaleConfigSnapshot() {
+        return LocaleConfigMapper.buildConfig(
                 buildLocales(),
                 buildCountries(),
                 buildCurrencies(),
@@ -164,7 +181,6 @@ public class LocaleConfigController {
                 buildSubscriptionStatuses(),
                 buildMealTypes()
         );
-        return ResponseEntity.ok(config);
     }
 
     private List<LocaleDto> buildLocales() {
