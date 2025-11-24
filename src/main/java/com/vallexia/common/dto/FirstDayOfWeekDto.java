@@ -21,7 +21,4 @@ public class FirstDayOfWeekDto {
 
     @Schema(description = "Display name", example = "Monday")
     String name;
-
-    @Schema(description = "Numeric value used by backend (0 or 1)", example = "1")
-    int value;
 }

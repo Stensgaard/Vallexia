@@ -11,7 +11,14 @@ import java.util.stream.Collectors;
 
 /**
  * Supported currencies in the application.
- * 
+ *
+ * <p>To add a currency:
+ * <ol>
+ *   <li>Add the enum constant with ISO code and display name</li>
+ *   <li>Update any dependent countries in {@link SupportedCountry}</li>
+ *   <li>No further wiring is necessary; lookup helpers pick up the new value automatically</li>
+ * </ol>
+ *
  * @author Henrik Stensgaard
  * @version 1.0
  * @since 2025-11-24

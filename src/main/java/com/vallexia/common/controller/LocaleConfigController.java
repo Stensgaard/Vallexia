@@ -36,7 +36,15 @@ import java.util.stream.Collectors;
 
 /**
  * REST controller for locale-related configuration.
- * 
+ *
+ * <p>To expose a new configuration resource:
+ * <ol>
+ *   <li>Add or update the relevant enum/DTO under {@code com.vallexia.common}</li>
+ *   <li>Extend {@link LocaleConfigMapper} so the new enum can be converted to DTOs</li>
+ *   <li>Add a {@code buildXYZ()} helper and matching {@code @GetMapping} in this controller</li>
+ *   <li>Wire the builder into {@link #buildLocaleConfigSnapshot()} so /config stays in sync</li>
+ * </ol>
+ *
  * @author Henrik Stensgaard
  * @version 1.0
  * @since 2025-11-20

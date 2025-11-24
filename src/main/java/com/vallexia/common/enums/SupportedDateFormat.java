@@ -8,7 +8,14 @@ import java.util.Optional;
 
 /**
  * Supported date formats for user preferences.
- * 
+ *
+ * <p>To introduce a new format:
+ * <ol>
+ *   <li>Add an enum constant with the display pattern and {@link DateFormatToken} sequence</li>
+ *   <li>Reference the enum from any country or user-preference defaults</li>
+ *   <li>The frontend receives the new format automatically through the locale config endpoint</li>
+ * </ol>
+ *
  * @author Henrik Stensgaard
  * @version 1.0
  * @since 2025-11-24

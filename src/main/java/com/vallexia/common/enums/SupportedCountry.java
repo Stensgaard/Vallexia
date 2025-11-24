@@ -8,7 +8,14 @@ import java.util.Optional;
 
 /**
  * Supported countries in the application.
- * 
+ *
+ * <p>To register a new country:
+ * <ol>
+ *   <li>Add the enum constant with locale, date/time defaults, separators, and currency</li>
+ *   <li>Ensure {@link SupportedCurrency}, {@link SupportedLocale}, and other referenced enums contain the value</li>
+ *   <li>No controller changes are needed—{@code LocaleConfigController} will pick it up automatically</li>
+ * </ol>
+ *
  * @author Henrik Stensgaard
  * @version 1.0
  * @since 2025-11-24
