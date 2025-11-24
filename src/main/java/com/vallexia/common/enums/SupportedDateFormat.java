@@ -1,0 +1,127 @@
+package com.vallexia.common.enums;
+
+import lombok.Getter;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Supported date formats for user preferences.
+ * 
+ * @author Henrik Stensgaard
+ * @version 1.0
+ * @since 2025-11-24
+ */
+@Getter
+public enum SupportedDateFormat {
+    MM_DD_YYYY("MM/DD/YYYY", DateFormatToken.sequence(
+            DateFormatToken.month(),
+            DateFormatToken.literal("/"),
+            DateFormatToken.day(),
+            DateFormatToken.literal("/"),
+            DateFormatToken.year()
+    )),
+    DD_MM_YYYY("DD/MM/YYYY", DateFormatToken.sequence(
+            DateFormatToken.day(),
+            DateFormatToken.literal("/"),
+            DateFormatToken.month(),
+            DateFormatToken.literal("/"),
+            DateFormatToken.year()
+    )),
+    YYYY_MM_DD("YYYY-MM-DD", DateFormatToken.sequence(
+            DateFormatToken.year(),
+            DateFormatToken.literal("-"),
+            DateFormatToken.month(),
+            DateFormatToken.literal("-"),
+            DateFormatToken.day()
+    )),
+    DD_MM_YYYY_DOT("DD.MM.YYYY", DateFormatToken.sequence(
+            DateFormatToken.day(),
+            DateFormatToken.literal("."),
+            DateFormatToken.month(),
+            DateFormatToken.literal("."),
+            DateFormatToken.year()
+    ));
+
+    private final String format;
+    private final List<DateFormatToken> tokens;
+
+    SupportedDateFormat(String format, List<DateFormatToken> tokens) {
+        this.format = format;
+        this.tokens = tokens;
+    }
+
+    public static boolean isValidFormat(String format) {
+        if (format == null || format.isEmpty()) {
+            return false;
+        }
+        return Arrays.stream(values())
+                .anyMatch(item -> item.getFormat().equals(format));
+    }
+
+    public static Optional<SupportedDateFormat> fromFormat(String format) {
+        if (format == null || format.isEmpty()) {
+            return Optional.empty();
+        }
+        return Arrays.stream(values())
+                .filter(item -> item.getFormat().equals(format))
+                .findFirst();
+    }
+
+    public static Optional<SupportedDateFormat> fromCode(String code) {
+        if (code == null || code.isEmpty()) {
+            return Optional.empty();
+        }
+        return Arrays.stream(values())
+                .filter(item -> item.name().equalsIgnoreCase(code))
+                .findFirst();
+    }
+
+    public static boolean isValidCode(String code) {
+        return fromCode(code).isPresent();
+    }
+
+    public static List<SupportedDateFormat> getAll() {
+        return Arrays.asList(values());
+    }
+
+    @Getter
+    public static class DateFormatToken {
+        private final Type type;
+        private final String value;
+
+        private DateFormatToken(Type type, String value) {
+            this.type = type;
+            this.value = value;
+        }
+
+        public static DateFormatToken day() {
+            return new DateFormatToken(Type.DAY, null);
+        }
+
+        public static DateFormatToken month() {
+            return new DateFormatToken(Type.MONTH, null);
+        }
+
+        public static DateFormatToken year() {
+            return new DateFormatToken(Type.YEAR, null);
+        }
+
+        public static DateFormatToken literal(String value) {
+            return new DateFormatToken(Type.LITERAL, value);
+        }
+
+        public static List<DateFormatToken> sequence(DateFormatToken... tokens) {
+            return Arrays.asList(tokens);
+        }
+
+        public enum Type {
+            DAY,
+            MONTH,
+            YEAR,
+            LITERAL
+        }
+    }
+
+}
