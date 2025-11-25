@@ -7,13 +7,12 @@ import jakarta.validation.ConstraintValidatorContext;
 /**
  * Validator implementation for @ValidFirstDayOfWeek annotation.
  * Validates that a first day of week value is one of the supported options defined in SupportedFirstDayOfWeek enum.
- * Only accepts SupportedFirstDayOfWeek enum instances or string/CharSequence values that can be resolved to the enum.
  * 
  * @author Henrik Stensgaard
  * @version 1.0
  * @since 2025-11-25
  */
-public class ValidFirstDayOfWeekValidator implements ConstraintValidator<ValidFirstDayOfWeek, Object> {
+public class ValidFirstDayOfWeekValidator implements ConstraintValidator<ValidFirstDayOfWeek, String> {
 
     @Override
     public void initialize(ValidFirstDayOfWeek constraintAnnotation) {
@@ -21,19 +20,10 @@ public class ValidFirstDayOfWeekValidator implements ConstraintValidator<ValidFi
     }
 
     @Override
-    public boolean isValid(Object value, ConstraintValidatorContext context) {
-        if (value == null) {
+    public boolean isValid(String value, ConstraintValidatorContext context) {
+        if (value == null || value.isEmpty()) {
             return true;
         }
-
-        if (value instanceof SupportedFirstDayOfWeek) {
-            return true;
-        }
-
-        if (value instanceof CharSequence sequence) {
-            return SupportedFirstDayOfWeek.fromCode(sequence.toString()).isPresent();
-        }
-
-        return false;
+        return SupportedFirstDayOfWeek.fromCode(value).isPresent();
     }
 }
