@@ -10,19 +10,23 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Validates that an allergy string matches one of the supported {@link com.vallexia.user.entity.enums.Allergy} values.
- * 
+ * Validates that a country code matches one of the {@link com.vallexia.common.enums.SupportedCountry}
+ * entries.
+ *
+ * <p>Combine with {@code @NotBlank} or {@code @NotNull} when the field must be provided; this
+ * validator only ensures supplied values belong to the supported countries list.</p>
+ *
  * @author Henrik Stensgaard
  * @version 1.0
  * @since 2025-11-25
  */
 @Documented
-@Constraint(validatedBy = ValidAllergyValidator.class)
+@Constraint(validatedBy = ValidCountryValidator.class)
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ValidAllergy {
+public @interface ValidCountry {
 
-    String message() default "Allergy must be one of the supported values";
+    String message() default "Country must be one of the supported countries";
 
     Class<?>[] groups() default {};
 
