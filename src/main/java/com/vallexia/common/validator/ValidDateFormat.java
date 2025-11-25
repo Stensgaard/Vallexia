@@ -11,11 +11,11 @@ import java.lang.annotation.Target;
 
 /**
  * Custom validation annotation to ensure a date format string is one of the supported formats.
- * Uses the DateFormat enum as the source of truth.
+ * Uses the SupportedDateFormat enum as the source of truth.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-15
  */
 @Documented
 @Constraint(validatedBy = ValidDateFormatValidator.class)

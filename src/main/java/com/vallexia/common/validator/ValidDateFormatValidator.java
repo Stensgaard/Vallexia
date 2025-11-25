@@ -1,6 +1,6 @@
 package com.vallexia.common.validator;
 
-import com.vallexia.user.entity.enums.DateFormat;
+import com.vallexia.common.enums.SupportedDateFormat;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
@@ -8,9 +8,9 @@ import jakarta.validation.ConstraintValidatorContext;
  * Validator implementation for @ValidDateFormat annotation.
  * Validates that a date format string is one of the supported formats defined in DateFormat enum.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-15
  */
 public class ValidDateFormatValidator implements ConstraintValidator<ValidDateFormat, String> {
     
@@ -21,11 +21,14 @@ public class ValidDateFormatValidator implements ConstraintValidator<ValidDateFo
     
     @Override
     public boolean isValid(String dateFormat, ConstraintValidatorContext context) {
-        // Null values are handled by @NotBlank or @NotNull annotations
-        if (dateFormat == null || dateFormat.isEmpty()) {
+        if (dateFormat == null) {
             return true;
         }
-        
-        return DateFormat.isValidFormat(dateFormat);
+        String trimmed = dateFormat.trim();
+        if (trimmed.isEmpty()) {
+            return false;
+        }
+
+        return SupportedDateFormat.isValidCode(trimmed);
     }
 }
