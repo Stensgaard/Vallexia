@@ -8,9 +8,9 @@ import jakarta.validation.ConstraintValidatorContext;
  * Validator implementation for @ValidLocale annotation.
  * Validates that a locale string is one of the supported locales defined in SupportedLocale enum.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-15
  */
 public class ValidLocaleValidator implements ConstraintValidator<ValidLocale, String> {
     
@@ -21,11 +21,9 @@ public class ValidLocaleValidator implements ConstraintValidator<ValidLocale, St
     
     @Override
     public boolean isValid(String locale, ConstraintValidatorContext context) {
-        // Null values are handled by @NotBlank or @NotNull annotations
         if (locale == null || locale.isEmpty()) {
             return true;
         }
-        
-        return SupportedLocale.isSupported(locale);
+        return SupportedLocale.fromCode(locale).isPresent();
     }
 }

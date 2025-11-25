@@ -13,9 +13,9 @@ import java.lang.annotation.Target;
  * Custom validation annotation to ensure a locale string is one of the supported locales.
  * Uses the SupportedLocale enum as the source of truth.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-15
  */
 @Documented
 @Constraint(validatedBy = ValidLocaleValidator.class)
