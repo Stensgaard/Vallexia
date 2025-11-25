@@ -21,12 +21,12 @@ public class ValidDateFormatValidator implements ConstraintValidator<ValidDateFo
     
     @Override
     public boolean isValid(String dateFormat, ConstraintValidatorContext context) {
-        if (dateFormat == null) {
+        if (dateFormat == null || dateFormat.isEmpty()) {
             return true;
         }
         String trimmed = dateFormat.trim();
         if (trimmed.isEmpty()) {
-            return false;
+            return true;
         }
 
         return SupportedDateFormat.isValidCode(trimmed);
