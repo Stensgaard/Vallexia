@@ -2,11 +2,10 @@ package com.vallexia.common.mapper;
 
 import com.vallexia.common.dto.*;
 import com.vallexia.recipe.entity.enums.DifficultyLevel;
-import com.vallexia.user.entity.enums.Allergy;
-import com.vallexia.user.entity.enums.CuisineType;
-import com.vallexia.user.entity.enums.DietaryRestriction;
+import com.vallexia.common.enums.SupportedAllergy;
+import com.vallexia.common.enums.SupportedCuisineType;
+import com.vallexia.common.enums.SupportedDietaryRestriction;
 import com.vallexia.user.entity.enums.GoalType;
-import com.vallexia.user.entity.enums.MealType;
 import com.vallexia.user.entity.enums.SubscriptionStatus;
 
 /**
@@ -45,13 +44,13 @@ public class DomainEnumMapper {
     }
 
     /**
-     * Converts a {@link DietaryRestriction} enum to a {@link DietaryRestrictionDto}.
+     * Converts a {@link SupportedDietaryRestriction} enum to a {@link DietaryRestrictionDto}.
      * 
      * @param restriction the dietary restriction enum to convert, must not be null
      * @return the dietary restriction DTO with code and display name
      * @throws IllegalArgumentException if restriction is null
      */
-    public static DietaryRestrictionDto toDietaryRestrictionDto(DietaryRestriction restriction) {
+    public static DietaryRestrictionDto toDietaryRestrictionDto(SupportedDietaryRestriction restriction) {
         requireNonNull(restriction, "restriction");
         return DietaryRestrictionDto.builder()
                 .code(restriction.name())
@@ -60,13 +59,13 @@ public class DomainEnumMapper {
     }
 
     /**
-     * Converts an {@link Allergy} enum to an {@link AllergyDto}.
+     * Converts a {@link SupportedAllergy} enum to an {@link AllergyDto}.
      * 
      * @param allergy the allergy enum to convert, must not be null
      * @return the allergy DTO with code and display name
      * @throws IllegalArgumentException if allergy is null
      */
-    public static AllergyDto toAllergyDto(Allergy allergy) {
+    public static AllergyDto toAllergyDto(SupportedAllergy allergy) {
         requireNonNull(allergy, "allergy");
         return AllergyDto.builder()
                 .code(allergy.name())
@@ -75,13 +74,13 @@ public class DomainEnumMapper {
     }
 
     /**
-     * Converts a {@link CuisineType} enum to a {@link CuisineTypeDto}.
+     * Converts a {@link SupportedCuisineType} enum to a {@link CuisineTypeDto}.
      * 
      * @param cuisineType the cuisine type enum to convert, must not be null
      * @return the cuisine type DTO with code and display name
      * @throws IllegalArgumentException if cuisineType is null
      */
-    public static CuisineTypeDto toCuisineTypeDto(CuisineType cuisineType) {
+    public static CuisineTypeDto toCuisineTypeDto(SupportedCuisineType cuisineType) {
         requireNonNull(cuisineType, "cuisineType");
         return CuisineTypeDto.builder()
                 .code(cuisineType.name())
@@ -140,18 +139,4 @@ public class DomainEnumMapper {
                 .build();
     }
 
-    /**
-     * Converts a {@link MealType} enum to a {@link MealTypeDto}.
-     * 
-     * @param mealType the meal type enum to convert, must not be null
-     * @return the meal type DTO with code and display name
-     * @throws IllegalArgumentException if mealType is null
-     */
-    public static MealTypeDto toMealTypeDto(MealType mealType) {
-        requireNonNull(mealType, "mealType");
-        return MealTypeDto.builder()
-                .code(mealType.name())
-                .name(mealType.getDisplayName())
-                .build();
-    }
 }

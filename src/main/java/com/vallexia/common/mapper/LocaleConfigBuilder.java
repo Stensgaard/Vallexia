@@ -60,7 +60,6 @@ public class LocaleConfigBuilder {
      * @param difficultyLevels list of difficulty level DTOs, must not be null
      * @param goalTypes list of goal type DTOs, must not be null
      * @param subscriptionStatuses list of subscription status DTOs, must not be null
-     * @param mealTypes list of meal type DTOs, must not be null
      * @return the complete locale configuration DTO bundle
      * @throws IllegalArgumentException if any list parameter is null
      */
@@ -81,8 +80,7 @@ public class LocaleConfigBuilder {
                                              List<CuisineTypeDto> cuisineTypes,
                                              List<DifficultyLevelDto> difficultyLevels,
                                              List<GoalTypeDto> goalTypes,
-                                             List<SubscriptionStatusDto> subscriptionStatuses,
-                                             List<MealTypeDto> mealTypes) {
+                                             List<SubscriptionStatusDto> subscriptionStatuses) {
         requireNonNull(locales, "locales");
         requireNonNull(countries, "countries");
         requireNonNull(currencies, "currencies");
@@ -101,7 +99,6 @@ public class LocaleConfigBuilder {
         requireNonNull(difficultyLevels, "difficultyLevels");
         requireNonNull(goalTypes, "goalTypes");
         requireNonNull(subscriptionStatuses, "subscriptionStatuses");
-        requireNonNull(mealTypes, "mealTypes");
         
         return LocaleConfigDto.builder()
                 .locales(locales)
@@ -122,7 +119,6 @@ public class LocaleConfigBuilder {
                 .difficultyLevels(difficultyLevels)
                 .goalTypes(goalTypes)
                 .subscriptionStatuses(subscriptionStatuses)
-                .mealTypes(mealTypes)
                 .build();
     }
 }
