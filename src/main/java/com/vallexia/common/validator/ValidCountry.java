@@ -13,9 +13,6 @@ import java.lang.annotation.Target;
  * Validates that a country code matches one of the {@link com.vallexia.common.enums.SupportedCountry}
  * entries.
  *
- * <p>Combine with {@code @NotBlank} or {@code @NotNull} when the field must be provided; this
- * validator only ensures supplied values belong to the supported countries list.</p>
- *
  * @author Henrik Stensgaard
  * @version 1.0
  * @since 2025-11-25
