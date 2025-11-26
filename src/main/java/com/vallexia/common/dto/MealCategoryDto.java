@@ -16,9 +16,15 @@ import lombok.Value;
 @Schema(description = "Supported meal category for recipes and meal plans")
 public class MealCategoryDto {
 
-    @Schema(description = "Category code", example = "BREAKFAST")
+    @Schema(
+        description = "Category code", 
+        example = "BREAKFAST", 
+        allowableValues = {"BREAKFAST", "LUNCH", "DINNER", "SNACK", 
+            "DESSERT", "APPETIZER", "BEVERAGE"})
     String code;
 
-    @Schema(description = "Display name", example = "Breakfast")
+    @Schema(
+        description = "Display name", 
+        example = "Breakfast")
     String name;
 }

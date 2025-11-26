@@ -16,18 +16,30 @@ import lombok.Value;
 @Schema(description = "Number/currency formatting metadata derived from country settings")
 public class FormattingRuleDto {
 
-    @Schema(description = "Country code", example = "US")
+    @Schema(
+        description = "Country code", 
+        example = "US", 
+        allowableValues = {"US", "DK"})
     String countryCode;
 
-    @Schema(description = "Country name", example = "United States")
+    @Schema(
+        description = "Country name", 
+        example = "United States")
     String countryName;
 
-    @Schema(description = "Decimal separator", example = ".")
+    @Schema(
+        description = "Decimal separator", 
+        example = ".")
     String decimalSeparator;
 
-    @Schema(description = "Thousands separator", example = ",")
+    @Schema(
+        description = "Thousands separator", 
+        example = ",")
     String thousandsSeparator;
 
-    @Schema(description = "Currency code", example = "USD")
+    @Schema(
+        description = "Currency code", 
+        example = "USD", 
+        allowableValues = {"USD", "DKK"})
     String currencyCode;
 }

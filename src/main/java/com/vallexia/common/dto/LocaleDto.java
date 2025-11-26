@@ -16,9 +16,14 @@ import lombok.Value;
 @Schema(description = "Supported application locale")
 public class LocaleDto {
 
-    @Schema(description = "Locale code such as 'en'", example = "en")
+    @Schema(
+        description = "Locale code such as 'en'", 
+        example = "en", 
+        allowableValues = {"en", "da"})
     String code;
 
-    @Schema(description = "Locale name", example = "English")
+    @Schema(
+        description = "Locale name", 
+        example = "English")
     String name;
 }

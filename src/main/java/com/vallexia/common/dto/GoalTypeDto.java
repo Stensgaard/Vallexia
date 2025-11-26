@@ -16,9 +16,15 @@ import lombok.Value;
 @Schema(description = "Supported goal type option")
 public class GoalTypeDto {
 
-    @Schema(description = "Enum code of the goal type", example = "WEIGHT_LOSS")
+    @Schema(
+        description = "Enum code of the goal type", 
+        example = "WEIGHT_LOSS", 
+        allowableValues = {"WEIGHT_LOSS", "WEIGHT_GAIN", "MUSCLE_GAIN", 
+            "MAINTENANCE", "ATHLETIC_PERFORMANCE", "GENERAL_HEALTH"})
     String code;
 
-    @Schema(description = "Display label for the goal", example = "Weight Loss")
+    @Schema(
+        description = "Display label for the goal", 
+        example = "Weight Loss")
     String name;
 }
