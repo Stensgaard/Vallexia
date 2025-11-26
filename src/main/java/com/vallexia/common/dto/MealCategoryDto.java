@@ -19,8 +19,7 @@ public class MealCategoryDto {
     @Schema(
         description = "Category code", 
         example = "BREAKFAST", 
-        allowableValues = {"BREAKFAST", "LUNCH", "DINNER", "SNACK", 
-            "DESSERT", "APPETIZER", "BEVERAGE"})
+        allowableValues = {"BREAKFAST", "LUNCH", "DINNER", "SNACK"})
     String code;
 
     @Schema(

@@ -13,12 +13,11 @@ import com.vallexia.common.enums.SupportedTimezone;
 import com.vallexia.common.enums.SupportedVolumeUnit;
 import com.vallexia.common.enums.SupportedWeightUnit;
 import com.vallexia.recipe.entity.enums.DifficultyLevel;
-import com.vallexia.user.entity.enums.Allergy;
-import com.vallexia.user.entity.enums.CuisineType;
-import com.vallexia.user.entity.enums.DietaryRestriction;
+import com.vallexia.common.enums.SupportedAllergy;
+import com.vallexia.common.enums.SupportedCuisineType;
+import com.vallexia.common.enums.SupportedDietaryRestriction;
 import com.vallexia.user.entity.enums.GoalType;
 import com.vallexia.user.entity.enums.SubscriptionStatus;
-import com.vallexia.user.entity.enums.MealType;
 import com.vallexia.common.mapper.DomainEnumMapper;
 import com.vallexia.common.mapper.LocaleConfigBuilder;
 import com.vallexia.common.mapper.LocaleMapper;
@@ -265,18 +264,6 @@ public class LocaleConfigController {
         return ResponseEntity.ok(buildSubscriptionStatuses());
     }
 
-    @GetMapping("/meal-types")
-    @Operation(
-        summary = "List supported meal types for meal planning", 
-        description = "Returns the complete list of meal type codes available for use in meal plans and user preferences")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Supported meal types retrieved successfully"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<List<MealTypeDto>> getMealTypes() {
-        return ResponseEntity.ok(buildMealTypes());
-    }
-
     @GetMapping("/config")
     @Operation(
         summary = "Get the complete locale configuration bundle", 
@@ -310,8 +297,7 @@ public class LocaleConfigController {
                 buildCuisineTypes(),
                 buildDifficultyLevels(),
                 buildGoalTypes(),
-                buildSubscriptionStatuses(),
-                buildMealTypes()
+                buildSubscriptionStatuses()
         );
     }
 
@@ -391,19 +377,19 @@ public class LocaleConfigController {
     }
 
     private List<DietaryRestrictionDto> buildDietaryRestrictions() {
-        return Arrays.stream(DietaryRestriction.values())
+        return SupportedDietaryRestriction.getAll().stream()
                 .map(DomainEnumMapper::toDietaryRestrictionDto)
                 .collect(Collectors.toList());
     }
 
     private List<AllergyDto> buildAllergies() {
-        return Arrays.stream(Allergy.values())
+        return SupportedAllergy.getAll().stream()
                 .map(DomainEnumMapper::toAllergyDto)
                 .collect(Collectors.toList());
     }
 
     private List<CuisineTypeDto> buildCuisineTypes() {
-        return Arrays.stream(CuisineType.values())
+        return SupportedCuisineType.getAll().stream()
                 .map(DomainEnumMapper::toCuisineTypeDto)
                 .collect(Collectors.toList());
     }
@@ -426,9 +412,4 @@ public class LocaleConfigController {
                 .collect(Collectors.toList());
     }
 
-    private List<MealTypeDto> buildMealTypes() {
-        return Arrays.stream(MealType.values())
-                .map(DomainEnumMapper::toMealTypeDto)
-                .collect(Collectors.toList());
-    }
 }

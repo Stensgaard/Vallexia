@@ -36,5 +36,4 @@ public class LocaleConfigDto {
     List<DifficultyLevelDto> difficultyLevels;
     List<GoalTypeDto> goalTypes;
     List<SubscriptionStatusDto> subscriptionStatuses;
-    List<MealTypeDto> mealTypes;
 }
