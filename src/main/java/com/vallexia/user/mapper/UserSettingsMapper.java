@@ -8,9 +8,9 @@ import org.mapstruct.Mapping;
 /**
  * MapStruct mapper for converting between UserSettings entity and DTO.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-15
  */
 @Mapper(componentModel = "spring")
 public interface UserSettingsMapper {
@@ -26,8 +26,9 @@ public interface UserSettingsMapper {
     
     /**
      * Convert UserSettingsDto to UserSettings entity.
-     * Note: numberDecimalSeparator, numberThousandsSeparator, and currency
+     * Note: numberDecimalSeparator and numberThousandsSeparator
      * are auto-populated from country in the service layer, so they are ignored here.
+     * Currency can be overridden by the user, so it is mapped from the DTO.
      * 
      * @param userSettingsDto UserSettingsDto
      * @return UserSettings entity
@@ -38,6 +39,5 @@ public interface UserSettingsMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "numberDecimalSeparator", ignore = true)
     @Mapping(target = "numberThousandsSeparator", ignore = true)
-    @Mapping(target = "currency", ignore = true)
     UserSettings toUserSettings(UserSettingsDto userSettingsDto);
 }

@@ -1,6 +1,6 @@
 package com.vallexia.user.dto;
 
-import com.vallexia.user.entity.enums.GoalType;
+import com.vallexia.common.validator.ValidGoalType;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
@@ -13,9 +13,9 @@ import java.math.BigDecimal;
 /**
  * Data Transfer Object for nutritional goals.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 @Data
 @NoArgsConstructor
@@ -66,5 +66,6 @@ public class NutritionalGoalsDto {
     @DecimalMax(value = "10000.0", message = "Daily sugar must not exceed 10000 grams")
     private BigDecimal dailySugar;
     
-    private GoalType goalType;
+    @ValidGoalType
+    private String goalType;
 }
