@@ -6,7 +6,9 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Supported weight units with conversion metadata (base unit grams).
@@ -32,12 +34,21 @@ public enum SupportedWeightUnit {
 
     private final String display;
     private final BigDecimal grams;
+    private static final Map<String, SupportedWeightUnit> BY_DISPLAY = Arrays.stream(values())
+            .collect(Collectors.toUnmodifiableMap(
+                    unit -> unit.getDisplay().toLowerCase(Locale.ROOT),
+                    unit -> unit));
 
     SupportedWeightUnit(String display, BigDecimal grams) {
         this.display = display;
         this.grams = grams;
     }
 
+    /**
+     * Get all supported weight units.
+     * 
+     * @return List of all supported weight units
+     */
     public static List<SupportedWeightUnit> getAll() {
         return Arrays.asList(values());
     }
@@ -54,15 +65,14 @@ public enum SupportedWeightUnit {
         }
         String normalized = display.trim().toLowerCase(Locale.ROOT);
         
+        // Try exact match first using the map
+        SupportedWeightUnit exactMatch = BY_DISPLAY.get(normalized);
+        if (exactMatch != null) {
+            return Optional.of(exactMatch);
+        }
+        
+        // Handle plurals and common variations
         for (SupportedWeightUnit unit : values()) {
-            String unitDisplay = unit.getDisplay().toLowerCase(Locale.ROOT);
-            
-            // Exact match
-            if (unitDisplay.equals(normalized)) {
-                return Optional.of(unit);
-            }
-            
-            // Handle plurals and common variations
             switch (unit) {
                 case GRAM:
                     if (normalized.equals("gram") || normalized.equals("grams")) {

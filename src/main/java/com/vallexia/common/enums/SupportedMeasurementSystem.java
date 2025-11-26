@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.vallexia.common.controller.LocaleConfigController;
-
 /**
  * Measurement system options for user preferences.
  *
@@ -30,26 +28,36 @@ public enum SupportedMeasurementSystem {
     METRIC("Metric"),
     IMPERIAL("Imperial");
 
+    private final String displayName;
     private static final Map<String, SupportedMeasurementSystem> BY_CODE = Arrays.stream(values())
             .collect(Collectors.toUnmodifiableMap(
                     ms -> ms.name().toUpperCase(Locale.ROOT),
                     ms -> ms));
 
-    private final String displayName;
-
     SupportedMeasurementSystem(String displayName) {
         this.displayName = displayName;
     }
 
+    /**
+     * Get all supported measurement systems.
+     * 
+     * @return List of all supported measurement systems
+     */
+    public static List<SupportedMeasurementSystem> getAll() {
+        return Arrays.asList(values());
+    }
+
+    /**
+     * Get a supported measurement system by code.
+     * 
+     * @param code the code to get
+     * @return Optional containing the supported measurement system, or empty if not found
+     */
     public static Optional<SupportedMeasurementSystem> fromCode(String code) {
-        if (code == null || code.isEmpty()) {
+        if (code == null || code.isBlank()) {
             return Optional.empty();
         }
         String normalized = code.trim().toUpperCase(Locale.ROOT);
         return Optional.ofNullable(BY_CODE.get(normalized));
-    }
-
-    public static List<SupportedMeasurementSystem> getAll() {
-        return Arrays.asList(values());
     }
 }

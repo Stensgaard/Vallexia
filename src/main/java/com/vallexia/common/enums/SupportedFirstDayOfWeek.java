@@ -3,6 +3,7 @@ package com.vallexia.common.enums;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -27,34 +28,36 @@ public enum SupportedFirstDayOfWeek {
     SUNDAY("Sunday"),
     MONDAY("Monday");
 
+    private final String displayName;
     private static final Map<String, SupportedFirstDayOfWeek> BY_CODE = Arrays.stream(values())
             .collect(Collectors.toUnmodifiableMap(
                     day -> day.name().toUpperCase(Locale.ROOT),
                     day -> day));
-
-    private final String displayName;
 
     SupportedFirstDayOfWeek(String displayName) {
         this.displayName = displayName;
     }
 
     /**
-     * Resolve enum from client-provided code in a locale-safe manner.
-     * Trims whitespace, uppercases with {@link Locale#ROOT}, and matches
-     * against the enum name (e.g., "MONDAY").
-     *
-     * @param code external code value
-     * @return matching enum value if present
+     * Get all supported first day of week options.
+     * 
+     * @return List of all supported first day of week options
+     */
+    public static List<SupportedFirstDayOfWeek> getAll() {
+        return Arrays.asList(values());
+    }
+
+    /**
+     * Get a supported first day of week by code.
+     * 
+     * @param code the code to get
+     * @return Optional containing the supported first day of week, or empty if not found
      */
     public static Optional<SupportedFirstDayOfWeek> fromCode(String code) {
-        if (code == null) {
+        if (code == null || code.isBlank()) {
             return Optional.empty();
         }
-        String trimmed = code.trim();
-        if (trimmed.isEmpty()) {
-            return Optional.empty();
-        }
-        String normalized = trimmed.toUpperCase(Locale.ROOT);
+        String normalized = code.trim().toUpperCase(Locale.ROOT);
         return Optional.ofNullable(BY_CODE.get(normalized));
     }
 }

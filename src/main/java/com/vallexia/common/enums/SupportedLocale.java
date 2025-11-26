@@ -3,11 +3,10 @@ package com.vallexia.common.enums;
 import lombok.Getter;
 
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -27,37 +26,23 @@ public enum SupportedLocale {
     EN("en"),
     DA("da");
 
+    private final String code;
     private static final Map<String, SupportedLocale> BY_CODE = Arrays.stream(values())
             .collect(Collectors.toUnmodifiableMap(
                     locale -> locale.getCode().toLowerCase(Locale.ROOT),
                     locale -> locale));
-
-    private static final Set<String> CACHED_CODES = Collections.unmodifiableSet(BY_CODE.keySet());
-
-    private final String code;
 
     SupportedLocale(String code) {
         this.code = code;
     }
 
     /**
-     * Get all supported locale codes as a Set.
+     * Get all supported locale enum values.
      *
-     * @return Set of locale codes (e.g., ["en", "da"])
+     * @return List of all SupportedLocale enum values
      */
-    public static Set<String> getAllCodes() {
-        return CACHED_CODES;
-    }
-    
-    /**
-     * Get all supported locale codes as a sorted array.
-     * 
-     * @return Array of locale codes sorted alphabetically
-     */
-    public static String[] getAllCodesArray() {
-        return CACHED_CODES.stream()
-                .sorted()
-                .toArray(String[]::new);
+    public static List<SupportedLocale> getAll() {
+        return Arrays.asList(values());
     }
     
     /**
@@ -67,7 +52,7 @@ public enum SupportedLocale {
      * @return Optional containing the SupportedLocale enum value if found
      */
     public static Optional<SupportedLocale> fromCode(String localeCode) {
-        if (localeCode == null || localeCode.isEmpty()) {
+        if (localeCode == null || localeCode.isBlank()) {
             return Optional.empty();
         }
         String normalized = localeCode.trim().toLowerCase(Locale.ROOT);

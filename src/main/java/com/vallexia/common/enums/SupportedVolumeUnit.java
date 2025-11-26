@@ -6,7 +6,9 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Supported volume units with conversion metadata (base unit milliliter).
@@ -33,12 +35,21 @@ public enum SupportedVolumeUnit {
 
     private final String display;
     private final BigDecimal milliliters;
+    private static final Map<String, SupportedVolumeUnit> BY_DISPLAY = Arrays.stream(values())
+            .collect(Collectors.toUnmodifiableMap(
+                    unit -> unit.getDisplay().toLowerCase(Locale.ROOT),
+                    unit -> unit));
 
     SupportedVolumeUnit(String display, BigDecimal milliliters) {
         this.display = display;
         this.milliliters = milliliters;
     }
 
+    /**
+     * Get all supported volume units.
+     * 
+     * @return List of all supported volume units
+     */
     public static List<SupportedVolumeUnit> getAll() {
         return Arrays.asList(values());
     }
@@ -55,15 +66,14 @@ public enum SupportedVolumeUnit {
         }
         String normalized = display.trim().toLowerCase(Locale.ROOT);
         
+        // Try exact match first using the map
+        SupportedVolumeUnit exactMatch = BY_DISPLAY.get(normalized);
+        if (exactMatch != null) {
+            return Optional.of(exactMatch);
+        }
+        
+        // Handle plurals and common variations
         for (SupportedVolumeUnit unit : values()) {
-            String unitDisplay = unit.getDisplay().toLowerCase(Locale.ROOT);
-            
-            // Exact match
-            if (unitDisplay.equals(normalized)) {
-                return Optional.of(unit);
-            }
-            
-            // Handle plurals and common variations
             switch (unit) {
                 case CUP:
                     if (normalized.equals("cups")) {

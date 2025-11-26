@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.vallexia.common.controller.LocaleConfigController;
-
 /**
  * Supported meal categories used for recipe tagging and meal-plan selections.
  *
@@ -35,23 +33,33 @@ public enum SupportedMealCategory {
     APPETIZER("Appetizer"),
     BEVERAGE("Beverage");
 
+    private final String displayName;
     private static final Map<String, SupportedMealCategory> BY_CODE = Arrays.stream(values())
             .collect(Collectors.toUnmodifiableMap(
                     category -> category.name().toUpperCase(Locale.ROOT),
                     category -> category));
 
-    private final String displayName;
-
     SupportedMealCategory(String displayName) {
         this.displayName = displayName;
     }
 
+    /**
+     * Get all supported meal categories.
+     * 
+     * @return List of all supported meal categories
+     */
     public static List<SupportedMealCategory> getAll() {
         return Arrays.asList(values());
     }
 
+    /**
+     * Get a supported meal category by code.
+     * 
+     * @param code the code to get
+     * @return Optional containing the supported meal category, or empty if not found
+     */
     public static Optional<SupportedMealCategory> fromCode(String code) {
-        if (code == null || code.isEmpty()) {
+        if (code == null || code.isBlank()) {
             return Optional.empty();
         }
         String normalized = code.trim().toUpperCase(Locale.ROOT);

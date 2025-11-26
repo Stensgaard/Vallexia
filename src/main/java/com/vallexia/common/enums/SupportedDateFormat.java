@@ -56,48 +56,47 @@ public enum SupportedDateFormat {
 
     private final String format;
     private final List<DateFormatToken> tokens;
+    private static final Map<String, SupportedDateFormat> BY_CODE = Arrays.stream(values())
+            .collect(Collectors.toUnmodifiableMap(
+                    format -> format.name().toUpperCase(Locale.ROOT),
+                    format -> format));
 
     SupportedDateFormat(String format, List<DateFormatToken> tokens) {
         this.format = format;
         this.tokens = tokens;
     }
 
-    public static boolean isValidFormat(String format) {
-        if (format == null || format.isEmpty()) {
-            return false;
-        }
-        return Arrays.stream(values())
-                .anyMatch(item -> item.getFormat().equals(format));
+    /**
+     * Get all supported date formats.
+     * 
+     * @return List of all supported date formats
+     */
+    public static List<SupportedDateFormat> getAll() {
+        return Arrays.asList(values());
     }
 
-    public static Optional<SupportedDateFormat> fromFormat(String format) {
-        if (format == null || format.isEmpty()) {
-            return Optional.empty();
-        }
-        return Arrays.stream(values())
-                .filter(item -> item.getFormat().equals(format))
-                .findFirst();
-    }
-
-    private static final Map<String, SupportedDateFormat> BY_CODE = Arrays.stream(values())
-            .collect(Collectors.toUnmodifiableMap(
-                    format -> format.name().toUpperCase(Locale.ROOT),
-                    format -> format));
-
+    /**
+     * Get a supported date format by code.
+     * 
+     * @param code the code to get
+     * @return Optional containing the supported date format, or empty if not found
+     */
     public static Optional<SupportedDateFormat> fromCode(String code) {
-        if (code == null || code.isEmpty()) {
+        if (code == null || code.isBlank()) {
             return Optional.empty();
         }
         String normalized = code.trim().toUpperCase(Locale.ROOT);
         return Optional.ofNullable(BY_CODE.get(normalized));
     }
 
+    /**
+     * Check if a code is valid.
+     * 
+     * @param code the code to check
+     * @return True if the code is valid, false otherwise
+     */
     public static boolean isValidCode(String code) {
         return fromCode(code).isPresent();
-    }
-
-    public static List<SupportedDateFormat> getAll() {
-        return Arrays.asList(values());
     }
 
     @Getter

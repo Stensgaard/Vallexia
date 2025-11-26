@@ -5,7 +5,9 @@ import lombok.Getter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Supported count units (units without conversion).
@@ -28,6 +30,10 @@ public enum SupportedCountUnit {
     WHOLE("whole");
 
     private final String display;
+    private static final Map<String, SupportedCountUnit> BY_DISPLAY = Arrays.stream(values())
+            .collect(Collectors.toUnmodifiableMap(
+                    unit -> unit.getDisplay().toLowerCase(Locale.ROOT),
+                    unit -> unit));
 
     SupportedCountUnit(String display) {
         this.display = display;
@@ -54,15 +60,14 @@ public enum SupportedCountUnit {
         }
         String normalized = display.trim().toLowerCase(Locale.ROOT);
         
+        // Try exact match first using the map
+        SupportedCountUnit exactMatch = BY_DISPLAY.get(normalized);
+        if (exactMatch != null) {
+            return Optional.of(exactMatch);
+        }
+        
+        // Handle plurals and common variations
         for (SupportedCountUnit unit : values()) {
-            String unitDisplay = unit.getDisplay().toLowerCase(Locale.ROOT);
-            
-            // Exact match
-            if (unitDisplay.equals(normalized)) {
-                return Optional.of(unit);
-            }
-            
-            // Handle plurals and common variations
             switch (unit) {
                 case PIECE:
                     if (normalized.equals("pieces") || normalized.equals("pcs") || normalized.equals("pc")) {

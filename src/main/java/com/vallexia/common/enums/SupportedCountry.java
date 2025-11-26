@@ -89,12 +89,12 @@ public enum SupportedCountry {
                     country -> country));
 
     /**
-     * Get the currency code for the country.
+     * Get all supported countries.
      * 
-     * @return Currency code
+     * @return List of all supported countries
      */
-    public String getCurrencyCode() {
-        return currency.getCode();
+    public static List<SupportedCountry> getAll() {
+        return Arrays.asList(values());
     }
 
     /**
@@ -104,7 +104,7 @@ public enum SupportedCountry {
      * @return Optional containing the supported country, or empty if not found
      */
     public static Optional<SupportedCountry> fromCountry(String countryCode) {
-        if (countryCode == null || countryCode.isEmpty()) {
+        if (countryCode == null || countryCode.isBlank()) {
             return Optional.empty();
         }
         String normalized = countryCode.trim().toUpperCase(Locale.ROOT);
@@ -112,11 +112,11 @@ public enum SupportedCountry {
     }
 
     /**
-     * Get all supported countries.
+     * Get the currency code for the country.
      * 
-     * @return List of all supported countries
+     * @return Currency code
      */
-    public static List<SupportedCountry> getAll() {
-        return Arrays.asList(values());
+    public String getCurrencyCode() {
+        return currency.getCode();
     }
 }

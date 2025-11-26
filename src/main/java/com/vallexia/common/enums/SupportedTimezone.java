@@ -30,25 +30,23 @@ public enum SupportedTimezone {
     AMERICA_LOS_ANGELES("America/Los_Angeles", "Pacific Time (US & Canada)"),
     EUROPE_COPENHAGEN("Europe/Copenhagen", "Copenhagen");
 
+    private final String value;
+    private final String label;
     private static final Map<String, SupportedTimezone> BY_VALUE = Arrays.stream(values())
             .collect(Collectors.toUnmodifiableMap(
                     tz -> tz.getValue().toLowerCase(Locale.ROOT),
                     tz -> tz));
-
-    private final String value;
-    private final String label;
 
     SupportedTimezone(String value, String label) {
         this.value = value;
         this.label = label;
     }
 
-    public static List<String> getValues() {
-        return Arrays.stream(values())
-                .map(SupportedTimezone::getValue)
-                .toList();
-    }
-
+    /**
+     * Get all supported timezones.
+     * 
+     * @return List of all supported timezones
+     */
     public static List<SupportedTimezone> getAll() {
         return Arrays.asList(values());
     }
@@ -62,14 +60,10 @@ public enum SupportedTimezone {
      * @return matching enum value if present
      */
     public static Optional<SupportedTimezone> fromValue(String value) {
-        if (value == null) {
+        if (value == null || value.isBlank()) {
             return Optional.empty();
         }
-        String trimmed = value.trim();
-        if (trimmed.isEmpty()) {
-            return Optional.empty();
-        }
-        String normalized = trimmed.toLowerCase(Locale.ROOT);
+        String normalized = value.trim().toLowerCase(Locale.ROOT);
         return Optional.ofNullable(BY_VALUE.get(normalized));
     }
 }
