@@ -17,14 +17,16 @@ import org.springframework.web.bind.annotation.*;
 /**
  * REST controller for nutritional goals management endpoints.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/users/nutritional-goals")
-@Tag(name = "Nutritional Goals Management", description = "Operations related to nutritional goals management")
+@Tag(
+    name = "Nutritional Goals Management", 
+    description = "Operations related to nutritional goals management")
 public class NutritionalGoalsController {
     
     private final NutritionalGoalsService nutritionalGoalsService;
@@ -48,7 +50,9 @@ public class NutritionalGoalsController {
      * @param authentication current authentication
      * @return NutritionalGoalsDto
      */
-    @Operation(summary = "Get current user's nutritional goals", description = "Retrieves the authenticated user's nutritional goals")
+    @Operation(
+        summary = "Get current user's nutritional goals", 
+        description = "Retrieves the authenticated user's nutritional goals")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Nutritional goals retrieved successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing JWT token"),
@@ -72,7 +76,9 @@ public class NutritionalGoalsController {
      * @param authentication current authentication
      * @return updated NutritionalGoalsDto
      */
-    @Operation(summary = "Update current user's nutritional goals", description = "Updates the authenticated user's nutritional goals")
+    @Operation(
+        summary = "Update current user's nutritional goals", 
+        description = "Updates the authenticated user's nutritional goals")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Nutritional goals updated successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid input data"),
@@ -98,7 +104,9 @@ public class NutritionalGoalsController {
      * @param authentication current authentication
      * @return no content
      */
-    @Operation(summary = "Delete current user's nutritional goals", description = "Deletes the authenticated user's nutritional goals (GDPR compliance)")
+    @Operation(
+        summary = "Delete current user's nutritional goals", 
+        description = "Deletes the authenticated user's nutritional goals (GDPR compliance)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Nutritional goals deleted successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing JWT token"),

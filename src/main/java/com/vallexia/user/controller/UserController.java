@@ -17,14 +17,16 @@ import org.springframework.web.bind.annotation.*;
 /**
  * REST controller for user profile management endpoints.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/users/profile")
-@Tag(name = "User Profile Management", description = "Operations related to user profile management")
+@Tag(
+    name = "User Profile Management", 
+    description = "Operations related to user profile management")
 public class UserController {
     
     private final UserService userService;
@@ -47,7 +49,9 @@ public class UserController {
      * @param authentication current authentication
      * @return UserProfileDto
      */
-    @Operation(summary = "Get current user profile", description = "Retrieves the authenticated user's profile information")
+    @Operation(
+        summary = "Get current user profile", 
+        description = "Retrieves the authenticated user's profile information")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Profile retrieved successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing JWT token"),
@@ -71,7 +75,9 @@ public class UserController {
      * @param authentication current authentication
      * @return updated UserProfileDto
      */
-    @Operation(summary = "Update current user profile", description = "Updates the authenticated user's profile information")
+    @Operation(
+        summary = "Update current user profile", 
+        description = "Updates the authenticated user's profile information")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Profile updated successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid input data"),

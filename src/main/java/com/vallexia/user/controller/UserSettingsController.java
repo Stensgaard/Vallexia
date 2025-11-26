@@ -17,14 +17,16 @@ import org.springframework.web.bind.annotation.*;
 /**
  * REST controller for user settings management endpoints.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-15
  */
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/users/settings")
-@Tag(name = "User Settings Management", description = "Operations related to user settings management")
+@Tag(
+    name = "User Settings Management", 
+    description = "Operations related to user settings management")
 public class UserSettingsController {
     
     private final UserSettingsService userSettingsService;
@@ -48,7 +50,9 @@ public class UserSettingsController {
      * @param authentication current authentication
      * @return UserSettingsDto
      */
-    @Operation(summary = "Get current user's settings", description = "Retrieves the authenticated user's display preferences and settings")
+    @Operation(
+        summary = "Get current user's settings", 
+        description = "Retrieves the authenticated user's display preferences and settings")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "User settings retrieved successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing JWT token"),
@@ -72,7 +76,9 @@ public class UserSettingsController {
      * @param authentication current authentication
      * @return updated UserSettingsDto
      */
-    @Operation(summary = "Update current user's settings", description = "Updates the authenticated user's display preferences and settings")
+    @Operation(
+        summary = "Update current user's settings", 
+        description = "Updates the authenticated user's display preferences and settings")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "User settings updated successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid input data"),
