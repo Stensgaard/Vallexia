@@ -12,9 +12,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit tests for InputSanitizer.
  * Tests input sanitization, edge cases, and security pattern filtering.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-29
  */
 @DisplayName("InputSanitizer Unit Tests")
 class InputSanitizerTest {
@@ -276,4 +276,3 @@ class InputSanitizerTest {
     assertThat(result.length()).isLessThanOrEqualTo(5000);
   }
 }
-

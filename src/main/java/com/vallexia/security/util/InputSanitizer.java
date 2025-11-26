@@ -10,9 +10,9 @@ import java.util.regex.Pattern;
  * Utility class for sanitizing inputs to prevent log injection, XSS,
  * information leakage, and other security vulnerabilities.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-29
  */
 @Slf4j
 @Component
