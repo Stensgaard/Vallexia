@@ -16,9 +16,14 @@ import lombok.Value;
 @Schema(description = "Supported meal type option")
 public class MealTypeDto {
 
-    @Schema(description = "Enum code for the meal type", example = "BREAKFAST")
+    @Schema(
+        description = "Enum code for the meal type", 
+        example = "BREAKFAST", 
+        allowableValues = {"BREAKFAST", "LUNCH", "DINNER", "SNACK"})
     String code;
 
-    @Schema(description = "Display name", example = "Breakfast")
+    @Schema(
+        description = "Display name", 
+        example = "Breakfast")
     String name;
 }

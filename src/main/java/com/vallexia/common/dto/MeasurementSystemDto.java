@@ -16,9 +16,14 @@ import lombok.Value;
 @Schema(description = "Supported measurement system option")
 public class MeasurementSystemDto {
 
-    @Schema(description = "Measurement system code", example = "METRIC")
+    @Schema(
+        description = "Measurement system code", 
+        example = "METRIC", 
+        allowableValues = {"METRIC", "IMPERIAL"})
     String code;
 
-    @Schema(description = "Display name", example = "Metric")
+    @Schema(
+        description = "Display name", 
+        example = "Metric")
     String name;
 }

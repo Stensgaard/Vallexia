@@ -20,14 +20,19 @@ import lombok.Value;
 @Schema(description = "Generic unit definition with optional conversion metadata")
 public class UnitDto {
 
-    @Schema(description = "Unit code identifier", example = "GRAM")
+    @Schema(
+        description = "Unit code identifier", 
+        example = "GRAM")
     String code;
 
-    @Schema(description = "Display label", example = "g")
+    @Schema(
+        description = "Display label", 
+        example = "g")
     String display;
 
     @Schema(
-            description = "Conversion factor relative to base unit (grams/milliliters); null for count units",
+            description = "Conversion factor relative to base unit (grams/milliliters);" + 
+                "null for count units",
             example = "28.35",
             nullable = true)
     BigDecimal conversion;

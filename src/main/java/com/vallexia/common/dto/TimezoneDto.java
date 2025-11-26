@@ -16,9 +16,15 @@ import lombok.Value;
 @Schema(description = "Supported timezone option")
 public class TimezoneDto {
 
-    @Schema(description = "IANA timezone identifier", example = "America/New_York")
+    @Schema(
+        description = "IANA timezone identifier", 
+        example = "America/New_York", 
+        allowableValues = {"UTC", "America/New_York", "America/Los_Angeles", 
+            "Europe/Copenhagen"})
     String value;
 
-    @Schema(description = "Display label", example = "Eastern Time (US & Canada)")
+    @Schema(
+        description = "Display label", 
+        example = "Eastern Time (US & Canada)")
     String label;
 }

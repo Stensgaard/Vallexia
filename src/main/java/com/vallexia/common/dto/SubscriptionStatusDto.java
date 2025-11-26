@@ -16,9 +16,14 @@ import lombok.Value;
 @Schema(description = "Supported subscription status")
 public class SubscriptionStatusDto {
 
-    @Schema(description = "Enum code of the subscription status", example = "PREMIUM")
+    @Schema(
+        description = "Enum code of the subscription status", 
+        example = "PREMIUM", 
+        allowableValues = {"FREE", "PREMIUM", "FAMILY", "CANCELLED", "EXPIRED"})
     String code;
 
-    @Schema(description = "Display label for the status", example = "Premium")
+    @Schema(
+        description = "Display label for the status", 
+        example = "Premium")
     String name;
 }
