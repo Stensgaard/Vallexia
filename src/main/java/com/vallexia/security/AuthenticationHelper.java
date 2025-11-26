@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
  * Helper component for extracting authentication information from Spring Security context.
  * Provides centralized methods for accessing current user details from Authentication objects.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-29
  */
 @Component
 public class AuthenticationHelper {

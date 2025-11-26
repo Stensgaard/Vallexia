@@ -22,9 +22,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * Unit tests for AuthenticationHelper.
  * Tests type safety, null handling, and authentication context extraction.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-29
  */
 @DisplayName("AuthenticationHelper Unit Tests")
 class AuthenticationHelperTest {
@@ -225,4 +225,3 @@ class AuthenticationHelperTest {
     assertThat(username).isEqualTo(user.getUsername());
   }
 }
-
