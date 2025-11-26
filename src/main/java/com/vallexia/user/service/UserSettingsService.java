@@ -2,15 +2,18 @@ package com.vallexia.user.service;
 
 import com.vallexia.audit.entity.enums.EventType;
 import com.vallexia.audit.service.AuditService;
+import com.vallexia.common.enums.SupportedCountry;
+import com.vallexia.common.enums.SupportedDateFormat;
+import com.vallexia.common.enums.SupportedFirstDayOfWeek;
+import com.vallexia.common.enums.SupportedMeasurementSystem;
 import com.vallexia.user.dto.UserSettingsDto;
 import com.vallexia.user.entity.User;
 import com.vallexia.user.entity.UserSettings;
-import com.vallexia.user.entity.enums.FirstDayOfWeek;
 import com.vallexia.user.mapper.UserSettingsMapper;
 import com.vallexia.user.repository.UserRepository;
 import com.vallexia.user.repository.UserSettingsRepository;
 import com.vallexia.user.exception.UserNotFoundException;
-import com.vallexia.user.util.LocaleUtils;
+import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,9 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Service for managing user settings operations.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-15
  */
 @Slf4j
 @Service
@@ -102,16 +105,22 @@ public class UserSettingsService {
         // Update settings
         settings.setLanguage(userSettingsDto.getLanguage());
         settings.setCountry(userSettingsDto.getCountry());
-        settings.setDateFormat(userSettingsDto.getDateFormat());
+        settings.setDateFormat(resolveDateFormat(userSettingsDto.getDateFormat()).name());
         settings.setTimezone(userSettingsDto.getTimezone());
-        settings.setFirstDayOfWeek(userSettingsDto.getFirstDayOfWeek());
-        settings.setMeasurementSystem(userSettingsDto.getMeasurementSystem());
+        settings.setFirstDayOfWeek(resolveFirstDayOfWeek(userSettingsDto.getFirstDayOfWeek()));
+        settings.setMeasurementSystem(resolveMeasurementSystem(userSettingsDto.getMeasurementSystem()));
         
-        // Auto-populate separators and currency from country
-        String country = userSettingsDto.getCountry();
-        settings.setNumberDecimalSeparator(LocaleUtils.getDecimalSeparator(country));
-        settings.setNumberThousandsSeparator(LocaleUtils.getThousandsSeparator(country));
-        settings.setCurrency(LocaleUtils.getCurrencyFromCountry(country));
+        // Auto-populate separators from country
+        SupportedCountry countryMeta = resolveCountryOrDefault(userSettingsDto.getCountry());
+        settings.setNumberDecimalSeparator(countryMeta.getDecimalSeparator());
+        settings.setNumberThousandsSeparator(countryMeta.getThousandsSeparator());
+        
+        // Currency: use override if provided, otherwise use country default
+        if (userSettingsDto.getCurrency() != null && !userSettingsDto.getCurrency().isEmpty()) {
+            settings.setCurrency(userSettingsDto.getCurrency());
+        } else {
+            settings.setCurrency(countryMeta.getCurrencyCode());
+        }
         
         UserSettings updatedSettings = userSettingsRepository.save(settings);
         
@@ -133,18 +142,30 @@ public class UserSettingsService {
      * @return default UserSettings
      */
     public UserSettings getDefaultSettings() {
+        return getDefaultSettingsForCountry(SupportedCountry.US.getCountryCode());
+    }
+    
+    /**
+     * Get default user settings for a specific country.
+     * Derives all settings from the country code.
+     * 
+     * @param countryCode country code (ISO 3166-1 alpha-2)
+     * @return UserSettings with country-specific defaults
+     */
+    public UserSettings getDefaultSettingsForCountry(String countryCode) {
+        SupportedCountry country = resolveCountryOrDefault(countryCode);
         UserSettings settings = new UserSettings();
-        settings.setLanguage("en");
-        String defaultCountry = "US";
-        settings.setCountry(defaultCountry);
-        settings.setDateFormat("MM/DD/YYYY");
-        settings.setTimezone("UTC");
-        settings.setFirstDayOfWeek(FirstDayOfWeek.MONDAY);
-        settings.setMeasurementSystem("METRIC");
-        // Auto-populate separators and currency from country
-        settings.setNumberDecimalSeparator(LocaleUtils.getDecimalSeparator(defaultCountry));
-        settings.setNumberThousandsSeparator(LocaleUtils.getThousandsSeparator(defaultCountry));
-        settings.setCurrency(LocaleUtils.getCurrencyFromCountry(defaultCountry));
+
+        settings.setLanguage(country.getLocale().getCode());
+        settings.setCountry(country.getCountryCode());
+        settings.setDateFormat(country.getDefaultDateFormat().name());
+        settings.setTimezone(country.getDefaultTimezone().getValue());
+        settings.setFirstDayOfWeek(country.getFirstDayOfWeek());
+        settings.setMeasurementSystem(country.getMeasurementSystem());
+        settings.setNumberDecimalSeparator(country.getDecimalSeparator());
+        settings.setNumberThousandsSeparator(country.getThousandsSeparator());
+        settings.setCurrency(country.getCurrencyCode());
+
         return settings;
     }
     
@@ -156,10 +177,48 @@ public class UserSettingsService {
      */
     @Transactional
     public UserSettings createDefaultSettings(User user) {
-        UserSettings userSettings = getDefaultSettings();
+        return createDefaultSettings(user, SupportedCountry.US.getCountryCode());
+    }
+    
+    /**
+     * Create default user settings for a new user with country-specific defaults.
+     * 
+     * @param user the user to create settings for
+     * @param countryCode country code to derive defaults from
+     * @return created UserSettings
+     */
+    @Transactional
+    public UserSettings createDefaultSettings(User user, String countryCode) {
+        UserSettings userSettings = getDefaultSettingsForCountry(countryCode);
         userSettings.setUser(user);
         UserSettings savedSettings = userSettingsRepository.save(userSettings);
         user.setUserSettings(savedSettings);
         return savedSettings;
+    }
+
+    private SupportedFirstDayOfWeek resolveFirstDayOfWeek(String code) {
+        return SupportedFirstDayOfWeek.fromCode(code)
+                .orElseThrow(() -> new ValidationException(
+                        String.format("Invalid first day of week value: %s", code)
+                ));
+    }
+
+    private SupportedCountry resolveCountryOrDefault(String countryCode) {
+        return SupportedCountry.fromCountry(countryCode)
+                .orElse(SupportedCountry.US);
+    }
+
+    private SupportedDateFormat resolveDateFormat(String code) {
+        return SupportedDateFormat.fromCode(code)
+                .orElseThrow(() -> new ValidationException(
+                        String.format("Invalid date format value: %s", code)
+                ));
+    }
+
+    private SupportedMeasurementSystem resolveMeasurementSystem(String code) {
+        return SupportedMeasurementSystem.fromCode(code)
+                .orElseThrow(() -> new ValidationException(
+                        String.format("Invalid measurement system value: %s", code)
+                ));
     }
 }

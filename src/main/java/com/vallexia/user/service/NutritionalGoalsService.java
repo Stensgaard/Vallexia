@@ -5,6 +5,7 @@ import com.vallexia.audit.service.AuditService;
 import com.vallexia.user.dto.NutritionalGoalsDto;
 import com.vallexia.user.entity.NutritionalGoals;
 import com.vallexia.user.entity.User;
+import com.vallexia.user.entity.enums.GoalType;
 import com.vallexia.user.mapper.NutritionalGoalsMapper;
 import com.vallexia.user.repository.NutritionalGoalsRepository;
 import com.vallexia.user.repository.UserRepository;
@@ -20,32 +21,9 @@ import java.math.BigDecimal;
 /**
  * Service for managing nutritional goals operations.
  * 
- * <p><b>Current Implementation:</b>
- * <ul>
- *   <li>Single set of nutritional goals per user account (OneToOne relationship)</li>
- *   <li>Goals represent household-level nutrition targets</li>
- *   <li>Works well for single users or households with similar nutritional needs</li>
- * </ul>
- * 
- * <p><b>Future Enhancement - Family Subscription:</b>
- * <ul>
- *   <li>When FAMILY subscription tier is implemented, this service will support:</li>
- *   <li>- Per-person nutritional goals via HouseholdMember entity</li>
- *   <li>- Individual progress tracking for each household member</li>
- *   <li>- Meal plan assignment to specific members</li>
- *   <li>- Aggregate household nutrition summaries</li>
- * </ul>
- * 
- * <p><b>Migration Strategy:</b>
- * <ul>
- *   <li>Current schema (nutritional_goals.user_id) will remain for backward compatibility</li>
- *   <li>Future: Add optional household_member_id column for FAMILY tier users</li>
- *   <li>Service methods will check subscription tier before determining data source</li>
- * </ul>
- * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 @Slf4j
 @Service
@@ -94,10 +72,6 @@ public class NutritionalGoalsService {
     
     /**
      * Get nutritional goals for user.
-     * 
-     * <p><b>Note:</b> Currently returns account-level goals. For FAMILY subscription
-     * tier (future feature), this will need to be enhanced to support per-person goals
-     * or aggregate household goals based on subscription status.
      * 
      * @param userId user ID
      * @return NutritionalGoalsDto
@@ -154,7 +128,11 @@ public class NutritionalGoalsService {
         goals.setDailyFiber(nutritionalGoalsDto.getDailyFiber());
         goals.setDailySodium(nutritionalGoalsDto.getDailySodium());
         goals.setDailySugar(nutritionalGoalsDto.getDailySugar());
-        goals.setGoalType(nutritionalGoalsDto.getGoalType());
+        
+        // Convert String goalType to GoalType enum
+        if (nutritionalGoalsDto.getGoalType() != null && !nutritionalGoalsDto.getGoalType().isEmpty()) {
+            goals.setGoalType(GoalType.valueOf(nutritionalGoalsDto.getGoalType().toUpperCase()));
+        }
         
         try {
             // Calculate percentages using NutritionalCalculator
