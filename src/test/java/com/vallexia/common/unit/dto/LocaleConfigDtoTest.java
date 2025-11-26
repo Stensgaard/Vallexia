@@ -13,7 +13,6 @@ import com.vallexia.common.dto.GoalTypeDto;
 import com.vallexia.common.dto.LocaleConfigDto;
 import com.vallexia.common.dto.LocaleDto;
 import com.vallexia.common.dto.MealCategoryDto;
-import com.vallexia.common.dto.MealTypeDto;
 import com.vallexia.common.dto.MeasurementSystemDto;
 import com.vallexia.common.dto.SubscriptionStatusDto;
 import com.vallexia.common.dto.TimezoneDto;
@@ -114,9 +113,6 @@ class LocaleConfigDtoTest {
     List<SubscriptionStatusDto> subscriptionStatuses = List.of(
         SubscriptionStatusDto.builder().code("FREE").name("Free").build()
     );
-    List<MealTypeDto> mealTypes = List.of(
-        MealTypeDto.builder().code("BREAKFAST").name("Breakfast").build()
-    );
 
     // When
     LocaleConfigDto dto = LocaleConfigDto.builder()
@@ -138,7 +134,6 @@ class LocaleConfigDtoTest {
         .difficultyLevels(difficultyLevels)
         .goalTypes(goalTypes)
         .subscriptionStatuses(subscriptionStatuses)
-        .mealTypes(mealTypes)
         .build();
 
     // Then
@@ -161,7 +156,6 @@ class LocaleConfigDtoTest {
     assertThat(dto.getDifficultyLevels()).isEqualTo(difficultyLevels);
     assertThat(dto.getGoalTypes()).isEqualTo(goalTypes);
     assertThat(dto.getSubscriptionStatuses()).isEqualTo(subscriptionStatuses);
-    assertThat(dto.getMealTypes()).isEqualTo(mealTypes);
   }
 
   @Test
@@ -187,7 +181,6 @@ class LocaleConfigDtoTest {
         .difficultyLevels(List.of())
         .goalTypes(List.of())
         .subscriptionStatuses(List.of())
-        .mealTypes(List.of())
         .build();
 
     // Then
@@ -224,7 +217,6 @@ class LocaleConfigDtoTest {
         .difficultyLevels(List.of())
         .goalTypes(List.of())
         .subscriptionStatuses(List.of())
-        .mealTypes(List.of())
         .build();
     LocaleConfigDto dto2 = LocaleConfigDto.builder()
         .locales(locales)
@@ -245,7 +237,6 @@ class LocaleConfigDtoTest {
         .difficultyLevels(List.of())
         .goalTypes(List.of())
         .subscriptionStatuses(List.of())
-        .mealTypes(List.of())
         .build();
 
     // Then

@@ -3,11 +3,10 @@ package com.vallexia.common.unit.mapper;
 import com.vallexia.common.dto.*;
 import com.vallexia.common.mapper.DomainEnumMapper;
 import com.vallexia.recipe.entity.enums.DifficultyLevel;
-import com.vallexia.user.entity.enums.Allergy;
-import com.vallexia.user.entity.enums.CuisineType;
-import com.vallexia.user.entity.enums.DietaryRestriction;
+import com.vallexia.common.enums.SupportedAllergy;
+import com.vallexia.common.enums.SupportedCuisineType;
+import com.vallexia.common.enums.SupportedDietaryRestriction;
 import com.vallexia.user.entity.enums.GoalType;
-import com.vallexia.user.entity.enums.MealType;
 import com.vallexia.user.entity.enums.SubscriptionStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,10 +28,10 @@ class DomainEnumMapperTest {
   // ==================== toDietaryRestrictionDto() Tests ====================
 
   @Test
-  @DisplayName("Should map DietaryRestriction to DietaryRestrictionDto")
+  @DisplayName("Should map SupportedDietaryRestriction to DietaryRestrictionDto")
   void shouldMapDietaryRestrictionToDietaryRestrictionDto() {
     // Given
-    DietaryRestriction restriction = DietaryRestriction.VEGETARIAN;
+    SupportedDietaryRestriction restriction = SupportedDietaryRestriction.VEGETARIAN;
 
     // When
     DietaryRestrictionDto dto = DomainEnumMapper.toDietaryRestrictionDto(restriction);
@@ -55,10 +54,10 @@ class DomainEnumMapperTest {
   // ==================== toAllergyDto() Tests ====================
 
   @Test
-  @DisplayName("Should map Allergy to AllergyDto")
+  @DisplayName("Should map SupportedAllergy to AllergyDto")
   void shouldMapAllergyToAllergyDto() {
     // Given
-    Allergy allergy = Allergy.PEANUTS;
+    SupportedAllergy allergy = SupportedAllergy.PEANUTS;
 
     // When
     AllergyDto dto = DomainEnumMapper.toAllergyDto(allergy);
@@ -81,10 +80,10 @@ class DomainEnumMapperTest {
   // ==================== toCuisineTypeDto() Tests ====================
 
   @Test
-  @DisplayName("Should map CuisineType to CuisineTypeDto")
+  @DisplayName("Should map SupportedCuisineType to CuisineTypeDto")
   void shouldMapCuisineTypeToCuisineTypeDto() {
     // Given
-    CuisineType cuisineType = CuisineType.ITALIAN;
+    SupportedCuisineType cuisineType = SupportedCuisineType.ITALIAN;
 
     // When
     CuisineTypeDto dto = DomainEnumMapper.toCuisineTypeDto(cuisineType);
@@ -184,29 +183,4 @@ class DomainEnumMapperTest {
         .hasMessageContaining("status must not be null");
   }
 
-  // ==================== toMealTypeDto() Tests ====================
-
-  @Test
-  @DisplayName("Should map MealType to MealTypeDto")
-  void shouldMapMealTypeToMealTypeDto() {
-    // Given
-    MealType mealType = MealType.BREAKFAST;
-
-    // When
-    MealTypeDto dto = DomainEnumMapper.toMealTypeDto(mealType);
-
-    // Then
-    assertThat(dto).isNotNull();
-    assertThat(dto.getCode()).isEqualTo("BREAKFAST");
-    assertThat(dto.getName()).isEqualTo("Breakfast");
-  }
-
-  @Test
-  @DisplayName("Should throw IllegalArgumentException when meal type is null")
-  void shouldThrowIllegalArgumentExceptionWhenMealTypeIsNull() {
-    // When/Then
-    assertThatThrownBy(() -> DomainEnumMapper.toMealTypeDto(null))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessageContaining("mealType must not be null");
-  }
 }

@@ -17,11 +17,10 @@ import com.vallexia.common.mapper.LocaleConfigBuilder;
 import com.vallexia.common.mapper.LocaleMapper;
 import com.vallexia.common.mapper.UnitMapper;
 import com.vallexia.recipe.entity.enums.DifficultyLevel;
-import com.vallexia.user.entity.enums.Allergy;
-import com.vallexia.user.entity.enums.CuisineType;
-import com.vallexia.user.entity.enums.DietaryRestriction;
+import com.vallexia.common.enums.SupportedAllergy;
+import com.vallexia.common.enums.SupportedCuisineType;
+import com.vallexia.common.enums.SupportedDietaryRestriction;
 import com.vallexia.user.entity.enums.GoalType;
-import com.vallexia.user.entity.enums.MealType;
 import com.vallexia.user.entity.enums.SubscriptionStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -74,26 +73,24 @@ class LocaleConfigBuilderTest {
     List<MealCategoryDto> mealCategories = Collections.singletonList(
         LocaleMapper.toMealCategoryDto(SupportedMealCategory.getAll().get(0)));
     List<DietaryRestrictionDto> dietaryRestrictions = Collections.singletonList(
-        DomainEnumMapper.toDietaryRestrictionDto(DietaryRestriction.VEGETARIAN));
+        DomainEnumMapper.toDietaryRestrictionDto(SupportedDietaryRestriction.VEGETARIAN));
     List<AllergyDto> allergies = Collections.singletonList(
-        DomainEnumMapper.toAllergyDto(Allergy.PEANUTS));
+        DomainEnumMapper.toAllergyDto(SupportedAllergy.PEANUTS));
     List<CuisineTypeDto> cuisineTypes = Collections.singletonList(
-        DomainEnumMapper.toCuisineTypeDto(CuisineType.ITALIAN));
+        DomainEnumMapper.toCuisineTypeDto(SupportedCuisineType.ITALIAN));
     List<DifficultyLevelDto> difficultyLevels = Collections.singletonList(
         DomainEnumMapper.toDifficultyLevelDto(DifficultyLevel.EASY));
     List<GoalTypeDto> goalTypes = Collections.singletonList(
         DomainEnumMapper.toGoalTypeDto(GoalType.WEIGHT_LOSS));
     List<SubscriptionStatusDto> subscriptionStatuses = Collections.singletonList(
         DomainEnumMapper.toSubscriptionStatusDto(SubscriptionStatus.PREMIUM));
-    List<MealTypeDto> mealTypes = Collections.singletonList(
-        DomainEnumMapper.toMealTypeDto(MealType.BREAKFAST));
 
     // When
     LocaleConfigDto config = LocaleConfigBuilder.buildConfig(
         locales, countries, currencies, timezones, formattingRules,
         dateFormats, measurementSystems, weightUnits, volumeUnits, countUnits,
         firstDayOfWeek, mealCategories, dietaryRestrictions, allergies,
-        cuisineTypes, difficultyLevels, goalTypes, subscriptionStatuses, mealTypes);
+        cuisineTypes, difficultyLevels, goalTypes, subscriptionStatuses);
 
     // Then
     assertThat(config).isNotNull();
@@ -115,7 +112,6 @@ class LocaleConfigBuilderTest {
     assertThat(config.getDifficultyLevels()).isEqualTo(difficultyLevels);
     assertThat(config.getGoalTypes()).isEqualTo(goalTypes);
     assertThat(config.getSubscriptionStatuses()).isEqualTo(subscriptionStatuses);
-    assertThat(config.getMealTypes()).isEqualTo(mealTypes);
   }
 
   @Test
@@ -140,14 +136,13 @@ class LocaleConfigBuilderTest {
     List<DifficultyLevelDto> emptyDifficultyLevels = Collections.emptyList();
     List<GoalTypeDto> emptyGoalTypes = Collections.emptyList();
     List<SubscriptionStatusDto> emptySubscriptionStatuses = Collections.emptyList();
-    List<MealTypeDto> emptyMealTypes = Collections.emptyList();
 
     // When
     LocaleConfigDto config = LocaleConfigBuilder.buildConfig(
         emptyLocales, emptyCountries, emptyCurrencies, emptyTimezones, emptyFormattingRules,
         emptyDateFormats, emptyMeasurementSystems, emptyWeightUnits, emptyVolumeUnits, emptyCountUnits,
         emptyFirstDayOfWeek, emptyMealCategories, emptyDietaryRestrictions, emptyAllergies,
-        emptyCuisineTypes, emptyDifficultyLevels, emptyGoalTypes, emptySubscriptionStatuses, emptyMealTypes);
+        emptyCuisineTypes, emptyDifficultyLevels, emptyGoalTypes, emptySubscriptionStatuses);
 
     // Then
     assertThat(config).isNotNull();
@@ -178,14 +173,13 @@ class LocaleConfigBuilderTest {
     List<DifficultyLevelDto> emptyDifficultyLevels = Collections.emptyList();
     List<GoalTypeDto> emptyGoalTypes = Collections.emptyList();
     List<SubscriptionStatusDto> emptySubscriptionStatuses = Collections.emptyList();
-    List<MealTypeDto> emptyMealTypes = Collections.emptyList();
 
     // When/Then - Test first parameter
     assertThatThrownBy(() -> LocaleConfigBuilder.buildConfig(
         null, emptyCountries, emptyCurrencies, emptyTimezones, emptyFormattingRules,
         emptyDateFormats, emptyMeasurementSystems, emptyWeightUnits, emptyVolumeUnits, emptyCountUnits,
         emptyFirstDayOfWeek, emptyMealCategories, emptyDietaryRestrictions, emptyAllergies,
-        emptyCuisineTypes, emptyDifficultyLevels, emptyGoalTypes, emptySubscriptionStatuses, emptyMealTypes))
+        emptyCuisineTypes, emptyDifficultyLevels, emptyGoalTypes, emptySubscriptionStatuses))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("locales must not be null");
 
@@ -194,8 +188,8 @@ class LocaleConfigBuilderTest {
         emptyLocales, emptyCountries, emptyCurrencies, emptyTimezones, emptyFormattingRules,
         emptyDateFormats, emptyMeasurementSystems, emptyWeightUnits, emptyVolumeUnits, emptyCountUnits,
         emptyFirstDayOfWeek, emptyMealCategories, emptyDietaryRestrictions, emptyAllergies,
-        emptyCuisineTypes, emptyDifficultyLevels, emptyGoalTypes, emptySubscriptionStatuses, null))
+        emptyCuisineTypes, emptyDifficultyLevels, emptyGoalTypes, null))
         .isInstanceOf(IllegalArgumentException.class)
-        .hasMessageContaining("mealTypes must not be null");
+        .hasMessageContaining("subscriptionStatuses must not be null");
   }
 }

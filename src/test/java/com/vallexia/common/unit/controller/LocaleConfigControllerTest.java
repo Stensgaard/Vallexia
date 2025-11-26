@@ -46,7 +46,7 @@ class LocaleConfigControllerTest {
     assertThat(config.getDifficultyLevels()).isNotEmpty();
     assertThat(config.getGoalTypes()).isNotEmpty();
     assertThat(config.getSubscriptionStatuses()).isNotEmpty();
-    assertThat(config.getMealTypes()).isNotEmpty();
+    assertThat(config.getMealCategories()).isNotEmpty();
   }
 
   @Test
@@ -135,13 +135,4 @@ class LocaleConfigControllerTest {
     assertThat(response.getBody()).isNotEmpty();
   }
 
-  @Test
-  @DisplayName("Should return meal types")
-  void shouldReturnMealTypes() {
-    // When
-    var response = controller.getMealTypes();
-
-    // Then
-    assertThat(response.getBody()).isNotEmpty();
-  }
 }

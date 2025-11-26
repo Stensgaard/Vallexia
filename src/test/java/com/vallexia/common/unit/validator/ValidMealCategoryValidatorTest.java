@@ -54,9 +54,6 @@ class ValidMealCategoryValidatorTest {
     assertThat(validator.isValid(SupportedMealCategory.LUNCH, null)).isTrue();
     assertThat(validator.isValid(SupportedMealCategory.DINNER, null)).isTrue();
     assertThat(validator.isValid(SupportedMealCategory.SNACK, null)).isTrue();
-    assertThat(validator.isValid(SupportedMealCategory.DESSERT, null)).isTrue();
-    assertThat(validator.isValid(SupportedMealCategory.APPETIZER, null)).isTrue();
-    assertThat(validator.isValid(SupportedMealCategory.BEVERAGE, null)).isTrue();
   }
 
   // ==================== String Code Tests ====================
@@ -74,12 +71,6 @@ class ValidMealCategoryValidatorTest {
     assertThat(validator.isValid("dinner", null)).isTrue();
     assertThat(validator.isValid("SNACK", null)).isTrue();
     assertThat(validator.isValid("snack", null)).isTrue();
-    assertThat(validator.isValid("DESSERT", null)).isTrue();
-    assertThat(validator.isValid("dessert", null)).isTrue();
-    assertThat(validator.isValid("APPETIZER", null)).isTrue();
-    assertThat(validator.isValid("appetizer", null)).isTrue();
-    assertThat(validator.isValid("BEVERAGE", null)).isTrue();
-    assertThat(validator.isValid("beverage", null)).isTrue();
   }
 
   @Test
