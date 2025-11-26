@@ -5,14 +5,16 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 /**
- * Validator implementation for @ValidGoalType annotation.
- * Validates that a goal type string is one of the supported options defined in GoalType enum.
- * 
+ * Validator implementation for {@link ValidGoalType}.
+ * Ensures provided goal type values map to {@link com.vallexia.user.entity.enums.GoalType}.
+ *
+ * <p>Values are trimmed before validation so surrounding whitespace does not cause false negatives.
+ *
  * @author Henrik Stensgaard
  * @version 1.0
  * @since 2025-11-25
  */
-public class ValidGoalTypeValidator implements ConstraintValidator<ValidGoalType, String> {
+public class ValidGoalTypeValidator implements ConstraintValidator<ValidGoalType, Object> {
 
     @Override
     public void initialize(ValidGoalType constraintAnnotation) {
@@ -20,10 +22,26 @@ public class ValidGoalTypeValidator implements ConstraintValidator<ValidGoalType
     }
 
     @Override
-    public boolean isValid(String value, ConstraintValidatorContext context) {
-        if (value == null || value.isEmpty()) {
+    public boolean isValid(Object value, ConstraintValidatorContext context) {
+        if (value == null) {
             return true;
         }
-        return GoalType.fromCode(value).isPresent();
+        if (value instanceof GoalType) {
+            return true;
+        }
+        if (value instanceof String goalType) {
+            if (goalType.isEmpty()) {
+                return true;
+            }
+            
+            String trimmed = goalType.trim();
+            if (trimmed.isEmpty()) {
+                return true;
+            }
+
+            return GoalType.fromCode(trimmed).isPresent();
+        }
+        
+        return false;
     }
 }

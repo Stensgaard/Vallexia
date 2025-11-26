@@ -5,14 +5,16 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 /**
- * Validator implementation for @ValidFirstDayOfWeek annotation.
- * Validates that a first day of week value is one of the supported options defined in SupportedFirstDayOfWeek enum.
- * 
+ * Validator implementation for {@link ValidFirstDayOfWeek}.
+ * Ensures provided first day of week values map to {@link com.vallexia.common.enums.SupportedFirstDayOfWeek}.
+ *
+ * <p>Values are trimmed before validation so surrounding whitespace does not cause false negatives.
+ *
  * @author Henrik Stensgaard
  * @version 1.0
  * @since 2025-11-25
  */
-public class ValidFirstDayOfWeekValidator implements ConstraintValidator<ValidFirstDayOfWeek, String> {
+public class ValidFirstDayOfWeekValidator implements ConstraintValidator<ValidFirstDayOfWeek, Object> {
 
     @Override
     public void initialize(ValidFirstDayOfWeek constraintAnnotation) {
@@ -20,10 +22,26 @@ public class ValidFirstDayOfWeekValidator implements ConstraintValidator<ValidFi
     }
 
     @Override
-    public boolean isValid(String value, ConstraintValidatorContext context) {
-        if (value == null || value.isEmpty()) {
+    public boolean isValid(Object value, ConstraintValidatorContext context) {
+        if (value == null) {
             return true;
         }
-        return SupportedFirstDayOfWeek.fromCode(value).isPresent();
+        if (value instanceof SupportedFirstDayOfWeek) {
+            return true;
+        }
+        if (value instanceof String firstDayOfWeek) {
+            if (firstDayOfWeek.isEmpty()) {
+                return true;
+            }
+            
+            String trimmed = firstDayOfWeek.trim();
+            if (trimmed.isEmpty()) {
+                return true;
+            }
+
+            return SupportedFirstDayOfWeek.fromCode(trimmed).isPresent();
+        }
+
+        return false;
     }
 }

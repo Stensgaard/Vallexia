@@ -6,15 +6,15 @@ import jakarta.validation.ConstraintValidatorContext;
 
 /**
  * Validator implementation for {@link ValidCountry}.
- * Ensures provided country codes map to {@link com.vallexia.common.enums.SupportedCountry}.
+ * Ensures provided country values map to {@link com.vallexia.common.enums.SupportedCountry}.
  *
- * <p>Values are trimmed before validation so surrounding whitespace does not cause false negatives.</p>
+ * <p>Values are trimmed before validation so surrounding whitespace does not cause false negatives.
  *
  * @author Henrik Stensgaard
  * @version 1.0
  * @since 2025-11-25
  */
-public class ValidCountryValidator implements ConstraintValidator<ValidCountry, String> {
+public class ValidCountryValidator implements ConstraintValidator<ValidCountry, Object> {
 
     @Override
     public void initialize(ValidCountry constraintAnnotation) {
@@ -22,14 +22,26 @@ public class ValidCountryValidator implements ConstraintValidator<ValidCountry, 
     }
 
     @Override
-    public boolean isValid(String countryCode, ConstraintValidatorContext context) {
-        if (countryCode == null || countryCode.isEmpty()) {
+    public boolean isValid(Object value, ConstraintValidatorContext context) {
+        if (value == null) {
             return true;
         }
-        String trimmed = countryCode.trim();
-        if (trimmed.isEmpty()) {
+        if (value instanceof SupportedCountry) {
             return true;
         }
-        return SupportedCountry.fromCountry(trimmed).isPresent();
+        if (value instanceof String countryCode) {
+            if (countryCode.isEmpty()) {
+                return true;
+            }
+            
+            String trimmed = countryCode.trim();
+            if (trimmed.isEmpty()) {
+                return true;
+            }
+
+            return SupportedCountry.fromCountry(trimmed).isPresent();
+        }
+
+        return false;
     }
 }
