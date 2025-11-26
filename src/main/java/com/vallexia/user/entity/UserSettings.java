@@ -1,7 +1,16 @@
 package com.vallexia.user.entity;
 
+import com.vallexia.common.enums.SupportedCountry;
+import com.vallexia.common.enums.SupportedDateFormat;
+import com.vallexia.common.enums.SupportedFirstDayOfWeek;
+import com.vallexia.common.enums.SupportedLocale;
+import com.vallexia.common.enums.SupportedMeasurementSystem;
+import com.vallexia.common.enums.SupportedTimezone;
+import com.vallexia.common.validator.ValidCountry;
+import com.vallexia.common.validator.ValidCurrency;
+import com.vallexia.common.validator.ValidDateFormat;
 import com.vallexia.common.validator.ValidLocale;
-import com.vallexia.user.entity.enums.FirstDayOfWeek;
+import com.vallexia.common.validator.ValidTimezone;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -17,9 +26,9 @@ import java.time.LocalDateTime;
  * User settings entity storing user's display preferences including localization,
  * date formats, measurement units, and other UI preferences.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-15
  */
 @Entity
 @Table(name = "user_settings")
@@ -40,31 +49,34 @@ public class UserSettings {
     @ValidLocale
     @Size(max = 10)
     @Column(nullable = false, length = 10)
-    private String language = "en";
+    private String language = SupportedLocale.EN.getCode();
     
+    @ValidCountry
     @Size(max = 2)
     @Column(length = 2)
-    private String country;
+    private String country = SupportedCountry.US.getCountryCode();
     
     @NotNull
+    @ValidDateFormat
     @Size(max = 20)
     @Column(name = "date_format", nullable = false, length = 20)
-    private String dateFormat = "MM/DD/YYYY";
+    private String dateFormat = SupportedDateFormat.MM_DD_YYYY.name();
     
     @NotNull
+    @ValidTimezone
     @Size(max = 50)
     @Column(nullable = false, length = 50)
-    private String timezone = "UTC";
+    private String timezone = SupportedTimezone.UTC.getValue();
     
     @NotNull
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     @Column(name = "first_day_of_week", nullable = false)
-    private FirstDayOfWeek firstDayOfWeek = FirstDayOfWeek.MONDAY;
+    private SupportedFirstDayOfWeek firstDayOfWeek = SupportedFirstDayOfWeek.MONDAY;
     
     @NotNull
-    @Size(max = 10)
+    @Enumerated(EnumType.STRING)
     @Column(name = "measurement_system", nullable = false, length = 10)
-    private String measurementSystem = "METRIC";
+    private SupportedMeasurementSystem measurementSystem = SupportedMeasurementSystem.METRIC;
     
     @NotNull
     @Size(max = 1)
@@ -76,6 +88,7 @@ public class UserSettings {
     @Column(name = "number_thousands_separator", nullable = false, length = 1)
     private String numberThousandsSeparator = ",";
     
+    @ValidCurrency
     @Size(max = 3)
     @Column(length = 3)
     private String currency;

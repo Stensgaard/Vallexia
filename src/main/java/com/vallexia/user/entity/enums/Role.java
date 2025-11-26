@@ -5,9 +5,9 @@ import lombok.Getter;
 /**
  * User roles for authorization and access control.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 @Getter
 public enum Role {

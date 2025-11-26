@@ -17,9 +17,9 @@ import java.time.LocalDateTime;
 /**
  * Nutritional goals entity storing user's daily nutritional targets.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 @Entity
 @Table(name = "nutritional_goals")
