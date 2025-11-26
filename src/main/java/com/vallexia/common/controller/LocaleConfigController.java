@@ -19,7 +19,10 @@ import com.vallexia.user.entity.enums.DietaryRestriction;
 import com.vallexia.user.entity.enums.GoalType;
 import com.vallexia.user.entity.enums.SubscriptionStatus;
 import com.vallexia.user.entity.enums.MealType;
-import com.vallexia.common.mapper.LocaleConfigMapper;
+import com.vallexia.common.mapper.DomainEnumMapper;
+import com.vallexia.common.mapper.LocaleConfigBuilder;
+import com.vallexia.common.mapper.LocaleMapper;
+import com.vallexia.common.mapper.UnitMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.CacheControl;
@@ -40,7 +43,7 @@ import java.util.stream.Collectors;
  * <p>To expose a new configuration resource:
  * <ol>
  *   <li>Add or update the relevant enum/DTO under {@code com.vallexia.common}</li>
- *   <li>Extend {@link LocaleConfigMapper} so the new enum can be converted to DTOs</li>
+ *   <li>Add a mapper method to the appropriate mapper ({@link LocaleMapper}, {@link UnitMapper}, or {@link DomainEnumMapper})</li>
  *   <li>Add a {@code buildXYZ()} helper and matching {@code @GetMapping} in this controller</li>
  *   <li>Wire the builder into {@link #buildLocaleConfigSnapshot()} so /config stays in sync</li>
  * </ol>
@@ -51,7 +54,10 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/api/v1/locales")
-@Tag(name = "Locale Configuration", description = "Localized configuration such as countries, currencies, timezones, and date formats")
+@Tag(
+    name = "Locale Configuration", 
+    description = "Localized configuration such as countries," + 
+        "currencies, timezones, and date formats")
 public class LocaleConfigController {
 
     private static final CacheControl LOCALE_CACHE_CONTROL =
@@ -64,103 +70,163 @@ public class LocaleConfigController {
     }
 
     @GetMapping
-    @Operation(summary = "List supported locales")
+    @Operation(
+        summary = "List supported locales", 
+        description = "Returns the complete list of locale codes accepted by" + 
+            "UserSettingsDto.language and other endpoints" + 
+            "using @ValidLocale")
     public ResponseEntity<List<LocaleDto>> getSupportedLocales() {
         return ResponseEntity.ok(buildLocales());
     }
 
     @GetMapping("/countries")
-    @Operation(summary = "List supported countries")
+    @Operation(
+        summary = "List supported countries", 
+        description = "Returns the complete list of country codes accepted" + 
+            "by UserSettingsDto.country, RegisterRequestDto.country and other" + 
+            "endpoints" + 
+            "using @ValidCountry")
     public ResponseEntity<List<CountryDto>> getSupportedCountries() {
         return ResponseEntity.ok(buildCountries());
     }
 
     @GetMapping("/currencies")
-    @Operation(summary = "List supported currencies")
+    @Operation(
+        summary = "List supported currencies", 
+        description = "Returns the complete list of currency codes accepted by" + 
+            "UserSettingsDto.currency and other endpoints" + 
+            "using @ValidCurrency")
     public ResponseEntity<List<CurrencyDto>> getSupportedCurrencies() {
         return ResponseEntity.ok(buildCurrencies());
     }
 
     @GetMapping("/timezones")
-    @Operation(summary = "List supported timezones")
+    @Operation(
+        summary = "List supported timezones", 
+        description = "Returns the complete list of timezone identifiers accepted by" + 
+            "UserSettingsDto.timezone and other endpoints" + 
+            "using @ValidTimezone")
     public ResponseEntity<List<TimezoneDto>> getSupportedTimezones() {
         return ResponseEntity.ok(buildTimezones());
     }
 
     @GetMapping("/formatting-rules")
-    @Operation(summary = "List formatting rules derived from countries")
+    @Operation(
+        summary = "List formatting rules derived from countries", 
+        description = "Returns the complete list of formatting rules" + 
+            "derived from countries")
     public ResponseEntity<List<FormattingRuleDto>> getFormattingRules() {
         return ResponseEntity.ok(buildFormattingRules());
     }
 
     @GetMapping("/date-formats")
-    @Operation(summary = "List supported date formats with tokens")
+    @Operation(
+        summary = "List supported date formats with tokens", 
+        description = "Returns the complete list of date format codes accepted by" + 
+            "UserSettingsDto.dateFormat and other endpoints" + 
+            "using @ValidDateFormat")
     public ResponseEntity<List<DateFormatDto>> getDateFormats() {
         return ResponseEntity.ok(buildDateFormats());
     }
 
     @GetMapping("/measurement-systems")
-    @Operation(summary = "List supported measurement systems")
+    @Operation(
+        summary = "List supported measurement systems", 
+        description = "Returns the complete list of measurement system codes" + 
+            "accepted by UserSettingsDto.measurementSystem and other endpoints" + 
+            "using @ValidMeasurementSystem")
     public ResponseEntity<List<MeasurementSystemDto>> getMeasurementSystems() {
         return ResponseEntity.ok(buildMeasurementSystems());
     }
 
     @GetMapping("/first-day-of-week")
-    @Operation(summary = "List supported first-day-of-week options")
+    @Operation(
+        summary = "List supported first-day-of-week options", 
+        description = "Returns the complete list of first day of week codes" + 
+            "accepted by UserSettingsDto.firstDayOfWeek and other endpoints" + 
+            "using @ValidFirstDayOfWeek")
     public ResponseEntity<List<FirstDayOfWeekDto>> getFirstDayOfWeek() {
         return ResponseEntity.ok(buildFirstDayOfWeek());
     }
 
     @GetMapping("/meal-categories")
-    @Operation(summary = "List supported meal/recipe categories")
+    @Operation(
+        summary = "List supported meal/recipe categories", 
+        description = "Returns the complete list of meal category codes accepted" + 
+            "by CreateRecipeDto.category, UpdateRecipeDto.category, RecipeSearchCriteria.category" + 
+            "and other endpoints using @ValidMealCategory")
     public ResponseEntity<List<MealCategoryDto>> getMealCategories() {
         return ResponseEntity.ok(buildMealCategories());
     }
 
     @GetMapping("/dietary-restrictions")
-    @Operation(summary = "List supported dietary restrictions")
+    @Operation(
+        summary = "List supported dietary restrictions", 
+        description = "Returns the complete list of dietary restriction codes" + 
+            "available for use in recipes and user preferences")
     public ResponseEntity<List<DietaryRestrictionDto>> getDietaryRestrictions() {
         return ResponseEntity.ok(buildDietaryRestrictions());
     }
 
     @GetMapping("/allergies")
-    @Operation(summary = "List supported allergies")
+    @Operation(
+        summary = "List supported allergies", 
+        description = "Returns the complete list of allergy codes available" + 
+            "for use in recipes and user preferences")
     public ResponseEntity<List<AllergyDto>> getAllergies() {
         return ResponseEntity.ok(buildAllergies());
     }
 
     @GetMapping("/cuisine-types")
-    @Operation(summary = "List supported cuisine types")
+    @Operation(
+        summary = "List supported cuisine types", 
+        description = "Returns the complete list of cuisine type codes available for use in recipes")
     public ResponseEntity<List<CuisineTypeDto>> getCuisineTypes() {
         return ResponseEntity.ok(buildCuisineTypes());
     }
 
     @GetMapping("/difficulty-levels")
-    @Operation(summary = "List supported recipe difficulty levels")
+    @Operation(
+        summary = "List supported recipe difficulty levels", 
+        description = "Returns the complete list of difficulty level codes available" + 
+            "for use in recipes")
     public ResponseEntity<List<DifficultyLevelDto>> getDifficultyLevels() {
         return ResponseEntity.ok(buildDifficultyLevels());
     }
 
     @GetMapping("/goal-types")
-    @Operation(summary = "List supported nutritional goal types")
+    @Operation(
+        summary = "List supported nutritional goal types", 
+        description = "Returns the complete list of goal type codes available" + 
+            "for use in nutritional goals")
     public ResponseEntity<List<GoalTypeDto>> getGoalTypes() {
         return ResponseEntity.ok(buildGoalTypes());
     }
 
     @GetMapping("/subscription-statuses")
-    @Operation(summary = "List supported subscription statuses")
+    @Operation(
+        summary = "List supported subscription statuses", 
+        description = "Returns the complete list of subscription status codes" + 
+            "accepted by JwtResponseDto.subscriptionStatus, UserProfileDto.subscriptionStatus" + 
+            "and other endpoints" + 
+            "using @ValidSubscriptionStatus")
     public ResponseEntity<List<SubscriptionStatusDto>> getSubscriptionStatuses() {
         return ResponseEntity.ok(buildSubscriptionStatuses());
     }
 
     @GetMapping("/meal-types")
-    @Operation(summary = "List supported meal types for meal planning")
+    @Operation(
+        summary = "List supported meal types for meal planning", 
+        description = "Returns the complete list of meal type codes available for use" + 
+            "in meal plans and user preferences")
     public ResponseEntity<List<MealTypeDto>> getMealTypes() {
         return ResponseEntity.ok(buildMealTypes());
     }
 
     @GetMapping("/config")
-    @Operation(summary = "Get the complete locale configuration bundle")
+    @Operation(
+        summary = "Get the complete locale configuration bundle", 
+        description = "Returns the complete locale configuration bundle")
     public ResponseEntity<LocaleConfigDto> getLocaleConfig() {
         return ResponseEntity.ok()
                 .cacheControl(LOCALE_CACHE_CONTROL)
@@ -168,7 +234,7 @@ public class LocaleConfigController {
     }
 
     private LocaleConfigDto buildLocaleConfigSnapshot() {
-        return LocaleConfigMapper.buildConfig(
+        return LocaleConfigBuilder.buildConfig(
                 buildLocales(),
                 buildCountries(),
                 buildCurrencies(),
@@ -192,119 +258,119 @@ public class LocaleConfigController {
     }
 
     private List<LocaleDto> buildLocales() {
-        return SupportedLocale.getAllCodes().stream()
-                .sorted()
-                .map(code -> LocaleConfigMapper.toLocaleDto(SupportedLocale.fromCode(code)))
+        return SupportedLocale.getAll().stream()
+                .sorted(Comparator.comparing(SupportedLocale::getCode))
+                .map(LocaleMapper::toLocaleDto)
                 .collect(Collectors.toList());
     }
 
     private List<CountryDto> buildCountries() {
         return SupportedCountry.getAll().stream()
                 .sorted(Comparator.comparing(SupportedCountry::getCountryCode))
-                .map(LocaleConfigMapper::toCountryDto)
+                .map(LocaleMapper::toCountryDto)
                 .collect(Collectors.toList());
     }
 
     private List<CurrencyDto> buildCurrencies() {
         return SupportedCurrency.getAll().stream()
                 .sorted(Comparator.comparing(SupportedCurrency::getCode))
-                .map(LocaleConfigMapper::toCurrencyDto)
+                .map(LocaleMapper::toCurrencyDto)
                 .collect(Collectors.toList());
     }
 
     private List<TimezoneDto> buildTimezones() {
         return SupportedTimezone.getAll().stream()
-                .map(LocaleConfigMapper::toTimezoneDto)
+                .map(LocaleMapper::toTimezoneDto)
                 .collect(Collectors.toList());
     }
 
     private List<FormattingRuleDto> buildFormattingRules() {
         return SupportedCountry.getAll().stream()
-                .map(LocaleConfigMapper::toFormattingRuleDto)
+                .map(LocaleMapper::toFormattingRuleDto)
                 .collect(Collectors.toList());
     }
 
     private List<DateFormatDto> buildDateFormats() {
         return SupportedDateFormat.getAll().stream()
-                .map(LocaleConfigMapper::toDateFormatDto)
+                .map(LocaleMapper::toDateFormatDto)
                 .collect(Collectors.toList());
     }
 
     private List<MeasurementSystemDto> buildMeasurementSystems() {
         return SupportedMeasurementSystem.getAll().stream()
-                .map(LocaleConfigMapper::toMeasurementSystemDto)
+                .map(LocaleMapper::toMeasurementSystemDto)
                 .collect(Collectors.toList());
     }
 
     private List<UnitDto> buildWeightUnits() {
         return SupportedWeightUnit.getAll().stream()
-                .map(LocaleConfigMapper::toWeightUnitDto)
+                .map(UnitMapper::toWeightUnitDto)
                 .collect(Collectors.toList());
     }
 
     private List<UnitDto> buildVolumeUnits() {
         return SupportedVolumeUnit.getAll().stream()
-                .map(LocaleConfigMapper::toVolumeUnitDto)
+                .map(UnitMapper::toVolumeUnitDto)
                 .collect(Collectors.toList());
     }
 
     private List<UnitDto> buildCountUnits() {
         return SupportedCountUnit.getAll().stream()
-                .map(LocaleConfigMapper::toCountUnitDto)
+                .map(UnitMapper::toCountUnitDto)
                 .collect(Collectors.toList());
     }
 
     private List<FirstDayOfWeekDto> buildFirstDayOfWeek() {
         return Arrays.stream(SupportedFirstDayOfWeek.values())
-                .map(LocaleConfigMapper::toFirstDayOfWeekDto)
+                .map(LocaleMapper::toFirstDayOfWeekDto)
                 .collect(Collectors.toList());
     }
 
     private List<MealCategoryDto> buildMealCategories() {
         return SupportedMealCategory.getAll().stream()
-                .map(LocaleConfigMapper::toMealCategoryDto)
+                .map(LocaleMapper::toMealCategoryDto)
                 .collect(Collectors.toList());
     }
 
     private List<DietaryRestrictionDto> buildDietaryRestrictions() {
         return Arrays.stream(DietaryRestriction.values())
-                .map(LocaleConfigMapper::toDietaryRestrictionDto)
+                .map(DomainEnumMapper::toDietaryRestrictionDto)
                 .collect(Collectors.toList());
     }
 
     private List<AllergyDto> buildAllergies() {
         return Arrays.stream(Allergy.values())
-                .map(LocaleConfigMapper::toAllergyDto)
+                .map(DomainEnumMapper::toAllergyDto)
                 .collect(Collectors.toList());
     }
 
     private List<CuisineTypeDto> buildCuisineTypes() {
         return Arrays.stream(CuisineType.values())
-                .map(LocaleConfigMapper::toCuisineTypeDto)
+                .map(DomainEnumMapper::toCuisineTypeDto)
                 .collect(Collectors.toList());
     }
 
     private List<DifficultyLevelDto> buildDifficultyLevels() {
         return Arrays.stream(DifficultyLevel.values())
-                .map(LocaleConfigMapper::toDifficultyLevelDto)
+                .map(DomainEnumMapper::toDifficultyLevelDto)
                 .collect(Collectors.toList());
     }
 
     private List<GoalTypeDto> buildGoalTypes() {
         return Arrays.stream(GoalType.values())
-                .map(LocaleConfigMapper::toGoalTypeDto)
+                .map(DomainEnumMapper::toGoalTypeDto)
                 .collect(Collectors.toList());
     }
 
     private List<SubscriptionStatusDto> buildSubscriptionStatuses() {
         return Arrays.stream(SubscriptionStatus.values())
-                .map(LocaleConfigMapper::toSubscriptionStatusDto)
+                .map(DomainEnumMapper::toSubscriptionStatusDto)
                 .collect(Collectors.toList());
     }
 
     private List<MealTypeDto> buildMealTypes() {
         return Arrays.stream(MealType.values())
-                .map(LocaleConfigMapper::toMealTypeDto)
+                .map(DomainEnumMapper::toMealTypeDto)
                 .collect(Collectors.toList());
     }
 }
