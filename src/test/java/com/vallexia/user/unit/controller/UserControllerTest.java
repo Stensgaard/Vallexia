@@ -265,10 +265,10 @@ class UserControllerTest {
     assertThat(body.getEmail()).isEqualTo("updated@example.com");
     assertThat(body.getHouseholdSize()).isEqualTo(4);
     assertThat(body.getMealTypes()).containsExactlyInAnyOrder(
-        com.vallexia.user.entity.enums.MealType.BREAKFAST,
-        com.vallexia.user.entity.enums.MealType.LUNCH,
-        com.vallexia.user.entity.enums.MealType.DINNER,
-        com.vallexia.user.entity.enums.MealType.SNACK
+        com.vallexia.common.enums.SupportedMealCategory.BREAKFAST,
+        com.vallexia.common.enums.SupportedMealCategory.LUNCH,
+        com.vallexia.common.enums.SupportedMealCategory.DINNER,
+        com.vallexia.common.enums.SupportedMealCategory.SNACK
     );
   }
   

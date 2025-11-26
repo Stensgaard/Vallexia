@@ -14,11 +14,11 @@ import com.vallexia.user.entity.DietaryPreferences;
 import com.vallexia.user.entity.NutritionalGoals;
 import com.vallexia.user.entity.User;
 import com.vallexia.user.entity.UserSettings;
-import com.vallexia.user.entity.enums.Allergy;
-import com.vallexia.user.entity.enums.CuisineType;
-import com.vallexia.user.entity.enums.DietaryRestriction;
+import com.vallexia.common.enums.SupportedAllergy;
+import com.vallexia.common.enums.SupportedCuisineType;
+import com.vallexia.common.enums.SupportedDietaryRestriction;
+import com.vallexia.common.enums.SupportedMealCategory;
 import com.vallexia.user.entity.enums.GoalType;
-import com.vallexia.user.entity.enums.MealType;
 import com.vallexia.user.entity.enums.Role;
 import com.vallexia.user.entity.enums.SubscriptionStatus;
 
@@ -44,7 +44,7 @@ public class UserTestFixtures {
   public static final String TEST_EMAIL = "test@example.com";
   public static final String TEST_PASSWORD_HASH = "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy";
   public static final Integer TEST_HOUSEHOLD_SIZE = 2;
-  public static final Set<MealType> TEST_MEAL_TYPES = Set.of(MealType.BREAKFAST, MealType.LUNCH, MealType.DINNER);
+  public static final Set<SupportedMealCategory> TEST_MEAL_TYPES = Set.of(SupportedMealCategory.BREAKFAST, SupportedMealCategory.LUNCH, SupportedMealCategory.DINNER);
   
   /**
    * Creates a standard test user.
@@ -90,7 +90,7 @@ public class UserTestFixtures {
   public static User createUserWithProfile() {
     User user = createUser();
     user.setHouseholdSize(3);
-    user.setMealTypes(new HashSet<>(Set.of(MealType.BREAKFAST, MealType.LUNCH, MealType.DINNER, MealType.SNACK)));
+    user.setMealTypes(new HashSet<>(Set.of(SupportedMealCategory.BREAKFAST, SupportedMealCategory.LUNCH, SupportedMealCategory.DINNER, SupportedMealCategory.SNACK)));
     return user;
   }
   
@@ -104,7 +104,7 @@ public class UserTestFixtures {
     user.setEmail("admin@example.com");
     user.setPasswordHash(TEST_PASSWORD_HASH);
     user.setHouseholdSize(1);
-    user.setMealTypes(new HashSet<>(Set.of(MealType.BREAKFAST, MealType.DINNER)));
+    user.setMealTypes(new HashSet<>(Set.of(SupportedMealCategory.BREAKFAST, SupportedMealCategory.DINNER)));
     user.setEnabled(true);
     user.setAccountNonExpired(true);
     user.setAccountNonLocked(true);
@@ -161,7 +161,7 @@ public class UserTestFixtures {
     dto.setEmail("updated@example.com");
     dto.setEnabled(true);
     dto.setHouseholdSize(4);
-    dto.setMealTypes(Set.of(MealType.BREAKFAST, MealType.LUNCH, MealType.DINNER, MealType.SNACK));
+    dto.setMealTypes(Set.of(SupportedMealCategory.BREAKFAST, SupportedMealCategory.LUNCH, SupportedMealCategory.DINNER, SupportedMealCategory.SNACK));
     dto.setSubscriptionStatus("PREMIUM");
     dto.setSubscriptionExpiresAt(LocalDateTime.now().plusMonths(1));
     return dto;
@@ -184,16 +184,16 @@ public class UserTestFixtures {
     preferences.setId(1L);
     preferences.setUser(user);
     preferences.setRestrictions(new HashSet<>(Set.of(
-        DietaryRestriction.VEGETARIAN,
-        DietaryRestriction.GLUTEN_FREE
+        SupportedDietaryRestriction.VEGETARIAN,
+        SupportedDietaryRestriction.GLUTEN_FREE
     )));
     preferences.setAllergies(new HashSet<>(Set.of(
-        Allergy.PEANUTS,
-        Allergy.MILK
+        SupportedAllergy.PEANUTS,
+        SupportedAllergy.MILK
     )));
     preferences.setPreferredCuisines(new HashSet<>(Set.of(
-        CuisineType.ITALIAN,
-        CuisineType.MEDITERRANEAN
+        SupportedCuisineType.ITALIAN,
+        SupportedCuisineType.MEDITERRANEAN
     )));
     preferences.setCreatedAt(LocalDateTime.now().minusDays(10));
     preferences.setUpdatedAt(LocalDateTime.now().minusDays(1));
@@ -208,16 +208,16 @@ public class UserTestFixtures {
     dto.setId(1L);
     dto.setUserId(TEST_USER_ID);
     dto.setRestrictions(new HashSet<>(Set.of(
-        DietaryRestriction.VEGETARIAN,
-        DietaryRestriction.GLUTEN_FREE
+        SupportedDietaryRestriction.VEGETARIAN,
+        SupportedDietaryRestriction.GLUTEN_FREE
     )));
     dto.setAllergies(new HashSet<>(Set.of(
-        Allergy.PEANUTS,
-        Allergy.MILK
+        SupportedAllergy.PEANUTS,
+        SupportedAllergy.MILK
     )));
     dto.setPreferredCuisines(new HashSet<>(Set.of(
-        CuisineType.ITALIAN,
-        CuisineType.MEDITERRANEAN
+        SupportedCuisineType.ITALIAN,
+        SupportedCuisineType.MEDITERRANEAN
     )));
     return dto;
   }
@@ -230,19 +230,19 @@ public class UserTestFixtures {
     dto.setId(1L);
     dto.setUserId(TEST_USER_ID);
     dto.setRestrictions(new HashSet<>(Set.of(
-        DietaryRestriction.VEGAN,
-        DietaryRestriction.KETO,
-        DietaryRestriction.LOW_SODIUM
+        SupportedDietaryRestriction.VEGAN,
+        SupportedDietaryRestriction.KETO,
+        SupportedDietaryRestriction.LOW_SODIUM
     )));
     dto.setAllergies(new HashSet<>(Set.of(
-        Allergy.TREE_NUTS,
-        Allergy.SOY,
-        Allergy.WHEAT
+        SupportedAllergy.TREE_NUTS,
+        SupportedAllergy.SOY,
+        SupportedAllergy.WHEAT
     )));
     dto.setPreferredCuisines(new HashSet<>(Set.of(
-        CuisineType.JAPANESE,
-        CuisineType.THAI,
-        CuisineType.INDIAN
+        SupportedCuisineType.JAPANESE,
+        SupportedCuisineType.THAI,
+        SupportedCuisineType.INDIAN
     )));
     return dto;
   }
