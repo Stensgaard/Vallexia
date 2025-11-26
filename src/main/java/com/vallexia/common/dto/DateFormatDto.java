@@ -18,10 +18,15 @@ import java.util.List;
 @Schema(description = "Supported date format definition")
 public class DateFormatDto {
 
-    @Schema(description = "Format code identifier", example = "MM_DD_YYYY")
+    @Schema(
+        description = "Format code identifier", 
+        example = "MM_DD_YYYY", 
+        allowableValues = {"MM_DD_YYYY", "DD_MM_YYYY", "YYYY_MM_DD", "DD_MM_YYYY_DOT"})
     String code;
 
-    @Schema(description = "Display string for the format", example = "MM/DD/YYYY")
+    @Schema(
+        description = "Display string for the format", 
+        example = "MM/DD/YYYY")
     String format;
 
     @Schema(description = "Rendering tokens describing the format order")

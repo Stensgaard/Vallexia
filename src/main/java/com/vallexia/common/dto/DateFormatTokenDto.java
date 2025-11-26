@@ -16,9 +16,13 @@ import lombok.Value;
 @Schema(description = "Token describing a segment of a date format")
 public class DateFormatTokenDto {
 
-    @Schema(description = "Token type (DAY|MONTH|YEAR|LITERAL)", example = "DAY")
+    @Schema(
+        description = "Token type (DAY|MONTH|YEAR|LITERAL)", 
+        example = "DAY")
     String type;
 
-    @Schema(description = "Literal value when type is LITERAL", example = "/")
+    @Schema(
+        description = "Literal value when type is LITERAL", 
+        example = "/")
     String value;
 }

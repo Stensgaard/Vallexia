@@ -16,9 +16,17 @@ import lombok.Value;
 @Schema(description = "Supported cuisine type option")
 public class CuisineTypeDto {
 
-    @Schema(description = "Enum code of the cuisine type", example = "ITALIAN")
+    @Schema(
+        description = "Enum code of the cuisine type", 
+        example = "ITALIAN", 
+        allowableValues = {"AMERICAN", "ITALIAN", "MEXICAN", "CHINESE", "JAPANESE", 
+            "THAI", "INDIAN", "FRENCH", "MEDITERRANEAN", "GREEK", "SPANISH", 
+            "GERMAN", "BRITISH", "KOREAN", "VIETNAMESE", "MIDDLE_EASTERN", 
+            "CARIBBEAN", "AFRICAN", "SOUTH_AMERICAN"})
     String code;
 
-    @Schema(description = "Display label for the cuisine", example = "Italian")
+    @Schema(
+        description = "Display label for the cuisine", 
+        example = "Italian")
     String name;
 }

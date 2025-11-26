@@ -16,9 +16,14 @@ import lombok.Value;
 @Schema(description = "Supported currency option")
 public class CurrencyDto {
 
-    @Schema(description = "ISO 4217 currency code", example = "USD")
+    @Schema(
+        description = "ISO 4217 currency code", 
+        example = "USD", 
+        allowableValues = {"USD", "DKK"})
     String code;
 
-    @Schema(description = "Currency name", example = "US Dollar")
+    @Schema(
+        description = "Currency name", 
+        example = "US Dollar")
     String name;
 }
