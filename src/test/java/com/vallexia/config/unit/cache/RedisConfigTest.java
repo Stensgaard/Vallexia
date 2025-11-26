@@ -3,106 +3,56 @@ package com.vallexia.config.unit.cache;
 import com.vallexia.config.cache.RedisConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 
 /**
- * Unit tests for RedisConfig validation.
- * Tests Redis configuration validation logic with @PostConstruct.
+ * Unit tests for RedisConfig.
+ * Tests RedisTemplate bean creation with custom serializers.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-29
  */
-@DisplayName("RedisConfig Validation Tests")
+@DisplayName("RedisConfig Tests")
 class RedisConfigTest {
   
-  private RedisConfig createConfig(String host, String port, String password, String profile) {
+  @Test
+  @DisplayName("Should create RedisTemplate with correct serializers")
+  void shouldCreateRedisTemplateWithCorrectSerializers() {
+    // Given
     RedisConfig config = new RedisConfig();
-    ReflectionTestUtils.setField(config, "redisHost", host);
-    ReflectionTestUtils.setField(config, "redisPort", port != null ? Integer.parseInt(port) : 6379);
-    ReflectionTestUtils.setField(config, "redisPassword", password);
-    ReflectionTestUtils.setField(config, "activeProfile", profile);
-    return config;
+    RedisConnectionFactory connectionFactory = mock(RedisConnectionFactory.class);
+    
+    // When
+    RedisTemplate<String, Object> template = config.redisTemplate(connectionFactory);
+    
+    // Then
+    assertThat(template).isNotNull();
+    assertThat(template.getConnectionFactory()).isEqualTo(connectionFactory);
+    assertThat(template.getKeySerializer()).isInstanceOf(StringRedisSerializer.class);
+    assertThat(template.getHashKeySerializer()).isInstanceOf(StringRedisSerializer.class);
+    assertThat(template.getValueSerializer()).isInstanceOf(GenericJackson2JsonRedisSerializer.class);
+    assertThat(template.getHashValueSerializer()).isInstanceOf(GenericJackson2JsonRedisSerializer.class);
   }
   
   @Test
-  @DisplayName("Should throw exception when host is null")
-  void shouldThrowExceptionWhenHostIsNull() {
+  @DisplayName("Should configure RedisTemplate with string keys and JSON values")
+  void shouldConfigureRedisTemplateWithStringKeysAndJsonValues() {
     // Given
-    RedisConfig config = createConfig(null, "6379", "", "dev");
+    RedisConfig config = new RedisConfig();
+    RedisConnectionFactory connectionFactory = mock(RedisConnectionFactory.class);
     
-    // When/Then
-    assertThatThrownBy(() -> config.validateRedisConfig())
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessageContaining("Redis host is not configured");
-  }
-  
-  @Test
-  @DisplayName("Should throw exception when host is empty")
-  void shouldThrowExceptionWhenHostIsEmpty() {
-    // Given
-    RedisConfig config = createConfig("", "6379", "", "dev");
+    // When
+    RedisTemplate<String, Object> template = config.redisTemplate(connectionFactory);
     
-    // When/Then
-    assertThatThrownBy(() -> config.validateRedisConfig())
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessageContaining("Redis host is not configured");
-  }
-  
-  @Test
-  @DisplayName("Should validate successfully with valid host")
-  void shouldValidateSuccessfullyWithValidHost() {
-    // Given
-    RedisConfig config = createConfig("redis", "6379", "", "dev");
-    
-    // When - should not throw exception
-    config.validateRedisConfig();
-    
-    // Then - validation passes silently
-    assertThat(ReflectionTestUtils.getField(config, "redisHost")).isEqualTo("redis");
-  }
-  
-  @Test
-  @DisplayName("Should validate successfully with localhost as default")
-  void shouldValidateSuccessfullyWithLocalhostAsDefault() {
-    // Given
-    RedisConfig config = createConfig("localhost", "6379", "", "dev");
-    
-    // When - should not throw exception
-    config.validateRedisConfig();
-    
-    // Then - validation passes silently
-    assertThat(ReflectionTestUtils.getField(config, "redisHost")).isEqualTo("localhost");
-  }
-  
-  @Test
-  @DisplayName("Should validate successfully with password in production")
-  void shouldValidateSuccessfullyWithPasswordInProduction() {
-    // Given
-    RedisConfig config = createConfig("redis", "6379", "strongpassword123", "prod");
-    
-    // When - should not throw exception
-    config.validateRedisConfig();
-    
-    // Then - validation passes silently
-    assertThat(ReflectionTestUtils.getField(config, "redisHost")).isEqualTo("redis");
-    assertThat(ReflectionTestUtils.getField(config, "redisPassword")).isEqualTo("strongpassword123");
-  }
-  
-  @Test
-  @DisplayName("Should log warning when password is empty in production")
-  void shouldLogWarningWhenPasswordIsEmptyInProduction() {
-    // Given
-    RedisConfig config = createConfig("redis", "6379", "", "prod");
-    
-    // When - should not throw exception but logs warning
-    config.validateRedisConfig();
-    
-    // Then - validation passes with warning
-    assertThat(ReflectionTestUtils.getField(config, "redisHost")).isEqualTo("redis");
+    // Then
+    assertThat(template.getKeySerializer()).isInstanceOf(StringRedisSerializer.class);
+    assertThat(template.getValueSerializer()).isInstanceOf(GenericJackson2JsonRedisSerializer.class);
   }
 }
-

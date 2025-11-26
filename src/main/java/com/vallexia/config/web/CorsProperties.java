@@ -1,37 +1,43 @@
 package com.vallexia.config.web;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
 /**
  * Configuration properties for CORS settings.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-29
  */
 @Slf4j
 @Data
+@Validated
 @ConfigurationProperties(prefix = "app.cors")
 public class CorsProperties {
   
   /**
    * Allowed origins for CORS.
    */
+  @NotEmpty(message = "CORS allowed origins must be configured")
   private List<String> allowedOrigins;
   
   /**
    * Allowed HTTP methods for CORS.
    */
+  @NotEmpty(message = "CORS allowed methods must be configured")
   private List<String> allowedMethods;
   
   /**
    * Allowed headers for CORS.
    */
+  @NotEmpty(message = "CORS allowed headers must be configured")
   private List<String> allowedHeaders;
   
   /**
@@ -40,16 +46,15 @@ public class CorsProperties {
   private boolean allowCredentials;
   
   /**
-   * Validates CORS configuration after properties are loaded.
-   * Ensures configuration is secure and properly set.
+   * Validates CORS configuration for complex business logic rules.
+   * 
+   * <p>Bean Validation handles basic null/empty checks. This method validates
+   * complex security rules that cannot be expressed with annotations:
+   * - Wildcard origin with credentials (security violation)
+   * - Origin format validation (business logic)
    */
   @PostConstruct
   public void validateCorsConfiguration() {
-    if (allowedOrigins == null || allowedOrigins.isEmpty()) {
-      throw new IllegalStateException(
-          "CORS allowed origins must be configured. Set app.cors.allowed-origins property.");
-    }
-    
     // Check for overly permissive wildcard configuration
     if (allowedOrigins.contains("*") && allowCredentials) {
       throw new IllegalStateException(
@@ -76,11 +81,6 @@ public class CorsProperties {
         log.warn("CORS origin '{}' does not start with http:// or https://. "
             + "Verify this is intentional.", origin);
       }
-    }
-    
-    if (allowedMethods == null || allowedMethods.isEmpty()) {
-      throw new IllegalStateException(
-          "CORS allowed methods must be configured. Set app.cors.allowed-methods property.");
     }
     
     log.info("CORS configuration validated successfully. Allowed origins: {}", 
