@@ -102,4 +102,56 @@ class ValidMealCategoryValidatorTest {
     assertThat(validator.isValid(true, null)).isFalse();
     assertThat(validator.isValid(new Object(), null)).isFalse();
   }
+
+  // ==================== Collection Tests ====================
+
+  @Test
+  @DisplayName("Should accept collections of valid meal category enum instances")
+  void shouldAcceptCollectionsOfValidMealCategoryEnumInstances() {
+    // When/Then
+    assertThat(validator.isValid(java.util.Set.of(SupportedMealCategory.BREAKFAST, SupportedMealCategory.LUNCH), null)).isTrue();
+    assertThat(validator.isValid(java.util.List.of(SupportedMealCategory.DINNER, SupportedMealCategory.SNACK), null)).isTrue();
+  }
+
+  @Test
+  @DisplayName("Should accept collections with valid meal category string codes")
+  void shouldAcceptCollectionsWithValidMealCategoryStringCodes() {
+    // When/Then
+    assertThat(validator.isValid(java.util.Set.of("BREAKFAST", "LUNCH"), null)).isTrue();
+    assertThat(validator.isValid(java.util.List.of("dinner", "snack"), null)).isTrue();
+  }
+
+  @Test
+  @DisplayName("Should accept empty collections")
+  void shouldAcceptEmptyCollections() {
+    // When/Then
+    assertThat(validator.isValid(java.util.Set.of(), null)).isTrue();
+    assertThat(validator.isValid(java.util.List.of(), null)).isTrue();
+  }
+
+  @Test
+  @DisplayName("Should accept collections with null elements")
+  void shouldAcceptCollectionsWithNullElements() {
+    // When/Then
+    java.util.List<Object> listWithNull = new java.util.ArrayList<>();
+    listWithNull.add(null);
+    listWithNull.add(SupportedMealCategory.BREAKFAST);
+    assertThat(validator.isValid(listWithNull, null)).isTrue();
+  }
+
+  @Test
+  @DisplayName("Should reject collections with invalid meal category codes")
+  void shouldRejectCollectionsWithInvalidMealCategoryCodes() {
+    // When/Then
+    assertThat(validator.isValid(java.util.Set.of("INVALID", "BREAKFAST"), null)).isFalse();
+    assertThat(validator.isValid(java.util.List.of("LUNCH", "INVALID"), null)).isFalse();
+  }
+
+  @Test
+  @DisplayName("Should reject collections with invalid types")
+  void shouldRejectCollectionsWithInvalidTypes() {
+    // When/Then
+    assertThat(validator.isValid(java.util.Set.of(123, 456), null)).isFalse();
+    assertThat(validator.isValid(java.util.List.of(true, false), null)).isFalse();
+  }
 }
