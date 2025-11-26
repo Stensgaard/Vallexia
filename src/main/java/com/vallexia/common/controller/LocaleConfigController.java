@@ -321,7 +321,7 @@ public class LocaleConfigController {
     }
 
     private List<FirstDayOfWeekDto> buildFirstDayOfWeek() {
-        return Arrays.stream(SupportedFirstDayOfWeek.values())
+        return SupportedFirstDayOfWeek.getAll().stream()
                 .map(LocaleMapper::toFirstDayOfWeekDto)
                 .collect(Collectors.toList());
     }
