@@ -24,6 +24,8 @@ import com.vallexia.common.mapper.LocaleConfigBuilder;
 import com.vallexia.common.mapper.LocaleMapper;
 import com.vallexia.common.mapper.UnitMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
@@ -56,8 +58,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/locales")
 @Tag(
     name = "Locale Configuration", 
-    description = "Localized configuration such as countries," + 
-        "currencies, timezones, and date formats")
+    description = "Localized configuration such as countries, currencies, timezones, " +
+        "and date formats")
 public class LocaleConfigController {
 
     private static final CacheControl LOCALE_CACHE_CONTROL =
@@ -72,9 +74,12 @@ public class LocaleConfigController {
     @GetMapping
     @Operation(
         summary = "List supported locales", 
-        description = "Returns the complete list of locale codes accepted by" + 
-            "UserSettingsDto.language and other endpoints" + 
-            "using @ValidLocale")
+        description = "Returns the complete list of locale codes accepted by UserSettingsDto.language" + 
+            "and other endpoints using @ValidLocale")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Supported locales retrieved successfully"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<List<LocaleDto>> getSupportedLocales() {
         return ResponseEntity.ok(buildLocales());
     }
@@ -82,20 +87,25 @@ public class LocaleConfigController {
     @GetMapping("/countries")
     @Operation(
         summary = "List supported countries", 
-        description = "Returns the complete list of country codes accepted" + 
-            "by UserSettingsDto.country, RegisterRequestDto.country and other" + 
-            "endpoints" + 
-            "using @ValidCountry")
+        description = "Returns the complete list of country codes accepted by UserSettingsDto.country," + 
+            "RegisterRequestDto.country and other endpoints using @ValidCountry")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Supported countries retrieved successfully"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<List<CountryDto>> getSupportedCountries() {
         return ResponseEntity.ok(buildCountries());
     }
 
     @GetMapping("/currencies")
     @Operation(
-        summary = "List supported currencies", 
-        description = "Returns the complete list of currency codes accepted by" + 
-            "UserSettingsDto.currency and other endpoints" + 
-            "using @ValidCurrency")
+        summary = "List supported currencies",  
+        description = "Returns the complete list of currency codes accepted by UserSettingsDto.currency" + 
+            " and other endpoints using @ValidCurrency")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Supported currencies retrieved successfully"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<List<CurrencyDto>> getSupportedCurrencies() {
         return ResponseEntity.ok(buildCurrencies());
     }
@@ -104,8 +114,11 @@ public class LocaleConfigController {
     @Operation(
         summary = "List supported timezones", 
         description = "Returns the complete list of timezone identifiers accepted by" + 
-            "UserSettingsDto.timezone and other endpoints" + 
-            "using @ValidTimezone")
+            "UserSettingsDto.timezone and other endpoints using @ValidTimezone")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Supported timezones retrieved successfully"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<List<TimezoneDto>> getSupportedTimezones() {
         return ResponseEntity.ok(buildTimezones());
     }
@@ -113,8 +126,11 @@ public class LocaleConfigController {
     @GetMapping("/formatting-rules")
     @Operation(
         summary = "List formatting rules derived from countries", 
-        description = "Returns the complete list of formatting rules" + 
-            "derived from countries")
+        description = "Returns the complete list of formatting rules derived from countries")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Formatting rules retrieved successfully"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<List<FormattingRuleDto>> getFormattingRules() {
         return ResponseEntity.ok(buildFormattingRules());
     }
@@ -123,8 +139,11 @@ public class LocaleConfigController {
     @Operation(
         summary = "List supported date formats with tokens", 
         description = "Returns the complete list of date format codes accepted by" + 
-            "UserSettingsDto.dateFormat and other endpoints" + 
-            "using @ValidDateFormat")
+            "UserSettingsDto.dateFormat and other endpoints using @ValidDateFormat")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Supported date formats retrieved successfully"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<List<DateFormatDto>> getDateFormats() {
         return ResponseEntity.ok(buildDateFormats());
     }
@@ -135,6 +154,10 @@ public class LocaleConfigController {
         description = "Returns the complete list of measurement system codes" + 
             "accepted by UserSettingsDto.measurementSystem and other endpoints" + 
             "using @ValidMeasurementSystem")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Supported measurement systems retrieved successfully"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<List<MeasurementSystemDto>> getMeasurementSystems() {
         return ResponseEntity.ok(buildMeasurementSystems());
     }
@@ -142,9 +165,12 @@ public class LocaleConfigController {
     @GetMapping("/first-day-of-week")
     @Operation(
         summary = "List supported first-day-of-week options", 
-        description = "Returns the complete list of first day of week codes" + 
-            "accepted by UserSettingsDto.firstDayOfWeek and other endpoints" + 
-            "using @ValidFirstDayOfWeek")
+        description = "Returns the complete list of first day of week codes accepted by" +  
+        "UserSettingsDto.firstDayOfWeek and other endpoints using @ValidFirstDayOfWeek")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Supported first day of week options retrieved successfully"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<List<FirstDayOfWeekDto>> getFirstDayOfWeek() {
         return ResponseEntity.ok(buildFirstDayOfWeek());
     }
@@ -152,9 +178,13 @@ public class LocaleConfigController {
     @GetMapping("/meal-categories")
     @Operation(
         summary = "List supported meal/recipe categories", 
-        description = "Returns the complete list of meal category codes accepted" + 
-            "by CreateRecipeDto.category, UpdateRecipeDto.category, RecipeSearchCriteria.category" + 
-            "and other endpoints using @ValidMealCategory")
+        description = "Returns the complete list of meal category codes accepted by" + 
+            "CreateRecipeDto.category, UpdateRecipeDto.category, RecipeSearchCriteria.category and" + 
+            "other endpoints using @ValidMealCategory")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Supported meal categories retrieved successfully"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<List<MealCategoryDto>> getMealCategories() {
         return ResponseEntity.ok(buildMealCategories());
     }
@@ -162,8 +192,12 @@ public class LocaleConfigController {
     @GetMapping("/dietary-restrictions")
     @Operation(
         summary = "List supported dietary restrictions", 
-        description = "Returns the complete list of dietary restriction codes" + 
-            "available for use in recipes and user preferences")
+        description = "Returns the complete list of dietary restriction codes available for use" + 
+            "in recipes and user preferences")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Supported dietary restrictions retrieved successfully"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<List<DietaryRestrictionDto>> getDietaryRestrictions() {
         return ResponseEntity.ok(buildDietaryRestrictions());
     }
@@ -171,8 +205,12 @@ public class LocaleConfigController {
     @GetMapping("/allergies")
     @Operation(
         summary = "List supported allergies", 
-        description = "Returns the complete list of allergy codes available" + 
-            "for use in recipes and user preferences")
+        description = "Returns the complete list of allergy codes available for use in" + 
+        "recipes and user preferences")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Supported allergies retrieved successfully"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<List<AllergyDto>> getAllergies() {
         return ResponseEntity.ok(buildAllergies());
     }
@@ -181,6 +219,10 @@ public class LocaleConfigController {
     @Operation(
         summary = "List supported cuisine types", 
         description = "Returns the complete list of cuisine type codes available for use in recipes")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Supported cuisine types retrieved successfully"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<List<CuisineTypeDto>> getCuisineTypes() {
         return ResponseEntity.ok(buildCuisineTypes());
     }
@@ -188,8 +230,11 @@ public class LocaleConfigController {
     @GetMapping("/difficulty-levels")
     @Operation(
         summary = "List supported recipe difficulty levels", 
-        description = "Returns the complete list of difficulty level codes available" + 
-            "for use in recipes")
+        description = "Returns the complete list of difficulty level codes available for use in recipes")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Supported difficulty levels retrieved successfully"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<List<DifficultyLevelDto>> getDifficultyLevels() {
         return ResponseEntity.ok(buildDifficultyLevels());
     }
@@ -197,8 +242,11 @@ public class LocaleConfigController {
     @GetMapping("/goal-types")
     @Operation(
         summary = "List supported nutritional goal types", 
-        description = "Returns the complete list of goal type codes available" + 
-            "for use in nutritional goals")
+        description = "Returns the complete list of goal type codes available for use in nutritional goals")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Supported goal types retrieved successfully"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<List<GoalTypeDto>> getGoalTypes() {
         return ResponseEntity.ok(buildGoalTypes());
     }
@@ -206,10 +254,13 @@ public class LocaleConfigController {
     @GetMapping("/subscription-statuses")
     @Operation(
         summary = "List supported subscription statuses", 
-        description = "Returns the complete list of subscription status codes" + 
-            "accepted by JwtResponseDto.subscriptionStatus, UserProfileDto.subscriptionStatus" + 
-            "and other endpoints" + 
-            "using @ValidSubscriptionStatus")
+        description = "Returns the complete list of subscription status codes accepted by" + 
+            "JwtResponseDto.subscriptionStatus, UserProfileDto.subscriptionStatus and other" + 
+            "endpoints using @ValidSubscriptionStatus")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Supported subscription statuses retrieved successfully"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<List<SubscriptionStatusDto>> getSubscriptionStatuses() {
         return ResponseEntity.ok(buildSubscriptionStatuses());
     }
@@ -217,8 +268,11 @@ public class LocaleConfigController {
     @GetMapping("/meal-types")
     @Operation(
         summary = "List supported meal types for meal planning", 
-        description = "Returns the complete list of meal type codes available for use" + 
-            "in meal plans and user preferences")
+        description = "Returns the complete list of meal type codes available for use in meal plans and user preferences")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Supported meal types retrieved successfully"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<List<MealTypeDto>> getMealTypes() {
         return ResponseEntity.ok(buildMealTypes());
     }
@@ -227,6 +281,10 @@ public class LocaleConfigController {
     @Operation(
         summary = "Get the complete locale configuration bundle", 
         description = "Returns the complete locale configuration bundle")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Locale configuration bundle retrieved successfully"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<LocaleConfigDto> getLocaleConfig() {
         return ResponseEntity.ok()
                 .cacheControl(LOCALE_CACHE_CONTROL)
