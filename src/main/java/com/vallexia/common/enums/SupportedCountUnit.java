@@ -33,6 +33,11 @@ public enum SupportedCountUnit {
         this.display = display;
     }
 
+    /**
+     * Get all supported count units.
+     * 
+     * @return List of all supported count units
+     */
     public static List<SupportedCountUnit> getAll() {
         return Arrays.asList(values());
     }

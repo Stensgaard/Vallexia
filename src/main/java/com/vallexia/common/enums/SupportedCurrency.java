@@ -38,25 +38,26 @@ public enum SupportedCurrency {
         this.name = name;
     }
 
-    public static List<String> getCodes() {
-        return Arrays.stream(values())
-                .map(SupportedCurrency::getCode)
-                .toList();
-    }
-
+    /**
+     * Get all supported currencies.
+     * 
+     * @return List of all supported currencies
+     */
     public static List<SupportedCurrency> getAll() {
         return Arrays.asList(values());
     }
 
+    /**
+     * Get a supported currency by code.
+     * 
+     * @param code the currency code
+     * @return Optional containing the supported currency, or empty if not found
+     */
     public static Optional<SupportedCurrency> fromCode(String code) {
         if (code == null || code.isBlank()) {
             return Optional.empty();
         }
         String normalized = code.trim().toUpperCase(Locale.ROOT);
         return Optional.ofNullable(BY_CODE.get(normalized));
-    }
-
-    public static boolean supports(String code) {
-        return fromCode(code).isPresent();
     }
 }

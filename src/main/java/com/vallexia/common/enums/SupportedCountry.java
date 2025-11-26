@@ -88,14 +88,21 @@ public enum SupportedCountry {
                     country -> country.countryCode.toUpperCase(Locale.ROOT),
                     country -> country));
 
+    /**
+     * Get the currency code for the country.
+     * 
+     * @return Currency code
+     */
     public String getCurrencyCode() {
         return currency.getCode();
     }
 
-    public String getCurrencyName() {
-        return currency.getName();
-    }
-
+    /**
+     * Get a supported country by country code.
+     * 
+     * @param countryCode the country code
+     * @return Optional containing the supported country, or empty if not found
+     */
     public static Optional<SupportedCountry> fromCountry(String countryCode) {
         if (countryCode == null || countryCode.isEmpty()) {
             return Optional.empty();
@@ -104,6 +111,11 @@ public enum SupportedCountry {
         return Optional.ofNullable(BY_COUNTRY_CODE.get(normalized));
     }
 
+    /**
+     * Get all supported countries.
+     * 
+     * @return List of all supported countries
+     */
     public static List<SupportedCountry> getAll() {
         return Arrays.asList(values());
     }
