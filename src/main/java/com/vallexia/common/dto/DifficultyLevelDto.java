@@ -16,9 +16,14 @@ import lombok.Value;
 @Schema(description = "Supported recipe difficulty level")
 public class DifficultyLevelDto {
 
-    @Schema(description = "Enum code of the difficulty level", example = "EASY")
+    @Schema(
+        description = "Enum code of the difficulty level", 
+        example = "EASY", 
+        allowableValues = {"EASY", "MEDIUM", "HARD", "EXPERT"})
     String code;
 
-    @Schema(description = "Display label for the difficulty", example = "Easy")
+    @Schema(
+        description = "Display label for the difficulty", 
+        example = "Easy")
     String name;
 }

@@ -16,9 +16,14 @@ import lombok.Value;
 @Schema(description = "Supported first-day-of-week option")
 public class FirstDayOfWeekDto {
 
-    @Schema(description = "Code (SUNDAY or MONDAY)", example = "MONDAY")
+    @Schema(
+        description = "Code (SUNDAY or MONDAY)", 
+        example = "MONDAY", 
+        allowableValues = {"SUNDAY", "MONDAY"})
     String code;
 
-    @Schema(description = "Display name", example = "Monday")
+    @Schema(
+        description = "Display name", 
+        example = "Monday")
     String name;
 }
