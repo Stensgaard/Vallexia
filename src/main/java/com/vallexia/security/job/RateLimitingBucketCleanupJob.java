@@ -13,9 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * Scheduled job for cleaning up unused rate limiting buckets to prevent memory leaks.
  * Removes buckets that haven't been accessed in the last hour.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-29
  */
 @Slf4j
 @Component
@@ -91,6 +91,8 @@ public class RateLimitingBucketCleanupJob {
   
   /**
    * Cleanup a specific bucket map by removing entries that haven't been accessed recently.
+   * Also removes buckets that exist but were never tracked (edge case where recordBucketAccess
+   * was never called, e.g., if bucketCleanupJob was null when bucket was created).
    * 
    * @param buckets the bucket map to clean
    * @param lastAccessMap the last access time tracking map
@@ -101,6 +103,8 @@ public class RateLimitingBucketCleanupJob {
   private int cleanupBucketMap(Map<String, Bucket> buckets, Map<String, Long> lastAccessMap,
                                String bucketType, long cutoffTime) {
     int removed = 0;
+    
+    // First, remove buckets that are tracked but haven't been accessed recently
     Iterator<Map.Entry<String, Long>> iterator = lastAccessMap.entrySet().iterator();
     
     while (iterator.hasNext()) {
@@ -114,6 +118,23 @@ public class RateLimitingBucketCleanupJob {
         removed++;
         log.trace("Removed unused {} bucket for IP: {} (last access: {}ms ago)", 
             bucketType, ip, System.currentTimeMillis() - lastAccess);
+      }
+    }
+    
+    // Second, remove buckets that exist but were never tracked (treat as old)
+    // This handles edge cases where buckets were created but recordBucketAccess was never called
+    Iterator<Map.Entry<String, Bucket>> bucketIterator = buckets.entrySet().iterator();
+    while (bucketIterator.hasNext()) {
+      Map.Entry<String, Bucket> entry = bucketIterator.next();
+      String ip = entry.getKey();
+      
+      // If this IP is not in the lastAccess map, it was never tracked
+      // Treat it as old and remove it
+      if (!lastAccessMap.containsKey(ip)) {
+        bucketIterator.remove();
+        removed++;
+        log.trace("Removed untracked {} bucket for IP: {} (never had access recorded)", 
+            bucketType, ip);
       }
     }
     
@@ -151,4 +172,3 @@ public class RateLimitingBucketCleanupJob {
     }
   }
 }
-
