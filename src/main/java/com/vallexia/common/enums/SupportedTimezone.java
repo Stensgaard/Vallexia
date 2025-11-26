@@ -4,7 +4,10 @@ import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Enumeration of supported timezones that the frontend can present to users.
@@ -26,6 +29,11 @@ public enum SupportedTimezone {
     AMERICA_NEW_YORK("America/New_York", "Eastern Time (US & Canada)"),
     AMERICA_LOS_ANGELES("America/Los_Angeles", "Pacific Time (US & Canada)"),
     EUROPE_COPENHAGEN("Europe/Copenhagen", "Copenhagen");
+
+    private static final Map<String, SupportedTimezone> BY_VALUE = Arrays.stream(values())
+            .collect(Collectors.toUnmodifiableMap(
+                    tz -> tz.getValue().toLowerCase(Locale.ROOT),
+                    tz -> tz));
 
     private final String value;
     private final String label;
@@ -61,8 +69,7 @@ public enum SupportedTimezone {
         if (trimmed.isEmpty()) {
             return Optional.empty();
         }
-        return Arrays.stream(values())
-                .filter(tz -> tz.getValue().equalsIgnoreCase(trimmed))
-                .findFirst();
+        String normalized = trimmed.toLowerCase(Locale.ROOT);
+        return Optional.ofNullable(BY_VALUE.get(normalized));
     }
 }

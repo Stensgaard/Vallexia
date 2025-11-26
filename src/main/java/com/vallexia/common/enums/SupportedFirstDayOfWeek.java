@@ -4,10 +4,19 @@ import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Supported first day of week options for user display preferences.
+ * 
+ * <p>To add a new first day of week option:
+ * <ol>
+ *   <li>Add the enum constant with its display label</li>
+ *   <li>Expose any necessary translation strings in the frontend</li>
+ *   <li>The enums will automatically flow through {@link com.vallexia.common.controller.LocaleConfigController}</li>
+ * </ol>
  * 
  * @author Henrik Stensgaard
  * @version 1.0
@@ -17,6 +26,11 @@ import java.util.Optional;
 public enum SupportedFirstDayOfWeek {
     SUNDAY("Sunday"),
     MONDAY("Monday");
+
+    private static final Map<String, SupportedFirstDayOfWeek> BY_CODE = Arrays.stream(values())
+            .collect(Collectors.toUnmodifiableMap(
+                    day -> day.name().toUpperCase(Locale.ROOT),
+                    day -> day));
 
     private final String displayName;
 
@@ -41,8 +55,6 @@ public enum SupportedFirstDayOfWeek {
             return Optional.empty();
         }
         String normalized = trimmed.toUpperCase(Locale.ROOT);
-        return Arrays.stream(values())
-                .filter(day -> day.name().equals(normalized))
-                .findFirst();
+        return Optional.ofNullable(BY_CODE.get(normalized));
     }
 }

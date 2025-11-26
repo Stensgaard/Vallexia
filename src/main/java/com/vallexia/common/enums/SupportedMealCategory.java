@@ -4,7 +4,12 @@ import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import com.vallexia.common.controller.LocaleConfigController;
 
 /**
  * Supported meal categories used for recipe tagging and meal-plan selections.
@@ -13,7 +18,7 @@ import java.util.Optional;
  * <ol>
  *   <li>Add the enum constant with its display label</li>
  *   <li>Expose any necessary translation strings in the frontend</li>
- *   <li>The enums will automatically flow through {@link com.vallexia.common.controller.LocaleConfigController}</li>
+ *   <li>The enums will automatically flow through {@link LocaleConfigController}</li>
  * </ol>
  * 
  * @author Henrik Stensgaard
@@ -30,6 +35,11 @@ public enum SupportedMealCategory {
     APPETIZER("Appetizer"),
     BEVERAGE("Beverage");
 
+    private static final Map<String, SupportedMealCategory> BY_CODE = Arrays.stream(values())
+            .collect(Collectors.toUnmodifiableMap(
+                    category -> category.name().toUpperCase(Locale.ROOT),
+                    category -> category));
+
     private final String displayName;
 
     SupportedMealCategory(String displayName) {
@@ -44,9 +54,7 @@ public enum SupportedMealCategory {
         if (code == null || code.isEmpty()) {
             return Optional.empty();
         }
-        String normalized = code.trim().toUpperCase();
-        return Arrays.stream(values())
-                .filter(category -> category.name().equalsIgnoreCase(normalized))
-                .findFirst();
+        String normalized = code.trim().toUpperCase(Locale.ROOT);
+        return Optional.ofNullable(BY_CODE.get(normalized));
     }
 }

@@ -4,7 +4,10 @@ import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Supported date formats for user preferences.
@@ -76,13 +79,17 @@ public enum SupportedDateFormat {
                 .findFirst();
     }
 
+    private static final Map<String, SupportedDateFormat> BY_CODE = Arrays.stream(values())
+            .collect(Collectors.toUnmodifiableMap(
+                    format -> format.name().toUpperCase(Locale.ROOT),
+                    format -> format));
+
     public static Optional<SupportedDateFormat> fromCode(String code) {
         if (code == null || code.isEmpty()) {
             return Optional.empty();
         }
-        return Arrays.stream(values())
-                .filter(item -> item.name().equalsIgnoreCase(code))
-                .findFirst();
+        String normalized = code.trim().toUpperCase(Locale.ROOT);
+        return Optional.ofNullable(BY_CODE.get(normalized));
     }
 
     public static boolean isValidCode(String code) {

@@ -4,6 +4,8 @@ import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,11 +27,12 @@ public enum SupportedLocale {
     EN("en"),
     DA("da");
 
-    private static final Set<String> CACHED_CODES =
-            Collections.unmodifiableSet(
-                    Arrays.stream(values())
-                            .map(locale -> locale.getCode().toLowerCase())
-                            .collect(Collectors.toSet()));
+    private static final Map<String, SupportedLocale> BY_CODE = Arrays.stream(values())
+            .collect(Collectors.toUnmodifiableMap(
+                    locale -> locale.getCode().toLowerCase(Locale.ROOT),
+                    locale -> locale));
+
+    private static final Set<String> CACHED_CODES = Collections.unmodifiableSet(BY_CODE.keySet());
 
     private final String code;
 
@@ -58,19 +61,6 @@ public enum SupportedLocale {
     }
     
     /**
-     * Check if a locale code is supported.
-     * 
-     * @param localeCode the locale code to check
-     * @return true if the locale is supported, false otherwise
-     */
-    public static boolean isSupported(String localeCode) {
-        if (localeCode == null || localeCode.isEmpty()) {
-            return false;
-        }
-        return CACHED_CODES.contains(localeCode.toLowerCase());
-    }
-    
-    /**
      * Get the SupportedLocale enum value from a locale code.
      * 
      * @param localeCode the locale code
@@ -80,8 +70,7 @@ public enum SupportedLocale {
         if (localeCode == null || localeCode.isEmpty()) {
             return Optional.empty();
         }
-        return Arrays.stream(values())
-                .filter(locale -> locale.getCode().equalsIgnoreCase(localeCode))
-                .findFirst();
+        String normalized = localeCode.trim().toLowerCase(Locale.ROOT);
+        return Optional.ofNullable(BY_CODE.get(normalized));
     }
 }

@@ -4,7 +4,10 @@ import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Supported countries in the application.
@@ -80,6 +83,11 @@ public enum SupportedCountry {
         this.currency = currency;
     }
 
+    private static final Map<String, SupportedCountry> BY_COUNTRY_CODE = Arrays.stream(values())
+            .collect(Collectors.toUnmodifiableMap(
+                    country -> country.countryCode.toUpperCase(Locale.ROOT),
+                    country -> country));
+
     public String getCurrencyCode() {
         return currency.getCode();
     }
@@ -92,9 +100,8 @@ public enum SupportedCountry {
         if (countryCode == null || countryCode.isEmpty()) {
             return Optional.empty();
         }
-        return Arrays.stream(values())
-                .filter(rule -> rule.countryCode.equalsIgnoreCase(countryCode))
-                .findFirst();
+        String normalized = countryCode.trim().toUpperCase(Locale.ROOT);
+        return Optional.ofNullable(BY_COUNTRY_CODE.get(normalized));
     }
 
     public static List<SupportedCountry> getAll() {
