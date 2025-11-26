@@ -1,11 +1,28 @@
 package com.vallexia.user.fixtures;
 
+import com.vallexia.common.enums.SupportedCountry;
+import com.vallexia.common.enums.SupportedDateFormat;
+import com.vallexia.common.enums.SupportedFirstDayOfWeek;
+import com.vallexia.common.enums.SupportedLocale;
+import com.vallexia.common.enums.SupportedMeasurementSystem;
+import com.vallexia.common.enums.SupportedTimezone;
+import com.vallexia.user.dto.DietaryPreferencesDto;
+import com.vallexia.user.dto.NutritionalGoalsDto;
 import com.vallexia.user.dto.UserProfileDto;
+import com.vallexia.user.dto.UserSettingsDto;
+import com.vallexia.user.entity.DietaryPreferences;
+import com.vallexia.user.entity.NutritionalGoals;
+import com.vallexia.user.entity.User;
+import com.vallexia.user.entity.UserSettings;
+import com.vallexia.user.entity.enums.Allergy;
+import com.vallexia.user.entity.enums.CuisineType;
+import com.vallexia.user.entity.enums.DietaryRestriction;
+import com.vallexia.user.entity.enums.GoalType;
 import com.vallexia.user.entity.enums.MealType;
 import com.vallexia.user.entity.enums.Role;
 import com.vallexia.user.entity.enums.SubscriptionStatus;
-import com.vallexia.user.entity.User;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,9 +31,9 @@ import java.util.Set;
  * Test fixtures for user testing.
  * Provides reusable test data and builder methods.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 public class UserTestFixtures {
   
@@ -24,12 +41,8 @@ public class UserTestFixtures {
   public static final Long TEST_USER_ID = 1L;
   public static final Long TEST_ADMIN_ID = 100L;
   public static final String TEST_USERNAME = "testuser";
-  public static final String TEST_ADMIN_USERNAME = "admin";
   public static final String TEST_EMAIL = "test@example.com";
-  public static final String TEST_ADMIN_EMAIL = "admin@example.com";
   public static final String TEST_PASSWORD_HASH = "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy";
-  public static final String TEST_FIRST_NAME = "Test";
-  public static final String TEST_LAST_NAME = "User";
   public static final Integer TEST_HOUSEHOLD_SIZE = 2;
   public static final Set<MealType> TEST_MEAL_TYPES = Set.of(MealType.BREAKFAST, MealType.LUNCH, MealType.DINNER);
   
@@ -87,8 +100,8 @@ public class UserTestFixtures {
   public static User createAdminUser() {
     User user = new User();
     user.setId(TEST_ADMIN_ID);
-    user.setUsername(TEST_ADMIN_USERNAME);
-    user.setEmail(TEST_ADMIN_EMAIL);
+    user.setUsername("admin");
+    user.setEmail("admin@example.com");
     user.setPasswordHash(TEST_PASSWORD_HASH);
     user.setHouseholdSize(1);
     user.setMealTypes(new HashSet<>(Set.of(MealType.BREAKFAST, MealType.DINNER)));
@@ -123,24 +136,6 @@ public class UserTestFixtures {
   }
   
   /**
-   * Creates a user with specified email.
-   */
-  public static User createUserWithEmail(String email) {
-    User user = createUser();
-    user.setEmail(email);
-    return user;
-  }
-  
-  /**
-   * Creates a user with specified username.
-   */
-  public static User createUserWithUsername(String username) {
-    User user = createUser();
-    user.setUsername(username);
-    return user;
-  }
-  
-  /**
    * Creates a standard UserProfileDto.
    */
   public static UserProfileDto createUserProfileDto() {
@@ -153,15 +148,6 @@ public class UserTestFixtures {
     dto.setMealTypes(new HashSet<>(TEST_MEAL_TYPES));
     dto.setSubscriptionStatus("FREE");
     dto.setSubscriptionExpiresAt(null);
-    return dto;
-  }
-  
-  /**
-   * Creates a UserProfileDto with specified user ID.
-   */
-  public static UserProfileDto createUserProfileDto(Long userId) {
-    UserProfileDto dto = createUserProfileDto();
-    dto.setId(userId);
     return dto;
   }
   
@@ -181,38 +167,221 @@ public class UserTestFixtures {
     return dto;
   }
   
+  // ==================== DietaryPreferences Fixtures ====================
+  
   /**
-   * Creates an invalid UserProfileDto for testing validation.
+   * Creates a standard test DietaryPreferences entity.
    */
-  public static UserProfileDto createInvalidUserProfileDto() {
-    UserProfileDto dto = new UserProfileDto();
-    dto.setEmail("invalid-email"); // Invalid email format
-    dto.setHouseholdSize(25); // Exceeds max of 20
-    dto.setMealTypes(new HashSet<>()); // Empty set should fail @NotEmpty validation
+  public static DietaryPreferences createDietaryPreferences() {
+    return createDietaryPreferences(createUser());
+  }
+  
+  /**
+   * Creates a DietaryPreferences entity with specified user.
+   */
+  public static DietaryPreferences createDietaryPreferences(User user) {
+    DietaryPreferences preferences = new DietaryPreferences();
+    preferences.setId(1L);
+    preferences.setUser(user);
+    preferences.setRestrictions(new HashSet<>(Set.of(
+        DietaryRestriction.VEGETARIAN,
+        DietaryRestriction.GLUTEN_FREE
+    )));
+    preferences.setAllergies(new HashSet<>(Set.of(
+        Allergy.PEANUTS,
+        Allergy.MILK
+    )));
+    preferences.setPreferredCuisines(new HashSet<>(Set.of(
+        CuisineType.ITALIAN,
+        CuisineType.MEDITERRANEAN
+    )));
+    preferences.setCreatedAt(LocalDateTime.now().minusDays(10));
+    preferences.setUpdatedAt(LocalDateTime.now().minusDays(1));
+    return preferences;
+  }
+  
+  /**
+   * Creates a standard DietaryPreferencesDto.
+   */
+  public static DietaryPreferencesDto createDietaryPreferencesDto() {
+    DietaryPreferencesDto dto = new DietaryPreferencesDto();
+    dto.setId(1L);
+    dto.setUserId(TEST_USER_ID);
+    dto.setRestrictions(new HashSet<>(Set.of(
+        DietaryRestriction.VEGETARIAN,
+        DietaryRestriction.GLUTEN_FREE
+    )));
+    dto.setAllergies(new HashSet<>(Set.of(
+        Allergy.PEANUTS,
+        Allergy.MILK
+    )));
+    dto.setPreferredCuisines(new HashSet<>(Set.of(
+        CuisineType.ITALIAN,
+        CuisineType.MEDITERRANEAN
+    )));
     return dto;
   }
   
   /**
-   * Creates a UserProfileDto with boundary values for testing.
+   * Creates an updated DietaryPreferencesDto with new data.
    */
-  public static UserProfileDto createBoundaryValueUserProfileDto() {
-    UserProfileDto dto = new UserProfileDto();
-    dto.setId(TEST_USER_ID);
-    dto.setUsername(TEST_USERNAME);
-    dto.setEmail("a@b.co"); // Minimum valid email
-    dto.setEnabled(true);
-    dto.setHouseholdSize(1); // Minimum value
-    dto.setMealTypes(Set.of(MealType.BREAKFAST)); // Minimum - one meal type
-    dto.setSubscriptionStatus("FREE");
+  public static DietaryPreferencesDto createUpdatedDietaryPreferencesDto() {
+    DietaryPreferencesDto dto = new DietaryPreferencesDto();
+    dto.setId(1L);
+    dto.setUserId(TEST_USER_ID);
+    dto.setRestrictions(new HashSet<>(Set.of(
+        DietaryRestriction.VEGAN,
+        DietaryRestriction.KETO,
+        DietaryRestriction.LOW_SODIUM
+    )));
+    dto.setAllergies(new HashSet<>(Set.of(
+        Allergy.TREE_NUTS,
+        Allergy.SOY,
+        Allergy.WHEAT
+    )));
+    dto.setPreferredCuisines(new HashSet<>(Set.of(
+        CuisineType.JAPANESE,
+        CuisineType.THAI,
+        CuisineType.INDIAN
+    )));
+    return dto;
+  }
+  
+  // ==================== NutritionalGoals Fixtures ====================
+  
+  /**
+   * Creates a standard test NutritionalGoals entity with default values.
+   */
+  public static NutritionalGoals createNutritionalGoals() {
+    return createNutritionalGoals(createUser());
+  }
+  
+  /**
+   * Creates a NutritionalGoals entity with specified user.
+   */
+  public static NutritionalGoals createNutritionalGoals(User user) {
+    NutritionalGoals goals = new NutritionalGoals();
+    goals.setId(1L);
+    goals.setUser(user);
+    goals.setDailyCalories(BigDecimal.valueOf(2000));
+    goals.setDailyProtein(BigDecimal.valueOf(150));
+    goals.setDailyCarbs(BigDecimal.valueOf(250));
+    goals.setDailyFats(BigDecimal.valueOf(67));
+    goals.setDailyFiber(BigDecimal.valueOf(25));
+    goals.setDailySodium(BigDecimal.valueOf(2300));
+    goals.setDailySugar(BigDecimal.valueOf(50));
+    goals.setProteinPercentage(BigDecimal.valueOf(30));
+    goals.setCarbsPercentage(BigDecimal.valueOf(50));
+    goals.setFatsPercentage(BigDecimal.valueOf(20));
+    goals.setGoalType(GoalType.MAINTENANCE);
+    goals.setCreatedAt(LocalDateTime.now().minusDays(10));
+    goals.setUpdatedAt(LocalDateTime.now().minusDays(1));
+    return goals;
+  }
+  
+  /**
+   * Creates a standard NutritionalGoalsDto.
+   */
+  public static NutritionalGoalsDto createNutritionalGoalsDto() {
+    NutritionalGoalsDto dto = new NutritionalGoalsDto();
+    dto.setId(1L);
+    dto.setUserId(TEST_USER_ID);
+    dto.setDailyCalories(BigDecimal.valueOf(2000));
+    dto.setDailyProtein(BigDecimal.valueOf(150));
+    dto.setDailyCarbs(BigDecimal.valueOf(250));
+    dto.setDailyFats(BigDecimal.valueOf(67));
+    dto.setDailyFiber(BigDecimal.valueOf(25));
+    dto.setDailySodium(BigDecimal.valueOf(2300));
+    dto.setDailySugar(BigDecimal.valueOf(50));
+    dto.setProteinPercentage(BigDecimal.valueOf(30));
+    dto.setCarbsPercentage(BigDecimal.valueOf(50));
+    dto.setFatsPercentage(BigDecimal.valueOf(20));
+    dto.setGoalType("MAINTENANCE");
     return dto;
   }
   
   /**
-   * Creates a minimal UserProfileDto with only required fields.
+   * Creates an updated NutritionalGoalsDto with new data.
    */
-  public static UserProfileDto createMinimalUserProfileDto() {
-    UserProfileDto dto = new UserProfileDto();
-    dto.setEmail(TEST_EMAIL); // Only required field
+  public static NutritionalGoalsDto createUpdatedNutritionalGoalsDto() {
+    NutritionalGoalsDto dto = new NutritionalGoalsDto();
+    dto.setId(1L);
+    dto.setUserId(TEST_USER_ID);
+    dto.setDailyCalories(BigDecimal.valueOf(2500));
+    dto.setDailyProtein(BigDecimal.valueOf(200));
+    dto.setDailyCarbs(BigDecimal.valueOf(300));
+    dto.setDailyFats(BigDecimal.valueOf(83));
+    dto.setDailyFiber(BigDecimal.valueOf(30));
+    dto.setDailySodium(BigDecimal.valueOf(2000));
+    dto.setDailySugar(BigDecimal.valueOf(40));
+    dto.setProteinPercentage(BigDecimal.valueOf(32));
+    dto.setCarbsPercentage(BigDecimal.valueOf(48));
+    dto.setFatsPercentage(BigDecimal.valueOf(20));
+    dto.setGoalType("MUSCLE_GAIN");
+    return dto;
+  }
+  
+  // ==================== UserSettings Fixtures ====================
+  
+  /**
+   * Creates a standard test UserSettings entity.
+   */
+  public static UserSettings createUserSettings() {
+    return createUserSettings(createUser());
+  }
+  
+  /**
+   * Creates a UserSettings entity with specified user.
+   */
+  public static UserSettings createUserSettings(User user) {
+    UserSettings settings = new UserSettings();
+    settings.setId(1L);
+    settings.setUser(user);
+    settings.setLanguage(SupportedLocale.EN.getCode());
+    settings.setCountry(SupportedCountry.US.getCountryCode());
+    settings.setDateFormat(SupportedDateFormat.MM_DD_YYYY.name());
+    settings.setTimezone(SupportedTimezone.AMERICA_NEW_YORK.getValue());
+    settings.setFirstDayOfWeek(SupportedFirstDayOfWeek.SUNDAY);
+    settings.setMeasurementSystem(SupportedMeasurementSystem.IMPERIAL);
+    settings.setNumberDecimalSeparator(".");
+    settings.setNumberThousandsSeparator(",");
+    settings.setCurrency(SupportedCountry.US.getCurrencyCode());
+    settings.setCreatedAt(LocalDateTime.now().minusDays(10));
+    settings.setUpdatedAt(LocalDateTime.now().minusDays(1));
+    return settings;
+  }
+  
+  /**
+   * Creates a standard UserSettingsDto.
+   */
+  public static UserSettingsDto createUserSettingsDto() {
+    UserSettingsDto dto = new UserSettingsDto();
+    dto.setId(1L);
+    dto.setUserId(TEST_USER_ID);
+    dto.setLanguage(SupportedLocale.EN.getCode());
+    dto.setCountry(SupportedCountry.US.getCountryCode());
+    dto.setDateFormat(SupportedDateFormat.MM_DD_YYYY.name());
+    dto.setTimezone(SupportedTimezone.AMERICA_NEW_YORK.getValue());
+    dto.setFirstDayOfWeek(SupportedFirstDayOfWeek.SUNDAY.name());
+    dto.setMeasurementSystem(SupportedMeasurementSystem.IMPERIAL.name());
+    dto.setCurrency(SupportedCountry.US.getCurrencyCode());
+    return dto;
+  }
+  
+  /**
+   * Creates an updated UserSettingsDto with new data.
+   */
+  public static UserSettingsDto createUpdatedUserSettingsDto() {
+    UserSettingsDto dto = new UserSettingsDto();
+    dto.setId(1L);
+    dto.setUserId(TEST_USER_ID);
+    dto.setLanguage(SupportedLocale.DA.getCode());
+    dto.setCountry(SupportedCountry.DK.getCountryCode());
+    dto.setDateFormat(SupportedDateFormat.DD_MM_YYYY_DOT.name());
+    dto.setTimezone(SupportedTimezone.EUROPE_COPENHAGEN.getValue());
+    dto.setFirstDayOfWeek(SupportedFirstDayOfWeek.MONDAY.name());
+    dto.setMeasurementSystem(SupportedMeasurementSystem.METRIC.name());
+    dto.setCurrency(SupportedCountry.DK.getCurrencyCode());
     return dto;
   }
 }
