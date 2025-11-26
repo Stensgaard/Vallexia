@@ -7,9 +7,9 @@ import org.springframework.http.HttpStatus;
  * Base exception class for all custom Vallexia application exceptions.
  * Provides consistent error handling with error codes and HTTP status mapping.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 @Getter
 public abstract class VallexiaException extends RuntimeException {

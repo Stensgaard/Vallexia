@@ -12,9 +12,9 @@ import java.util.Map;
  * Utility class for extracting readable error messages from exceptions.
  * Provides user-friendly error message formatting for API responses.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-01
  */
 public class ErrorMessageExtractor {
   

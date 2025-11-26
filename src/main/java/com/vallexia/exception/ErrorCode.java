@@ -8,9 +8,9 @@ import org.springframework.http.HttpStatus;
  * Each error code maps to an HTTP status code and provides a consistent
  * error code string for client consumption.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 @Getter
 public enum ErrorCode {

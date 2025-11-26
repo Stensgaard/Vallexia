@@ -3,9 +3,9 @@ package com.vallexia.exception;
 /**
  * Custom exception for validation errors.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 public class ValidationException extends VallexiaException {
   
