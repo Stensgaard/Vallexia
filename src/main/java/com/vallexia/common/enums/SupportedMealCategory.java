@@ -10,7 +10,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Supported meal categories used for recipe tagging and meal-plan selections.
+ * Supported meal categories used for recipe tagging and user meal planning.
+ * 
+ * <p>This enum contains the core meal types that are used for both recipe categorization
+ * and user meal planning preferences. All meal categories are available for both purposes.
  *
  * <p>To add a new meal category:
  * <ol>
@@ -28,10 +31,7 @@ public enum SupportedMealCategory {
     BREAKFAST("Breakfast"),
     LUNCH("Lunch"),
     DINNER("Dinner"),
-    SNACK("Snack"),
-    DESSERT("Dessert"),
-    APPETIZER("Appetizer"),
-    BEVERAGE("Beverage");
+    SNACK("Snack");
 
     private final String displayName;
     private static final Map<String, SupportedMealCategory> BY_CODE = Arrays.stream(values())
