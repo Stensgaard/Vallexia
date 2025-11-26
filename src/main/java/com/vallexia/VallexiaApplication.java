@@ -13,9 +13,9 @@ import com.vallexia.config.audit.AuditProperties;
 /**
  * Main Spring Boot application class for Vallexia Smart Meal Planning App.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-26
  */
 @SpringBootApplication
 @EnableScheduling
