@@ -10,9 +10,9 @@ import java.util.Optional;
 /**
  * Repository interface for DietaryPreferences entity operations.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 @Repository
 public interface DietaryPreferencesRepository extends JpaRepository<DietaryPreferences, Long> {
@@ -24,28 +24,4 @@ public interface DietaryPreferencesRepository extends JpaRepository<DietaryPrefe
      * @return Optional containing the dietary preferences if found
      */
     Optional<DietaryPreferences> findByUser(User user);
-    
-    /**
-     * Find dietary preferences by user ID.
-     * 
-     * @param userId the user ID to search for
-     * @return Optional containing the dietary preferences if found
-     */
-    Optional<DietaryPreferences> findByUserId(Long userId);
-    
-    /**
-     * Check if dietary preferences exist for user.
-     * 
-     * @param user the user to check
-     * @return true if preferences exist, false otherwise
-     */
-    boolean existsByUser(User user);
-    
-    /**
-     * Check if dietary preferences exist for user ID.
-     * 
-     * @param userId the user ID to check
-     * @return true if preferences exist, false otherwise
-     */
-    boolean existsByUserId(Long userId);
 }
