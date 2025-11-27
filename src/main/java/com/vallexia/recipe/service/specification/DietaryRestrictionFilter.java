@@ -3,8 +3,8 @@ package com.vallexia.recipe.service.specification;
 import com.vallexia.recipe.entity.Recipe;
 import com.vallexia.recipe.entity.enums.RestrictionMatchMode;
 import com.vallexia.recipe.util.AllergenCompatibilityUtil;
-import com.vallexia.user.entity.enums.Allergy;
-import com.vallexia.user.entity.enums.DietaryRestriction;
+import com.vallexia.common.enums.SupportedAllergy;
+import com.vallexia.common.enums.SupportedDietaryRestriction;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -22,9 +22,9 @@ import java.util.List;
  * for OR vs AND mode. OR mode uses LEFT JOINs for better performance, while AND mode uses
  * subqueries which are required for correctness.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 public class DietaryRestrictionFilter {
     
@@ -36,9 +36,9 @@ public class DietaryRestrictionFilter {
      * @return Specification for dietary restrictions filter
      */
     public static Specification<Recipe> filter(
-            List<DietaryRestriction> restrictions, RestrictionMatchMode matchMode) {
+            List<SupportedDietaryRestriction> restrictions, RestrictionMatchMode matchMode) {
         // Pre-compute all incompatible allergens once (performance optimization)
-        List<Allergy> allIncompatibleAllergens = AllergenCompatibilityUtil.getIncompatibleAllergens(restrictions);
+        List<SupportedAllergy> allIncompatibleAllergens = AllergenCompatibilityUtil.getIncompatibleAllergens(restrictions);
         
         return (root, query, cb) -> {
             // Note: query is always provided by JPA Specifications framework (linter warnings are false positives)
@@ -75,12 +75,12 @@ public class DietaryRestrictionFilter {
      */
     private static Predicate filterOR(
             Root<Recipe> root, CriteriaQuery<?> query, CriteriaBuilder cb,
-            List<DietaryRestriction> restrictions, List<Allergy> allIncompatibleAllergens) {
+            List<SupportedDietaryRestriction> restrictions, List<SupportedAllergy> allIncompatibleAllergens) {
         
         List<Predicate> orPredicates = new ArrayList<>();
         
         // Check if recipe has ANY of the requested restriction tags (single join, more efficient)
-        Join<Recipe, DietaryRestriction> restrictionsJoin = 
+        Join<Recipe, SupportedDietaryRestriction> restrictionsJoin = 
                 root.join("dietaryRestrictions", JoinType.LEFT);
         orPredicates.add(restrictionsJoin.in(restrictions));
         
@@ -119,14 +119,14 @@ public class DietaryRestrictionFilter {
      */
     private static Predicate filterAND(
             Root<Recipe> root, CriteriaQuery<?> query, CriteriaBuilder cb,
-            List<DietaryRestriction> restrictions, List<Allergy> allIncompatibleAllergens) {
+            List<SupportedDietaryRestriction> restrictions, List<SupportedAllergy> allIncompatibleAllergens) {
         
         List<Predicate> andPredicates = new ArrayList<>();
         
         // For each restriction, create a predicate that matches if:
         // - Recipe has the restriction tag, OR
         // - Recipe doesn't have incompatible allergens for that specific restriction
-        for (DietaryRestriction restriction : restrictions) {
+        for (SupportedDietaryRestriction restriction : restrictions) {
             List<Predicate> restrictionOrPredicates = new ArrayList<>();
             
             // Check if recipe has the restriction tag
@@ -141,7 +141,7 @@ public class DietaryRestrictionFilter {
             restrictionOrPredicates.add(cb.exists(tagSubquery));
             
             // Check if recipe doesn't have incompatible allergens for this specific restriction
-            List<Allergy> restrictionIncompatibleAllergens = AllergenCompatibilityUtil.getIncompatibleAllergens(List.of(restriction));
+            List<SupportedAllergy> restrictionIncompatibleAllergens = AllergenCompatibilityUtil.getIncompatibleAllergens(List.of(restriction));
             if (!restrictionIncompatibleAllergens.isEmpty()) {
                 var allergenSubquery = query.subquery(Long.class);
                 var allergenSubRoot = allergenSubquery.from(Recipe.class);
