@@ -14,8 +14,6 @@ import com.vallexia.exception.ErrorCode;
 import com.vallexia.exception.ValidationException;
 import com.vallexia.auth.exception.UserAlreadyExistsException;
 import com.vallexia.auth.exception.AuthenticationException;
-import com.vallexia.auth.service.JwtTokenService;
-import com.vallexia.auth.service.TokenBlacklistService;
 import com.vallexia.auth.util.AccountSecurityHelper;
 import com.vallexia.auth.util.UserAuthenticationHelper;
 
