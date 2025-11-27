@@ -26,7 +26,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -378,8 +377,7 @@ class AuthTokenFilterTest {
     when(jwtUtils.validateJwtToken(VALID_TOKEN)).thenReturn(true);
     when(tokenBlacklistService.isTokenBlacklisted(VALID_TOKEN)).thenReturn(false);
     when(jwtUtils.getUsernameFromJwtToken(VALID_TOKEN)).thenReturn(TEST_USERNAME);
-    when(jwtUtils.getUserIdFromJwtToken(VALID_TOKEN)).thenReturn(null);
-    when(jwtUtils.getRolesFromJwtToken(VALID_TOKEN)).thenReturn(TEST_ROLES);
+    when(jwtUtils.getUserIdFromJwtToken(VALID_TOKEN)).thenThrow(new IllegalStateException("User ID claim is missing or invalid in token"));
     
     String requestId = "test-request-id";
     ErrorResponseDto errorDto = createErrorResponseDto(requestId, "/api/v1/users/profile");
@@ -408,7 +406,7 @@ class AuthTokenFilterTest {
     when(tokenBlacklistService.isTokenBlacklisted(VALID_TOKEN)).thenReturn(false);
     when(jwtUtils.getUsernameFromJwtToken(VALID_TOKEN)).thenReturn(TEST_USERNAME);
     when(jwtUtils.getUserIdFromJwtToken(VALID_TOKEN)).thenReturn(TEST_USER_ID);
-    when(jwtUtils.getRolesFromJwtToken(VALID_TOKEN)).thenReturn(null);
+    when(jwtUtils.getRolesFromJwtToken(VALID_TOKEN)).thenThrow(new IllegalStateException("Roles claim is missing or invalid in token"));
     
     String requestId = "test-request-id";
     ErrorResponseDto errorDto = createErrorResponseDto(requestId, "/api/v1/users/profile");
@@ -437,7 +435,7 @@ class AuthTokenFilterTest {
     when(tokenBlacklistService.isTokenBlacklisted(VALID_TOKEN)).thenReturn(false);
     when(jwtUtils.getUsernameFromJwtToken(VALID_TOKEN)).thenReturn(TEST_USERNAME);
     when(jwtUtils.getUserIdFromJwtToken(VALID_TOKEN)).thenReturn(TEST_USER_ID);
-    when(jwtUtils.getRolesFromJwtToken(VALID_TOKEN)).thenReturn(Collections.emptyList());
+    when(jwtUtils.getRolesFromJwtToken(VALID_TOKEN)).thenThrow(new IllegalStateException("Roles claim is empty in token"));
     
     String requestId = "test-request-id";
     ErrorResponseDto errorDto = createErrorResponseDto(requestId, "/api/v1/users/profile");
@@ -887,8 +885,7 @@ class AuthTokenFilterTest {
     when(jwtUtils.validateJwtToken(VALID_TOKEN)).thenReturn(true);
     when(tokenBlacklistService.isTokenBlacklisted(VALID_TOKEN)).thenReturn(false);
     when(jwtUtils.getUsernameFromJwtToken(VALID_TOKEN)).thenReturn(TEST_USERNAME);
-    when(jwtUtils.getUserIdFromJwtToken(VALID_TOKEN)).thenReturn(null); // Missing userId
-    when(jwtUtils.getRolesFromJwtToken(VALID_TOKEN)).thenReturn(TEST_ROLES);
+    when(jwtUtils.getUserIdFromJwtToken(VALID_TOKEN)).thenThrow(new IllegalStateException("User ID claim is missing or invalid in token"));
     
     String requestId = "test-request-id";
     ErrorResponseDto errorDto = createErrorResponseDto(requestId, "/api/v1/users/profile");

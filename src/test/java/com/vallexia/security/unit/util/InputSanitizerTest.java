@@ -26,61 +26,6 @@ class InputSanitizerTest {
     inputSanitizer = new InputSanitizer();
   }
   
-  // ==================== Basic Sanitization Tests ====================
-  
-  @Test
-  @DisplayName("Should return null when input is null")
-  void shouldReturnNullWhenInputIsNull() {
-    // When
-    String result = inputSanitizer.sanitize(null, 100);
-    
-    // Then
-    assertThat(result).isNull();
-  }
-  
-  @Test
-  @DisplayName("Should remove control characters from input")
-  void shouldRemoveControlCharacters() {
-    // Given - string with control characters
-    String input = "Hello\u0001World\u0002Test";
-    
-    // When
-    String result = inputSanitizer.sanitize(input, 100);
-    
-    // Then
-    assertThat(result).isEqualTo("HelloWorldTest");
-    assertThat(result).doesNotContain("\u0001", "\u0002");
-  }
-  
-  @Test
-  @DisplayName("Should preserve newline and tab characters")
-  void shouldPreserveNewlineAndTab() {
-    // Given - string with newline and tab
-    String input = "Line1\nLine2\tTabbed";
-    
-    // When
-    String result = inputSanitizer.sanitize(input, 100);
-    
-    // Then
-    assertThat(result).contains("\n", "\t");
-    assertThat(result).isEqualTo("Line1\nLine2\tTabbed");
-  }
-  
-  @Test
-  @DisplayName("Should truncate input exceeding max length")
-  void shouldTruncateInputExceedingMaxLength() {
-    // Given
-    String input = "a".repeat(100);
-    int maxLength = 50;
-    
-    // When
-    String result = inputSanitizer.sanitize(input, maxLength);
-    
-    // Then
-    assertThat(result).hasSize(maxLength);
-    assertThat(result).endsWith("...");
-  }
-  
   // ==================== IP Address Sanitization Tests ====================
   
   @Test
@@ -262,17 +207,4 @@ class InputSanitizerTest {
     assertThat(result.length()).isLessThanOrEqualTo(500);
   }
   
-  @Test
-  @DisplayName("Should sanitize details field correctly")
-  void shouldSanitizeDetailsField() {
-    // Given
-    String details = "Details with \u0005 control character";
-    
-    // When
-    String result = inputSanitizer.sanitizeDetails(details);
-    
-    // Then
-    assertThat(result).doesNotContain("\u0005");
-    assertThat(result.length()).isLessThanOrEqualTo(5000);
-  }
 }

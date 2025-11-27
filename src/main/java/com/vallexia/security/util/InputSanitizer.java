@@ -23,7 +23,6 @@ public class InputSanitizer {
   private static final int MAX_USER_AGENT_LENGTH = 500;
   private static final int MAX_REQUEST_URI_LENGTH = 500;
   private static final int MAX_IP_ADDRESS_LENGTH = 50;
-  private static final int MAX_DETAILS_LENGTH = 5000;
   private static final int MAX_ERROR_MESSAGE_LENGTH = 500;
   
   @Value("${spring.profiles.active:dev}")
@@ -52,12 +51,13 @@ public class InputSanitizer {
   
   /**
    * Sanitizes a string by removing control characters and truncating to max length.
+   * Internal helper method used by other sanitize methods.
    * 
    * @param input the input string
    * @param maxLength maximum allowed length
    * @return sanitized string
    */
-  public String sanitize(String input, int maxLength) {
+  private String sanitize(String input, int maxLength) {
     if (input == null) {
       return null;
     }
@@ -125,13 +125,6 @@ public class InputSanitizer {
     }
     
     return sanitized;
-  }
-  
-  /**
-   * Sanitizes details field.
-   */
-  public String sanitizeDetails(String details) {
-    return sanitize(details, MAX_DETAILS_LENGTH);
   }
   
   /**

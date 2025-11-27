@@ -86,13 +86,14 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                     return;
                 }
                 
-                Long userId = jwtUtils.getUserIdFromJwtToken(jwt);
-                List<String> roles = jwtUtils.getRolesFromJwtToken(jwt);
-                
-                // Validate that required claims are present
-                if (userId == null || roles == null || roles.isEmpty()) {
-                    log.error("Invalid token for user {}: missing required claims (userId or roles)", 
-                        username != null ? username : "unknown");
+                Long userId;
+                List<String> roles;
+                try {
+                    userId = jwtUtils.getUserIdFromJwtToken(jwt);
+                    roles = jwtUtils.getRolesFromJwtToken(jwt);
+                } catch (IllegalArgumentException | IllegalStateException e) {
+                    log.error("Invalid token for user {}: failed to extract claims - {}", 
+                        username != null ? username : "unknown", e.getMessage());
                     sendErrorResponse(response, request, ErrorCode.INVALID_TOKEN);
                     return;
                 }
