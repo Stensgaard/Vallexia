@@ -12,9 +12,9 @@ import java.util.List;
 /**
  * MapStruct mapper for converting between Recipe entities and DTOs.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 @Mapper(
     componentModel = "spring",
