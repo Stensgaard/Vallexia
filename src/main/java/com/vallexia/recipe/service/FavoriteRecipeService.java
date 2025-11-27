@@ -26,9 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Service for managing user favorite recipes.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 @Slf4j
 @Service
@@ -151,7 +151,7 @@ public class FavoriteRecipeService {
         String userLocale = SupportedLocale.EN.getCode(); // Default to English
         try {
             String locale = userSettingsService.getUserSettings(userId).getLanguage();
-            if (SupportedLocale.isSupported(locale)) {
+            if (SupportedLocale.fromCode(locale).isPresent()) {
                 userLocale = locale;
             }
         } catch (Exception e) {

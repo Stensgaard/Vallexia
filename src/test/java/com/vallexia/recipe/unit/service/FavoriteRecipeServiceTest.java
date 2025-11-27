@@ -42,9 +42,9 @@ import static org.mockito.Mockito.*;
  * Unit tests for FavoriteRecipeService.
  * Tests favorite recipe management operations.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
