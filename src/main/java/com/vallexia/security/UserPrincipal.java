@@ -1,7 +1,6 @@
 package com.vallexia.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.vallexia.user.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,9 +12,9 @@ import java.util.stream.Collectors;
 /**
  * User principal implementation for Spring Security.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-29
  */
 public class UserPrincipal implements UserDetails {
     
@@ -45,34 +44,47 @@ public class UserPrincipal implements UserDetails {
     }
     
     /**
-     * Create UserPrincipal from User entity.
+     * Create UserPrincipal from JWT token claims.
+     * Used for stateless JWT authentication without database lookup.
      * 
-     * @param user User entity
+     * <p>Account status flags (enabled, accountNonExpired, accountNonLocked, credentialsNonExpired)
+     * are set to true by design, as token validation and blacklist checking handle account status.
+     * Tokens should be invalidated (blacklisted) when accounts are disabled/locked.
+     * 
+     * <p>This method converts role strings to Spring Security GrantedAuthority objects
+     * and creates a UserPrincipal suitable for stateless authentication.
+     * 
+     * @param userId the user ID from token claims
+     * @param username the username from token claims
+     * @param roles the list of role strings from token claims
      * @return UserPrincipal instance
-     * @throws IllegalArgumentException if user is null or user roles are null
+     * @throws IllegalArgumentException if userId is null, username is null/empty, or roles is null/empty
      */
-    public static UserPrincipal create(User user) {
-        if (user == null) {
-            throw new IllegalArgumentException("User cannot be null");
+    public static UserPrincipal createFromJwtClaims(Long userId, String username, List<String> roles) {
+        if (userId == null) {
+            throw new IllegalArgumentException("User ID cannot be null");
         }
-        if (user.getRoles() == null) {
-            throw new IllegalArgumentException("User roles cannot be null");
+        if (username == null || username.trim().isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be null or empty");
+        }
+        if (roles == null || roles.isEmpty()) {
+            throw new IllegalArgumentException("Roles cannot be null or empty");
         }
         
-        List<GrantedAuthority> authorities = user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getAuthority()))
+        List<GrantedAuthority> authorities = roles.stream()
+                .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
         
         return new UserPrincipal(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getPasswordHash(),
+                userId,
+                username,
+                null,  // email not in token
+                "",    // password not needed for JWT auth
                 authorities,
-                user.getEnabled(),
-                user.getAccountNonExpired(),
-                !user.isAccountLocked(),
-                user.getCredentialsNonExpired()
+                true,  // enabled - assume enabled if token is valid
+                true,  // accountNonExpired
+                true,  // accountNonLocked
+                true   // credentialsNonExpired
         );
     }
     

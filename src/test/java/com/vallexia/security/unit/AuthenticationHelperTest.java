@@ -14,6 +14,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -95,7 +97,11 @@ class AuthenticationHelperTest {
   void shouldReturnTrueWhenUserHasRole() {
     // Given
     User user = UserTestFixtures.createUser();
-    UserPrincipal userPrincipal = UserPrincipal.create(user);
+    List<String> roles = user.getRoles().stream()
+        .map(role -> role.getAuthority())
+        .collect(Collectors.toList());
+    UserPrincipal userPrincipal = UserPrincipal.createFromJwtClaims(
+        user.getId(), user.getUsername(), roles);
     Authentication auth = new UsernamePasswordAuthenticationToken(
         userPrincipal, null, userPrincipal.getAuthorities());
     SecurityContextHolder.getContext().setAuthentication(auth);
@@ -112,7 +118,11 @@ class AuthenticationHelperTest {
   void shouldReturnFalseWhenUserDoesNotHaveRole() {
     // Given
     User user = UserTestFixtures.createUser();
-    UserPrincipal userPrincipal = UserPrincipal.create(user);
+    List<String> roles = user.getRoles().stream()
+        .map(role -> role.getAuthority())
+        .collect(Collectors.toList());
+    UserPrincipal userPrincipal = UserPrincipal.createFromJwtClaims(
+        user.getId(), user.getUsername(), roles);
     Authentication auth = new UsernamePasswordAuthenticationToken(
         userPrincipal, null, userPrincipal.getAuthorities());
     SecurityContextHolder.getContext().setAuthentication(auth);
@@ -133,5 +143,4 @@ class AuthenticationHelperTest {
     // Then
     assertThat(hasRole).isFalse();
   }
-  
 }
