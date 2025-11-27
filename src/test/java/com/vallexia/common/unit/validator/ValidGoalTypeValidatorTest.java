@@ -1,7 +1,7 @@
 package com.vallexia.common.unit.validator;
 
 import com.vallexia.common.validator.ValidGoalTypeValidator;
-import com.vallexia.user.entity.enums.GoalType;
+import com.vallexia.nutrition.enums.GoalType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

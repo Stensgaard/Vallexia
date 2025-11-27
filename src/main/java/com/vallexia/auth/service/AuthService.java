@@ -6,7 +6,7 @@ import com.vallexia.user.entity.*;
 import com.vallexia.user.entity.enums.Role;
 import com.vallexia.user.repository.*;
 import com.vallexia.user.service.DietaryPreferencesService;
-import com.vallexia.user.service.NutritionalGoalsService;
+import com.vallexia.nutrition.service.NutritionalGoalsService;
 import com.vallexia.user.service.UserSettingsService;
 import com.vallexia.audit.entity.enums.EventType;
 import com.vallexia.audit.service.AuditService;

@@ -1,5 +1,7 @@
 package com.vallexia.user.entity;
 
+import com.vallexia.nutrition.entity.NutritionalGoals;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;

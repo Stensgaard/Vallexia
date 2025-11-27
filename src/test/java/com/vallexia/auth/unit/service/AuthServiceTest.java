@@ -20,7 +20,7 @@ import com.vallexia.user.entity.User;
 import com.vallexia.user.fixtures.UserTestFixtures;
 import com.vallexia.user.repository.UserRepository;
 import com.vallexia.user.service.DietaryPreferencesService;
-import com.vallexia.user.service.NutritionalGoalsService;
+import com.vallexia.nutrition.service.NutritionalGoalsService;
 import com.vallexia.user.service.UserSettingsService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;

@@ -6,7 +6,7 @@ import com.vallexia.recipe.entity.enums.DifficultyLevel;
 import com.vallexia.common.enums.SupportedAllergy;
 import com.vallexia.common.enums.SupportedCuisineType;
 import com.vallexia.common.enums.SupportedDietaryRestriction;
-import com.vallexia.user.entity.enums.GoalType;
+import com.vallexia.nutrition.enums.GoalType;
 import com.vallexia.user.entity.enums.SubscriptionStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,12 +1,12 @@
 package com.vallexia.common.validator;
 
-import com.vallexia.user.entity.enums.GoalType;
+import com.vallexia.nutrition.enums.GoalType;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 /**
  * Validator implementation for {@link ValidGoalType}.
- * Ensures provided goal type values map to {@link com.vallexia.user.entity.enums.GoalType}.
+ * Ensures provided goal type values map to {@link com.vallexia.nutrition.enums.GoalType}.
  *
  * <p>Values are trimmed before validation so surrounding whitespace does not cause false negatives.
  *
