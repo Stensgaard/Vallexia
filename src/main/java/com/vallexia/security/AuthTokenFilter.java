@@ -5,6 +5,8 @@ import com.vallexia.auth.service.TokenBlacklistService;
 import com.vallexia.exception.ErrorCode;
 import com.vallexia.exception.ErrorResponseDto;
 import com.vallexia.exception.ErrorResponseMapper;
+import com.vallexia.security.util.JwtUtils;
+
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -14,8 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
@@ -23,15 +23,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * JWT authentication filter for processing JWT tokens in requests.
  * Authenticates users directly from token claims (userId and roles) without database lookups.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-29
  */
 @Slf4j
 public class AuthTokenFilter extends OncePerRequestFilter {
@@ -71,34 +70,35 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 }
                 
                 // Extract user information from token claims
-                String username = jwtUtils.getUsernameFromJwtToken(jwt);
+                String username;
+                try {
+                    username = jwtUtils.getUsernameFromJwtToken(jwt);
+                } catch (IllegalArgumentException e) {
+                    log.error("Invalid token: failed to extract username - {}", e.getMessage());
+                    sendErrorResponse(response, request, ErrorCode.INVALID_TOKEN);
+                    return;
+                }
+                
+                // Validate username is present and not empty
+                if (username == null || username.trim().isEmpty()) {
+                    log.error("Invalid token: missing or empty username claim");
+                    sendErrorResponse(response, request, ErrorCode.INVALID_TOKEN);
+                    return;
+                }
+                
                 Long userId = jwtUtils.getUserIdFromJwtToken(jwt);
                 List<String> roles = jwtUtils.getRolesFromJwtToken(jwt);
                 
                 // Validate that required claims are present
                 if (userId == null || roles == null || roles.isEmpty()) {
-                    log.error("Invalid token for user {}: missing required claims (userId or roles)", username);
+                    log.error("Invalid token for user {}: missing required claims (userId or roles)", 
+                        username != null ? username : "unknown");
                     sendErrorResponse(response, request, ErrorCode.INVALID_TOKEN);
                     return;
                 }
                 
-                // Create authorities from token claims
-                List<GrantedAuthority> authorities = roles.stream()
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
-                
-                // Create UserPrincipal directly from token claims (no database lookup)
-                UserPrincipal userPrincipal = new UserPrincipal(
-                        userId,                    // id
-                        username,                  // username
-                        null,                      // email (not in token, can be null)
-                        "",                        // password (not needed for JWT auth)
-                        authorities,               // authorities
-                        true,                      // enabled (assume enabled if token is valid)
-                        true,                      // accountNonExpired
-                        true,                      // accountNonLocked
-                        true                       // credentialsNonExpired
-                );
+                // Create UserPrincipal from token claims using factory method (no database lookup)
+                UserPrincipal userPrincipal = UserPrincipal.createFromJwtClaims(userId, username, roles);
                 
                 UsernamePasswordAuthenticationToken authentication = 
                     new UsernamePasswordAuthenticationToken(userPrincipal, null, userPrincipal.getAuthorities());
@@ -112,6 +112,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             log.error("JWT validation failed: {}", e.getMessage());
             // Don't set authentication, let downstream handle unauthorized access
         } catch (IllegalArgumentException e) {
+            // This catch handles IllegalArgumentException from parseJwt or other token parsing issues
+            // Username extraction failures are handled above with error response
             log.error("Invalid token parameter: {}", e.getMessage());
             // Don't set authentication, let downstream handle unauthorized access
         } catch (Exception e) {
