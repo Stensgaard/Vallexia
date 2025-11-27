@@ -1,10 +1,14 @@
 package com.vallexia.recipe.dto;
 
 import com.vallexia.recipe.entity.enums.DifficultyLevel;
-import com.vallexia.recipe.entity.enums.RecipeCategory;
-import com.vallexia.user.entity.enums.Allergy;
-import com.vallexia.user.entity.enums.CuisineType;
-import com.vallexia.user.entity.enums.DietaryRestriction;
+import com.vallexia.common.enums.SupportedAllergy;
+import com.vallexia.common.enums.SupportedCuisineType;
+import com.vallexia.common.enums.SupportedDietaryRestriction;
+import com.vallexia.common.enums.SupportedMealCategory;
+import com.vallexia.common.validator.ValidAllergy;
+import com.vallexia.common.validator.ValidCuisineType;
+import com.vallexia.common.validator.ValidDietaryRestriction;
+import com.vallexia.common.validator.ValidMealCategory;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
@@ -19,9 +23,9 @@ import java.util.Set;
  * Data Transfer Object for updating an existing recipe.
  * All fields are optional for partial updates.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 @Data
 @NoArgsConstructor
@@ -50,9 +54,11 @@ public class UpdateRecipeDto {
     
     private DifficultyLevel difficultyLevel;
     
-    private RecipeCategory category;
+    @ValidMealCategory
+    private SupportedMealCategory category;
     
-    private CuisineType cuisineType;
+    @ValidCuisineType
+    private SupportedCuisineType cuisineType;
     
     @Size(max = 500, message = "Image URL must not exceed 500 characters")
     private String imageUrl;
@@ -67,7 +73,9 @@ public class UpdateRecipeDto {
     
     private Set<String> tags;
     
-    private Set<DietaryRestriction> dietaryRestrictions;
+    @ValidDietaryRestriction
+    private Set<SupportedDietaryRestriction> dietaryRestrictions;
     
-    private Set<Allergy> allergens;
+    @ValidAllergy
+    private Set<SupportedAllergy> allergens;
 }
