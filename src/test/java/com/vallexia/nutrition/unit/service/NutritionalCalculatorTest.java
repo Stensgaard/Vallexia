@@ -2,7 +2,7 @@ package com.vallexia.nutrition.unit.service;
 
 import com.vallexia.nutrition.exception.InvalidNutritionalDataException;
 import com.vallexia.nutrition.service.MacroCalculator;
-import com.vallexia.user.entity.NutritionalGoals;
+import com.vallexia.nutrition.entity.NutritionalGoals;
 import com.vallexia.user.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

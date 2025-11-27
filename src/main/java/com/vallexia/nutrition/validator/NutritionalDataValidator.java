@@ -1,7 +1,7 @@
 package com.vallexia.nutrition.validator;
 
 import com.vallexia.nutrition.exception.InvalidNutritionalDataException;
-import com.vallexia.user.entity.NutritionalGoals;
+import com.vallexia.nutrition.entity.NutritionalGoals;
 
 import java.math.BigDecimal;
 

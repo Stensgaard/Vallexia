@@ -1,9 +1,11 @@
 package com.vallexia.nutrition.service;
 
+import com.vallexia.nutrition.dto.MacroBreakdown;
+import com.vallexia.nutrition.enums.GoalType;
 import com.vallexia.nutrition.exception.InvalidNutritionalDataException;
 import com.vallexia.nutrition.exception.NutritionalCalculationException;
 import com.vallexia.nutrition.validator.NutritionalDataValidator;
-import com.vallexia.user.entity.NutritionalGoals;
+import com.vallexia.nutrition.entity.NutritionalGoals;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -263,5 +265,119 @@ public class MacroCalculator {
   public BigDecimal calculateFatCalories(BigDecimal fatGrams) {
     NutritionalDataValidator.validateFats(fatGrams);
     return fatGrams != null ? fatGrams.multiply(FAT_CALORIES_PER_GRAM) : BigDecimal.ZERO;
+  }
+  
+  /**
+   * Calculate macro breakdown (protein, carbs, fats) in grams based on goal type and daily calories.
+   * 
+   * <p>This method uses recommended macro percentage ratios for different fitness goals:
+   * <ul>
+   *   <li><b>WEIGHT_LOSS</b>: 40% protein, 30% carbs, 30% fats</li>
+   *   <li><b>WEIGHT_GAIN</b>: 25% protein, 45% carbs, 30% fats</li>
+   *   <li><b>MUSCLE_GAIN</b>: 35% protein, 40% carbs, 25% fats</li>
+   *   <li><b>MAINTENANCE</b>: 30% protein, 40% carbs, 30% fats</li>
+   *   <li><b>ATHLETIC_PERFORMANCE</b>: 25% protein, 50% carbs, 25% fats</li>
+   *   <li><b>GENERAL_HEALTH</b>: 30% protein, 40% carbs, 30% fats</li>
+   * </ul>
+   * 
+   * <p><b>Formula:</b> grams = (calories × percentage / 100) / calories_per_gram
+   * 
+   * <p><b>Example:</b>
+   * <pre>
+   * Daily calories: 2000
+   * Goal: WEIGHT_LOSS (40% protein, 30% carbs, 30% fats)
+   * Protein: (2000 × 0.40) / 4 = 200g
+   * Carbs: (2000 × 0.30) / 4 = 150g
+   * Fats: (2000 × 0.30) / 9 = 66.67g
+   * </pre>
+   * 
+   * @param dailyCalories total daily calories
+   * @param goalType the fitness goal type
+   * @return MacroBreakdown with calculated protein, carbs, and fats in grams
+   * @throws InvalidNutritionalDataException if dailyCalories is null, zero, or negative
+   * @throws NutritionalCalculationException if calculation fails due to arithmetic error
+   */
+  public MacroBreakdown calculateMacrosFromGoalType(BigDecimal dailyCalories, GoalType goalType) {
+    if (dailyCalories == null) {
+      throw new InvalidNutritionalDataException("Daily calories cannot be null");
+    }
+    if (dailyCalories.compareTo(BigDecimal.ZERO) <= 0) {
+      throw new InvalidNutritionalDataException("Daily calories must be greater than 0");
+    }
+    if (goalType == null) {
+      throw new InvalidNutritionalDataException("Goal type cannot be null");
+    }
+    
+    log.debug("Calculating macros for goal type: {}, daily calories: {}", goalType, dailyCalories);
+    
+    try {
+      // Define macro percentage ratios for each goal type
+      BigDecimal proteinPercentage;
+      BigDecimal carbsPercentage;
+      BigDecimal fatsPercentage;
+      
+      switch (goalType) {
+        case WEIGHT_LOSS:
+          proteinPercentage = BigDecimal.valueOf(40);
+          carbsPercentage = BigDecimal.valueOf(30);
+          fatsPercentage = BigDecimal.valueOf(30);
+          break;
+        case WEIGHT_GAIN:
+          proteinPercentage = BigDecimal.valueOf(25);
+          carbsPercentage = BigDecimal.valueOf(45);
+          fatsPercentage = BigDecimal.valueOf(30);
+          break;
+        case MUSCLE_GAIN:
+          proteinPercentage = BigDecimal.valueOf(35);
+          carbsPercentage = BigDecimal.valueOf(40);
+          fatsPercentage = BigDecimal.valueOf(25);
+          break;
+        case MAINTENANCE:
+          proteinPercentage = BigDecimal.valueOf(30);
+          carbsPercentage = BigDecimal.valueOf(40);
+          fatsPercentage = BigDecimal.valueOf(30);
+          break;
+        case ATHLETIC_PERFORMANCE:
+          proteinPercentage = BigDecimal.valueOf(25);
+          carbsPercentage = BigDecimal.valueOf(50);
+          fatsPercentage = BigDecimal.valueOf(25);
+          break;
+        case GENERAL_HEALTH:
+          proteinPercentage = BigDecimal.valueOf(30);
+          carbsPercentage = BigDecimal.valueOf(40);
+          fatsPercentage = BigDecimal.valueOf(30);
+          break;
+        default:
+          throw new InvalidNutritionalDataException("Unknown goal type: " + goalType);
+      }
+      
+      // Calculate grams: (calories × percentage / 100) / calories_per_gram
+      BigDecimal proteinCalories = dailyCalories
+          .multiply(proteinPercentage)
+          .divide(BigDecimal.valueOf(100), DECIMAL_SCALE, ROUNDING_MODE);
+      BigDecimal proteinGrams = proteinCalories
+          .divide(PROTEIN_CALORIES_PER_GRAM, DECIMAL_SCALE, ROUNDING_MODE);
+      
+      BigDecimal carbsCalories = dailyCalories
+          .multiply(carbsPercentage)
+          .divide(BigDecimal.valueOf(100), DECIMAL_SCALE, ROUNDING_MODE);
+      BigDecimal carbsGrams = carbsCalories
+          .divide(CARB_CALORIES_PER_GRAM, DECIMAL_SCALE, ROUNDING_MODE);
+      
+      BigDecimal fatsCalories = dailyCalories
+          .multiply(fatsPercentage)
+          .divide(BigDecimal.valueOf(100), DECIMAL_SCALE, ROUNDING_MODE);
+      BigDecimal fatsGrams = fatsCalories
+          .divide(FAT_CALORIES_PER_GRAM, DECIMAL_SCALE, ROUNDING_MODE);
+      
+      log.debug("Calculated macros - Protein: {}g, Carbs: {}g, Fats: {}g", 
+          proteinGrams, carbsGrams, fatsGrams);
+      
+      return new MacroBreakdown(proteinGrams, carbsGrams, fatsGrams);
+    } catch (ArithmeticException e) {
+      log.error("Arithmetic error calculating macros from goal type: {}", e.getMessage(), e);
+      throw new NutritionalCalculationException(
+          "Failed to calculate macros from goal type: " + e.getMessage(), e);
+    }
   }
 }

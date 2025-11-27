@@ -2,7 +2,7 @@ package com.vallexia.nutrition.unit.validator;
 
 import com.vallexia.nutrition.exception.InvalidNutritionalDataException;
 import com.vallexia.nutrition.validator.NutritionalDataValidator;
-import com.vallexia.user.entity.NutritionalGoals;
+import com.vallexia.nutrition.entity.NutritionalGoals;
 import com.vallexia.user.entity.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
