@@ -25,9 +25,9 @@ import static org.mockito.Mockito.*;
  * Unit tests for TokenBlacklistService.
  * Tests token blacklisting logic with mocked Redis.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-30
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -225,9 +225,6 @@ class TokenBlacklistServiceTest {
     );
   }
   
-  // Note: removeFromBlacklist() and clearBlacklist() are package-private methods
-  // They are intended for testing purposes only and should be tested via integration tests
-  // or tests within the same package. These are excluded from unit tests here.
   
   // ==================== Token Hashing Tests ====================
   
@@ -272,4 +269,3 @@ class TokenBlacklistServiceTest {
     verify(valueOperations, times(2)).set(anyString(), anyString(), anyLong(), any(TimeUnit.class));
   }
 }
-

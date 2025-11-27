@@ -2,39 +2,35 @@ package com.vallexia.auth.service;
 
 import com.vallexia.auth.dto.*;
 import com.vallexia.auth.mapper.AuthMapper;
-import com.vallexia.config.security.AccountSecurityProperties;
 import com.vallexia.user.entity.*;
 import com.vallexia.user.entity.enums.Role;
 import com.vallexia.user.repository.*;
 import com.vallexia.user.service.DietaryPreferencesService;
 import com.vallexia.user.service.NutritionalGoalsService;
+import com.vallexia.user.service.UserSettingsService;
 import com.vallexia.audit.entity.enums.EventType;
 import com.vallexia.audit.service.AuditService;
 import com.vallexia.exception.ErrorCode;
 import com.vallexia.exception.ValidationException;
 import com.vallexia.auth.exception.UserAlreadyExistsException;
 import com.vallexia.auth.exception.AuthenticationException;
-import com.vallexia.auth.exception.AccountLockedException;
-import com.vallexia.auth.exception.AccountDisabledException;
-import com.vallexia.security.JwtUtils;
+import com.vallexia.auth.service.JwtTokenService;
+import com.vallexia.auth.service.TokenBlacklistService;
+import com.vallexia.auth.util.AccountSecurityHelper;
+import com.vallexia.auth.util.UserAuthenticationHelper;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.servlet.http.HttpServletRequest;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.Date;
-
 /**
  * Service for managing authentication operations including registration, login, token refresh, and logout.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-30
  */
 @Slf4j
 @Service
@@ -43,46 +39,54 @@ public class AuthService {
     
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtils jwtUtils;
     private final AuditService auditService;
     private final DietaryPreferencesService dietaryPreferencesService;
     private final NutritionalGoalsService nutritionalGoalsService;
+    private final UserSettingsService userSettingsService;
     private final TokenBlacklistService tokenBlacklistService;
-    private final AccountSecurityProperties accountSecurityProperties;
     private final AuthMapper authMapper;
+    private final JwtTokenService jwtTokenService;
+    private final UserAuthenticationHelper userAuthenticationHelper;
+    private final AccountSecurityHelper accountSecurityHelper;
     
     /**
      * Constructor with dependency injection.
      * 
      * @param userRepository user repository
      * @param passwordEncoder password encoder
-     * @param jwtUtils JWT utility
      * @param auditService audit service
      * @param dietaryPreferencesService dietary preferences service
      * @param nutritionalGoalsService nutritional goals service
+     * @param userSettingsService user settings service
      * @param tokenBlacklistService token blacklist service
-     * @param accountSecurityProperties account security configuration
      * @param authMapper mapper for auth DTOs and entities
+     * @param jwtTokenService JWT token service
+     * @param userAuthenticationHelper user authentication helper
+     * @param accountSecurityHelper account security helper
      */
     public AuthService(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
-            JwtUtils jwtUtils,
             AuditService auditService,
             DietaryPreferencesService dietaryPreferencesService,
             NutritionalGoalsService nutritionalGoalsService,
+            UserSettingsService userSettingsService,
             TokenBlacklistService tokenBlacklistService,
-            AccountSecurityProperties accountSecurityProperties,
-            AuthMapper authMapper) {
+            AuthMapper authMapper,
+            JwtTokenService jwtTokenService,
+            UserAuthenticationHelper userAuthenticationHelper,
+            AccountSecurityHelper accountSecurityHelper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.jwtUtils = jwtUtils;
         this.auditService = auditService;
         this.dietaryPreferencesService = dietaryPreferencesService;
         this.nutritionalGoalsService = nutritionalGoalsService;
+        this.userSettingsService = userSettingsService;
         this.tokenBlacklistService = tokenBlacklistService;
-        this.accountSecurityProperties = accountSecurityProperties;
         this.authMapper = authMapper;
+        this.jwtTokenService = jwtTokenService;
+        this.userAuthenticationHelper = userAuthenticationHelper;
+        this.accountSecurityHelper = accountSecurityHelper;
     }
     
     /**
@@ -98,6 +102,39 @@ public class AuthService {
     public JwtResponseDto registerUser(RegisterRequestDto registerRequestDto, HttpServletRequest request) {
         log.debug("Registering new user");
         
+        // Validate registration data
+        validateRegistrationData(registerRequestDto);
+        
+        // Create and save new user with default settings
+        User savedUser = createNewUser(registerRequestDto);
+        
+        // Generate JWT tokens
+        JwtTokenService.JwtTokenData tokenData = jwtTokenService.generateTokens(savedUser);
+        
+        log.info("User registered successfully with ID: {}", savedUser.getId());
+        
+        // Log registration event
+        auditService.logAuthenticationEvent(
+            EventType.REGISTRATION,
+            "User registered successfully",
+            savedUser.getId(),
+            savedUser.getUsername(),
+            request,
+            true
+        );
+        
+        return authMapper.toJwtResponse(savedUser, tokenData.accessToken(), 
+            tokenData.refreshToken(), tokenData.expiresAt());
+    }
+    
+    /**
+     * Validate registration data (password confirmation, username/email uniqueness).
+     * 
+     * @param registerRequestDto registration request data
+     * @throws ValidationException if password confirmation doesn't match
+     * @throws UserAlreadyExistsException if username or email already exists
+     */
+    private void validateRegistrationData(RegisterRequestDto registerRequestDto) {
         // Validate password confirmation
         if (!registerRequestDto.getPassword().equals(registerRequestDto.getConfirmPassword())) {
             throw new ValidationException("Password and confirmation password do not match");
@@ -112,7 +149,15 @@ public class AuthService {
         if (userRepository.existsByEmail(registerRequestDto.getEmail())) {
             throw new UserAlreadyExistsException("Email is already in use");
         }
-        
+    }
+    
+    /**
+     * Create new user with default settings and preferences.
+     * 
+     * @param registerRequestDto registration request data
+     * @return saved user entity
+     */
+    private User createNewUser(RegisterRequestDto registerRequestDto) {
         // Create new user using mapper
         User user = authMapper.toUser(registerRequestDto);
         user.setPasswordHash(passwordEncoder.encode(registerRequestDto.getPassword()));
@@ -125,30 +170,10 @@ public class AuthService {
         dietaryPreferencesService.createDefaultPreferences(savedUser);
         nutritionalGoalsService.createDefaultGoals(savedUser);
         
-        // Prepare user roles for JWT claims
-        List<String> roles = extractUserRoles(savedUser);
+        // Create default user settings with country-specific defaults
+        userSettingsService.createDefaultSettings(savedUser, registerRequestDto.getCountry());
         
-        // Generate JWT tokens with user ID and roles to reduce database lookups
-        String accessToken = jwtUtils.generateAccessToken(savedUser.getUsername(), savedUser.getId(), roles);
-        String refreshToken = jwtUtils.generateRefreshToken(savedUser.getUsername(), savedUser.getId(), roles);
-        Date expDate = jwtUtils.getExpirationDateFromToken(accessToken);
-        LocalDateTime expiresAt = (expDate != null)
-            ? expDate.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDateTime()
-            : LocalDateTime.now();
-        
-        log.info("User registered successfully with ID: {}", savedUser.getId());
-        
-        // Log registration event
-        auditService.logAuthenticationEvent(
-            EventType.REGISTRATION,
-            "User registered successfully",
-            savedUser.getId(),
-            savedUser.getUsername(),
-            request, // Pass the actual request for audit context
-            true
-        );
-        
-        return authMapper.toJwtResponse(savedUser, accessToken, refreshToken, expiresAt);
+        return savedUser;
     }
     
     /**
@@ -158,65 +183,32 @@ public class AuthService {
      * @param request HTTP request for audit logging
      * @return JWT response with tokens and user info
      * @throws AuthenticationException if authentication fails
+     * @throws AccountLockedException if account is locked
+     * @throws AccountDisabledException if account is disabled
      */
     @Transactional
     public JwtResponseDto authenticateUser(LoginRequestDto loginRequestDto, HttpServletRequest request) {
         log.debug("Authenticating user");
         
-        // Find user by username or email
-        Optional<User> userOpt = userRepository.findByUsernameAndEnabledTrue(loginRequestDto.getUsernameOrEmail());
-        if (userOpt.isEmpty()) {
-            userOpt = userRepository.findByEmailAndEnabledTrue(loginRequestDto.getUsernameOrEmail());
-        }
+        // Find user by username or email (try username first as it's immutable)
+        User user = userAuthenticationHelper.findUserByUsernameOrEmail(loginRequestDto.getUsernameOrEmail())
+                .orElseThrow(() -> new AuthenticationException(ErrorCode.INVALID_CREDENTIALS, 
+                    "Invalid username/email or password"));
         
-        if (userOpt.isEmpty()) {
-            throw new AuthenticationException(ErrorCode.INVALID_CREDENTIALS, "Invalid username/email or password");
-        }
-        
-        User user = userOpt.get();
-        
-        // Check if account is locked
-        if (user.isAccountLocked()) {
-            log.warn("Account locked until {}", user.getAccountLockedUntil());
-            throw new AccountLockedException("Account is temporarily locked due to multiple failed login attempts");
-        }
+        // Validate account status (disabled, locked)
+        userAuthenticationHelper.validateAccountStatus(user);
         
         // Verify password
-        // Note: Account disabled check is handled by repository queries (findByUsernameAndEnabledTrue/findByEmailAndEnabledTrue)
         if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPasswordHash())) {
-            // Increment failed login attempts
-            user.incrementFailedLoginAttempts();
-            
-            // Lock account after configured number of failed attempts
-            int maxAttempts = accountSecurityProperties.getMaxFailedAttempts();
-            int lockoutMinutes = accountSecurityProperties.getDurationMinutes();
-            
-            if (user.getFailedLoginAttempts() >= maxAttempts) {
-                user.setAccountLockedUntil(LocalDateTime.now().plusMinutes(lockoutMinutes));
-                log.warn("Account locked for {} minutes due to {} failed attempts", 
-                    lockoutMinutes, user.getFailedLoginAttempts());
-            }
-            
-            userRepository.save(user);
+            accountSecurityHelper.handleFailedLoginAttempt(user);
             throw new AuthenticationException(ErrorCode.INVALID_CREDENTIALS, "Invalid username/email or password");
         }
         
         // Reset failed login attempts on successful login
-        if (user.getFailedLoginAttempts() > 0) {
-            user.resetFailedLoginAttempts();
-            userRepository.save(user);
-        }
+        accountSecurityHelper.resetFailedLoginAttempts(user);
         
-        // Prepare user roles for JWT claims
-        List<String> roles = extractUserRoles(user);
-        
-        // Generate JWT tokens with user ID and roles to reduce database lookups
-        String accessToken = jwtUtils.generateAccessToken(user.getUsername(), user.getId(), roles);
-        String refreshToken = jwtUtils.generateRefreshToken(user.getUsername(), user.getId(), roles);
-        Date expDate = jwtUtils.getExpirationDateFromToken(accessToken);
-        LocalDateTime expiresAt = (expDate != null)
-            ? expDate.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDateTime()
-            : LocalDateTime.now();
+        // Generate JWT tokens
+        JwtTokenService.JwtTokenData tokenData = jwtTokenService.generateTokens(user);
         
         log.debug("User authenticated successfully");
         
@@ -226,11 +218,12 @@ public class AuthService {
             "User logged in successfully",
             user.getId(),
             user.getUsername(),
-            request, // Pass the actual request for audit context
+            request,
             true
         );
         
-        return authMapper.toJwtResponse(user, accessToken, refreshToken, expiresAt);
+        return authMapper.toJwtResponse(user, tokenData.accessToken(), 
+            tokenData.refreshToken(), tokenData.expiresAt());
     }
     
     /**
@@ -245,25 +238,14 @@ public class AuthService {
      */
     @Transactional(readOnly = true)
     public JwtResponseDto refreshToken(String refreshToken) {
-        // Validate token format
-        if (refreshToken == null || refreshToken.trim().isEmpty()) {
-            throw new AuthenticationException(ErrorCode.INVALID_TOKEN, "Refresh token is required");
-        }
-        
-        // Check if token is valid first
-        // If validation fails, try to determine if it's expired (valid format) vs invalid (malformed)
-        Date expirationDate = jwtUtils.getExpirationDateFromToken(refreshToken);
-        if (expirationDate != null) {
-            // Token format is valid (we could extract expiration), check if expired
-            if (expirationDate.before(new Date())) {
-                throw new AuthenticationException(ErrorCode.TOKEN_EXPIRED, "Refresh token has expired");
-            }
-        }
-        
-        // If we couldn't get expiration or token validation fails, check validation
-        if (!jwtUtils.validateJwtToken(refreshToken)) {
-            // Token is invalid - malformed, wrong signature, etc.
+        // Validate token structure and signature first (handles null/empty/invalid)
+        if (!jwtTokenService.isValidToken(refreshToken)) {
             throw new AuthenticationException(ErrorCode.INVALID_TOKEN, "Invalid refresh token");
+        }
+        
+        // Check if token is expired (only for valid tokens)
+        if (jwtTokenService.isTokenExpired(refreshToken)) {
+            throw new AuthenticationException(ErrorCode.TOKEN_EXPIRED, "Refresh token has expired");
         }
         
         // Check if refresh token is already blacklisted
@@ -272,35 +254,18 @@ public class AuthService {
             throw new AuthenticationException(ErrorCode.INVALID_TOKEN, "Refresh token has been revoked");
         }
         
-        String username = jwtUtils.getUsernameFromJwtToken(refreshToken);
+        String username = jwtTokenService.getUsernameFromToken(refreshToken);
         User user = userRepository.findByUsernameAndEnabledTrue(username)
                 .orElseThrow(() -> new AuthenticationException(ErrorCode.INVALID_TOKEN, "User not found"));
         
-        // Check if account is locked
-        if (user.isAccountLocked()) {
-            log.warn("Attempted token refresh for locked account: {}", username);
-            throw new AccountLockedException("Account is temporarily locked");
-        }
+        // Validate account status (disabled, locked)
+        userAuthenticationHelper.validateAccountStatus(user);
         
-        // Check if account is disabled
-        if (!user.getEnabled()) {
-            log.warn("Attempted token refresh for disabled account: {}", username);
-            throw new AccountDisabledException("Account is disabled");
-        }
-        
-        // Prepare user roles for JWT claims
-        List<String> roles = extractUserRoles(user);
-        
-        // Generate new tokens with user ID and roles
-        String newAccessToken = jwtUtils.generateAccessToken(user.getUsername(), user.getId(), roles);
-        String newRefreshToken = jwtUtils.generateRefreshToken(user.getUsername(), user.getId(), roles);
-        Date expDate = jwtUtils.getExpirationDateFromToken(newAccessToken);
-        LocalDateTime expiresAt = (expDate != null)
-            ? expDate.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDateTime()
-            : LocalDateTime.now();
+        // Generate new JWT tokens
+        JwtTokenService.JwtTokenData tokenData = jwtTokenService.generateTokens(user);
         
         // Blacklist the old refresh token to prevent reuse (token rotation)
-        long oldTokenExpiration = jwtUtils.getExpirationDateFromToken(refreshToken).getTime();
+        long oldTokenExpiration = jwtTokenService.getTokenExpirationTime(refreshToken);
         boolean blacklisted = tokenBlacklistService.blacklistToken(refreshToken, oldTokenExpiration);
         if (!blacklisted) {
             log.error("CRITICAL: Failed to blacklist old refresh token during token rotation");
@@ -308,7 +273,8 @@ public class AuthService {
         }
         
         log.debug("Old refresh token blacklisted successfully");
-        return authMapper.toJwtResponse(user, newAccessToken, newRefreshToken, expiresAt);
+        return authMapper.toJwtResponse(user, tokenData.accessToken(), 
+            tokenData.refreshToken(), tokenData.expiresAt());
     }
     
     /**
@@ -320,56 +286,25 @@ public class AuthService {
         log.debug("Processing logout request");
         
         try {
-            // Extract access token from request
-            String authHeader = request.getHeader("Authorization");
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                String accessToken = authHeader.substring(7);
-                
-                // Validate token format before processing
-                if (accessToken == null || accessToken.trim().isEmpty()) {
-                    log.warn("Empty access token in logout request");
-                    return;
-                }
-                
-                // Validate token before extracting expiration
-                if (!jwtUtils.validateJwtToken(accessToken)) {
-                    log.warn("Invalid access token format in logout request");
-                    return;
-                }
-                
-                // Get token expiration time
-                long expirationTime = jwtUtils.getExpirationDateFromToken(accessToken).getTime();
-                
-                // Blacklist the access token
-                boolean blacklisted = tokenBlacklistService.blacklistToken(accessToken, expirationTime);
-                if (blacklisted) {
-                    log.debug("Access token blacklisted successfully");
-                } else {
-                    log.warn("Failed to blacklist access token during logout. "
-                        + "Token may remain valid until expiration");
-                }
-            } else {
-                log.warn("No valid Authorization header found in logout request");
+            String accessToken = jwtTokenService.parseJwtFromRequest(request);
+            if (!jwtTokenService.isValidToken(accessToken)) {
+                log.warn("No valid access token found in logout request");
+                return;
             }
-        } catch (io.jsonwebtoken.JwtException e) {
-            log.error("JWT error during logout: {}", e.getMessage());
-            // Don't throw exception - logout should always succeed from user perspective
+            
+            // Get token expiration time
+            long expirationTime = jwtTokenService.getTokenExpirationTime(accessToken);
+            
+            // Blacklist the access token
+            boolean blacklisted = tokenBlacklistService.blacklistToken(accessToken, expirationTime);
+            if (blacklisted) {
+                log.debug("Access token blacklisted successfully");
+            } else {
+                log.warn("Failed to blacklist access token during logout.");
+            }
         } catch (Exception e) {
-            log.error("Unexpected error during logout: {}", e.getMessage());
+            log.error("Error during logout: {}", e.getMessage());
             // Don't throw exception - logout should always succeed from user perspective
         }
-    }
-    
-    /**
-     * Extract user roles as a list of authority strings.
-     * Helper method to eliminate code duplication.
-     * 
-     * @param user the user entity
-     * @return list of role authority strings
-     */
-    private List<String> extractUserRoles(User user) {
-        return user.getRoles().stream()
-                .map(role -> role.getAuthority())
-                .collect(Collectors.toList());
     }
 }

@@ -85,7 +85,7 @@ class AuthMapperTest {
     // Then
     assertThat(user.getId()).isNull(); // Should be ignored
     assertThat(user.getPasswordHash()).isNull(); // Should be ignored
-    assertThat(user.getRoles()).isNull(); // Should be ignored
+    assertThat(user.getRoles()).isEmpty(); // Should be ignored (initialized to empty set in User entity)
     assertThat(user.getDietaryPreferences()).isNull(); // Should be ignored
     assertThat(user.getNutritionalGoals()).isNull(); // Should be ignored
     assertThat(user.getUserSettings()).isNull(); // Should be ignored

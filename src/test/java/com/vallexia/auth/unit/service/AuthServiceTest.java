@@ -10,16 +10,18 @@ import com.vallexia.auth.exception.UserAlreadyExistsException;
 import com.vallexia.auth.fixtures.AuthTestFixtures;
 import com.vallexia.auth.mapper.AuthMapper;
 import com.vallexia.auth.service.AuthService;
+import com.vallexia.auth.service.JwtTokenService;
 import com.vallexia.auth.service.TokenBlacklistService;
-import com.vallexia.config.security.AccountSecurityProperties;
+import com.vallexia.auth.util.AccountSecurityHelper;
+import com.vallexia.auth.util.UserAuthenticationHelper;
 import com.vallexia.exception.ValidationException;
-import com.vallexia.security.JwtUtils;
 import com.vallexia.user.entity.enums.Role;
 import com.vallexia.user.entity.User;
 import com.vallexia.user.fixtures.UserTestFixtures;
 import com.vallexia.user.repository.UserRepository;
 import com.vallexia.user.service.DietaryPreferencesService;
 import com.vallexia.user.service.NutritionalGoalsService;
+import com.vallexia.user.service.UserSettingsService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,7 +36,6 @@ import org.mockito.quality.Strictness;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,9 +47,9 @@ import static org.mockito.Mockito.*;
  * Unit tests for AuthService.
  * Tests business logic with mocked dependencies.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-30
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -62,9 +63,6 @@ class AuthServiceTest {
   private PasswordEncoder passwordEncoder;
   
   @Mock
-  private JwtUtils jwtUtils;
-  
-  @Mock
   private AuditService auditService;
   
   @Mock
@@ -74,13 +72,22 @@ class AuthServiceTest {
   private NutritionalGoalsService nutritionalGoalsService;
   
   @Mock
+  private UserSettingsService userSettingsService;
+  
+  @Mock
   private TokenBlacklistService tokenBlacklistService;
   
   @Mock
-  private AccountSecurityProperties accountSecurityProperties;
+  private AuthMapper authMapper;
   
   @Mock
-  private AuthMapper authMapper;
+  private JwtTokenService jwtTokenService;
+  
+  @Mock
+  private UserAuthenticationHelper userAuthenticationHelper;
+  
+  @Mock
+  private AccountSecurityHelper accountSecurityHelper;
   
   @Mock
   private HttpServletRequest request;
@@ -93,8 +100,6 @@ class AuthServiceTest {
   @BeforeEach
   void setUp() {
     testUser = UserTestFixtures.createUser();
-    when(accountSecurityProperties.getMaxFailedAttempts()).thenReturn(5);
-    when(accountSecurityProperties.getDurationMinutes()).thenReturn(15);
   }
   
   // ==================== registerUser() Tests ====================
@@ -112,9 +117,12 @@ class AuthServiceTest {
     when(passwordEncoder.encode(registerDto.getPassword())).thenReturn(UserTestFixtures.TEST_PASSWORD_HASH);
     when(authMapper.toUser(registerDto)).thenReturn(newUser);
     when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
-    when(jwtUtils.generateAccessToken(anyString(), anyLong(), anyList())).thenReturn(AuthTestFixtures.TEST_ACCESS_TOKEN);
-    when(jwtUtils.generateRefreshToken(anyString(), anyLong(), anyList())).thenReturn(AuthTestFixtures.TEST_REFRESH_TOKEN);
-    when(jwtUtils.getExpirationDateFromToken(anyString())).thenReturn(Date.from(AuthTestFixtures.TEST_TOKEN_EXPIRES_AT.atZone(java.time.ZoneId.systemDefault()).toInstant()));
+    JwtTokenService.JwtTokenData tokenData = new JwtTokenService.JwtTokenData(
+        AuthTestFixtures.TEST_ACCESS_TOKEN,
+        AuthTestFixtures.TEST_REFRESH_TOKEN,
+        AuthTestFixtures.TEST_TOKEN_EXPIRES_AT
+    );
+    when(jwtTokenService.generateTokens(any(User.class))).thenReturn(tokenData);
     when(authMapper.toJwtResponse(any(), anyString(), anyString(), any())).thenReturn(expectedResponse);
     
     // When
@@ -132,8 +140,7 @@ class AuthServiceTest {
     verify(userRepository).save(any(User.class));
     verify(dietaryPreferencesService).createDefaultPreferences(any(User.class));
     verify(nutritionalGoalsService).createDefaultGoals(any(User.class));
-    verify(jwtUtils).generateAccessToken(anyString(), anyLong(), anyList());
-    verify(jwtUtils).generateRefreshToken(anyString(), anyLong(), anyList());
+    verify(jwtTokenService).generateTokens(any(User.class));
     verify(auditService).logAuthenticationEvent(eq(EventType.REGISTRATION), anyString(), anyLong(), anyString(), any(), eq(true));
   }
   
@@ -201,10 +208,12 @@ class AuthServiceTest {
     when(passwordEncoder.encode(registerDto.getPassword())).thenReturn(encodedPassword);
     when(authMapper.toUser(registerDto)).thenReturn(newUser);
     when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
-    when(jwtUtils.generateAccessToken(anyString(), anyLong(), anyList())).thenReturn(AuthTestFixtures.TEST_ACCESS_TOKEN);
-    when(jwtUtils.generateRefreshToken(anyString(), anyLong(), anyList())).thenReturn(AuthTestFixtures.TEST_REFRESH_TOKEN);
-    Date expirationDate = Date.from(AuthTestFixtures.TEST_TOKEN_EXPIRES_AT.atZone(java.time.ZoneId.systemDefault()).toInstant());
-    when(jwtUtils.getExpirationDateFromToken(anyString())).thenReturn(expirationDate);
+    JwtTokenService.JwtTokenData tokenData = new JwtTokenService.JwtTokenData(
+        AuthTestFixtures.TEST_ACCESS_TOKEN,
+        AuthTestFixtures.TEST_REFRESH_TOKEN,
+        AuthTestFixtures.TEST_TOKEN_EXPIRES_AT
+    );
+    when(jwtTokenService.generateTokens(any(User.class))).thenReturn(tokenData);
     when(authMapper.toJwtResponse(any(), anyString(), anyString(), any())).thenReturn(AuthTestFixtures.createJwtResponseDto());
     
     // When
@@ -230,12 +239,12 @@ class AuthServiceTest {
     when(authMapper.toUser(registerDto)).thenReturn(newUser);
     when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
     
-    // Mock JWT token generation - exactly matching the working test pattern
-    when(jwtUtils.generateAccessToken(anyString(), anyLong(), anyList())).thenReturn(AuthTestFixtures.TEST_ACCESS_TOKEN);
-    when(jwtUtils.generateRefreshToken(anyString(), anyLong(), anyList())).thenReturn(AuthTestFixtures.TEST_REFRESH_TOKEN);
-    // Create expiration date inline exactly like the working test (line 117)
-    when(jwtUtils.getExpirationDateFromToken(anyString())).thenReturn(Date.from(AuthTestFixtures.TEST_TOKEN_EXPIRES_AT.atZone(java.time.ZoneId.systemDefault()).toInstant()));
-    
+    JwtTokenService.JwtTokenData tokenData = new JwtTokenService.JwtTokenData(
+        AuthTestFixtures.TEST_ACCESS_TOKEN,
+        AuthTestFixtures.TEST_REFRESH_TOKEN,
+        AuthTestFixtures.TEST_TOKEN_EXPIRES_AT
+    );
+    when(jwtTokenService.generateTokens(any(User.class))).thenReturn(tokenData);
     when(authMapper.toJwtResponse(any(), anyString(), anyString(), any())).thenReturn(AuthTestFixtures.createJwtResponseDto());
     
     // When
@@ -256,12 +265,18 @@ class AuthServiceTest {
     // Given
     LoginRequestDto loginDto = AuthTestFixtures.createLoginRequestDto();
     JwtResponseDto expectedResponse = AuthTestFixtures.createJwtResponseDto();
+    testUser.setEnabled(true);
     
-    when(userRepository.findByUsernameAndEnabledTrue(loginDto.getUsernameOrEmail())).thenReturn(Optional.of(testUser));
+    when(userAuthenticationHelper.findUserByUsernameOrEmail(loginDto.getUsernameOrEmail())).thenReturn(Optional.of(testUser));
+    doNothing().when(userAuthenticationHelper).validateAccountStatus(testUser);
     when(passwordEncoder.matches(loginDto.getPassword(), testUser.getPasswordHash())).thenReturn(true);
-    when(jwtUtils.generateAccessToken(anyString(), anyLong(), anyList())).thenReturn(AuthTestFixtures.TEST_ACCESS_TOKEN);
-    when(jwtUtils.generateRefreshToken(anyString(), anyLong(), anyList())).thenReturn(AuthTestFixtures.TEST_REFRESH_TOKEN);
-    when(jwtUtils.getExpirationDateFromToken(anyString())).thenReturn(Date.from(AuthTestFixtures.TEST_TOKEN_EXPIRES_AT.atZone(java.time.ZoneId.systemDefault()).toInstant()));
+    doNothing().when(accountSecurityHelper).resetFailedLoginAttempts(testUser);
+    JwtTokenService.JwtTokenData tokenData = new JwtTokenService.JwtTokenData(
+        AuthTestFixtures.TEST_ACCESS_TOKEN,
+        AuthTestFixtures.TEST_REFRESH_TOKEN,
+        AuthTestFixtures.TEST_TOKEN_EXPIRES_AT
+    );
+    when(jwtTokenService.generateTokens(any(User.class))).thenReturn(tokenData);
     when(authMapper.toJwtResponse(any(), anyString(), anyString(), any())).thenReturn(expectedResponse);
     
     // When
@@ -272,8 +287,11 @@ class AuthServiceTest {
     assertThat(result.getAccessToken()).isEqualTo(expectedResponse.getAccessToken());
     assertThat(result.getRefreshToken()).isEqualTo(expectedResponse.getRefreshToken());
     
-    verify(userRepository).findByUsernameAndEnabledTrue(loginDto.getUsernameOrEmail());
+    verify(userAuthenticationHelper).findUserByUsernameOrEmail(loginDto.getUsernameOrEmail());
+    verify(userAuthenticationHelper).validateAccountStatus(testUser);
     verify(passwordEncoder).matches(loginDto.getPassword(), testUser.getPasswordHash());
+    verify(accountSecurityHelper).resetFailedLoginAttempts(testUser);
+    verify(jwtTokenService).generateTokens(any(User.class));
     verify(auditService).logAuthenticationEvent(eq(EventType.LOGIN_SUCCESS), anyString(), anyLong(), anyString(), any(), eq(true));
   }
   
@@ -283,13 +301,18 @@ class AuthServiceTest {
     // Given
     LoginRequestDto loginDto = AuthTestFixtures.createLoginRequestDtoWithEmail();
     JwtResponseDto expectedResponse = AuthTestFixtures.createJwtResponseDto();
+    testUser.setEnabled(true);
     
-    when(userRepository.findByUsernameAndEnabledTrue(loginDto.getUsernameOrEmail())).thenReturn(Optional.empty());
-    when(userRepository.findByEmailAndEnabledTrue(loginDto.getUsernameOrEmail())).thenReturn(Optional.of(testUser));
+    when(userAuthenticationHelper.findUserByUsernameOrEmail(loginDto.getUsernameOrEmail())).thenReturn(Optional.of(testUser));
+    doNothing().when(userAuthenticationHelper).validateAccountStatus(testUser);
     when(passwordEncoder.matches(loginDto.getPassword(), testUser.getPasswordHash())).thenReturn(true);
-    when(jwtUtils.generateAccessToken(anyString(), anyLong(), anyList())).thenReturn(AuthTestFixtures.TEST_ACCESS_TOKEN);
-    when(jwtUtils.generateRefreshToken(anyString(), anyLong(), anyList())).thenReturn(AuthTestFixtures.TEST_REFRESH_TOKEN);
-    when(jwtUtils.getExpirationDateFromToken(anyString())).thenReturn(Date.from(AuthTestFixtures.TEST_TOKEN_EXPIRES_AT.atZone(java.time.ZoneId.systemDefault()).toInstant()));
+    doNothing().when(accountSecurityHelper).resetFailedLoginAttempts(testUser);
+    JwtTokenService.JwtTokenData tokenData = new JwtTokenService.JwtTokenData(
+        AuthTestFixtures.TEST_ACCESS_TOKEN,
+        AuthTestFixtures.TEST_REFRESH_TOKEN,
+        AuthTestFixtures.TEST_TOKEN_EXPIRES_AT
+    );
+    when(jwtTokenService.generateTokens(any(User.class))).thenReturn(tokenData);
     when(authMapper.toJwtResponse(any(), anyString(), anyString(), any())).thenReturn(expectedResponse);
     
     // When
@@ -297,8 +320,9 @@ class AuthServiceTest {
     
     // Then
     assertThat(result).isNotNull();
-    verify(userRepository).findByUsernameAndEnabledTrue(loginDto.getUsernameOrEmail());
-    verify(userRepository).findByEmailAndEnabledTrue(loginDto.getUsernameOrEmail());
+    verify(userAuthenticationHelper).findUserByUsernameOrEmail(loginDto.getUsernameOrEmail());
+    verify(userAuthenticationHelper).validateAccountStatus(testUser);
+    verify(accountSecurityHelper).resetFailedLoginAttempts(testUser);
   }
   
   @Test
@@ -307,16 +331,14 @@ class AuthServiceTest {
     // Given
     LoginRequestDto loginDto = AuthTestFixtures.createLoginRequestDto();
     
-    when(userRepository.findByUsernameAndEnabledTrue(loginDto.getUsernameOrEmail())).thenReturn(Optional.empty());
-    when(userRepository.findByEmailAndEnabledTrue(loginDto.getUsernameOrEmail())).thenReturn(Optional.empty());
+    when(userAuthenticationHelper.findUserByUsernameOrEmail(loginDto.getUsernameOrEmail())).thenReturn(Optional.empty());
     
     // When & Then
     assertThatThrownBy(() -> authService.authenticateUser(loginDto, request))
         .isInstanceOf(AuthenticationException.class)
         .hasMessageContaining("Invalid username/email or password");
     
-    verify(userRepository).findByUsernameAndEnabledTrue(loginDto.getUsernameOrEmail());
-    verify(userRepository).findByEmailAndEnabledTrue(loginDto.getUsernameOrEmail());
+    verify(userAuthenticationHelper).findUserByUsernameOrEmail(loginDto.getUsernameOrEmail());
     verify(passwordEncoder, never()).matches(anyString(), anyString());
   }
   
@@ -325,10 +347,11 @@ class AuthServiceTest {
   void shouldThrowAuthenticationExceptionForInvalidPassword() {
     // Given
     LoginRequestDto loginDto = AuthTestFixtures.createLoginRequestDto();
+    testUser.setEnabled(true);
     
-    when(userRepository.findByUsernameAndEnabledTrue(loginDto.getUsernameOrEmail())).thenReturn(Optional.of(testUser));
+    when(userAuthenticationHelper.findUserByUsernameOrEmail(loginDto.getUsernameOrEmail())).thenReturn(Optional.of(testUser));
     when(passwordEncoder.matches(loginDto.getPassword(), testUser.getPasswordHash())).thenReturn(false);
-    when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
+    doNothing().when(accountSecurityHelper).handleFailedLoginAttempt(any(User.class));
     
     // When & Then
     assertThatThrownBy(() -> authService.authenticateUser(loginDto, request))
@@ -336,7 +359,7 @@ class AuthServiceTest {
         .hasMessageContaining("Invalid username/email or password");
     
     verify(passwordEncoder).matches(loginDto.getPassword(), testUser.getPasswordHash());
-    verify(userRepository).save(any(User.class));
+    verify(accountSecurityHelper).handleFailedLoginAttempt(testUser);
   }
   
   @Test
@@ -345,8 +368,10 @@ class AuthServiceTest {
     // Given
     LoginRequestDto loginDto = AuthTestFixtures.createLoginRequestDto();
     User lockedUser = AuthTestFixtures.createLockedUser();
+    lockedUser.setEnabled(true);
     
-    when(userRepository.findByUsernameAndEnabledTrue(loginDto.getUsernameOrEmail())).thenReturn(Optional.of(lockedUser));
+    when(userAuthenticationHelper.findUserByUsernameOrEmail(loginDto.getUsernameOrEmail())).thenReturn(Optional.of(lockedUser));
+    doThrow(new AccountLockedException("Account is temporarily locked")).when(userAuthenticationHelper).validateAccountStatus(lockedUser);
     
     // When & Then
     assertThatThrownBy(() -> authService.authenticateUser(loginDto, request))
@@ -357,15 +382,38 @@ class AuthServiceTest {
   }
   
   @Test
+  @DisplayName("Should throw AccountDisabledException when account is disabled")
+  void shouldThrowAccountDisabledExceptionWhenAccountIsDisabled() {
+    // Given
+    LoginRequestDto loginDto = AuthTestFixtures.createLoginRequestDto();
+    User disabledUser = UserTestFixtures.createDisabledUser();
+    
+    when(userAuthenticationHelper.findUserByUsernameOrEmail(loginDto.getUsernameOrEmail())).thenReturn(Optional.of(disabledUser));
+    doThrow(new AccountDisabledException("Account is disabled")).when(userAuthenticationHelper).validateAccountStatus(disabledUser);
+    
+    // When & Then
+    assertThatThrownBy(() -> authService.authenticateUser(loginDto, request))
+        .isInstanceOf(AccountDisabledException.class)
+        .hasMessageContaining("Account is disabled");
+    
+    verify(passwordEncoder, never()).matches(anyString(), anyString());
+  }
+  
+  @Test
   @DisplayName("Should increment failed login attempts on wrong password")
   void shouldIncrementFailedLoginAttemptsOnWrongPassword() {
     // Given
     LoginRequestDto loginDto = AuthTestFixtures.createLoginRequestDto();
     User user = AuthTestFixtures.createUserWithFailedAttempts(2);
+    user.setEnabled(true);
     
-    when(userRepository.findByUsernameAndEnabledTrue(loginDto.getUsernameOrEmail())).thenReturn(Optional.of(user));
+    when(userAuthenticationHelper.findUserByUsernameOrEmail(loginDto.getUsernameOrEmail())).thenReturn(Optional.of(user));
     when(passwordEncoder.matches(loginDto.getPassword(), user.getPasswordHash())).thenReturn(false);
-    when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
+    doAnswer(invocation -> {
+      User u = invocation.getArgument(0);
+      u.incrementFailedLoginAttempts();
+      return null;
+    }).when(accountSecurityHelper).handleFailedLoginAttempt(any(User.class));
     
     // When
     try {
@@ -375,9 +423,7 @@ class AuthServiceTest {
     }
     
     // Then
-    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-    verify(userRepository).save(userCaptor.capture());
-    assertThat(userCaptor.getValue().getFailedLoginAttempts()).isEqualTo(3);
+    verify(accountSecurityHelper).handleFailedLoginAttempt(user);
   }
   
   @Test
@@ -386,10 +432,18 @@ class AuthServiceTest {
     // Given
     LoginRequestDto loginDto = AuthTestFixtures.createLoginRequestDto();
     User user = AuthTestFixtures.createUserNearLockout(5);
+    user.setEnabled(true);
     
-    when(userRepository.findByUsernameAndEnabledTrue(loginDto.getUsernameOrEmail())).thenReturn(Optional.of(user));
+    when(userAuthenticationHelper.findUserByUsernameOrEmail(loginDto.getUsernameOrEmail())).thenReturn(Optional.of(user));
     when(passwordEncoder.matches(loginDto.getPassword(), user.getPasswordHash())).thenReturn(false);
-    when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
+    doAnswer(invocation -> {
+      User u = invocation.getArgument(0);
+      u.incrementFailedLoginAttempts();
+      if (u.getFailedLoginAttempts() >= 5) {
+        u.setAccountLockedUntil(LocalDateTime.now().plusMinutes(15));
+      }
+      return null;
+    }).when(accountSecurityHelper).handleFailedLoginAttempt(any(User.class));
     
     // When
     try {
@@ -399,12 +453,9 @@ class AuthServiceTest {
     }
     
     // Then
-    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-    verify(userRepository).save(userCaptor.capture());
-    User savedUser = userCaptor.getValue();
-    assertThat(savedUser.getFailedLoginAttempts()).isEqualTo(5);
-    assertThat(savedUser.getAccountLockedUntil()).isNotNull();
-    assertThat(savedUser.getAccountLockedUntil()).isAfter(LocalDateTime.now());
+    verify(accountSecurityHelper).handleFailedLoginAttempt(user);
+    assertThat(user.getFailedLoginAttempts()).isEqualTo(5);
+    assertThat(user.getAccountLockedUntil()).isNotNull();
   }
   
   @Test
@@ -413,25 +464,31 @@ class AuthServiceTest {
     // Given
     LoginRequestDto loginDto = AuthTestFixtures.createLoginRequestDto();
     User user = AuthTestFixtures.createUserWithFailedAttempts(3);
+    user.setEnabled(true);
     JwtResponseDto expectedResponse = AuthTestFixtures.createJwtResponseDto();
     
-    when(userRepository.findByUsernameAndEnabledTrue(loginDto.getUsernameOrEmail())).thenReturn(Optional.of(user));
+    when(userAuthenticationHelper.findUserByUsernameOrEmail(loginDto.getUsernameOrEmail())).thenReturn(Optional.of(user));
     when(passwordEncoder.matches(loginDto.getPassword(), user.getPasswordHash())).thenReturn(true);
-    when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
-    when(jwtUtils.generateAccessToken(anyString(), anyLong(), anyList())).thenReturn(AuthTestFixtures.TEST_ACCESS_TOKEN);
-    when(jwtUtils.generateRefreshToken(anyString(), anyLong(), anyList())).thenReturn(AuthTestFixtures.TEST_REFRESH_TOKEN);
-    when(jwtUtils.getExpirationDateFromToken(anyString())).thenReturn(Date.from(AuthTestFixtures.TEST_TOKEN_EXPIRES_AT.atZone(java.time.ZoneId.systemDefault()).toInstant()));
+    doAnswer(invocation -> {
+      User u = invocation.getArgument(0);
+      u.resetFailedLoginAttempts();
+      return null;
+    }).when(accountSecurityHelper).resetFailedLoginAttempts(any(User.class));
+    JwtTokenService.JwtTokenData tokenData = new JwtTokenService.JwtTokenData(
+        AuthTestFixtures.TEST_ACCESS_TOKEN,
+        AuthTestFixtures.TEST_REFRESH_TOKEN,
+        AuthTestFixtures.TEST_TOKEN_EXPIRES_AT
+    );
+    when(jwtTokenService.generateTokens(any(User.class))).thenReturn(tokenData);
     when(authMapper.toJwtResponse(any(), anyString(), anyString(), any())).thenReturn(expectedResponse);
     
     // When
     authService.authenticateUser(loginDto, request);
     
     // Then
-    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-    verify(userRepository).save(userCaptor.capture());
-    User savedUser = userCaptor.getValue();
-    assertThat(savedUser.getFailedLoginAttempts()).isEqualTo(0);
-    assertThat(savedUser.getAccountLockedUntil()).isNull();
+    verify(accountSecurityHelper).resetFailedLoginAttempts(user);
+    assertThat(user.getFailedLoginAttempts()).isEqualTo(0);
+    assertThat(user.getAccountLockedUntil()).isNull();
   }
   
   // ==================== refreshToken() Tests ====================
@@ -444,14 +501,19 @@ class AuthServiceTest {
     User user = UserTestFixtures.createUser();
     JwtResponseDto expectedResponse = AuthTestFixtures.createJwtResponseDto();
     
-    when(jwtUtils.validateJwtToken(refreshToken)).thenReturn(true);
+    when(jwtTokenService.isValidToken(refreshToken)).thenReturn(true);
+    when(jwtTokenService.isTokenExpired(refreshToken)).thenReturn(false);
     when(tokenBlacklistService.isTokenBlacklisted(refreshToken)).thenReturn(false);
-    when(jwtUtils.getUsernameFromJwtToken(refreshToken)).thenReturn(user.getUsername());
+    when(jwtTokenService.getUsernameFromToken(refreshToken)).thenReturn(user.getUsername());
     when(userRepository.findByUsernameAndEnabledTrue(user.getUsername())).thenReturn(Optional.of(user));
-    when(jwtUtils.generateAccessToken(anyString(), anyLong(), anyList())).thenReturn(AuthTestFixtures.TEST_ACCESS_TOKEN);
-    when(jwtUtils.generateRefreshToken(anyString(), anyLong(), anyList())).thenReturn("new_refresh_token");
-    when(jwtUtils.getExpirationDateFromToken(anyString())).thenReturn(Date.from(AuthTestFixtures.TEST_TOKEN_EXPIRES_AT.atZone(java.time.ZoneId.systemDefault()).toInstant()));
-    when(jwtUtils.getExpirationDateFromToken(refreshToken)).thenReturn(Date.from(AuthTestFixtures.TEST_TOKEN_EXPIRES_AT.atZone(java.time.ZoneId.systemDefault()).toInstant()));
+    doNothing().when(userAuthenticationHelper).validateAccountStatus(user);
+    JwtTokenService.JwtTokenData tokenData = new JwtTokenService.JwtTokenData(
+        AuthTestFixtures.TEST_ACCESS_TOKEN,
+        "new_refresh_token",
+        AuthTestFixtures.TEST_TOKEN_EXPIRES_AT
+    );
+    when(jwtTokenService.generateTokens(any(User.class))).thenReturn(tokenData);
+    when(jwtTokenService.getTokenExpirationTime(refreshToken)).thenReturn(AuthTestFixtures.TEST_TOKEN_EXPIRES_AT.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
     when(tokenBlacklistService.blacklistToken(eq(refreshToken), anyLong())).thenReturn(true);
     when(authMapper.toJwtResponse(any(), anyString(), anyString(), any())).thenReturn(expectedResponse);
     
@@ -460,11 +522,14 @@ class AuthServiceTest {
     
     // Then
     assertThat(result).isNotNull();
-    verify(jwtUtils).validateJwtToken(refreshToken);
+    verify(jwtTokenService).isValidToken(refreshToken);
+    verify(jwtTokenService).isTokenExpired(refreshToken);
     verify(tokenBlacklistService).isTokenBlacklisted(refreshToken);
+    verify(jwtTokenService).getUsernameFromToken(refreshToken);
+    verify(userAuthenticationHelper).validateAccountStatus(user);
+    verify(jwtTokenService).generateTokens(any(User.class));
+    verify(jwtTokenService).getTokenExpirationTime(refreshToken);
     verify(tokenBlacklistService).blacklistToken(eq(refreshToken), anyLong());
-    verify(jwtUtils).generateAccessToken(anyString(), anyLong(), anyList());
-    verify(jwtUtils).generateRefreshToken(anyString(), anyLong(), anyList());
   }
   
   @Test
@@ -473,35 +538,59 @@ class AuthServiceTest {
     // Given
     String invalidToken = AuthTestFixtures.TEST_INVALID_TOKEN;
     
-    when(jwtUtils.validateJwtToken(invalidToken)).thenReturn(false);
+    when(jwtTokenService.isValidToken(invalidToken)).thenReturn(false);
     
     // When & Then
     assertThatThrownBy(() -> authService.refreshToken(invalidToken))
         .isInstanceOf(AuthenticationException.class)
         .hasMessageContaining("Invalid refresh token");
     
-    verify(jwtUtils).validateJwtToken(invalidToken);
+    verify(jwtTokenService).isValidToken(invalidToken);
     verify(tokenBlacklistService, never()).isTokenBlacklisted(anyString());
   }
   
   @Test
   @DisplayName("Should throw AuthenticationException for null token")
   void shouldThrowAuthenticationExceptionForNullToken() {
+    // Given
+    when(jwtTokenService.isValidToken(null)).thenReturn(false);
+    
     // When & Then
     assertThatThrownBy(() -> authService.refreshToken(null))
         .isInstanceOf(AuthenticationException.class)
-        .hasMessageContaining("Refresh token is required");
+        .hasMessageContaining("Invalid refresh token");
     
-    verify(jwtUtils, never()).validateJwtToken(anyString());
+    verify(jwtTokenService).isValidToken(null);
   }
   
   @Test
   @DisplayName("Should throw AuthenticationException for empty token")
   void shouldThrowAuthenticationExceptionForEmptyToken() {
+    // Given
+    when(jwtTokenService.isValidToken("")).thenReturn(false);
+    
     // When & Then
     assertThatThrownBy(() -> authService.refreshToken(""))
         .isInstanceOf(AuthenticationException.class)
-        .hasMessageContaining("Refresh token is required");
+        .hasMessageContaining("Invalid refresh token");
+  }
+  
+  @Test
+  @DisplayName("Should throw AuthenticationException for expired token")
+  void shouldThrowAuthenticationExceptionForExpiredToken() {
+    // Given
+    String expiredToken = AuthTestFixtures.TEST_REFRESH_TOKEN;
+    when(jwtTokenService.isValidToken(expiredToken)).thenReturn(true);
+    when(jwtTokenService.isTokenExpired(expiredToken)).thenReturn(true);
+    
+    // When & Then
+    assertThatThrownBy(() -> authService.refreshToken(expiredToken))
+        .isInstanceOf(AuthenticationException.class)
+        .hasMessageContaining("Refresh token has expired");
+    
+    verify(jwtTokenService).isValidToken(expiredToken);
+    verify(jwtTokenService).isTokenExpired(expiredToken);
+    verify(tokenBlacklistService, never()).isTokenBlacklisted(anyString());
   }
   
   @Test
@@ -510,7 +599,8 @@ class AuthServiceTest {
     // Given
     String blacklistedToken = AuthTestFixtures.TEST_BLACKLISTED_TOKEN;
     
-    when(jwtUtils.validateJwtToken(blacklistedToken)).thenReturn(true);
+    when(jwtTokenService.isValidToken(blacklistedToken)).thenReturn(true);
+    when(jwtTokenService.isTokenExpired(blacklistedToken)).thenReturn(false);
     when(tokenBlacklistService.isTokenBlacklisted(blacklistedToken)).thenReturn(true);
     
     // When & Then
@@ -525,9 +615,10 @@ class AuthServiceTest {
     // Given
     String refreshToken = AuthTestFixtures.TEST_REFRESH_TOKEN;
     
-    when(jwtUtils.validateJwtToken(refreshToken)).thenReturn(true);
+    when(jwtTokenService.isValidToken(refreshToken)).thenReturn(true);
+    when(jwtTokenService.isTokenExpired(refreshToken)).thenReturn(false);
     when(tokenBlacklistService.isTokenBlacklisted(refreshToken)).thenReturn(false);
-    when(jwtUtils.getUsernameFromJwtToken(refreshToken)).thenReturn("nonexistent");
+    when(jwtTokenService.getUsernameFromToken(refreshToken)).thenReturn("nonexistent");
     when(userRepository.findByUsernameAndEnabledTrue("nonexistent")).thenReturn(Optional.empty());
     
     // When & Then
@@ -543,10 +634,12 @@ class AuthServiceTest {
     String refreshToken = AuthTestFixtures.TEST_REFRESH_TOKEN;
     User lockedUser = AuthTestFixtures.createLockedUser();
     
-    when(jwtUtils.validateJwtToken(refreshToken)).thenReturn(true);
+    when(jwtTokenService.isValidToken(refreshToken)).thenReturn(true);
+    when(jwtTokenService.isTokenExpired(refreshToken)).thenReturn(false);
     when(tokenBlacklistService.isTokenBlacklisted(refreshToken)).thenReturn(false);
-    when(jwtUtils.getUsernameFromJwtToken(refreshToken)).thenReturn(lockedUser.getUsername());
+    when(jwtTokenService.getUsernameFromToken(refreshToken)).thenReturn(lockedUser.getUsername());
     when(userRepository.findByUsernameAndEnabledTrue(lockedUser.getUsername())).thenReturn(Optional.of(lockedUser));
+    doThrow(new AccountLockedException("Account is temporarily locked")).when(userAuthenticationHelper).validateAccountStatus(lockedUser);
     
     // When & Then
     assertThatThrownBy(() -> authService.refreshToken(refreshToken))
@@ -561,10 +654,12 @@ class AuthServiceTest {
     String refreshToken = AuthTestFixtures.TEST_REFRESH_TOKEN;
     User disabledUser = UserTestFixtures.createDisabledUser();
     
-    when(jwtUtils.validateJwtToken(refreshToken)).thenReturn(true);
+    when(jwtTokenService.isValidToken(refreshToken)).thenReturn(true);
+    when(jwtTokenService.isTokenExpired(refreshToken)).thenReturn(false);
     when(tokenBlacklistService.isTokenBlacklisted(refreshToken)).thenReturn(false);
-    when(jwtUtils.getUsernameFromJwtToken(refreshToken)).thenReturn(disabledUser.getUsername());
+    when(jwtTokenService.getUsernameFromToken(refreshToken)).thenReturn(disabledUser.getUsername());
     when(userRepository.findByUsernameAndEnabledTrue(disabledUser.getUsername())).thenReturn(Optional.of(disabledUser));
+    doThrow(new AccountDisabledException("Account is disabled")).when(userAuthenticationHelper).validateAccountStatus(disabledUser);
     
     // When & Then
     assertThatThrownBy(() -> authService.refreshToken(refreshToken))
@@ -579,14 +674,18 @@ class AuthServiceTest {
     String refreshToken = AuthTestFixtures.TEST_REFRESH_TOKEN;
     User user = UserTestFixtures.createUser();
     
-    when(jwtUtils.validateJwtToken(refreshToken)).thenReturn(true);
+    when(jwtTokenService.isValidToken(refreshToken)).thenReturn(true);
+    when(jwtTokenService.isTokenExpired(refreshToken)).thenReturn(false);
     when(tokenBlacklistService.isTokenBlacklisted(refreshToken)).thenReturn(false);
-    when(jwtUtils.getUsernameFromJwtToken(refreshToken)).thenReturn(user.getUsername());
+    when(jwtTokenService.getUsernameFromToken(refreshToken)).thenReturn(user.getUsername());
     when(userRepository.findByUsernameAndEnabledTrue(user.getUsername())).thenReturn(Optional.of(user));
-    when(jwtUtils.generateAccessToken(anyString(), anyLong(), anyList())).thenReturn(AuthTestFixtures.TEST_ACCESS_TOKEN);
-    when(jwtUtils.generateRefreshToken(anyString(), anyLong(), anyList())).thenReturn("new_refresh_token");
-    when(jwtUtils.getExpirationDateFromToken(anyString())).thenReturn(Date.from(AuthTestFixtures.TEST_TOKEN_EXPIRES_AT.atZone(java.time.ZoneId.systemDefault()).toInstant()));
-    when(jwtUtils.getExpirationDateFromToken(refreshToken)).thenReturn(Date.from(AuthTestFixtures.TEST_TOKEN_EXPIRES_AT.atZone(java.time.ZoneId.systemDefault()).toInstant()));
+    JwtTokenService.JwtTokenData tokenData = new JwtTokenService.JwtTokenData(
+        AuthTestFixtures.TEST_ACCESS_TOKEN,
+        "new_refresh_token",
+        AuthTestFixtures.TEST_TOKEN_EXPIRES_AT
+    );
+    when(jwtTokenService.generateTokens(any(User.class))).thenReturn(tokenData);
+    when(jwtTokenService.getTokenExpirationTime(refreshToken)).thenReturn(AuthTestFixtures.TEST_TOKEN_EXPIRES_AT.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
     when(tokenBlacklistService.blacklistToken(eq(refreshToken), anyLong())).thenReturn(false);
     
     // When & Then
@@ -604,21 +703,19 @@ class AuthServiceTest {
   void shouldSuccessfullyBlacklistTokenFromAuthorizationHeader() {
     // Given
     String accessToken = AuthTestFixtures.TEST_ACCESS_TOKEN;
-    String authHeader = "Bearer " + accessToken;
     
-    when(request.getHeader("Authorization")).thenReturn(authHeader);
-    when(jwtUtils.validateJwtToken(accessToken)).thenReturn(true);
-    Date expirationDate = Date.from(AuthTestFixtures.TEST_TOKEN_EXPIRES_AT.atZone(java.time.ZoneId.systemDefault()).toInstant());
-    when(jwtUtils.getExpirationDateFromToken(accessToken)).thenReturn(expirationDate);
+    when(jwtTokenService.parseJwtFromRequest(request)).thenReturn(accessToken);
+    when(jwtTokenService.isValidToken(accessToken)).thenReturn(true);
+    when(jwtTokenService.getTokenExpirationTime(accessToken)).thenReturn(AuthTestFixtures.TEST_TOKEN_EXPIRES_AT.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
     when(tokenBlacklistService.blacklistToken(eq(accessToken), anyLong())).thenReturn(true);
     
     // When
     authService.logoutUser(request);
     
     // Then
-    verify(request).getHeader("Authorization");
-    verify(jwtUtils).validateJwtToken(accessToken);
-    verify(jwtUtils).getExpirationDateFromToken(accessToken);
+    verify(jwtTokenService).parseJwtFromRequest(request);
+    verify(jwtTokenService).isValidToken(accessToken);
+    verify(jwtTokenService).getTokenExpirationTime(accessToken);
     verify(tokenBlacklistService).blacklistToken(eq(accessToken), anyLong());
   }
   
@@ -626,14 +723,14 @@ class AuthServiceTest {
   @DisplayName("Should handle missing Authorization header gracefully")
   void shouldHandleMissingAuthorizationHeaderGracefully() {
     // Given
-    when(request.getHeader("Authorization")).thenReturn(null);
+    when(jwtTokenService.parseJwtFromRequest(request)).thenReturn(null);
     
     // When
     authService.logoutUser(request);
     
     // Then - should not throw exception
-    verify(request).getHeader("Authorization");
-    verify(jwtUtils, never()).validateJwtToken(anyString());
+    verify(jwtTokenService).parseJwtFromRequest(request);
+    verify(jwtTokenService, never()).isValidToken(anyString());
     verify(tokenBlacklistService, never()).blacklistToken(anyString(), anyLong());
   }
   
@@ -641,14 +738,14 @@ class AuthServiceTest {
   @DisplayName("Should handle invalid Bearer token format gracefully")
   void shouldHandleInvalidBearerTokenFormatGracefully() {
     // Given
-    when(request.getHeader("Authorization")).thenReturn("InvalidFormat token");
+    when(jwtTokenService.parseJwtFromRequest(request)).thenReturn(null);
     
     // When
     authService.logoutUser(request);
     
     // Then - should not throw exception
-    verify(request).getHeader("Authorization");
-    verify(jwtUtils, never()).validateJwtToken(anyString());
+    verify(jwtTokenService).parseJwtFromRequest(request);
+    verify(jwtTokenService, never()).isValidToken(anyString());
     verify(tokenBlacklistService, never()).blacklistToken(anyString(), anyLong());
   }
   
@@ -657,17 +754,16 @@ class AuthServiceTest {
   void shouldHandleJwtExceptionsGracefully() {
     // Given
     String accessToken = AuthTestFixtures.TEST_ACCESS_TOKEN;
-    String authHeader = "Bearer " + accessToken;
     
-    when(request.getHeader("Authorization")).thenReturn(authHeader);
-    when(jwtUtils.validateJwtToken(accessToken)).thenReturn(false);
+    when(jwtTokenService.parseJwtFromRequest(request)).thenReturn(accessToken);
+    when(jwtTokenService.isValidToken(accessToken)).thenReturn(false);
     
     // When
     authService.logoutUser(request);
     
     // Then - should not throw exception
-    verify(request).getHeader("Authorization");
-    verify(jwtUtils).validateJwtToken(accessToken);
+    verify(jwtTokenService).parseJwtFromRequest(request);
+    verify(jwtTokenService).isValidToken(accessToken);
     verify(tokenBlacklistService, never()).blacklistToken(anyString(), anyLong());
   }
   
@@ -676,15 +772,13 @@ class AuthServiceTest {
   void shouldNeverThrowExceptionDuringLogout() {
     // Given
     String accessToken = AuthTestFixtures.TEST_ACCESS_TOKEN;
-    String authHeader = "Bearer " + accessToken;
     
-    when(request.getHeader("Authorization")).thenReturn(authHeader);
-    when(jwtUtils.validateJwtToken(accessToken)).thenThrow(new RuntimeException("JWT error"));
+    when(jwtTokenService.parseJwtFromRequest(request)).thenReturn(accessToken);
+    when(jwtTokenService.isValidToken(accessToken)).thenThrow(new RuntimeException("JWT error"));
     
     // When & Then - should not throw
     authService.logoutUser(request);
     
-    verify(request).getHeader("Authorization");
+    verify(jwtTokenService).parseJwtFromRequest(request);
   }
 }
-

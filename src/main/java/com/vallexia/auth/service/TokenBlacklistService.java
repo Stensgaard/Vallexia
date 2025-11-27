@@ -13,9 +13,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * Service for managing JWT token blacklisting using Redis.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-30
  */
 @Slf4j
 @Service
@@ -62,8 +62,6 @@ public class TokenBlacklistService {
      * 
      * SECURITY NOTE: This method fails closed (returns true) when Redis is unavailable
      * to prevent blacklisted tokens from being accepted during outages.
-     * This is a security vs availability trade-off. Consider implementing a fallback
-     * mechanism (e.g., database-backed blacklist) for production environments.
      * 
      * @param token JWT token to check
      * @return true if token is blacklisted or if Redis is unavailable, false otherwise
@@ -79,38 +77,7 @@ public class TokenBlacklistService {
                     + "Failing closed (rejecting token) for security. Error: {}", e.getMessage());
             // Fail closed - reject tokens when we can't verify blacklist status
             // This prevents blacklisted tokens from working during Redis outages
-            // TODO: Implement fallback mechanism (e.g., database-backed blacklist)
             return true;
-        }
-    }
-    
-    /**
-     * Remove a token from the blacklist (for testing purposes).
-     * Package-private to restrict access to tests only.
-     * 
-     * @param token JWT token to remove from blacklist
-     */
-    void removeFromBlacklist(String token) {
-        try {
-            String hashedToken = hashToken(token);
-            String key = BLACKLIST_PREFIX + hashedToken;
-            redisTemplate.delete(key);
-            log.info("Token removed from blacklist");
-        } catch (Exception e) {
-            log.error("Error removing token from blacklist: {}", e.getMessage());
-        }
-    }
-    
-    /**
-     * Clear all blacklisted tokens (for testing purposes).
-     * Package-private to restrict access to tests only.
-     */
-    void clearBlacklist() {
-        try {
-            redisTemplate.delete(redisTemplate.keys(BLACKLIST_PREFIX + "*"));
-            log.info("All blacklisted tokens cleared");
-        } catch (Exception e) {
-            log.error("Error clearing blacklist: {}", e.getMessage());
         }
     }
     
