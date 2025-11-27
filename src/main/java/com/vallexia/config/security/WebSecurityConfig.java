@@ -6,8 +6,9 @@ import com.vallexia.config.web.CorsConfig;
 import com.vallexia.exception.ErrorResponseMapper;
 import com.vallexia.security.AuthEntryPointJwt;
 import com.vallexia.security.AuthTokenFilter;
-import com.vallexia.security.JwtUtils;
 import com.vallexia.security.RateLimitingFilter;
+import com.vallexia.security.util.JwtUtils;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
