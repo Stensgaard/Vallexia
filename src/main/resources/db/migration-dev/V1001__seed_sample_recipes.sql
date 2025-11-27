@@ -431,7 +431,7 @@ BEGIN
             '7. Drop rounded tablespoons of dough onto prepared baking sheets, spacing 2 inches apart. ' ||
             '8. Bake for 9-11 minutes until edges are golden but centers are still soft. ' ||
             '9. Cool on baking sheet for 5 minutes before transferring to wire rack.',
-            15, 11, 26, 24, 'EASY', 'DESSERT', 'AMERICAN', true, 'en'
+            15, 11, 26, 24, 'EASY', 'SNACK', 'AMERICAN', true, 'en'
         ) RETURNING id INTO v_recipe_id;
     END IF;
 

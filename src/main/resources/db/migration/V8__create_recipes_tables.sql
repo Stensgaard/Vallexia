@@ -35,7 +35,7 @@ CREATE TABLE recipes (
     CONSTRAINT chk_total_time CHECK (total_time_minutes IS NULL OR total_time_minutes >= 0),
     CONSTRAINT chk_servings CHECK (servings >= 1),
     CONSTRAINT chk_difficulty_level CHECK (difficulty_level IS NULL OR difficulty_level IN ('EASY', 'MEDIUM', 'HARD', 'EXPERT')),
-    CONSTRAINT chk_category CHECK (category IN ('BREAKFAST', 'LUNCH', 'DINNER', 'SNACK', 'DESSERT', 'APPETIZER', 'BEVERAGE')),
+    CONSTRAINT chk_category CHECK (category IN ('BREAKFAST', 'LUNCH', 'DINNER', 'SNACK')),
     CONSTRAINT chk_cuisine_type CHECK (cuisine_type IS NULL OR cuisine_type IN (
         'AMERICAN', 'ITALIAN', 'MEXICAN', 'CHINESE', 'JAPANESE', 'THAI', 'INDIAN',
         'FRENCH', 'MEDITERRANEAN', 'GREEK', 'SPANISH', 'GERMAN', 'BRITISH',
