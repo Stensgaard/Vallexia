@@ -9,9 +9,9 @@ import java.util.Optional;
 /**
  * Repository for IngredientNutrition entity.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 @Repository
 public interface IngredientNutritionRepository extends JpaRepository<IngredientNutrition, Long> {
@@ -23,12 +23,4 @@ public interface IngredientNutritionRepository extends JpaRepository<IngredientN
      * @return optional ingredient nutrition
      */
     Optional<IngredientNutrition> findByIngredientId(Long ingredientId);
-    
-    /**
-     * Check if nutritional information exists for an ingredient.
-     * 
-     * @param ingredientId the ingredient ID
-     * @return true if nutrition data exists
-     */
-    boolean existsByIngredientId(Long ingredientId);
 }
