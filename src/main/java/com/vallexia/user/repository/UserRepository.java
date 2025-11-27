@@ -47,4 +47,23 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return Optional containing the enabled user if found
      */
     Optional<User> findByEmailAndEnabledTrue(String email);
+    
+    /**
+     * Find user by username (regardless of enabled status).
+     * Username is immutable and preferred for account status checks.
+     * 
+     * @param username the username to search for
+     * @return Optional containing the user if found
+     */
+    Optional<User> findByUsername(String username);
+    
+    /**
+     * Find user by email (regardless of enabled status).
+     * Note: Email can be changed by users, so username lookup is preferred when possible.
+     * This method is needed to support login with email address.
+     * 
+     * @param email the email to search for
+     * @return Optional containing the user if found
+     */
+    Optional<User> findByEmail(String email);
 }
