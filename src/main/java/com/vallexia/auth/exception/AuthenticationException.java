@@ -6,9 +6,9 @@ import com.vallexia.exception.VallexiaException;
 /**
  * Custom exception for authentication errors.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-30
  */
 public class AuthenticationException extends VallexiaException {
   
@@ -43,4 +43,3 @@ public class AuthenticationException extends VallexiaException {
     super(errorCode, message);
   }
 }
-
