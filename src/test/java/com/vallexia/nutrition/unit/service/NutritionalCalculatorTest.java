@@ -1,7 +1,7 @@
 package com.vallexia.nutrition.unit.service;
 
 import com.vallexia.nutrition.exception.InvalidNutritionalDataException;
-import com.vallexia.nutrition.service.NutritionalCalculator;
+import com.vallexia.nutrition.service.MacroCalculator;
 import com.vallexia.user.entity.NutritionalGoals;
 import com.vallexia.user.entity.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,24 +12,26 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 
+import static com.vallexia.nutrition.util.NutritionalConstants.DECIMAL_SCALE;
+import static com.vallexia.nutrition.util.NutritionalConstants.ROUNDING_MODE;
 import static org.assertj.core.api.Assertions.*;
 
 /**
- * Unit tests for NutritionalCalculator service.
+ * Unit tests for MacroCalculator service.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-29
  */
 @ExtendWith(MockitoExtension.class)
-@DisplayName("NutritionalCalculator Unit Tests")
-class NutritionalCalculatorTest {
+@DisplayName("MacroCalculator Unit Tests")
+class MacroCalculatorTest {
   
-  private NutritionalCalculator nutritionalCalculator;
+  private MacroCalculator macroCalculator;
   
   @BeforeEach
   void setUp() {
-    nutritionalCalculator = new NutritionalCalculator();
+    macroCalculator = new MacroCalculator();
   }
   
   // ==================== calculateMacroPercentages() Tests ====================
@@ -46,7 +48,7 @@ class NutritionalCalculatorTest {
     goals.setDailyFats(BigDecimal.valueOf(67));     // 603 cal, 30.15%
     
     // When
-    nutritionalCalculator.calculateMacroPercentages(goals);
+    macroCalculator.calculateMacroPercentages(goals);
     
     // Then
     // Using compareTo for BigDecimal comparison to handle scale differences
@@ -59,7 +61,7 @@ class NutritionalCalculatorTest {
   @DisplayName("Should throw InvalidNutritionalDataException when goals is null")
   void shouldThrowExceptionWhenGoalsIsNull() {
     // When & Then
-    assertThatThrownBy(() -> nutritionalCalculator.calculateMacroPercentages(null))
+    assertThatThrownBy(() -> macroCalculator.calculateMacroPercentages(null))
       .isInstanceOf(InvalidNutritionalDataException.class)
       .hasMessage("Nutritional goals cannot be null");
   }
@@ -74,7 +76,7 @@ class NutritionalCalculatorTest {
     goals.setDailyProtein(BigDecimal.valueOf(150));
     
     // When & Then
-    assertThatThrownBy(() -> nutritionalCalculator.calculateMacroPercentages(goals))
+    assertThatThrownBy(() -> macroCalculator.calculateMacroPercentages(goals))
       .isInstanceOf(InvalidNutritionalDataException.class)
       .hasMessageContaining("Daily calories cannot be null");
   }
@@ -89,7 +91,7 @@ class NutritionalCalculatorTest {
     goals.setDailyProtein(BigDecimal.valueOf(150));
     
     // When & Then
-    assertThatThrownBy(() -> nutritionalCalculator.calculateMacroPercentages(goals))
+    assertThatThrownBy(() -> macroCalculator.calculateMacroPercentages(goals))
       .isInstanceOf(InvalidNutritionalDataException.class)
       .hasMessageContaining("Daily calories must be positive");
   }
@@ -104,7 +106,7 @@ class NutritionalCalculatorTest {
     goals.setDailyProtein(BigDecimal.valueOf(150));
     
     // When & Then
-    assertThatThrownBy(() -> nutritionalCalculator.calculateMacroPercentages(goals))
+    assertThatThrownBy(() -> macroCalculator.calculateMacroPercentages(goals))
       .isInstanceOf(InvalidNutritionalDataException.class)
       .hasMessageContaining("Daily calories must be positive");
   }
@@ -119,7 +121,7 @@ class NutritionalCalculatorTest {
     goals.setDailyProtein(BigDecimal.valueOf(50));
     
     // When & Then
-    assertThatThrownBy(() -> nutritionalCalculator.calculateMacroPercentages(goals))
+    assertThatThrownBy(() -> macroCalculator.calculateMacroPercentages(goals))
       .isInstanceOf(InvalidNutritionalDataException.class)
       .hasMessageContaining("too low");
   }
@@ -134,7 +136,7 @@ class NutritionalCalculatorTest {
     goals.setDailyProtein(BigDecimal.valueOf(150));
     
     // When & Then
-    assertThatThrownBy(() -> nutritionalCalculator.calculateMacroPercentages(goals))
+    assertThatThrownBy(() -> macroCalculator.calculateMacroPercentages(goals))
       .isInstanceOf(InvalidNutritionalDataException.class)
       .hasMessageContaining("exceeds maximum");
   }
@@ -149,7 +151,7 @@ class NutritionalCalculatorTest {
     goals.setDailyProtein(BigDecimal.valueOf(-10));
     
     // When & Then
-    assertThatThrownBy(() -> nutritionalCalculator.calculateMacroPercentages(goals))
+    assertThatThrownBy(() -> macroCalculator.calculateMacroPercentages(goals))
       .isInstanceOf(InvalidNutritionalDataException.class)
       .hasMessageContaining("Protein cannot be negative");
   }
@@ -164,7 +166,7 @@ class NutritionalCalculatorTest {
     goals.setDailyProtein(BigDecimal.valueOf(1500)); // Above maximum of 1000
     
     // When & Then
-    assertThatThrownBy(() -> nutritionalCalculator.calculateMacroPercentages(goals))
+    assertThatThrownBy(() -> macroCalculator.calculateMacroPercentages(goals))
       .isInstanceOf(InvalidNutritionalDataException.class)
       .hasMessageContaining("Protein")
       .hasMessageContaining("exceeds maximum");
@@ -180,7 +182,7 @@ class NutritionalCalculatorTest {
     goals.setDailyCarbs(BigDecimal.valueOf(-10));
     
     // When & Then
-    assertThatThrownBy(() -> nutritionalCalculator.calculateMacroPercentages(goals))
+    assertThatThrownBy(() -> macroCalculator.calculateMacroPercentages(goals))
       .isInstanceOf(InvalidNutritionalDataException.class)
       .hasMessageContaining("Carbohydrates cannot be negative");
   }
@@ -195,7 +197,7 @@ class NutritionalCalculatorTest {
     goals.setDailyCarbs(BigDecimal.valueOf(2000)); // Above maximum of 1500
     
     // When & Then
-    assertThatThrownBy(() -> nutritionalCalculator.calculateMacroPercentages(goals))
+    assertThatThrownBy(() -> macroCalculator.calculateMacroPercentages(goals))
       .isInstanceOf(InvalidNutritionalDataException.class)
       .hasMessageContaining("Carbohydrates")
       .hasMessageContaining("exceeds maximum");
@@ -211,7 +213,7 @@ class NutritionalCalculatorTest {
     goals.setDailyFats(BigDecimal.valueOf(-10));
     
     // When & Then
-    assertThatThrownBy(() -> nutritionalCalculator.calculateMacroPercentages(goals))
+    assertThatThrownBy(() -> macroCalculator.calculateMacroPercentages(goals))
       .isInstanceOf(InvalidNutritionalDataException.class)
       .hasMessageContaining("Fats cannot be negative");
   }
@@ -226,7 +228,7 @@ class NutritionalCalculatorTest {
     goals.setDailyFats(BigDecimal.valueOf(600)); // Above maximum of 500
     
     // When & Then
-    assertThatThrownBy(() -> nutritionalCalculator.calculateMacroPercentages(goals))
+    assertThatThrownBy(() -> macroCalculator.calculateMacroPercentages(goals))
       .isInstanceOf(InvalidNutritionalDataException.class)
       .hasMessageContaining("Fats")
       .hasMessageContaining("exceeds maximum");
@@ -244,7 +246,7 @@ class NutritionalCalculatorTest {
     goals.setDailyFats(BigDecimal.valueOf(67));
     
     // When
-    nutritionalCalculator.calculateMacroPercentages(goals);
+    macroCalculator.calculateMacroPercentages(goals);
     
     // Then
     assertThat(goals.getProteinPercentage()).isNull();
@@ -264,7 +266,7 @@ class NutritionalCalculatorTest {
     goals.setDailyFats(BigDecimal.valueOf(67));
     
     // When
-    nutritionalCalculator.calculateMacroPercentages(goals);
+    macroCalculator.calculateMacroPercentages(goals);
     
     // Then
     assertThat(goals.getProteinPercentage()).isNotNull();
@@ -284,7 +286,7 @@ class NutritionalCalculatorTest {
     goals.setDailyFats(null);
     
     // When
-    nutritionalCalculator.calculateMacroPercentages(goals);
+    macroCalculator.calculateMacroPercentages(goals);
     
     // Then
     assertThat(goals.getProteinPercentage()).isNotNull();
@@ -304,7 +306,7 @@ class NutritionalCalculatorTest {
     goals.setDailyFats(BigDecimal.valueOf(10));
     
     // When
-    nutritionalCalculator.calculateMacroPercentages(goals);
+    macroCalculator.calculateMacroPercentages(goals);
     
     // Then
     assertThat(goals.getProteinPercentage()).isNotNull();
@@ -329,7 +331,7 @@ class NutritionalCalculatorTest {
     goals.setDailyFats(null);
     
     // When
-    nutritionalCalculator.calculateMacroPercentages(goals);
+    macroCalculator.calculateMacroPercentages(goals);
     
     // Then
     assertThat(goals.getProteinPercentage()).isNull();
@@ -353,7 +355,7 @@ class NutritionalCalculatorTest {
     // Total: 40 + 60 + 45 = 145% (exceeds 100%)
     
     // When
-    nutritionalCalculator.calculateMacroPercentages(goals);
+    macroCalculator.calculateMacroPercentages(goals);
     
     // Then
     assertThat(goals.getProteinPercentage()).isNotNull();
@@ -381,7 +383,7 @@ class NutritionalCalculatorTest {
     goals.setDailyFats(BigDecimal.valueOf(67));     // 603 cal ≈ 30.15%
     
     // When
-    nutritionalCalculator.calculateMacroPercentages(goals);
+    macroCalculator.calculateMacroPercentages(goals);
     
     // Then
     assertThat(goals.getProteinPercentage()).isNotNull();
@@ -414,7 +416,7 @@ class NutritionalCalculatorTest {
     goals.setDailyFats(BigDecimal.valueOf(30));     // 270 cal = 13.5%
     
     // When
-    nutritionalCalculator.calculateMacroPercentages(goals);
+    macroCalculator.calculateMacroPercentages(goals);
     
     // Then
     assertThat(goals.getProteinPercentage()).isNotNull();
@@ -439,10 +441,10 @@ class NutritionalCalculatorTest {
     BigDecimal fats = BigDecimal.valueOf(67);     // 603 cal
     
     // When
-    BigDecimal result = nutritionalCalculator.calculateCaloriesFromMacros(protein, carbs, fats);
+    BigDecimal result = macroCalculator.calculateCaloriesFromMacros(protein, carbs, fats);
     
     // Then
-    assertThat(result).isEqualTo(BigDecimal.valueOf(2003));
+    assertThat(result).isEqualTo(BigDecimal.valueOf(2003).setScale(DECIMAL_SCALE, ROUNDING_MODE));
   }
   
   @Test
@@ -453,10 +455,10 @@ class NutritionalCalculatorTest {
     BigDecimal fats = BigDecimal.valueOf(67);
     
     // When
-    BigDecimal result = nutritionalCalculator.calculateCaloriesFromMacros(null, carbs, fats);
+    BigDecimal result = macroCalculator.calculateCaloriesFromMacros(null, carbs, fats);
     
     // Then
-    assertThat(result).isEqualTo(BigDecimal.valueOf(1403)); // 800 + 603
+    assertThat(result).isEqualTo(BigDecimal.valueOf(1403).setScale(DECIMAL_SCALE, ROUNDING_MODE)); // 800 + 603
   }
   
   @Test
@@ -467,10 +469,10 @@ class NutritionalCalculatorTest {
     BigDecimal fats = BigDecimal.valueOf(67);
     
     // When
-    BigDecimal result = nutritionalCalculator.calculateCaloriesFromMacros(protein, null, fats);
+    BigDecimal result = macroCalculator.calculateCaloriesFromMacros(protein, null, fats);
     
     // Then
-    assertThat(result).isEqualTo(BigDecimal.valueOf(1203)); // 600 + 603
+    assertThat(result).isEqualTo(BigDecimal.valueOf(1203).setScale(DECIMAL_SCALE, ROUNDING_MODE)); // 600 + 603
   }
   
   @Test
@@ -481,20 +483,20 @@ class NutritionalCalculatorTest {
     BigDecimal carbs = BigDecimal.valueOf(200);
     
     // When
-    BigDecimal result = nutritionalCalculator.calculateCaloriesFromMacros(protein, carbs, null);
+    BigDecimal result = macroCalculator.calculateCaloriesFromMacros(protein, carbs, null);
     
     // Then
-    assertThat(result).isEqualTo(BigDecimal.valueOf(1400)); // 600 + 800
+    assertThat(result).isEqualTo(BigDecimal.valueOf(1400).setScale(DECIMAL_SCALE, ROUNDING_MODE)); // 600 + 800
   }
   
   @Test
   @DisplayName("Should return zero when all macros are null")
   void shouldReturnZeroWhenAllMacrosAreNull() {
     // When
-    BigDecimal result = nutritionalCalculator.calculateCaloriesFromMacros(null, null, null);
+    BigDecimal result = macroCalculator.calculateCaloriesFromMacros(null, null, null);
     
     // Then
-    assertThat(result).isEqualTo(BigDecimal.ZERO);
+    assertThat(result).isEqualTo(BigDecimal.ZERO.setScale(DECIMAL_SCALE, ROUNDING_MODE));
   }
   
   @Test
@@ -504,7 +506,7 @@ class NutritionalCalculatorTest {
     BigDecimal protein = BigDecimal.valueOf(-10);
     
     // When & Then
-    assertThatThrownBy(() -> nutritionalCalculator.calculateCaloriesFromMacros(protein, null, null))
+    assertThatThrownBy(() -> macroCalculator.calculateCaloriesFromMacros(protein, null, null))
       .isInstanceOf(InvalidNutritionalDataException.class)
       .hasMessageContaining("Protein cannot be negative");
   }
@@ -516,7 +518,7 @@ class NutritionalCalculatorTest {
     BigDecimal carbs = BigDecimal.valueOf(-10);
     
     // When & Then
-    assertThatThrownBy(() -> nutritionalCalculator.calculateCaloriesFromMacros(null, carbs, null))
+    assertThatThrownBy(() -> macroCalculator.calculateCaloriesFromMacros(null, carbs, null))
       .isInstanceOf(InvalidNutritionalDataException.class)
       .hasMessageContaining("Carbohydrates cannot be negative");
   }
@@ -528,7 +530,7 @@ class NutritionalCalculatorTest {
     BigDecimal fats = BigDecimal.valueOf(-10);
     
     // When & Then
-    assertThatThrownBy(() -> nutritionalCalculator.calculateCaloriesFromMacros(null, null, fats))
+    assertThatThrownBy(() -> macroCalculator.calculateCaloriesFromMacros(null, null, fats))
       .isInstanceOf(InvalidNutritionalDataException.class)
       .hasMessageContaining("Fats cannot be negative");
   }
@@ -542,7 +544,7 @@ class NutritionalCalculatorTest {
     BigDecimal protein = BigDecimal.valueOf(150);
     
     // When
-    BigDecimal result = nutritionalCalculator.calculateProteinCalories(protein);
+    BigDecimal result = macroCalculator.calculateProteinCalories(protein);
     
     // Then
     assertThat(result).isEqualTo(BigDecimal.valueOf(600)); // 150 * 4
@@ -552,7 +554,7 @@ class NutritionalCalculatorTest {
   @DisplayName("Should return zero for null protein")
   void shouldReturnZeroForNullProtein() {
     // When
-    BigDecimal result = nutritionalCalculator.calculateProteinCalories(null);
+    BigDecimal result = macroCalculator.calculateProteinCalories(null);
     
     // Then
     assertThat(result).isEqualTo(BigDecimal.ZERO);
@@ -565,7 +567,7 @@ class NutritionalCalculatorTest {
     BigDecimal protein = BigDecimal.valueOf(-10);
     
     // When & Then
-    assertThatThrownBy(() -> nutritionalCalculator.calculateProteinCalories(protein))
+    assertThatThrownBy(() -> macroCalculator.calculateProteinCalories(protein))
       .isInstanceOf(InvalidNutritionalDataException.class)
       .hasMessageContaining("Protein cannot be negative");
   }
@@ -579,7 +581,7 @@ class NutritionalCalculatorTest {
     BigDecimal carbs = BigDecimal.valueOf(200);
     
     // When
-    BigDecimal result = nutritionalCalculator.calculateCarbCalories(carbs);
+    BigDecimal result = macroCalculator.calculateCarbCalories(carbs);
     
     // Then
     assertThat(result).isEqualTo(BigDecimal.valueOf(800)); // 200 * 4
@@ -589,7 +591,7 @@ class NutritionalCalculatorTest {
   @DisplayName("Should return zero for null carbs")
   void shouldReturnZeroForNullCarbs() {
     // When
-    BigDecimal result = nutritionalCalculator.calculateCarbCalories(null);
+    BigDecimal result = macroCalculator.calculateCarbCalories(null);
     
     // Then
     assertThat(result).isEqualTo(BigDecimal.ZERO);
@@ -602,7 +604,7 @@ class NutritionalCalculatorTest {
     BigDecimal carbs = BigDecimal.valueOf(-10);
     
     // When & Then
-    assertThatThrownBy(() -> nutritionalCalculator.calculateCarbCalories(carbs))
+    assertThatThrownBy(() -> macroCalculator.calculateCarbCalories(carbs))
       .isInstanceOf(InvalidNutritionalDataException.class)
       .hasMessageContaining("Carbohydrates cannot be negative");
   }
@@ -616,7 +618,7 @@ class NutritionalCalculatorTest {
     BigDecimal fats = BigDecimal.valueOf(67);
     
     // When
-    BigDecimal result = nutritionalCalculator.calculateFatCalories(fats);
+    BigDecimal result = macroCalculator.calculateFatCalories(fats);
     
     // Then
     assertThat(result).isEqualTo(BigDecimal.valueOf(603)); // 67 * 9
@@ -626,7 +628,7 @@ class NutritionalCalculatorTest {
   @DisplayName("Should return zero for null fats")
   void shouldReturnZeroForNullFats() {
     // When
-    BigDecimal result = nutritionalCalculator.calculateFatCalories(null);
+    BigDecimal result = macroCalculator.calculateFatCalories(null);
     
     // Then
     assertThat(result).isEqualTo(BigDecimal.ZERO);
@@ -639,9 +641,8 @@ class NutritionalCalculatorTest {
     BigDecimal fats = BigDecimal.valueOf(-10);
     
     // When & Then
-    assertThatThrownBy(() -> nutritionalCalculator.calculateFatCalories(fats))
+    assertThatThrownBy(() -> macroCalculator.calculateFatCalories(fats))
       .isInstanceOf(InvalidNutritionalDataException.class)
       .hasMessageContaining("Fats cannot be negative");
   }
 }
-

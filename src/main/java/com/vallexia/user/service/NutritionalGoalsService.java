@@ -9,7 +9,8 @@ import com.vallexia.user.entity.enums.GoalType;
 import com.vallexia.user.mapper.NutritionalGoalsMapper;
 import com.vallexia.user.repository.NutritionalGoalsRepository;
 import com.vallexia.user.repository.UserRepository;
-import com.vallexia.nutrition.service.NutritionalCalculator;
+import com.vallexia.nutrition.service.MacroCalculator;
+import com.vallexia.nutrition.validator.NutritionalDataValidator;
 import com.vallexia.user.exception.UserNotFoundException;
 import com.vallexia.exception.ValidationException;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +47,7 @@ public class NutritionalGoalsService {
     private final NutritionalGoalsRepository nutritionalGoalsRepository;
     private final UserRepository userRepository;
     private final NutritionalGoalsMapper nutritionalGoalsMapper;
-    private final NutritionalCalculator nutritionalCalculator;
+    private final MacroCalculator macroCalculator;
     private final AuditService auditService;
     
     /**
@@ -55,18 +56,18 @@ public class NutritionalGoalsService {
      * @param nutritionalGoalsRepository the nutritional goals repository
      * @param userRepository the user repository
      * @param nutritionalGoalsMapper the nutritional goals mapper
-     * @param nutritionalCalculator the nutritional calculator
+     * @param macroCalculator the macro calculator
      * @param auditService the audit service
      */
     public NutritionalGoalsService(NutritionalGoalsRepository nutritionalGoalsRepository,
                                   UserRepository userRepository,
                                   NutritionalGoalsMapper nutritionalGoalsMapper,
-                                  NutritionalCalculator nutritionalCalculator,
+                                  MacroCalculator macroCalculator,
                                   AuditService auditService) {
         this.nutritionalGoalsRepository = nutritionalGoalsRepository;
         this.userRepository = userRepository;
         this.nutritionalGoalsMapper = nutritionalGoalsMapper;
-        this.nutritionalCalculator = nutritionalCalculator;
+        this.macroCalculator = macroCalculator;
         this.auditService = auditService;
     }
     
@@ -92,7 +93,12 @@ public class NutritionalGoalsService {
                     return newGoals;
                 });
         
-        return nutritionalGoalsMapper.toNutritionalGoalsDto(goals);
+        NutritionalGoalsDto dto = nutritionalGoalsMapper.toNutritionalGoalsDto(goals);
+        
+        // Calculate macro calories using MacroCalculator
+        calculateAndSetMacroCalories(dto, goals);
+        
+        return dto;
     }
     
     /**
@@ -102,6 +108,7 @@ public class NutritionalGoalsService {
      * @param nutritionalGoalsDto updated goals data
      * @return updated NutritionalGoalsDto
      * @throws UserNotFoundException if user not found
+     * @throws com.vallexia.nutrition.exception.InvalidNutritionalDataException if nutritional data is invalid or out of range
      * @throws ValidationException if macro percentages don't add up to ~100%
      */
     public NutritionalGoalsDto updateNutritionalGoals(Long userId, NutritionalGoalsDto nutritionalGoalsDto) {
@@ -120,7 +127,21 @@ public class NutritionalGoalsService {
                     return newGoals;
                 });
         
-        // Update goals
+        // Create temporary goals object for validation before setting values on actual entity
+        NutritionalGoals tempGoals = new NutritionalGoals();
+        tempGoals.setUser(user);
+        tempGoals.setDailyCalories(nutritionalGoalsDto.getDailyCalories());
+        tempGoals.setDailyProtein(nutritionalGoalsDto.getDailyProtein());
+        tempGoals.setDailyCarbs(nutritionalGoalsDto.getDailyCarbs());
+        tempGoals.setDailyFats(nutritionalGoalsDto.getDailyFats());
+        tempGoals.setDailyFiber(nutritionalGoalsDto.getDailyFiber());
+        tempGoals.setDailySodium(nutritionalGoalsDto.getDailySodium());
+        tempGoals.setDailySugar(nutritionalGoalsDto.getDailySugar());
+        
+        // Validate nutritional data before setting values on actual entity
+        NutritionalDataValidator.validateNutritionalGoals(tempGoals);
+        
+        // Update goals (validation passed)
         goals.setDailyCalories(nutritionalGoalsDto.getDailyCalories());
         goals.setDailyProtein(nutritionalGoalsDto.getDailyProtein());
         goals.setDailyCarbs(nutritionalGoalsDto.getDailyCarbs());
@@ -135,8 +156,8 @@ public class NutritionalGoalsService {
         }
         
         try {
-            // Calculate percentages using NutritionalCalculator
-            nutritionalCalculator.calculateMacroPercentages(goals);
+            // Calculate percentages using MacroCalculator
+            macroCalculator.calculateMacroPercentages(goals);
             
             // Validate macro percentages add up to approximately 100%
             validateMacroPercentages(goals);
@@ -156,7 +177,12 @@ public class NutritionalGoalsService {
         
         log.info("Nutritional goals updated successfully for user ID: {}", userId);
         
-        return nutritionalGoalsMapper.toNutritionalGoalsDto(updatedGoals);
+        NutritionalGoalsDto dto = nutritionalGoalsMapper.toNutritionalGoalsDto(updatedGoals);
+        
+        // Calculate macro calories using MacroCalculator
+        calculateAndSetMacroCalories(dto, updatedGoals);
+        
+        return dto;
     }
     
     /**
@@ -241,5 +267,18 @@ public class NutritionalGoalsService {
                 );
             }
         }
+    }
+    
+    /**
+     * Calculate macro calories and set them in the DTO.
+     * Uses MacroCalculator to ensure consistency with backend calculations.
+     * 
+     * @param dto the DTO to set macro calories on
+     * @param goals the entity containing macro values in grams
+     */
+    private void calculateAndSetMacroCalories(NutritionalGoalsDto dto, NutritionalGoals goals) {
+        dto.setProteinCalories(macroCalculator.calculateProteinCalories(goals.getDailyProtein()));
+        dto.setCarbCalories(macroCalculator.calculateCarbCalories(goals.getDailyCarbs()));
+        dto.setFatCalories(macroCalculator.calculateFatCalories(goals.getDailyFats()));
     }
 }

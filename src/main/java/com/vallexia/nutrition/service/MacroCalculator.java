@@ -8,10 +8,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
+
+import static com.vallexia.nutrition.util.NutritionalConstants.*;
 
 /**
- * Service for performing nutritional calculations.
+ * Service for performing macro nutrient calculations.
  * 
  * <p>This service provides methods for calculating:
  * <ul>
@@ -27,26 +28,20 @@ import java.math.RoundingMode;
  *   <li>Fats: 9 calories per gram</li>
  * </ul>
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-29
  */
 @Slf4j
 @Service
-public class NutritionalCalculator {
-  
-  // Nutritional constants based on Atwater system
-  private static final BigDecimal PROTEIN_CALORIES_PER_GRAM = BigDecimal.valueOf(4);
-  private static final BigDecimal CARB_CALORIES_PER_GRAM = BigDecimal.valueOf(4);
-  private static final BigDecimal FAT_CALORIES_PER_GRAM = BigDecimal.valueOf(9);
-  
-  // Rounding mode for all calculations
-  private static final int DECIMAL_SCALE = 2;
-  private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_UP;
+public class MacroCalculator {
   
   // Acceptable percentage sum range for validation warnings
   private static final BigDecimal MIN_PERCENTAGE_SUM = BigDecimal.valueOf(90);
   private static final BigDecimal MAX_PERCENTAGE_SUM = BigDecimal.valueOf(110);
+  
+  // Percentage multiplier for converting decimal to percentage
+  private static final BigDecimal PERCENTAGE_MULTIPLIER = BigDecimal.valueOf(100);
   
   /**
    * Calculate macro percentages for nutritional goals.
@@ -97,47 +92,33 @@ public class NutritionalCalculator {
             "Percentage calculation will result in all percentages being null.");
       }
       
-      // Protein: 4 calories per gram
-      if (goals.getDailyProtein() != null) {
-        BigDecimal proteinPercentage = goals.getDailyProtein()
-          .multiply(PROTEIN_CALORIES_PER_GRAM)
-          .multiply(BigDecimal.valueOf(100))
-          .divide(dailyCalories, DECIMAL_SCALE, ROUNDING_MODE);
-        goals.setProteinPercentage(proteinPercentage);
-        log.debug("Protein percentage: {}%", proteinPercentage);
-      }
+      // Calculate macro percentages
+      calculateMacroPercentage(
+        goals.getDailyProtein(),
+        PROTEIN_CALORIES_PER_GRAM,
+        dailyCalories,
+        goals::setProteinPercentage,
+        "Protein"
+      );
       
-      // Carbs: 4 calories per gram
-      if (goals.getDailyCarbs() != null) {
-        BigDecimal carbsPercentage = goals.getDailyCarbs()
-          .multiply(CARB_CALORIES_PER_GRAM)
-          .multiply(BigDecimal.valueOf(100))
-          .divide(dailyCalories, DECIMAL_SCALE, ROUNDING_MODE);
-        goals.setCarbsPercentage(carbsPercentage);
-        log.debug("Carbs percentage: {}%", carbsPercentage);
-      }
+      calculateMacroPercentage(
+        goals.getDailyCarbs(),
+        CARB_CALORIES_PER_GRAM,
+        dailyCalories,
+        goals::setCarbsPercentage,
+        "Carbs"
+      );
       
-      // Fats: 9 calories per gram
-      if (goals.getDailyFats() != null) {
-        BigDecimal fatsPercentage = goals.getDailyFats()
-          .multiply(FAT_CALORIES_PER_GRAM)
-          .multiply(BigDecimal.valueOf(100))
-          .divide(dailyCalories, DECIMAL_SCALE, ROUNDING_MODE);
-        goals.setFatsPercentage(fatsPercentage);
-        log.debug("Fats percentage: {}%", fatsPercentage);
-      }
+      calculateMacroPercentage(
+        goals.getDailyFats(),
+        FAT_CALORIES_PER_GRAM,
+        dailyCalories,
+        goals::setFatsPercentage,
+        "Fats"
+      );
       
       // Validate percentage sum and log warning if outside acceptable range
-      BigDecimal percentageSum = BigDecimal.ZERO;
-      if (goals.getProteinPercentage() != null) {
-        percentageSum = percentageSum.add(goals.getProteinPercentage());
-      }
-      if (goals.getCarbsPercentage() != null) {
-        percentageSum = percentageSum.add(goals.getCarbsPercentage());
-      }
-      if (goals.getFatsPercentage() != null) {
-        percentageSum = percentageSum.add(goals.getFatsPercentage());
-      }
+      BigDecimal percentageSum = calculatePercentageSum(goals);
       
       if (percentageSum.compareTo(BigDecimal.ZERO) > 0 
           && (percentageSum.compareTo(MIN_PERCENTAGE_SUM) < 0 
@@ -153,6 +134,51 @@ public class NutritionalCalculator {
         "Failed to calculate macro percentages due to arithmetic error", e
       );
     }
+  }
+  
+  /**
+   * Helper method to calculate macro percentage for a single macronutrient.
+   * 
+   * @param macroGrams the macro value in grams (can be null)
+   * @param caloriesPerGram the calories per gram for this macro
+   * @param dailyCalories the total daily calories
+   * @param setter the setter method to update the percentage on the goals entity
+   * @param macroName the name of the macro for logging purposes
+   */
+  private void calculateMacroPercentage(
+      BigDecimal macroGrams,
+      BigDecimal caloriesPerGram,
+      BigDecimal dailyCalories,
+      java.util.function.Consumer<BigDecimal> setter,
+      String macroName) {
+    if (macroGrams != null) {
+      BigDecimal percentage = macroGrams
+        .multiply(caloriesPerGram)
+        .multiply(PERCENTAGE_MULTIPLIER)
+        .divide(dailyCalories, DECIMAL_SCALE, ROUNDING_MODE);
+      setter.accept(percentage);
+      log.debug("{} percentage: {}%", macroName, percentage);
+    }
+  }
+  
+  /**
+   * Helper method to calculate the sum of all macro percentages.
+   * 
+   * @param goals the nutritional goals containing percentage values
+   * @return the sum of all non-null percentages
+   */
+  private BigDecimal calculatePercentageSum(NutritionalGoals goals) {
+    BigDecimal sum = BigDecimal.ZERO;
+    if (goals.getProteinPercentage() != null) {
+      sum = sum.add(goals.getProteinPercentage());
+    }
+    if (goals.getCarbsPercentage() != null) {
+      sum = sum.add(goals.getCarbsPercentage());
+    }
+    if (goals.getFatsPercentage() != null) {
+      sum = sum.add(goals.getFatsPercentage());
+    }
+    return sum;
   }
     
   /**
@@ -194,7 +220,7 @@ public class NutritionalCalculator {
     
     log.debug("Total calories calculated: {}", totalCalories);
     
-    return totalCalories;
+    return totalCalories.setScale(DECIMAL_SCALE, ROUNDING_MODE);
   }
     
   /**

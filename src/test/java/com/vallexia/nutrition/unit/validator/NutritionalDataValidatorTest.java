@@ -14,9 +14,9 @@ import static org.assertj.core.api.Assertions.*;
 /**
  * Unit tests for NutritionalDataValidator.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-29
  */
 @DisplayName("NutritionalDataValidator Unit Tests")
 class NutritionalDataValidatorTest {
@@ -365,4 +365,3 @@ class NutritionalDataValidatorTest {
       .hasMessageContaining("500");
   }
 }
-

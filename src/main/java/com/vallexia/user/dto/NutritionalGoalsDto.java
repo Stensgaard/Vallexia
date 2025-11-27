@@ -54,6 +54,21 @@ public class NutritionalGoalsDto {
     @DecimalMax(value = "100.0", message = "Fats percentage must not exceed 100")
     private BigDecimal fatsPercentage;
     
+    /**
+     * Calories from protein (calculated: protein grams × 4).
+     */
+    private BigDecimal proteinCalories;
+    
+    /**
+     * Calories from carbohydrates (calculated: carbs grams × 4).
+     */
+    private BigDecimal carbCalories;
+    
+    /**
+     * Calories from fats (calculated: fats grams × 9).
+     */
+    private BigDecimal fatCalories;
+    
     @DecimalMin(value = "0.0", message = "Daily fiber must be 0 or greater")
     @DecimalMax(value = "100.0", message = "Daily fiber must not exceed 100 grams")
     private BigDecimal dailyFiber;

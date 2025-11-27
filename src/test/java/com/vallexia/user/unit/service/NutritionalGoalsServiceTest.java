@@ -3,7 +3,7 @@ package com.vallexia.user.unit.service;
 import com.vallexia.audit.entity.enums.EventType;
 import com.vallexia.audit.service.AuditService;
 import com.vallexia.exception.ValidationException;
-import com.vallexia.nutrition.service.NutritionalCalculator;
+import com.vallexia.nutrition.service.MacroCalculator;
 import com.vallexia.user.dto.NutritionalGoalsDto;
 import com.vallexia.user.entity.NutritionalGoals;
 import com.vallexia.user.entity.User;
@@ -56,13 +56,35 @@ class NutritionalGoalsServiceTest {
   private NutritionalGoalsMapper nutritionalGoalsMapper;
   
   @Mock
-  private NutritionalCalculator nutritionalCalculator;
+  private MacroCalculator macroCalculator;
   
   @Mock
   private AuditService auditService;
   
   @InjectMocks
   private NutritionalGoalsService nutritionalGoalsService;
+  
+  /**
+   * Helper method to set up default macro calorie calculation mocks.
+   * Used to avoid repeating mock setup in every test.
+   */
+  private void setupMacroCalorieMocks(NutritionalGoals goals) {
+    when(macroCalculator.calculateProteinCalories(any(BigDecimal.class)))
+        .thenAnswer(invocation -> {
+          BigDecimal protein = invocation.getArgument(0);
+          return protein != null ? protein.multiply(BigDecimal.valueOf(4)) : BigDecimal.ZERO;
+        });
+    when(macroCalculator.calculateCarbCalories(any(BigDecimal.class)))
+        .thenAnswer(invocation -> {
+          BigDecimal carbs = invocation.getArgument(0);
+          return carbs != null ? carbs.multiply(BigDecimal.valueOf(4)) : BigDecimal.ZERO;
+        });
+    when(macroCalculator.calculateFatCalories(any(BigDecimal.class)))
+        .thenAnswer(invocation -> {
+          BigDecimal fats = invocation.getArgument(0);
+          return fats != null ? fats.multiply(BigDecimal.valueOf(9)) : BigDecimal.ZERO;
+        });
+  }
   
   // ==================== getNutritionalGoals() Tests ====================
   
@@ -80,6 +102,8 @@ class NutritionalGoalsServiceTest {
         .thenReturn(Optional.of(goals));
     when(nutritionalGoalsMapper.toNutritionalGoalsDto(goals))
         .thenReturn(expectedDto);
+    // Set up macro calorie calculation mocks
+    setupMacroCalorieMocks(goals);
     
     // When
     NutritionalGoalsDto result = nutritionalGoalsService.getNutritionalGoals(UserTestFixtures.TEST_USER_ID);
@@ -88,10 +112,17 @@ class NutritionalGoalsServiceTest {
     assertThat(result).isNotNull();
     assertThat(result.getId()).isEqualTo(expectedDto.getId());
     assertThat(result.getUserId()).isEqualTo(expectedDto.getUserId());
+    // Verify macro calories are calculated (150g * 4 = 600, 250g * 4 = 1000, 67g * 9 = 603)
+    assertThat(result.getProteinCalories()).isNotNull();
+    assertThat(result.getCarbCalories()).isNotNull();
+    assertThat(result.getFatCalories()).isNotNull();
     
     verify(userRepository).findById(UserTestFixtures.TEST_USER_ID);
     verify(nutritionalGoalsRepository).findByUser(user);
     verify(nutritionalGoalsMapper).toNutritionalGoalsDto(goals);
+    verify(macroCalculator).calculateProteinCalories(goals.getDailyProtein());
+    verify(macroCalculator).calculateCarbCalories(goals.getDailyCarbs());
+    verify(macroCalculator).calculateFatCalories(goals.getDailyFats());
   }
   
   @Test
@@ -112,6 +143,9 @@ class NutritionalGoalsServiceTest {
     ArgumentCaptor<NutritionalGoals> goalsCaptor = ArgumentCaptor.forClass(NutritionalGoals.class);
     when(nutritionalGoalsMapper.toNutritionalGoalsDto(goalsCaptor.capture()))
         .thenReturn(expectedDto);
+    
+    // Set up macro calorie calculation mocks for default goals
+    setupMacroCalorieMocks(null); // Will use default values
     
     // When
     NutritionalGoalsDto result = nutritionalGoalsService.getNutritionalGoals(UserTestFixtures.TEST_USER_ID);
@@ -213,7 +247,7 @@ class NutritionalGoalsServiceTest {
         .thenReturn(Optional.of(user));
     when(nutritionalGoalsRepository.findByUser(user))
         .thenReturn(Optional.of(existingGoals));
-    doNothing().when(nutritionalCalculator).calculateMacroPercentages(existingGoals);
+    doNothing().when(macroCalculator).calculateMacroPercentages(existingGoals);
     when(nutritionalGoalsRepository.save(existingGoals))
         .thenReturn(existingGoals);
     when(nutritionalGoalsMapper.toNutritionalGoalsDto(existingGoals))
@@ -229,7 +263,7 @@ class NutritionalGoalsServiceTest {
     
     verify(userRepository).findById(UserTestFixtures.TEST_USER_ID);
     verify(nutritionalGoalsRepository).findByUser(user);
-    verify(nutritionalCalculator).calculateMacroPercentages(existingGoals);
+    verify(macroCalculator).calculateMacroPercentages(existingGoals);
     verify(nutritionalGoalsRepository).save(existingGoals);
     verify(auditService).logEvent(eq(EventType.PROFILE_UPDATE), eq(UserTestFixtures.TEST_USER_ID), any(String.class));
   }
@@ -248,7 +282,7 @@ class NutritionalGoalsServiceTest {
         .thenReturn(Optional.empty());
     
     ArgumentCaptor<NutritionalGoals> goalsCaptor = ArgumentCaptor.forClass(NutritionalGoals.class);
-    doNothing().when(nutritionalCalculator).calculateMacroPercentages(goalsCaptor.capture());
+    doNothing().when(macroCalculator).calculateMacroPercentages(goalsCaptor.capture());
     when(nutritionalGoalsRepository.save(goalsCaptor.capture()))
         .thenAnswer(invocation -> invocation.getArgument(0));
     when(nutritionalGoalsMapper.toNutritionalGoalsDto(any(NutritionalGoals.class)))
@@ -299,7 +333,7 @@ class NutritionalGoalsServiceTest {
         .thenReturn(Optional.of(user));
     when(nutritionalGoalsRepository.findByUser(user))
         .thenReturn(Optional.of(existingGoals));
-    doNothing().when(nutritionalCalculator).calculateMacroPercentages(existingGoals);
+    doNothing().when(macroCalculator).calculateMacroPercentages(existingGoals);
     when(nutritionalGoalsRepository.save(existingGoals))
         .thenReturn(existingGoals);
     when(nutritionalGoalsMapper.toNutritionalGoalsDto(existingGoals))
@@ -338,7 +372,7 @@ class NutritionalGoalsServiceTest {
         .thenReturn(Optional.of(user));
     when(nutritionalGoalsRepository.findByUser(user))
         .thenReturn(Optional.of(existingGoals));
-    doNothing().when(nutritionalCalculator).calculateMacroPercentages(existingGoals);
+    doNothing().when(macroCalculator).calculateMacroPercentages(existingGoals);
     when(nutritionalGoalsRepository.save(existingGoals))
         .thenReturn(existingGoals);
     when(nutritionalGoalsMapper.toNutritionalGoalsDto(existingGoals))
@@ -368,7 +402,7 @@ class NutritionalGoalsServiceTest {
         .thenReturn(Optional.of(user));
     when(nutritionalGoalsRepository.findByUser(user))
         .thenReturn(Optional.of(existingGoals));
-    doNothing().when(nutritionalCalculator).calculateMacroPercentages(existingGoals);
+    doNothing().when(macroCalculator).calculateMacroPercentages(existingGoals);
     when(nutritionalGoalsRepository.save(existingGoals))
         .thenReturn(existingGoals);
     when(nutritionalGoalsMapper.toNutritionalGoalsDto(existingGoals))
@@ -379,7 +413,7 @@ class NutritionalGoalsServiceTest {
     
     // Then
     assertThat(result).isNotNull();
-    verify(nutritionalCalculator).calculateMacroPercentages(existingGoals);
+    verify(macroCalculator).calculateMacroPercentages(existingGoals);
   }
   
   @Test
@@ -398,20 +432,20 @@ class NutritionalGoalsServiceTest {
         .thenReturn(Optional.of(user));
     when(nutritionalGoalsRepository.findByUser(user))
         .thenReturn(Optional.of(existingGoals));
-    doNothing().when(nutritionalCalculator).calculateMacroPercentages(existingGoals);
+    doNothing().when(macroCalculator).calculateMacroPercentages(existingGoals);
     
     // When & Then
     assertThatThrownBy(() -> nutritionalGoalsService.updateNutritionalGoals(UserTestFixtures.TEST_USER_ID, updateDto))
         .isInstanceOf(ValidationException.class)
         .hasMessageContaining("Macro percentages must add up to approximately 100%");
     
-    verify(nutritionalCalculator).calculateMacroPercentages(existingGoals);
+    verify(macroCalculator).calculateMacroPercentages(existingGoals);
     verify(nutritionalGoalsRepository, never()).save(any());
   }
   
   @Test
-  @DisplayName("Should calculate macro percentages using NutritionalCalculator")
-  void shouldCalculateMacroPercentagesUsingNutritionalCalculator() {
+  @DisplayName("Should calculate macro percentages using MacroCalculator")
+  void shouldCalculateMacroPercentagesUsingMacroCalculator() {
     // Given
     User user = UserTestFixtures.createUser();
     NutritionalGoals existingGoals = UserTestFixtures.createNutritionalGoals(user);
@@ -422,7 +456,7 @@ class NutritionalGoalsServiceTest {
         .thenReturn(Optional.of(user));
     when(nutritionalGoalsRepository.findByUser(user))
         .thenReturn(Optional.of(existingGoals));
-    doNothing().when(nutritionalCalculator).calculateMacroPercentages(existingGoals);
+    doNothing().when(macroCalculator).calculateMacroPercentages(existingGoals);
     when(nutritionalGoalsRepository.save(existingGoals))
         .thenReturn(existingGoals);
     when(nutritionalGoalsMapper.toNutritionalGoalsDto(existingGoals))
@@ -432,7 +466,7 @@ class NutritionalGoalsServiceTest {
     nutritionalGoalsService.updateNutritionalGoals(UserTestFixtures.TEST_USER_ID, updateDto);
     
     // Then
-    verify(nutritionalCalculator, times(1)).calculateMacroPercentages(existingGoals);
+    verify(macroCalculator, times(1)).calculateMacroPercentages(existingGoals);
   }
   
   @Test
@@ -452,7 +486,7 @@ class NutritionalGoalsServiceTest {
         .thenReturn(Optional.of(user));
     when(nutritionalGoalsRepository.findByUser(user))
         .thenReturn(Optional.of(existingGoals));
-    doNothing().when(nutritionalCalculator).calculateMacroPercentages(existingGoals);
+    doNothing().when(macroCalculator).calculateMacroPercentages(existingGoals);
     when(nutritionalGoalsRepository.save(existingGoals))
         .thenReturn(existingGoals);
     when(nutritionalGoalsMapper.toNutritionalGoalsDto(existingGoals))
@@ -487,7 +521,7 @@ class NutritionalGoalsServiceTest {
         .thenReturn(Optional.of(user));
     when(nutritionalGoalsRepository.findByUser(user))
         .thenReturn(Optional.of(existingGoals));
-    doNothing().when(nutritionalCalculator).calculateMacroPercentages(existingGoals);
+    doNothing().when(macroCalculator).calculateMacroPercentages(existingGoals);
     when(nutritionalGoalsRepository.save(existingGoals))
         .thenReturn(existingGoals);
     when(nutritionalGoalsMapper.toNutritionalGoalsDto(existingGoals))
@@ -519,7 +553,7 @@ class NutritionalGoalsServiceTest {
         .thenReturn(Optional.of(user));
     when(nutritionalGoalsRepository.findByUser(user))
         .thenReturn(Optional.of(existingGoals));
-    doNothing().when(nutritionalCalculator).calculateMacroPercentages(existingGoals);
+    doNothing().when(macroCalculator).calculateMacroPercentages(existingGoals);
     when(nutritionalGoalsRepository.save(existingGoals))
         .thenReturn(existingGoals);
     when(nutritionalGoalsMapper.toNutritionalGoalsDto(existingGoals))
@@ -755,7 +789,7 @@ class NutritionalGoalsServiceTest {
         .thenReturn(Optional.of(user));
     when(nutritionalGoalsRepository.findByUser(user))
         .thenReturn(Optional.of(existingGoals));
-    doNothing().when(nutritionalCalculator).calculateMacroPercentages(existingGoals);
+    doNothing().when(macroCalculator).calculateMacroPercentages(existingGoals);
     when(nutritionalGoalsRepository.save(existingGoals))
         .thenReturn(existingGoals);
     when(nutritionalGoalsMapper.toNutritionalGoalsDto(existingGoals))
@@ -782,7 +816,7 @@ class NutritionalGoalsServiceTest {
         .thenReturn(Optional.of(user));
     when(nutritionalGoalsRepository.findByUser(user))
         .thenReturn(Optional.of(existingGoals));
-    doNothing().when(nutritionalCalculator).calculateMacroPercentages(existingGoals);
+    doNothing().when(macroCalculator).calculateMacroPercentages(existingGoals);
     
     // When & Then
     assertThatThrownBy(() -> nutritionalGoalsService.updateNutritionalGoals(UserTestFixtures.TEST_USER_ID, updateDto))
@@ -806,7 +840,7 @@ class NutritionalGoalsServiceTest {
         .thenReturn(Optional.of(user));
     when(nutritionalGoalsRepository.findByUser(user))
         .thenReturn(Optional.of(existingGoals));
-    doNothing().when(nutritionalCalculator).calculateMacroPercentages(existingGoals);
+    doNothing().when(macroCalculator).calculateMacroPercentages(existingGoals);
     
     // When & Then
     assertThatThrownBy(() -> nutritionalGoalsService.updateNutritionalGoals(UserTestFixtures.TEST_USER_ID, updateDto))
@@ -831,7 +865,7 @@ class NutritionalGoalsServiceTest {
         .thenReturn(Optional.of(user));
     when(nutritionalGoalsRepository.findByUser(user))
         .thenReturn(Optional.of(existingGoals));
-    doNothing().when(nutritionalCalculator).calculateMacroPercentages(existingGoals);
+    doNothing().when(macroCalculator).calculateMacroPercentages(existingGoals);
     when(nutritionalGoalsRepository.save(existingGoals))
         .thenReturn(existingGoals);
     when(nutritionalGoalsMapper.toNutritionalGoalsDto(existingGoals))
