@@ -15,9 +15,9 @@ import java.time.LocalDateTime;
 /**
  * Entity representing a translation of recipe content for a specific locale.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-15
  */
 @Entity
 @Table(name = "recipe_translations", uniqueConstraints = {

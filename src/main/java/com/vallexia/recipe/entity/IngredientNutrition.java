@@ -16,9 +16,9 @@ import java.time.LocalDateTime;
  * Entity representing nutritional information for an ingredient.
  * Nutritional values are stored per 100g or per standard unit.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 @Entity
 @Table(name = "ingredient_nutrition")
