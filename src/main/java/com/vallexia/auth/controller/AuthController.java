@@ -20,14 +20,16 @@ import org.springframework.web.bind.annotation.*;
 /**
  * REST controller for authentication endpoints.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-30
  */
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/auth")
-@Tag(name = "Authentication", description = "User authentication and authorization endpoints")
+@Tag(
+    name = "Authentication", 
+    description = "User authentication and authorization endpoints")
 public class AuthController {
     
     private final AuthService authService;
