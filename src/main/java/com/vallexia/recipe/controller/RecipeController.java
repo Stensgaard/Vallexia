@@ -1,12 +1,8 @@
 package com.vallexia.recipe.controller;
 
 import com.vallexia.recipe.dto.*;
-import com.vallexia.recipe.entity.enums.DifficultyLevel;
 import com.vallexia.recipe.service.*;
-import com.vallexia.recipe.util.EnumPropertyEditor;
 import com.vallexia.security.AuthenticationHelper;
-import com.vallexia.common.enums.SupportedCuisineType;
-import com.vallexia.common.enums.SupportedMealCategory;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -60,19 +55,6 @@ public class RecipeController {
         this.recipeScalingService = recipeScalingService;
         this.favoriteRecipeService = favoriteRecipeService;
         this.authenticationHelper = authenticationHelper;
-    }
-    
-    /**
-     * Initialize data binder to handle empty strings for enum fields.
-     * 
-     * @param binder the data binder
-     */
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        // Register custom property editors for enum fields
-        binder.registerCustomEditor(DifficultyLevel.class, new EnumPropertyEditor<>(DifficultyLevel.class));
-        binder.registerCustomEditor(SupportedMealCategory.class, new EnumPropertyEditor<>(SupportedMealCategory.class));
-        binder.registerCustomEditor(SupportedCuisineType.class, new EnumPropertyEditor<>(SupportedCuisineType.class));
     }
     
     /**
@@ -298,7 +280,7 @@ public class RecipeController {
         summary = "Add to favorites", 
         description = "Add a recipe to user's favorites (requires authentication)")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Recipe added to favorites"),
+        @ApiResponse(responseCode = "204", description = "Recipe added to favorites"),
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "404", description = "Recipe not found")
     })
