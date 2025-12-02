@@ -1,48 +1,41 @@
 package com.vallexia.recipe.util;
 
+import com.vallexia.common.enums.SupportedCountUnit;
+import com.vallexia.common.enums.SupportedVolumeUnit;
+import com.vallexia.common.enums.SupportedWeightUnit;
+import lombok.extern.slf4j.Slf4j;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Utility class for converting between measurement units (metric and imperial).
+ * Uses enums as the single source of truth for unit definitions and conversion factors.
  * 
- * @author Vallexia Team
- * @version 1.0
- * @since 2024-01-01
+ * @author Henrik Stensgaard
+ * @version 2.0
+ * @since 2025-11-15
  */
+@Slf4j
 public class UnitConversionUtil {
-    
-    // Weight units
-    private static final Set<String> METRIC_WEIGHT_UNITS = new HashSet<>(Arrays.asList(
-        "g", "gram", "grams", "kg", "kilogram", "kilograms", "mg", "milligram", "milligrams"
-    ));
-    
-    private static final Set<String> IMPERIAL_WEIGHT_UNITS = new HashSet<>(Arrays.asList(
-        "oz", "ounce", "ounces", "lb", "pound", "pounds", "lbs"
-    ));
-    
-    // Volume units (universal, no conversion needed)
-    private static final Set<String> VOLUME_UNITS = new HashSet<>(Arrays.asList(
-        "cup", "cups", "tbsp", "tablespoon", "tablespoons", "tsp", "teaspoon", "teaspoons",
-        "ml", "milliliter", "milliliters", "l", "liter", "liters", "fl oz", "fluid ounce", "fluid ounces"
-    ));
-    
-    // Count units (universal, no conversion needed)
-    private static final Set<String> COUNT_UNITS = new HashSet<>(Arrays.asList(
-        "piece", "pieces", "item", "items", "whole", "wholes", "pcs", "pc"
-    ));
-    
-    // Conversion factors
-    private static final BigDecimal OUNCES_TO_GRAMS = BigDecimal.valueOf(28.35);
-    private static final BigDecimal POUNDS_TO_GRAMS = BigDecimal.valueOf(453.59);
-    private static final BigDecimal KILOGRAMS_TO_GRAMS = BigDecimal.valueOf(1000.0);
-    private static final BigDecimal MILLIGRAMS_TO_GRAMS = BigDecimal.valueOf(0.001);
     
     private static final int DECIMAL_SCALE = 4;
     private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_UP;
+    
+    // Mapping for metric to imperial weight unit conversions
+    private static final Map<SupportedWeightUnit, SupportedWeightUnit> METRIC_TO_IMPERIAL = Map.of(
+        SupportedWeightUnit.GRAM, SupportedWeightUnit.OUNCE,
+        SupportedWeightUnit.MILLIGRAM, SupportedWeightUnit.OUNCE,
+        SupportedWeightUnit.KILOGRAM, SupportedWeightUnit.POUND
+    );
+    
+    // Mapping for imperial to metric weight unit conversions
+    private static final Map<SupportedWeightUnit, SupportedWeightUnit> IMPERIAL_TO_METRIC = Map.of(
+        SupportedWeightUnit.OUNCE, SupportedWeightUnit.GRAM,
+        SupportedWeightUnit.POUND, SupportedWeightUnit.KILOGRAM
+    );
     
     /**
      * Convert weight value from one unit to another.
@@ -58,8 +51,12 @@ public class UnitConversionUtil {
             return null;
         }
         
-        String fromUnitLower = fromUnit != null ? fromUnit.toLowerCase() : "";
-        String toUnitLower = toUnit != null ? toUnit.toLowerCase() : "";
+        if (fromUnit == null || toUnit == null) {
+            return value;
+        }
+        
+        String fromUnitLower = fromUnit.toLowerCase();
+        String toUnitLower = toUnit.toLowerCase();
         
         // If units are the same, return as-is
         if (fromUnitLower.equals(toUnitLower)) {
@@ -75,108 +72,133 @@ public class UnitConversionUtil {
     
     /**
      * Convert any unit to grams (metric base unit).
+     * Uses SupportedWeightUnit enum as the single source of truth.
      * 
      * @param value the value to convert
      * @param unit the source unit
      * @return value in grams
+     * @throws IllegalArgumentException if the unit is not a supported weight unit
      */
     public static BigDecimal convertToGrams(BigDecimal value, String unit) {
         if (value == null || unit == null) {
             return value;
         }
         
-        String unitLower = unit.toLowerCase();
-        
-        // Already in grams
-        if (unitLower.equals("g") || unitLower.equals("gram") || unitLower.equals("grams")) {
-            return value;
+        Optional<SupportedWeightUnit> unitOpt = SupportedWeightUnit.fromDisplay(unit);
+        if (unitOpt.isPresent()) {
+            return value.multiply(unitOpt.get().getGrams());
         }
         
-        // Metric units
-        if (unitLower.equals("kg") || unitLower.equals("kilogram") || unitLower.equals("kilograms")) {
-            return value.multiply(KILOGRAMS_TO_GRAMS);
-        }
-        if (unitLower.equals("mg") || unitLower.equals("milligram") || unitLower.equals("milligrams")) {
-            return value.multiply(MILLIGRAMS_TO_GRAMS);
-        }
-        
-        // Imperial units
-        if (unitLower.equals("oz") || unitLower.equals("ounce") || unitLower.equals("ounces")) {
-            return value.multiply(OUNCES_TO_GRAMS);
-        }
-        if (unitLower.equals("lb") || unitLower.equals("lbs") || unitLower.equals("pound") || unitLower.equals("pounds")) {
-            return value.multiply(POUNDS_TO_GRAMS);
-        }
-        
-        // Unknown unit, assume grams
-        return value;
+        // Unknown unit - log warning and throw exception
+        log.warn("Unknown weight unit '{}' provided to convertToGrams(). Supported weight units: g, kg, mg, oz, lb", unit);
+        throw new IllegalArgumentException("Unsupported weight unit: '" + unit + "'. Supported units: g, kg, mg, oz, lb");
     }
     
     /**
      * Convert grams to target unit.
+     * Uses SupportedWeightUnit enum as the single source of truth.
      * 
      * @param valueInGrams value in grams
      * @param toUnit target unit
      * @return converted value
+     * @throws IllegalArgumentException if the unit is not a supported weight unit
      */
     private static BigDecimal convertFromGrams(BigDecimal valueInGrams, String toUnit) {
         if (valueInGrams == null || toUnit == null) {
             return valueInGrams;
         }
         
-        String unitLower = toUnit.toLowerCase();
-        
-        // Metric units
-        if (unitLower.equals("g") || unitLower.equals("gram") || unitLower.equals("grams")) {
-            return valueInGrams;
-        }
-        if (unitLower.equals("kg") || unitLower.equals("kilogram") || unitLower.equals("kilograms")) {
-            return valueInGrams.divide(KILOGRAMS_TO_GRAMS, DECIMAL_SCALE, ROUNDING_MODE);
-        }
-        if (unitLower.equals("mg") || unitLower.equals("milligram") || unitLower.equals("milligrams")) {
-            return valueInGrams.divide(MILLIGRAMS_TO_GRAMS, DECIMAL_SCALE, ROUNDING_MODE);
+        Optional<SupportedWeightUnit> unitOpt = SupportedWeightUnit.fromDisplay(toUnit);
+        if (unitOpt.isPresent()) {
+            SupportedWeightUnit unit = unitOpt.get();
+            return valueInGrams.divide(unit.getGrams(), DECIMAL_SCALE, ROUNDING_MODE);
         }
         
-        // Imperial units
-        if (unitLower.equals("oz") || unitLower.equals("ounce") || unitLower.equals("ounces")) {
-            return valueInGrams.divide(OUNCES_TO_GRAMS, DECIMAL_SCALE, ROUNDING_MODE);
-        }
-        if (unitLower.equals("lb") || unitLower.equals("lbs") || unitLower.equals("pound") || unitLower.equals("pounds")) {
-            return valueInGrams.divide(POUNDS_TO_GRAMS, DECIMAL_SCALE, ROUNDING_MODE);
-        }
-        
-        // Unknown unit, return as grams
-        return valueInGrams;
+        // Unknown unit - log warning and throw exception
+        log.warn("Unknown weight unit '{}' provided to convertFromGrams(). Supported weight units: g, kg, mg, oz, lb", toUnit);
+        throw new IllegalArgumentException("Unsupported weight unit: '" + toUnit + "'. Supported units: g, kg, mg, oz, lb");
     }
     
     /**
-     * Convert to metric unit (grams for weights).
+     * Convert volume value from one unit to another.
      * 
      * @param value the value to convert
-     * @param unit the source unit
-     * @return value in metric units
+     * @param fromUnit the source unit
+     * @param toUnit the target unit
+     * @return converted value
+     * @throws IllegalArgumentException if units are not volume units or conversion is not supported
      */
-    public static BigDecimal convertToMetric(BigDecimal value, String unit) {
-        return convertToGrams(value, unit);
+    public static BigDecimal convertVolume(BigDecimal value, String fromUnit, String toUnit) {
+        if (value == null) {
+            return null;
+        }
+        
+        if (fromUnit == null || toUnit == null) {
+            return value;
+        }
+        
+        String fromUnitLower = fromUnit.toLowerCase();
+        String toUnitLower = toUnit.toLowerCase();
+        
+        // If units are the same, return as-is
+        if (fromUnitLower.equals(toUnitLower)) {
+            return value;
+        }
+        
+        // Convert to milliliters first (intermediate unit)
+        BigDecimal valueInMilliliters = convertToMilliliters(value, fromUnit);
+        
+        // Convert from milliliters to target unit
+        return convertFromMilliliters(valueInMilliliters, toUnit);
     }
     
     /**
-     * Convert to imperial unit (ounces for weights).
+     * Convert any unit to milliliters (base volume unit).
+     * Uses SupportedVolumeUnit enum as the single source of truth.
      * 
      * @param value the value to convert
      * @param unit the source unit
-     * @return value in imperial units (ounces)
+     * @return value in milliliters
+     * @throws IllegalArgumentException if the unit is not a supported volume unit
      */
-    public static BigDecimal convertToImperial(BigDecimal value, String unit) {
+    public static BigDecimal convertToMilliliters(BigDecimal value, String unit) {
         if (value == null || unit == null) {
             return value;
         }
         
-        // Convert to grams first
-        BigDecimal valueInGrams = convertToGrams(value, unit);
+        Optional<SupportedVolumeUnit> unitOpt = SupportedVolumeUnit.fromDisplay(unit);
+        if (unitOpt.isPresent()) {
+            return value.multiply(unitOpt.get().getMilliliters());
+        }
         
-        // Convert to ounces
-        return valueInGrams.divide(OUNCES_TO_GRAMS, DECIMAL_SCALE, ROUNDING_MODE);
+        // Unknown unit - log warning and throw exception
+        log.warn("Unknown volume unit '{}' provided to convertToMilliliters(). Supported volume units: ml, l, cup, tbsp, tsp, fl oz", unit);
+        throw new IllegalArgumentException("Unsupported volume unit: '" + unit + "'. Supported units: ml, l, cup, tbsp, tsp, fl oz");
+    }
+    
+    /**
+     * Convert milliliters to target unit.
+     * Uses SupportedVolumeUnit enum as the single source of truth.
+     * 
+     * @param valueInMilliliters value in milliliters
+     * @param toUnit target unit
+     * @return converted value
+     * @throws IllegalArgumentException if the unit is not a supported volume unit
+     */
+    private static BigDecimal convertFromMilliliters(BigDecimal valueInMilliliters, String toUnit) {
+        if (valueInMilliliters == null || toUnit == null) {
+            return valueInMilliliters;
+        }
+        
+        Optional<SupportedVolumeUnit> unitOpt = SupportedVolumeUnit.fromDisplay(toUnit);
+        if (unitOpt.isPresent()) {
+            SupportedVolumeUnit unit = unitOpt.get();
+            return valueInMilliliters.divide(unit.getMilliliters(), DECIMAL_SCALE, ROUNDING_MODE);
+        }
+        
+        // Unknown unit - log warning and throw exception
+        log.warn("Unknown volume unit '{}' provided to convertFromMilliliters(). Supported volume units: ml, l, cup, tbsp, tsp, fl oz", toUnit);
+        throw new IllegalArgumentException("Unsupported volume unit: '" + toUnit + "'. Supported units: ml, l, cup, tbsp, tsp, fl oz");
     }
     
     /**
@@ -193,39 +215,31 @@ public class UnitConversionUtil {
             return unit;
         }
         
-        String unitLower = unit.toLowerCase();
         boolean isImperial = "IMPERIAL".equalsIgnoreCase(measurementSystem);
         
-        // Weight units - convert based on system
-        if (METRIC_WEIGHT_UNITS.contains(unitLower)) {
-            if (isImperial) {
-                // Convert metric to imperial
-                if (unitLower.equals("g") || unitLower.equals("gram") || unitLower.equals("grams")) {
-                    return "oz";
-                }
-                if (unitLower.equals("kg") || unitLower.equals("kilogram") || unitLower.equals("kilograms")) {
-                    return "lb";
-                }
-                if (unitLower.equals("mg") || unitLower.equals("milligram") || unitLower.equals("milligrams")) {
-                    return "oz"; // Convert mg to oz (very small, but still convert)
+        // Check if it's a weight unit
+        Optional<SupportedWeightUnit> weightUnitOpt = SupportedWeightUnit.fromDisplay(unit);
+        if (weightUnitOpt.isPresent()) {
+            SupportedWeightUnit weightUnit = weightUnitOpt.get();
+            
+            // Convert metric to imperial if needed
+            if (weightUnit.isMetric() && isImperial) {
+                SupportedWeightUnit imperialUnit = METRIC_TO_IMPERIAL.get(weightUnit);
+                if (imperialUnit != null) {
+                    return imperialUnit.getDisplay();
                 }
             }
-            // Metric system - keep as-is
-            return unit;
-        }
-        
-        if (IMPERIAL_WEIGHT_UNITS.contains(unitLower)) {
-            if (!isImperial) {
-                // Convert imperial to metric
-                if (unitLower.equals("oz") || unitLower.equals("ounce") || unitLower.equals("ounces")) {
-                    return "g";
-                }
-                if (unitLower.equals("lb") || unitLower.equals("lbs") || unitLower.equals("pound") || unitLower.equals("pounds")) {
-                    return "kg";
+            
+            // Convert imperial to metric if needed
+            if (weightUnit.isImperial() && !isImperial) {
+                SupportedWeightUnit metricUnit = IMPERIAL_TO_METRIC.get(weightUnit);
+                if (metricUnit != null) {
+                    return metricUnit.getDisplay();
                 }
             }
-            // Imperial system - keep as-is
-            return unit;
+            
+            // Keep as-is for same system
+            return weightUnit.getDisplay();
         }
         
         // Volume and count units - keep as-is (universal)
@@ -234,6 +248,7 @@ public class UnitConversionUtil {
     
     /**
      * Check if a unit is a weight unit.
+     * Uses SupportedWeightUnit enum as the single source of truth.
      * 
      * @param unit the unit to check
      * @return true if weight unit, false otherwise
@@ -242,12 +257,13 @@ public class UnitConversionUtil {
         if (unit == null) {
             return false;
         }
-        String unitLower = unit.toLowerCase();
-        return METRIC_WEIGHT_UNITS.contains(unitLower) || IMPERIAL_WEIGHT_UNITS.contains(unitLower);
+        
+        return SupportedWeightUnit.fromDisplay(unit).isPresent();
     }
     
     /**
      * Check if a unit is a volume unit.
+     * Uses SupportedVolumeUnit enum as the single source of truth.
      * 
      * @param unit the unit to check
      * @return true if volume unit, false otherwise
@@ -256,11 +272,13 @@ public class UnitConversionUtil {
         if (unit == null) {
             return false;
         }
-        return VOLUME_UNITS.contains(unit.toLowerCase());
+
+        return SupportedVolumeUnit.fromDisplay(unit).isPresent();
     }
     
     /**
      * Check if a unit is a count unit.
+     * Uses SupportedCountUnit enum as the single source of truth.
      * 
      * @param unit the unit to check
      * @return true if count unit, false otherwise
@@ -269,6 +287,7 @@ public class UnitConversionUtil {
         if (unit == null) {
             return false;
         }
-        return COUNT_UNITS.contains(unit.toLowerCase());
+
+        return SupportedCountUnit.fromDisplay(unit).isPresent();
     }
 }
