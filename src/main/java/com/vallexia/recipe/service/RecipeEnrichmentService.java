@@ -5,6 +5,7 @@ import com.vallexia.recipe.dto.RecipeDto;
 import com.vallexia.recipe.entity.Ingredient;
 import com.vallexia.recipe.entity.Recipe;
 import com.vallexia.recipe.repository.IngredientRepository;
+import com.vallexia.recipe.util.TranslationResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package com.vallexia.recipe.service;
+package com.vallexia.recipe.util;
 
 import com.vallexia.common.enums.SupportedLocale;
 import com.vallexia.recipe.entity.Ingredient;
@@ -15,9 +15,9 @@ import java.util.Optional;
  * Utility class for resolving translated content for recipes and ingredients based on user locale.
  * Falls back to base locale if translation is not available.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-15
  */
 @Slf4j
 @Component
@@ -34,6 +34,19 @@ public class TranslationResolver {
     }
     
     /**
+     * Validate and normalize user locale.
+     * Returns the validated locale code or defaults to English if invalid.
+     * 
+     * @param userLocale the user's locale string (can be null, empty, or blank)
+     * @return validated locale code, or "en" as default
+     */
+    private String validateAndNormalizeLocale(String userLocale) {
+        return SupportedLocale.fromCode(userLocale)
+            .map(SupportedLocale::getCode)
+            .orElse(SupportedLocale.EN.getCode());
+    }
+    
+    /**
      * Resolve recipe content (name, description, instructions) for a given locale.
      * Falls back to base locale if translation is not available.
      * 
@@ -47,9 +60,7 @@ public class TranslationResolver {
         }
         
         // Validate user locale
-        String locale = SupportedLocale.isSupported(userLocale) 
-            ? userLocale 
-            : SupportedLocale.EN.getCode();
+        String locale = validateAndNormalizeLocale(userLocale);
         
         // If user locale matches base locale, return base content
         if (locale.equals(recipe.getBaseLocale())) {
@@ -95,9 +106,7 @@ public class TranslationResolver {
         }
         
         // Validate user locale
-        String locale = SupportedLocale.isSupported(userLocale) 
-            ? userLocale 
-            : SupportedLocale.EN.getCode();
+        String locale = validateAndNormalizeLocale(userLocale);
         
         // Try to find translation
         Optional<com.vallexia.recipe.entity.IngredientTranslation> translation = 
