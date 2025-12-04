@@ -6,6 +6,7 @@ import com.vallexia.common.enums.SupportedCountry;
 import com.vallexia.common.enums.SupportedDateFormat;
 import com.vallexia.common.enums.SupportedFirstDayOfWeek;
 import com.vallexia.common.enums.SupportedMeasurementSystem;
+import com.vallexia.common.enums.SupportedLocale;
 import com.vallexia.user.dto.UserSettingsDto;
 import com.vallexia.user.entity.User;
 import com.vallexia.user.entity.UserSettings;
@@ -51,6 +52,28 @@ public class UserSettingsService {
         this.userRepository = userRepository;
         this.userSettingsMapper = userSettingsMapper;
         this.auditService = auditService;
+    }
+    
+    /**
+     * Get user's locale code, falling back to default if unavailable.
+     * 
+     * @param userId the user ID (can be null)
+     * @return locale code (defaults to English if user is null or settings unavailable)
+     */
+    @Transactional(readOnly = true)
+    public String getUserLocale(Long userId) {
+        if (userId == null) {
+            return SupportedLocale.EN.getCode();
+        }
+        try {
+            String locale = getUserSettings(userId).getLanguage();
+            return SupportedLocale.fromCode(locale).isPresent() 
+                ? locale 
+                : SupportedLocale.EN.getCode();
+        } catch (Exception e) {
+            log.debug("Could not fetch user locale for user ID {}: {}", userId, e.getMessage());
+            return SupportedLocale.EN.getCode();
+        }
     }
     
     /**
