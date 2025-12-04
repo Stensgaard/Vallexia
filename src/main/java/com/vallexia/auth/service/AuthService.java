@@ -190,8 +190,21 @@ public class AuthService {
         
         // Find user by username or email (try username first as it's immutable)
         User user = userAuthenticationHelper.findUserByUsernameOrEmail(loginRequestDto.getUsernameOrEmail())
-                .orElseThrow(() -> new AuthenticationException(ErrorCode.INVALID_CREDENTIALS, 
-                    "Invalid username/email or password"));
+                .orElse(null);
+        
+        // If user doesn't exist, log failed attempt and throw exception
+        if (user == null) {
+            auditService.logAuthenticationEvent(
+                EventType.LOGIN_FAILURE,
+                "Failed login attempt - user not found",
+                null,
+                loginRequestDto.getUsernameOrEmail(),
+                request,
+                false
+            );
+            throw new AuthenticationException(ErrorCode.INVALID_CREDENTIALS, 
+                "Invalid username/email or password");
+        }
         
         // Validate account status (disabled, locked)
         userAuthenticationHelper.validateAccountStatus(user);
@@ -199,6 +212,15 @@ public class AuthService {
         // Verify password
         if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPasswordHash())) {
             accountSecurityHelper.handleFailedLoginAttempt(user);
+            // Log failed login attempt
+            auditService.logAuthenticationEvent(
+                EventType.LOGIN_FAILURE,
+                "Failed login attempt - invalid password",
+                user.getId(),
+                user.getUsername(),
+                request,
+                false
+            );
             throw new AuthenticationException(ErrorCode.INVALID_CREDENTIALS, "Invalid username/email or password");
         }
         
@@ -271,6 +293,14 @@ public class AuthService {
         }
         
         log.debug("Old refresh token blacklisted successfully");
+        
+        // Log token refresh event
+        auditService.logEvent(
+            EventType.TOKEN_REFRESH,
+            user.getId(),
+            String.format("Token refreshed for user %s", user.getUsername())
+        );
+        
         return authMapper.toJwtResponse(user, tokenData.accessToken(), 
             tokenData.refreshToken(), tokenData.expiresAt());
     }
@@ -290,6 +320,11 @@ public class AuthService {
                 return;
             }
             
+            // Extract user info from token before blacklisting
+            String username = jwtTokenService.getUsernameFromToken(accessToken);
+            User user = userRepository.findByUsernameAndEnabledTrue(username).orElse(null);
+            Long userId = user != null ? user.getId() : null;
+            
             // Get token expiration time
             long expirationTime = jwtTokenService.getTokenExpirationTime(accessToken);
             
@@ -297,6 +332,15 @@ public class AuthService {
             boolean blacklisted = tokenBlacklistService.blacklistToken(accessToken, expirationTime);
             if (blacklisted) {
                 log.debug("Access token blacklisted successfully");
+                // Log logout event
+                auditService.logAuthenticationEvent(
+                    EventType.LOGOUT,
+                    "User logged out successfully",
+                    userId,
+                    username,
+                    request,
+                    true
+                );
             } else {
                 log.warn("Failed to blacklist access token during logout.");
             }

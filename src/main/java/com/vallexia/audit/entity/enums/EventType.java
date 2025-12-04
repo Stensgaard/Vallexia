@@ -4,9 +4,9 @@ package com.vallexia.audit.entity.enums;
  * Enum representing different types of audit events tracked in the system.
  * Used for categorizing security and user activity events.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 public enum EventType {
   
@@ -78,15 +78,5 @@ public enum EventType {
   /**
    * Recipe deleted.
    */
-  RECIPE_DELETED,
-  
-  /**
-   * Recipe favorited.
-   */
-  RECIPE_FAVORITED,
-  
-  /**
-   * Recipe unfavorited.
-   */
-  RECIPE_UNFAVORITED
+  RECIPE_DELETED
 }

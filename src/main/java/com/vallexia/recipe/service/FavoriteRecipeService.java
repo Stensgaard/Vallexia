@@ -1,7 +1,5 @@
 package com.vallexia.recipe.service;
 
-import com.vallexia.audit.entity.enums.EventType;
-import com.vallexia.audit.service.AuditService;
 import com.vallexia.recipe.dto.RecipeDto;
 import com.vallexia.recipe.entity.FavoriteRecipe;
 import com.vallexia.recipe.entity.Recipe;
@@ -36,7 +34,6 @@ public class FavoriteRecipeService {
     private final RecipeRepository recipeRepository;
     private final UserRepository userRepository;
     private final RecipeMapper recipeMapper;
-    private final AuditService auditService;
     private final UserSettingsService userSettingsService;
     private final RecipeEnrichmentService recipeEnrichmentService;
     
@@ -47,7 +44,6 @@ public class FavoriteRecipeService {
      * @param recipeRepository the recipe repository
      * @param userRepository the user repository
      * @param recipeMapper the recipe mapper
-     * @param auditService the audit service
      * @param userSettingsService the user settings service (for locale resolution)
      * @param recipeEnrichmentService the recipe enrichment service
      */
@@ -56,14 +52,12 @@ public class FavoriteRecipeService {
             RecipeRepository recipeRepository,
             UserRepository userRepository,
             RecipeMapper recipeMapper,
-            AuditService auditService,
             UserSettingsService userSettingsService,
             RecipeEnrichmentService recipeEnrichmentService) {
         this.favoriteRecipeRepository = favoriteRecipeRepository;
         this.recipeRepository = recipeRepository;
         this.userRepository = userRepository;
         this.recipeMapper = recipeMapper;
-        this.auditService = auditService;
         this.userSettingsService = userSettingsService;
         this.recipeEnrichmentService = recipeEnrichmentService;
     }
@@ -98,13 +92,6 @@ public class FavoriteRecipeService {
         
         favoriteRecipeRepository.save(favoriteRecipe);
         
-        // Audit log
-        auditService.logEvent(
-            EventType.RECIPE_FAVORITED,
-            userId,
-            String.format("Recipe ID %d favorited by user ID %d", recipeId, userId)
-        );
-        
         log.info("Recipe ID {} added to favorites for user ID {}", recipeId, userId);
     }
     
@@ -127,13 +114,6 @@ public class FavoriteRecipeService {
         }
         
         favoriteRecipeRepository.deleteByUserIdAndRecipeId(userId, recipeId);
-        
-        // Audit log
-        auditService.logEvent(
-            EventType.RECIPE_UNFAVORITED,
-            userId,
-            String.format("Recipe ID %d unfavorited by user ID %d", recipeId, userId)
-        );
         
         log.info("Recipe ID {} removed from favorites for user ID {}", recipeId, userId);
     }

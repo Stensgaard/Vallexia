@@ -1,5 +1,7 @@
 package com.vallexia.auth.util;
 
+import com.vallexia.audit.entity.enums.EventType;
+import com.vallexia.audit.service.AuditService;
 import com.vallexia.config.security.AccountSecurityProperties;
 import com.vallexia.user.entity.User;
 import com.vallexia.user.repository.UserRepository;
@@ -21,17 +23,21 @@ public class AccountSecurityHelper {
     
     private final UserRepository userRepository;
     private final AccountSecurityProperties accountSecurityProperties;
+    private final AuditService auditService;
     
     /**
      * Constructor with dependency injection.
      * 
      * @param userRepository user repository
      * @param accountSecurityProperties account security configuration
+     * @param auditService audit service for logging security events
      */
     public AccountSecurityHelper(UserRepository userRepository, 
-                                 AccountSecurityProperties accountSecurityProperties) {
+                                 AccountSecurityProperties accountSecurityProperties,
+                                 AuditService auditService) {
         this.userRepository = userRepository;
         this.accountSecurityProperties = accountSecurityProperties;
+        this.auditService = auditService;
     }
     
     /**
@@ -49,6 +55,14 @@ public class AccountSecurityHelper {
             user.setAccountLockedUntil(LocalDateTime.now().plusMinutes(lockoutMinutes));
             log.warn("Account locked for {} minutes due to {} failed attempts", 
                 lockoutMinutes, user.getFailedLoginAttempts());
+            
+            // Log account locked event
+            auditService.logEvent(
+                EventType.ACCOUNT_LOCKED,
+                user.getId(),
+                String.format("Account locked for %d minutes due to %d failed login attempts", 
+                    lockoutMinutes, user.getFailedLoginAttempts())
+            );
         }
         
         userRepository.save(user);
