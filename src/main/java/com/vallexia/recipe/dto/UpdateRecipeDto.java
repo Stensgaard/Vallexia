@@ -16,7 +16,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -78,4 +80,12 @@ public class UpdateRecipeDto {
     
     @ValidAllergy
     private Set<SupportedAllergy> allergens;
+    
+    /**
+     * Optional translations for the recipe in different locales.
+     * Key is the locale code (e.g., "en", "da"), value is the translation DTO.
+     * If provided, existing translations will be updated or new ones created.
+     */
+    @Valid
+    private Map<String, RecipeTranslationDto> translations = new HashMap<>();
 }
