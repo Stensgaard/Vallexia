@@ -15,16 +15,15 @@ import static org.mockito.Mockito.when;
  * Test fixtures for audit log testing.
  * Provides reusable test data and mock objects.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 public class AuditLogTestFixtures {
   
   public static final Long TEST_USER_ID = 1L;
   public static final Long TEST_ADMIN_ID = 100L;
   public static final String TEST_USERNAME = "testuser";
-  public static final String TEST_ADMIN_USERNAME = "admin";
   public static final String TEST_IP_ADDRESS = "192.168.1.100";
   public static final String TEST_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)";
   public static final String TEST_REQUEST_URI = "/api/v1/users/profile";
