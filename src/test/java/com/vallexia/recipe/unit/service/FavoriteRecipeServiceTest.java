@@ -1,7 +1,5 @@
 package com.vallexia.recipe.unit.service;
 
-import com.vallexia.audit.entity.enums.EventType;
-import com.vallexia.audit.service.AuditService;
 import com.vallexia.recipe.dto.RecipeDto;
 import com.vallexia.recipe.entity.FavoriteRecipe;
 import com.vallexia.recipe.entity.Recipe;
@@ -35,7 +33,6 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 /**
@@ -62,9 +59,6 @@ class FavoriteRecipeServiceTest {
   
   @Mock
   private RecipeMapper recipeMapper;
-  
-  @Mock
-  private AuditService auditService;
   
   @Mock
   private com.vallexia.user.service.UserSettingsService userSettingsService;
@@ -98,7 +92,6 @@ class FavoriteRecipeServiceTest {
     
     // Then
     verify(favoriteRecipeRepository).save(any(FavoriteRecipe.class));
-    verify(auditService).logEvent(eq(EventType.RECIPE_FAVORITED), eq(UserTestFixtures.TEST_USER_ID), any(String.class));
   }
   
   @Test
@@ -167,7 +160,6 @@ class FavoriteRecipeServiceTest {
     // Then
     verify(favoriteRecipeRepository).existsByUserIdAndRecipeId(UserTestFixtures.TEST_USER_ID, RecipeTestFixtures.TEST_RECIPE_ID);
     verify(favoriteRecipeRepository).deleteByUserIdAndRecipeId(UserTestFixtures.TEST_USER_ID, RecipeTestFixtures.TEST_RECIPE_ID);
-    verify(auditService).logEvent(eq(EventType.RECIPE_UNFAVORITED), eq(UserTestFixtures.TEST_USER_ID), any(String.class));
   }
   
   @Test
@@ -183,7 +175,6 @@ class FavoriteRecipeServiceTest {
     // Then
     verify(favoriteRecipeRepository).existsByUserIdAndRecipeId(UserTestFixtures.TEST_USER_ID, RecipeTestFixtures.TEST_RECIPE_ID);
     verify(favoriteRecipeRepository, never()).deleteByUserIdAndRecipeId(any(), any());
-    verify(auditService, never()).logEvent(any(), any(), any());
   }
   
   @Test
