@@ -5,14 +5,11 @@ import com.vallexia.audit.service.AuditService;
 import com.vallexia.recipe.dto.RecipeDto;
 import com.vallexia.recipe.entity.FavoriteRecipe;
 import com.vallexia.recipe.entity.Recipe;
-import com.vallexia.recipe.entity.Ingredient;
 import com.vallexia.recipe.exception.RecipeAlreadyFavoritedException;
 import com.vallexia.recipe.exception.RecipeNotFoundException;
 import com.vallexia.recipe.mapper.RecipeMapper;
 import com.vallexia.recipe.repository.FavoriteRecipeRepository;
 import com.vallexia.recipe.repository.RecipeRepository;
-import com.vallexia.common.enums.SupportedLocale;
-import com.vallexia.recipe.repository.IngredientRepository;
 import com.vallexia.user.entity.User;
 import com.vallexia.user.exception.UserNotFoundException;
 import com.vallexia.user.repository.UserRepository;
@@ -37,42 +34,38 @@ public class FavoriteRecipeService {
     
     private final FavoriteRecipeRepository favoriteRecipeRepository;
     private final RecipeRepository recipeRepository;
-    private final IngredientRepository ingredientRepository;
     private final UserRepository userRepository;
     private final RecipeMapper recipeMapper;
     private final AuditService auditService;
     private final UserSettingsService userSettingsService;
-    private final TranslationResolver translationResolver;
+    private final RecipeEnrichmentService recipeEnrichmentService;
     
     /**
      * Constructor for dependency injection.
      * 
      * @param favoriteRecipeRepository the favorite recipe repository
      * @param recipeRepository the recipe repository
-     * @param ingredientRepository the ingredient repository
      * @param userRepository the user repository
      * @param recipeMapper the recipe mapper
      * @param auditService the audit service
      * @param userSettingsService the user settings service (for locale resolution)
-     * @param translationResolver the translation resolver
+     * @param recipeEnrichmentService the recipe enrichment service
      */
     public FavoriteRecipeService(
             FavoriteRecipeRepository favoriteRecipeRepository,
             RecipeRepository recipeRepository,
-            IngredientRepository ingredientRepository,
             UserRepository userRepository,
             RecipeMapper recipeMapper,
             AuditService auditService,
             UserSettingsService userSettingsService,
-            TranslationResolver translationResolver) {
+            RecipeEnrichmentService recipeEnrichmentService) {
         this.favoriteRecipeRepository = favoriteRecipeRepository;
         this.recipeRepository = recipeRepository;
-        this.ingredientRepository = ingredientRepository;
         this.userRepository = userRepository;
         this.recipeMapper = recipeMapper;
         this.auditService = auditService;
         this.userSettingsService = userSettingsService;
-        this.translationResolver = translationResolver;
+        this.recipeEnrichmentService = recipeEnrichmentService;
     }
     
     /**
@@ -122,7 +115,16 @@ public class FavoriteRecipeService {
      * @param userId the user ID
      */
     public void removeFavorite(Long recipeId, Long userId) {
+        if (recipeId == null || userId == null) {
+            throw new IllegalArgumentException("Recipe ID and User ID cannot be null");
+        }
+        
         log.info("Removing recipe ID {} from favorites for user ID {}", recipeId, userId);
+        
+        if (!favoriteRecipeRepository.existsByUserIdAndRecipeId(userId, recipeId)) {
+            log.debug("Recipe ID {} is not in favorites for user ID {}", recipeId, userId);
+            return; // Idempotent operation - no error if already removed
+        }
         
         favoriteRecipeRepository.deleteByUserIdAndRecipeId(userId, recipeId);
         
@@ -148,16 +150,7 @@ public class FavoriteRecipeService {
         log.debug("Getting favorites for user ID {}", userId);
         
         // Get user's locale for translation resolution
-        String userLocale = SupportedLocale.EN.getCode(); // Default to English
-        try {
-            String locale = userSettingsService.getUserSettings(userId).getLanguage();
-            if (SupportedLocale.fromCode(locale).isPresent()) {
-                userLocale = locale;
-            }
-        } catch (Exception e) {
-            log.debug("Could not fetch user locale for user ID {}: {}", userId, e.getMessage());
-        }
-        final String finalUserLocale = userLocale;
+        String userLocale = userSettingsService.getUserLocale(userId);
         
         // Get favorites (no locale filtering)
         Page<FavoriteRecipe> favorites = favoriteRecipeRepository.findByUserId(userId, pageable);
@@ -166,27 +159,8 @@ public class FavoriteRecipeService {
             Recipe recipe = favorite.getRecipe();
             RecipeDto dto = recipeMapper.toRecipeDto(recipe, true); // Always true since these are favorites
             
-            // Resolve translations
-            TranslationResolver.RecipeContent content = translationResolver.resolveRecipeContent(recipe, finalUserLocale);
-            dto.setName(content.name());
-            dto.setDescription(content.description());
-            dto.setInstructions(content.instructions());
-            
-            // Resolve ingredient names
-            if (dto.getIngredients() != null) {
-                for (com.vallexia.recipe.dto.IngredientDto ingredientDto : dto.getIngredients()) {
-                    if (ingredientDto.getIngredientId() != null) {
-                        Ingredient ingredient = ingredientRepository.findById(ingredientDto.getIngredientId())
-                            .orElse(null);
-                        if (ingredient != null) {
-                            String translatedName = translationResolver.resolveIngredientName(ingredient, finalUserLocale);
-                            ingredientDto.setName(translatedName);
-                        }
-                    }
-                }
-            }
-            
-            return dto;
+            // Enrich with translations and ingredient names
+            return recipeEnrichmentService.enrichWithTranslations(dto, recipe, userLocale);
         });
     }
     
