@@ -1,6 +1,7 @@
 package com.vallexia.auth.unit.util;
 
 import com.vallexia.auth.util.AccountSecurityHelper;
+import com.vallexia.audit.service.AuditService;
 import com.vallexia.config.security.AccountSecurityProperties;
 import com.vallexia.user.entity.User;
 import com.vallexia.user.fixtures.UserTestFixtures;
@@ -38,6 +39,9 @@ class AccountSecurityHelperTest {
   
   @Mock
   private AccountSecurityProperties accountSecurityProperties;
+  
+  @Mock
+  private AuditService auditService;
   
   @InjectMocks
   private AccountSecurityHelper accountSecurityHelper;
