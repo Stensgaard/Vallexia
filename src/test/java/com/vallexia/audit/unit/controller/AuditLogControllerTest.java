@@ -1,8 +1,10 @@
 package com.vallexia.audit.unit.controller;
 
+import com.vallexia.audit.dto.AuditLogDto;
 import com.vallexia.audit.entity.AuditLog;
 import com.vallexia.audit.entity.enums.EventType;
 import com.vallexia.audit.fixtures.AuditLogTestFixtures;
+import com.vallexia.audit.mapper.AuditLogMapper;
 import com.vallexia.audit.service.AuditService;
 import com.vallexia.security.AuthenticationHelper;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,9 +33,9 @@ import static org.mockito.Mockito.*;
  * Unit tests for AuditLogController.
  * Tests REST endpoints for audit log operations with mocked dependencies.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("AuditLogController Unit Tests")
@@ -45,6 +47,9 @@ class AuditLogControllerTest {
   @Mock
   private AuthenticationHelper authenticationHelper;
   
+  @Mock
+  private AuditLogMapper auditLogMapper;
+  
   @InjectMocks
   private com.vallexia.audit.controller.AuditLogController auditLogController;
   
@@ -55,6 +60,25 @@ class AuditLogControllerTest {
     List<AuditLog> logs = AuditLogTestFixtures.createAuditLogList(5);
     Pageable pageable = PageRequest.of(0, 20);
     mockPage = new PageImpl<>(logs, pageable, 5);
+    
+    // Mock mapper to convert entities to DTOs
+    lenient().when(auditLogMapper.toDto(any(AuditLog.class))).thenAnswer(invocation -> {
+      AuditLog entity = invocation.getArgument(0);
+      return AuditLogDto.builder()
+          .id(entity.getId())
+          .eventType(entity.getEventType())
+          .eventDescription(entity.getEventDescription())
+          .userId(entity.getUserId())
+          .username(entity.getUsername())
+          .ipAddress(entity.getIpAddress())
+          .userAgent(entity.getUserAgent())
+          .requestMethod(entity.getRequestMethod())
+          .requestUri(entity.getRequestUri())
+          .responseStatus(entity.getResponseStatus())
+          .success(entity.getSuccess())
+          .timestamp(entity.getTimestamp())
+          .build();
+    });
   }
   
   // ==================== getMyAuditLogs() Tests ====================
@@ -70,12 +94,12 @@ class AuditLogControllerTest {
         .thenReturn(mockPage);
     
     // When
-    ResponseEntity<Page<AuditLog>> response = auditLogController.getMyAuditLogs(0, 20);
+    ResponseEntity<Page<AuditLogDto>> response = auditLogController.getMyAuditLogs(0, 20);
     
     // Then
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).isNotNull();
-    Page<AuditLog> body = response.getBody();
+    Page<AuditLogDto> body = response.getBody();
     assertThat(body).isNotNull();
     assertThat(body.getContent()).hasSize(5);
     verify(auditService).getUserAuditLogs(currentUserId, PageRequest.of(0, 20));
@@ -97,12 +121,12 @@ class AuditLogControllerTest {
         .thenReturn(customPage);
     
     // When
-    ResponseEntity<Page<AuditLog>> response = 
+    ResponseEntity<Page<AuditLogDto>> response = 
         auditLogController.getMyAuditLogs(2, 10);
     
     // Then
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    Page<AuditLog> body = response.getBody();
+    Page<AuditLogDto> body = response.getBody();
     assertThat(body).isNotNull();
     assertThat(body.getContent()).hasSize(10);
     assertThat(body.getTotalElements()).isEqualTo(50);
@@ -122,11 +146,11 @@ class AuditLogControllerTest {
         .thenReturn(emptyPage);
     
     // When
-    ResponseEntity<Page<AuditLog>> response = auditLogController.getMyAuditLogs(0, 20);
+    ResponseEntity<Page<AuditLogDto>> response = auditLogController.getMyAuditLogs(0, 20);
     
     // Then
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    Page<AuditLog> body = response.getBody();
+    Page<AuditLogDto> body = response.getBody();
     assertThat(body).isNotNull();
     assertThat(body.getContent()).isEmpty();
     assertThat(body.getTotalElements()).isEqualTo(0);
@@ -144,12 +168,12 @@ class AuditLogControllerTest {
         .thenReturn(mockPage);
     
     // When
-    ResponseEntity<Page<AuditLog>> response = 
+    ResponseEntity<Page<AuditLogDto>> response = 
         auditLogController.getUserAuditLogs(userId, 0, 20);
     
     // Then
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    Page<AuditLog> body = response.getBody();
+    Page<AuditLogDto> body = response.getBody();
     assertThat(body).isNotNull();
     assertThat(body.getContent()).hasSize(5);
     verify(auditService).getUserAuditLogs(eq(userId), any(Pageable.class));
@@ -169,12 +193,12 @@ class AuditLogControllerTest {
         .thenReturn(customPage);
     
     // When
-    ResponseEntity<Page<AuditLog>> response = 
+    ResponseEntity<Page<AuditLogDto>> response = 
         auditLogController.getUserAuditLogs(userId, 1, 5);
     
     // Then
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    Page<AuditLog> body = response.getBody();
+    Page<AuditLogDto> body = response.getBody();
     assertThat(body).isNotNull();
     assertThat(body.getSize()).isEqualTo(5);
     assertThat(body.getNumber()).isEqualTo(1);
@@ -194,12 +218,12 @@ class AuditLogControllerTest {
     when(auditService.getAuditLogs(any(Pageable.class))).thenReturn(page);
     
     // When
-    ResponseEntity<Page<AuditLog>> response = 
+    ResponseEntity<Page<AuditLogDto>> response = 
         auditLogController.getAllAuditLogs(0, 20);
     
     // Then
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    Page<AuditLog> body = response.getBody();
+    Page<AuditLogDto> body = response.getBody();
     assertThat(body).isNotNull();
     assertThat(body.getContent()).hasSize(20);
     assertThat(body.getTotalElements()).isEqualTo(100);
@@ -218,12 +242,12 @@ class AuditLogControllerTest {
     when(auditService.getAuditLogs(pageable)).thenReturn(page);
     
     // When
-    ResponseEntity<Page<AuditLog>> response = 
+    ResponseEntity<Page<AuditLogDto>> response = 
         auditLogController.getAllAuditLogs(3, 15);
     
     // Then
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    Page<AuditLog> body = response.getBody();
+    Page<AuditLogDto> body = response.getBody();
     assertThat(body).isNotNull();
     assertThat(body.getSize()).isEqualTo(15);
     assertThat(body.getNumber()).isEqualTo(3);
@@ -241,12 +265,12 @@ class AuditLogControllerTest {
     when(auditService.getAuditLogs(any(Pageable.class))).thenReturn(emptyPage);
     
     // When
-    ResponseEntity<Page<AuditLog>> response = 
+    ResponseEntity<Page<AuditLogDto>> response = 
         auditLogController.getAllAuditLogs(0, 20);
     
     // Then
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    Page<AuditLog> body = response.getBody();
+    Page<AuditLogDto> body = response.getBody();
     assertThat(body).isNotNull();
     assertThat(body.getContent()).isEmpty();
     verify(auditService).getAuditLogs(any(Pageable.class));
@@ -268,12 +292,12 @@ class AuditLogControllerTest {
         .thenReturn(page);
     
     // When
-    ResponseEntity<Page<AuditLog>> response = 
+    ResponseEntity<Page<AuditLogDto>> response = 
         auditLogController.getFailedLoginAttempts(username, 0, 20);
     
     // Then
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    Page<AuditLog> body = response.getBody();
+    Page<AuditLogDto> body = response.getBody();
     assertThat(body).isNotNull();
     assertThat(body.getContent()).hasSize(1);
     assertThat(body.getContent().get(0).getEventType())
@@ -296,12 +320,12 @@ class AuditLogControllerTest {
         .thenReturn(emptyPage);
     
     // When
-    ResponseEntity<Page<AuditLog>> response = 
+    ResponseEntity<Page<AuditLogDto>> response = 
         auditLogController.getFailedLoginAttempts(username, 0, 20);
     
     // Then
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    Page<AuditLog> body = response.getBody();
+    Page<AuditLogDto> body = response.getBody();
     assertThat(body).isNotNull();
     assertThat(body.getContent()).isEmpty();
   }
@@ -322,12 +346,12 @@ class AuditLogControllerTest {
         .thenReturn(page);
     
     // When
-    ResponseEntity<Page<AuditLog>> response = 
+    ResponseEntity<Page<AuditLogDto>> response = 
         auditLogController.getSecurityViolations(0, 20);
     
     // Then
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    Page<AuditLog> body = response.getBody();
+    Page<AuditLogDto> body = response.getBody();
     assertThat(body).isNotNull();
     assertThat(body.getContent()).hasSize(1);
     assertThat(body.getContent().get(0).getEventType())
@@ -347,12 +371,12 @@ class AuditLogControllerTest {
         .thenReturn(emptyPage);
     
     // When
-    ResponseEntity<Page<AuditLog>> response = 
+    ResponseEntity<Page<AuditLogDto>> response = 
         auditLogController.getSecurityViolations(0, 20);
     
     // Then
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    Page<AuditLog> body = response.getBody();
+    Page<AuditLogDto> body = response.getBody();
     assertThat(body).isNotNull();
     assertThat(body.getContent()).isEmpty();
   }
@@ -374,12 +398,12 @@ class AuditLogControllerTest {
         .thenReturn(page);
     
     // When
-    ResponseEntity<Page<AuditLog>> response = 
+    ResponseEntity<Page<AuditLogDto>> response = 
         auditLogController.getAuditLogsByDateRange(start, end, 0, 20);
     
     // Then
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    Page<AuditLog> body = response.getBody();
+    Page<AuditLogDto> body = response.getBody();
     assertThat(body).isNotNull();
     assertThat(body.getContent()).hasSize(10);
     verify(auditService).getAuditLogsByDateRange(eq(start), eq(end), any(Pageable.class));
@@ -400,12 +424,12 @@ class AuditLogControllerTest {
         .thenReturn(page);
     
     // When
-    ResponseEntity<Page<AuditLog>> response = 
+    ResponseEntity<Page<AuditLogDto>> response = 
         auditLogController.getAuditLogsByDateRange(start, end, 0, 50);
     
     // Then
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    Page<AuditLog> body = response.getBody();
+    Page<AuditLogDto> body = response.getBody();
     assertThat(body).isNotNull();
     assertThat(body.getContent()).hasSize(50);
     assertThat(body.getTotalElements()).isEqualTo(100);
@@ -426,12 +450,12 @@ class AuditLogControllerTest {
         .thenReturn(emptyPage);
     
     // When
-    ResponseEntity<Page<AuditLog>> response = 
+    ResponseEntity<Page<AuditLogDto>> response = 
         auditLogController.getAuditLogsByDateRange(start, end, 0, 20);
     
     // Then
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    Page<AuditLog> body = response.getBody();
+    Page<AuditLogDto> body = response.getBody();
     assertThat(body).isNotNull();
     assertThat(body.getContent()).isEmpty();
   }
