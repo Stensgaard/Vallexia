@@ -18,8 +18,9 @@ spring:
         format-sql: false
 
 app:
-  audit:
+  security:
     trusted-proxies: 
+  audit:
     retention-days: 90
     fallback-log-path: ${AUDIT_FALLBACK_LOG_PATH:deployment/logs/audit-fallback.log}
   jwt:

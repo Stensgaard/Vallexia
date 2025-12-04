@@ -60,11 +60,11 @@
       "sourceType": "com.vallexia.config.security.AccountSecurityProperties"
     },
     {
-      "name": "app.audit.trusted-proxies",
+      "name": "app.security.trusted-proxies",
       "type": "java.lang.String",
-      "description": "Comma-separated list of trusted proxy IP addresses for extracting real client IP from X-Forwarded-For headers. Example: \"172.17.0.1,10.0.0.1\"",
+      "description": "Comma-separated list of trusted proxy IP addresses for extracting real client IP from X-Forwarded-For headers. Only IPs from trusted proxies will be used for client IP extraction. Example: \"172.17.0.1,10.0.0.1\"",
       "defaultValue": "",
-      "sourceType": "com.vallexia.config.audit.AuditProperties"
+      "sourceType": "com.vallexia.config.security.SecurityProperties"
     },
     {
       "name": "app.audit.retention-days",

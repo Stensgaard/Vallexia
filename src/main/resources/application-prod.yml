@@ -58,9 +58,11 @@ app:
     lockout:
       max-failed-attempts: ${MAX_FAILED_ATTEMPTS:5}
       duration-minutes: ${LOCKOUT_DURATION_MINUTES:15}
-  audit:
+  security:
+    # Comma-separated list of trusted proxy IP addresses for extracting real client IP
     # Example: 172.17.0.1,10.0.0.1
     trusted-proxies: ${TRUSTED_PROXIES:}
+  audit:
     # Audit log retention period in days
     retention-days: ${AUDIT_RETENTION_DAYS:90}
     # Path for audit fallback log file (when database logging fails)

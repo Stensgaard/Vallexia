@@ -1,7 +1,7 @@
 package com.vallexia.security;
 
-import com.vallexia.audit.util.IpAddressExtractor;
 import com.vallexia.config.security.RateLimitingConfig;
+import com.vallexia.security.util.IpAddressExtractor;
 import com.vallexia.config.security.RateLimitingProperties;
 import com.vallexia.security.job.RateLimitingBucketCleanupJob;
 import io.github.bucket4j.Bucket;
@@ -17,8 +17,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Map;
 
 /**
@@ -89,9 +87,9 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     String requestURI = request.getRequestURI();
     String clientIp = ipAddressExtractor.extractClientIp(request);
     
-    // Validate IP address before using
-    if (clientIp == null || clientIp.trim().isEmpty() || !isValidIpAddress(clientIp)) {
-      log.warn("Could not extract or validate client IP, skipping rate limiting");
+    // Validate IP address before using (IpAddressExtractor already validates, just check for null/empty)
+    if (clientIp == null || clientIp.trim().isEmpty()) {
+      log.warn("Could not extract client IP, skipping rate limiting");
       filterChain.doFilter(request, response);
       return;
     }
@@ -183,80 +181,6 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     BucketWithType(Bucket bucket, String type) {
       this.bucket = bucket;
       this.type = type;
-    }
-  }
-  
-  /**
-   * Validates if the given string is a valid IP address (IPv4 or IPv6).
-   * Uses java.net.InetAddress for robust validation that handles all IPv4 and IPv6 formats,
-   * including compressed IPv6, mixed notation, and edge cases.
-   * 
-   * This method prevents DNS lookups by checking the format first, then using InetAddress
-   * only for numeric IP addresses to validate the range and format correctness.
-   * 
-   * @param ipAddress the IP address string to validate
-   * @return true if valid IP address, false otherwise
-   */
-  private boolean isValidIpAddress(String ipAddress) {
-    if (ipAddress == null || ipAddress.trim().isEmpty()) {
-      return false;
-    }
-    
-    String trimmed = ipAddress.trim();
-    
-    // Quick check: IP addresses should only contain numeric characters, dots, colons, and brackets
-    // This prevents DNS lookups for hostnames
-    if (!trimmed.matches("^[0-9a-fA-F:.\\[\\]]+$")) {
-      return false;
-    }
-    
-    // Remove IPv6 brackets if present for validation
-    String addressToValidate = trimmed.replaceAll("^\\[|\\]$", "");
-    
-    try {
-      // Use InetAddress.getByName() to validate the IP address format and range
-      // Since we've filtered out hostnames above, this will only parse IP addresses
-      // This validates:
-      // - IPv4: correct octet ranges (0-255), proper format
-      // - IPv6: correct hex format, compressed notation (::), mixed notation
-      // - Rejects invalid ranges (e.g., 256.256.256.256)
-      InetAddress addr = InetAddress.getByName(addressToValidate);
-      
-      // Verify it's actually an IP address and not a hostname
-      // getHostAddress() returns the numeric IP, so if it matches patterns, it's an IP
-      String hostAddress = addr.getHostAddress();
-      
-      // For IPv4, check that getHostAddress() is in IPv4 format
-      // For IPv6, check that it's in IPv6 format (contains colons)
-      // This ensures we didn't accidentally accept a hostname
-      boolean isIPv4 = hostAddress.matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$");
-      boolean isIPv6 = hostAddress.contains(":");
-      
-      if (!isIPv4 && !isIPv6) {
-        // Not a valid IP format
-        return false;
-      }
-      
-      // Additional validation: ensure the byte array length matches expected IP version
-      byte[] addressBytes = addr.getAddress();
-      if (isIPv4 && addressBytes.length != 4) {
-        return false;
-      }
-      if (isIPv6 && addressBytes.length != 16) {
-        return false;
-      }
-      
-      // Successfully validated as IP address
-      return true;
-             
-    } catch (UnknownHostException e) {
-      // getByName() couldn't parse it as an IP address
-      log.debug("Invalid IP address format: {}", trimmed);
-      return false;
-    } catch (Exception e) {
-      // Catch any other exceptions (security or parsing issues)
-      log.debug("Error validating IP address {}: {}", trimmed, e.getClass().getSimpleName());
-      return false;
     }
   }
 }

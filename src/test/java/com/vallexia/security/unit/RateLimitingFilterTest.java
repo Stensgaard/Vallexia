@@ -1,7 +1,7 @@
 package com.vallexia.security.unit;
 
-import com.vallexia.audit.util.IpAddressExtractor;
 import com.vallexia.config.security.RateLimitingConfig;
+import com.vallexia.security.util.IpAddressExtractor;
 import com.vallexia.config.security.RateLimitingProperties;
 import com.vallexia.security.RateLimitingFilter;
 import com.vallexia.security.job.RateLimitingBucketCleanupJob;

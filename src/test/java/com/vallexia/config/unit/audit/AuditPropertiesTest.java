@@ -36,7 +36,6 @@ class AuditPropertiesTest {
     AuditProperties properties = new AuditProperties();
     properties.setRetentionDays(90);
     properties.setFallbackLogPath("deployment/logs/audit-fallback.log");
-    properties.setTrustedProxies("");
     return properties;
   }
   
@@ -177,16 +176,6 @@ class AuditPropertiesTest {
     
     // Then
     assertThat(properties.getFallbackLogPath()).isEqualTo("deployment/logs/audit-fallback.log");
-  }
-  
-  @Test
-  @DisplayName("Should have default empty string for trustedProxies")
-  void shouldHaveDefaultEmptyStringForTrustedProxies() {
-    // Given
-    AuditProperties properties = new AuditProperties();
-    
-    // Then
-    assertThat(properties.getTrustedProxies()).isEqualTo("");
   }
   
   @Test

@@ -51,8 +51,10 @@ app:
     lockout:
       max-failed-attempts: 5
       duration-minutes: 15
-  audit:
+  security:
+    # Comma-separated list of trusted proxy IP addresses for extracting real client IP
     trusted-proxies: ${TRUSTED_PROXIES:}
+  audit:
     retention-days: ${AUDIT_RETENTION_DAYS:90}
     fallback-log-path: ${AUDIT_FALLBACK_LOG_PATH:deployment/logs/audit-fallback.log}
   cors:

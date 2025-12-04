@@ -19,13 +19,6 @@ import org.springframework.validation.annotation.Validated;
 public class AuditProperties {
   
   /**
-   * Comma-separated list of trusted proxy IP addresses.
-   * Used for extracting real client IP from X-Forwarded-For headers.
-   * Example: "172.17.0.1,10.0.0.1"
-   */
-  private String trustedProxies = "";
-  
-  /**
    * Audit log retention period in days.
    * Audit logs older than this will be automatically deleted.
    * Default: 90 days
