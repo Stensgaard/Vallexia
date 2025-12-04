@@ -17,7 +17,7 @@
             <!-- Success Icon -->
             <svg
               v-if="type === 'success'"
-              class="h-6 w-6 text-green-400"
+              :class="['h-6', 'w-6', TYPE_ICON_CLASSES.success]"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -33,7 +33,7 @@
             <!-- Error Icon -->
             <svg
               v-else-if="type === 'error'"
-              class="h-6 w-6 text-red-400"
+              :class="['h-6', 'w-6', TYPE_ICON_CLASSES.error]"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -49,7 +49,7 @@
             <!-- Warning Icon -->
             <svg
               v-else-if="type === 'warning'"
-              class="h-6 w-6 text-yellow-400"
+              :class="['h-6', 'w-6', TYPE_ICON_CLASSES.warning]"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -65,7 +65,7 @@
             <!-- Info Icon -->
             <svg
               v-else
-              class="h-6 w-6 text-blue-400"
+              :class="['h-6', 'w-6', TYPE_ICON_CLASSES.info]"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -87,9 +87,10 @@
           <div v-if="dismissible" class="ml-4 flex-shrink-0 flex">
             <button
               @click="dismiss"
+              :aria-label="t('common.close')"
               class="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-              <span class="sr-only">{{ $t('common.close') }}</span>
+              <span class="sr-only">{{ t('common.close') }}</span>
               <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path
                   fill-rule="evenodd"
@@ -107,6 +108,18 @@
 
 <script setup>
 import { watch, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
+const TOAST_TYPES = ['success', 'error', 'warning', 'info']
+
+const TYPE_ICON_CLASSES = {
+  success: 'text-green-400',
+  error: 'text-red-400',
+  warning: 'text-yellow-400',
+  info: 'text-blue-400'
+}
 
 const props = defineProps({
   show: {
@@ -116,7 +129,7 @@ const props = defineProps({
   type: {
     type: String,
     default: 'info',
-    validator: (value) => ['success', 'error', 'warning', 'info'].includes(value)
+    validator: (value) => TOAST_TYPES.includes(value)
   },
   title: {
     type: String,
