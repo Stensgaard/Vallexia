@@ -106,20 +106,23 @@
   </Transition>
 </template>
 
-<script setup>
-import { watch, onUnmounted } from 'vue'
-import { useI18n } from 'vue-i18n'
+<script>
+// Constants must be in module scope (not <script setup>) to be used in defineProps
+export const TOAST_TYPES = ['success', 'error', 'warning', 'info']
 
-const { t } = useI18n()
-
-const TOAST_TYPES = ['success', 'error', 'warning', 'info']
-
-const TYPE_ICON_CLASSES = {
+export const TYPE_ICON_CLASSES = {
   success: 'text-green-400',
   error: 'text-red-400',
   warning: 'text-yellow-400',
   info: 'text-blue-400'
 }
+</script>
+
+<script setup>
+import { watch, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   show: {
