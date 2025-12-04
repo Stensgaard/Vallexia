@@ -27,7 +27,7 @@ CREATE TABLE audit_logs (
     timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE audit_logs IS 'Immutable audit log table for security event tracking. Updates and deletes are prevented by database triggers.';
+COMMENT ON TABLE audit_logs IS 'Audit log table for security event tracking. Updates are prevented by database triggers. Deletes are allowed for retention policy management via scheduled job.';
 COMMENT ON COLUMN audit_logs.event_type IS 'Type of security/application event (enum value)';
 COMMENT ON COLUMN audit_logs.event_description IS 'Human-readable description of the event';
 COMMENT ON COLUMN audit_logs.user_id IS 'ID of the user who triggered the event (null if anonymous)';
