@@ -3,8 +3,8 @@ package com.vallexia.audit.service;
 import com.vallexia.audit.entity.AuditLog;
 import com.vallexia.audit.entity.enums.EventType;
 import com.vallexia.audit.repository.AuditLogRepository;
-import com.vallexia.audit.util.IpAddressExtractor;
 import com.vallexia.config.audit.AuditProperties;
+import com.vallexia.security.util.IpAddressExtractor;
 import com.vallexia.security.AuthenticationHelper;
 import com.vallexia.security.util.InputSanitizer;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,9 +28,9 @@ import java.util.List;
  * Service for managing audit logging with security hardening.
  * Implements input sanitization, access control, and fallback logging.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 @Slf4j
 @Service
@@ -101,11 +101,10 @@ public class AuditService {
           sanitizedUsername,
           sanitizedIp,
           sanitizedUserAgent,
+          request.getMethod(),
+          sanitizedRequestUri,
           success
       );
-      
-      auditLog.setRequestMethod(request.getMethod());
-      auditLog.setRequestUri(sanitizedRequestUri);
       
       auditLogRepository.save(auditLog);
       log.debug("Audit log saved: {} for user {}", eventType, sanitizedUsername);
@@ -155,11 +154,12 @@ public class AuditService {
     try {
       String sanitizedDescription = inputSanitizer.sanitizeDescription(description);
       
-      AuditLog auditLog = new AuditLog();
-      auditLog.setEventType(eventType);
-      auditLog.setEventDescription(sanitizedDescription);
-      auditLog.setUserId(userId);
-      auditLog.setSuccess(true);
+      AuditLog auditLog = new AuditLog(
+          eventType,
+          sanitizedDescription,
+          userId,
+          true
+      );
       
       auditLogRepository.save(auditLog);
       log.debug("Audit log saved: {} for user ID {}", eventType, userId);
@@ -221,12 +221,11 @@ public class AuditService {
           sanitizedUsername,
           sanitizedIp,
           sanitizedUserAgent,
+          request.getMethod(),
+          sanitizedRequestUri,
+          responseStatus,
           responseStatus != null && responseStatus < 400
       );
-      
-      auditLog.setRequestMethod(request.getMethod());
-      auditLog.setRequestUri(sanitizedRequestUri);
-      auditLog.setResponseStatus(responseStatus);
       
       auditLogRepository.save(auditLog);
       
