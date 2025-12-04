@@ -7,7 +7,7 @@ import com.vallexia.recipe.entity.Recipe;
 import com.vallexia.recipe.fixtures.RecipeTestFixtures;
 import com.vallexia.recipe.repository.IngredientRepository;
 import com.vallexia.recipe.service.RecipeEnrichmentService;
-import com.vallexia.recipe.service.TranslationResolver;
+import com.vallexia.recipe.util.TranslationResolver;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
