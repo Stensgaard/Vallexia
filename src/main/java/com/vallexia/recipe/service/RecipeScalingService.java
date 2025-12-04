@@ -15,16 +15,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static com.vallexia.nutrition.util.NutritionalConstants.*;
 
 /**
  * Service for scaling recipes to different serving sizes.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 @Slf4j
 @Service
@@ -33,18 +36,22 @@ public class RecipeScalingService {
     
     private final RecipeRepository recipeRepository;
     private final RecipeMapper recipeMapper;
-    private static final int DECIMAL_SCALE = 2;
-    private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_UP;
+    private final FavoriteRecipeService favoriteRecipeService;
     
     /**
      * Constructor for dependency injection.
      * 
      * @param recipeRepository the recipe repository
      * @param recipeMapper the recipe mapper
+     * @param favoriteRecipeService the favorite recipe service
      */
-    public RecipeScalingService(RecipeRepository recipeRepository, RecipeMapper recipeMapper) {
+    public RecipeScalingService(
+            RecipeRepository recipeRepository, 
+            RecipeMapper recipeMapper,
+            FavoriteRecipeService favoriteRecipeService) {
         this.recipeRepository = recipeRepository;
         this.recipeMapper = recipeMapper;
+        this.favoriteRecipeService = favoriteRecipeService;
     }
     
     /**
@@ -70,7 +77,14 @@ public class RecipeScalingService {
         }
         
         Integer currentServings = recipe.getServings();
-        RecipeDto scaledRecipe = recipeMapper.toRecipeDto(recipe, false); // Favorite check handled separately
+        if (currentServings == null || currentServings <= 0) {
+            throw new InvalidRecipeServingsException(
+                "Recipe has invalid servings: " + currentServings
+            );
+        }
+        
+        boolean isFavorite = userId != null && favoriteRecipeService.isFavorite(recipeId, userId);
+        RecipeDto scaledRecipe = recipeMapper.toRecipeDto(recipe, isFavorite);
         
         // Scale ingredients
         if (recipe.getIngredients() != null && !recipe.getIngredients().isEmpty()) {
@@ -100,6 +114,18 @@ public class RecipeScalingService {
     }
     
     /**
+     * Calculate the scale factor for scaling between serving sizes.
+     * 
+     * @param currentServings current number of servings
+     * @param targetServings target number of servings
+     * @return scale factor as BigDecimal
+     */
+    private BigDecimal calculateScaleFactor(Integer currentServings, Integer targetServings) {
+        return BigDecimal.valueOf(targetServings)
+                .divide(BigDecimal.valueOf(currentServings), DECIMAL_SCALE, ROUNDING_MODE);
+    }
+    
+    /**
      * Scale ingredient quantities proportionally.
      * 
      * @param ingredients list of recipe ingredients
@@ -112,8 +138,7 @@ public class RecipeScalingService {
             Integer currentServings, 
             Integer targetServings) {
         
-        BigDecimal scaleFactor = BigDecimal.valueOf(targetServings)
-                .divide(BigDecimal.valueOf(currentServings), DECIMAL_SCALE, ROUNDING_MODE);
+        BigDecimal scaleFactor = calculateScaleFactor(currentServings, targetServings);
         
         return ingredients.stream()
                 .map(ri -> {
@@ -140,48 +165,38 @@ public class RecipeScalingService {
             Integer currentServings, 
             Integer targetServings) {
         
-        BigDecimal scaleFactor = BigDecimal.valueOf(targetServings)
-                .divide(BigDecimal.valueOf(currentServings), DECIMAL_SCALE, ROUNDING_MODE);
-        
+        BigDecimal scaleFactor = calculateScaleFactor(currentServings, targetServings);
         NutritionalInfoDto dto = recipeMapper.toNutritionalInfoDto(nutritionalInfo);
         
         // Scale all nutritional values
-        if (dto.getCalories() != null) {
-            dto.setCalories(dto.getCalories()
-                    .multiply(scaleFactor)
-                    .setScale(DECIMAL_SCALE, ROUNDING_MODE));
-        }
-        if (dto.getProtein() != null) {
-            dto.setProtein(dto.getProtein()
-                    .multiply(scaleFactor)
-                    .setScale(DECIMAL_SCALE, ROUNDING_MODE));
-        }
-        if (dto.getCarbs() != null) {
-            dto.setCarbs(dto.getCarbs()
-                    .multiply(scaleFactor)
-                    .setScale(DECIMAL_SCALE, ROUNDING_MODE));
-        }
-        if (dto.getFats() != null) {
-            dto.setFats(dto.getFats()
-                    .multiply(scaleFactor)
-                    .setScale(DECIMAL_SCALE, ROUNDING_MODE));
-        }
-        if (dto.getFiber() != null) {
-            dto.setFiber(dto.getFiber()
-                    .multiply(scaleFactor)
-                    .setScale(DECIMAL_SCALE, ROUNDING_MODE));
-        }
-        if (dto.getSodium() != null) {
-            dto.setSodium(dto.getSodium()
-                    .multiply(scaleFactor)
-                    .setScale(DECIMAL_SCALE, ROUNDING_MODE));
-        }
-        if (dto.getSugar() != null) {
-            dto.setSugar(dto.getSugar()
-                    .multiply(scaleFactor)
-                    .setScale(DECIMAL_SCALE, ROUNDING_MODE));
-        }
+        scaleNutritionalValue(NutritionalInfoDto::getCalories, NutritionalInfoDto::setCalories, dto, scaleFactor);
+        scaleNutritionalValue(NutritionalInfoDto::getProtein, NutritionalInfoDto::setProtein, dto, scaleFactor);
+        scaleNutritionalValue(NutritionalInfoDto::getCarbs, NutritionalInfoDto::setCarbs, dto, scaleFactor);
+        scaleNutritionalValue(NutritionalInfoDto::getFats, NutritionalInfoDto::setFats, dto, scaleFactor);
+        scaleNutritionalValue(NutritionalInfoDto::getFiber, NutritionalInfoDto::setFiber, dto, scaleFactor);
+        scaleNutritionalValue(NutritionalInfoDto::getSodium, NutritionalInfoDto::setSodium, dto, scaleFactor);
+        scaleNutritionalValue(NutritionalInfoDto::getSugar, NutritionalInfoDto::setSugar, dto, scaleFactor);
         
         return dto;
+    }
+    
+    /**
+     * Scale a single nutritional value by the scale factor.
+     * 
+     * @param getter function to get the nutritional value
+     * @param setter function to set the nutritional value
+     * @param dto the nutritional info DTO
+     * @param scaleFactor the scale factor to apply
+     */
+    private void scaleNutritionalValue(
+            Function<NutritionalInfoDto, BigDecimal> getter,
+            BiConsumer<NutritionalInfoDto, BigDecimal> setter,
+            NutritionalInfoDto dto,
+            BigDecimal scaleFactor) {
+        BigDecimal value = getter.apply(dto);
+        if (value != null) {
+            setter.accept(dto, value.multiply(scaleFactor)
+                    .setScale(DECIMAL_SCALE, ROUNDING_MODE));
+        }
     }
 }
