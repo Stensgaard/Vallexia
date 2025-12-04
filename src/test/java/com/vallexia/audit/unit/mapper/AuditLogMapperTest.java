@@ -19,9 +19,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit tests for AuditLogMapper.
  * Tests entity-to-DTO mapping with real MapStruct implementation.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 @SpringBootTest(classes = {
     com.vallexia.audit.mapper.AuditLogMapperImpl.class
@@ -64,15 +64,9 @@ class AuditLogMapperTest {
   @DisplayName("Should exclude details field for security")
   void shouldExcludeDetailsFieldForSecurity() {
     // Given
-    AuditLog auditLog = new AuditLog();
-    auditLog.setId(1L);
-    auditLog.setEventType(EventType.LOGIN_SUCCESS);
-    auditLog.setEventDescription("Login successful");
-    auditLog.setDetails("Sensitive details that should not be exposed");
-    auditLog.setUserId(1L);
-    auditLog.setUsername("testuser");
-    auditLog.setSuccess(true);
-    auditLog.setTimestamp(LocalDateTime.now());
+    AuditLog auditLog = AuditLogTestFixtures.createAuditLogWithDetails(
+        "Sensitive details that should not be exposed"
+    );
     
     // When
     AuditLogDto dto = auditLogMapper.toDto(auditLog);
@@ -97,12 +91,12 @@ class AuditLogMapperTest {
   @DisplayName("Should map partial entity with only required fields")
   void shouldMapPartialEntityWithOnlyRequiredFields() {
     // Given
-    AuditLog auditLog = new AuditLog();
-    auditLog.setId(1L);
-    auditLog.setEventType(EventType.API_ACCESS);
-    auditLog.setEventDescription("API accessed");
-    auditLog.setUserId(1L);
-    // Leave other fields null
+    AuditLog auditLog = AuditLogTestFixtures.createMinimalAuditLog(
+        EventType.API_ACCESS,
+        "API accessed",
+        1L
+    );
+    AuditLogTestFixtures.setIdAndTimestamp(auditLog, 1L, null);
     
     // When
     AuditLogDto dto = auditLogMapper.toDto(auditLog);
@@ -144,19 +138,21 @@ class AuditLogMapperTest {
   @DisplayName("Should map complete entity with all fields populated")
   void shouldMapCompleteEntityWithAllFieldsPopulated() {
     // Given
-    AuditLog auditLog = new AuditLog();
-    auditLog.setId(99L);
-    auditLog.setEventType(EventType.SECURITY_VIOLATION);
-    auditLog.setEventDescription("Suspicious activity");
-    auditLog.setUserId(123L);
-    auditLog.setUsername("hacker");
-    auditLog.setIpAddress("203.0.113.100");
-    auditLog.setUserAgent("BadBot/1.0");
-    auditLog.setRequestMethod("POST");
-    auditLog.setRequestUri("/api/v1/admin/delete-all");
-    auditLog.setResponseStatus(403);
-    auditLog.setSuccess(false);
-    auditLog.setTimestamp(LocalDateTime.of(2024, 1, 15, 10, 30, 0));
+    LocalDateTime timestamp = LocalDateTime.of(2024, 1, 15, 10, 30, 0);
+    AuditLog auditLog = AuditLogTestFixtures.createCompleteAuditLog(
+        99L,
+        EventType.SECURITY_VIOLATION,
+        "Suspicious activity",
+        123L,
+        "hacker",
+        "203.0.113.100",
+        "BadBot/1.0",
+        "POST",
+        "/api/v1/admin/delete-all",
+        403,
+        false,
+        timestamp
+    );
     
     // When
     AuditLogDto dto = auditLogMapper.toDto(auditLog);
