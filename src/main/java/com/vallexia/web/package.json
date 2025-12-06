@@ -33,7 +33,7 @@
     "eslint-plugin-vue": "^10.5.1",
     "glob": "^11.0.3",
     "postcss": "^8.4.47",
-    "prettier": "^3.3.3",
+    "prettier": "^3.7.4",
     "rimraf": "^6.1.0",
     "tailwindcss": "^4.1.17",
     "vite": "^7.2.2"
