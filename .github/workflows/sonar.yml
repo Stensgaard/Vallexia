@@ -48,6 +48,14 @@ jobs:
           distribution: 'temurin'
           cache: maven
       
+      - name: Cache OWASP Dependency Check NVD database
+        uses: actions/cache@v4
+        with:
+          path: .dependency-check-data
+          key: dependency-check-nvd-${{ runner.os }}-${{ hashFiles('pom.xml') }}
+          restore-keys: |
+            dependency-check-nvd-${{ runner.os }}-
+      
       - name: Run tests with coverage
         run: mvn clean verify
         env:

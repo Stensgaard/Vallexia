@@ -68,6 +68,9 @@ dist/
 coverage/
 .nyc_output
 
+# OWASP Dependency Check cache
+.dependency-check-data/
+
 # npm/yarn cache and files
 .cache
 .parcel-cache

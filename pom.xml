@@ -291,6 +291,8 @@
                         <suppressionFile>dependency-check-suppressions.xml</suppressionFile>
                     </suppressionFiles>
                     <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
+                    <!-- Custom data directory for caching in CI -->
+                    <dataDirectory>${project.basedir}/.dependency-check-data</dataDirectory>
                 </configuration>
                 <executions>
                     <execution>
