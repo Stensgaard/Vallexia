@@ -1,0 +1,679 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "loading": "Loading...",
+    "dismiss": "Dismiss",
+    "confirm": "Confirm",
+    "close": "Close",
+    "search": "Search",
+    "filter": "Filter",
+    "clear": "Clear",
+    "apply": "Apply",
+    "reset": "Reset",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "create": "Create",
+    "update": "Update",
+    "view": "View",
+    "add": "Add",
+    "remove": "Remove",
+    "select": "Select",
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All",
+    "noResults": "No results found",
+    "noData": "No data available",
+    "required": "Required",
+    "optional": "Optional",
+    "tagInputPlaceholder": "Add tags...",
+    "actions": "Actions",
+    "status": "Status",
+    "expires": "Expires",
+    "expiresAt": "Expires: {date}",
+    "saveChanges": "Save Changes",
+    "cancelChanges": "Cancel Changes",
+    "areYouSure": "Are you sure?",
+    "thisActionCannotBeUndone": "This action cannot be undone.",
+    "confirmAction": "Confirm Action",
+    "success": "Success",
+    "error": "Error",
+    "appTitle": "Vallexia - Smart Meal Planning App"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign In",
+      "usernameOrEmail": "Username or Email",
+      "usernameOrEmailPlaceholder": "Enter your username or email",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "forgotPassword": "Forgot your password?",
+      "signIn": "Sign In",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up"
+    },
+    "register": {
+      "title": "Create Account",
+      "username": "Username",
+      "usernamePlaceholder": "Choose a username",
+      "usernameHint": "3-20 characters, letters and numbers only",
+      "email": "Email Address",
+      "emailPlaceholder": "Enter your email address",
+      "password": "Password",
+      "passwordPlaceholder": "Create a strong password",
+      "passwordHint": "At least 8 characters with uppercase, lowercase, number, and special character",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Confirm your password",
+      "country": "Country",
+      "countryPlaceholder": "Select your country",
+      "acceptTerms": "I agree to the",
+      "termsOfService": "Terms of Service",
+      "and": "and",
+      "privacyPolicy": "Privacy Policy",
+      "createAccount": "Create Account",
+      "alreadyHaveAccount": "Already have an account?",
+      "signIn": "Sign in"
+    },
+    "validation": {
+      "usernameRequired": "Username is required",
+      "usernameLength": "Username must be between 3 and 20 characters",
+      "usernameFormat": "Username can only contain letters and numbers",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email address",
+      "passwordRequired": "Password is required",
+      "passwordLength": "Password must be at least 8 characters",
+      "passwordComplexity": "Password must contain uppercase, lowercase, number, and special character",
+      "confirmPasswordRequired": "Please confirm your password",
+      "passwordsDoNotMatch": "Passwords do not match",
+      "countryRequired": "Country is required",
+      "countryInvalid": "Please select a valid country",
+      "termsRequired": "You must accept the terms and conditions",
+      "usernameOrEmailRequired": "Username or email is required"
+    },
+    "meta": {
+      "signInTitle": "Sign in to your account",
+      "signInSubtitle": "Welcome back! Please sign in to continue.",
+      "registerTitle": "Create your account",
+      "registerSubtitle": "Join Vallexia and start planning your meals today!"
+    }
+  },
+  "profile": {
+    "title": "Profile Management",
+    "description": "Manage your personal information, dietary preferences, and nutritional goals.",
+    "tabs": {
+      "personal": "Personal Information",
+      "dietary": "Dietary Preferences",
+      "nutritional": "Nutritional Goals",
+      "settings": "Display Preferences",
+      "ariaLabel": "Tabs"
+    },
+    "personal": {
+      "title": "Personal Information",
+      "description": "Update your personal details and profile information.",
+      "email": "Email Address",
+      "emailPlaceholder": "Enter your email address",
+      "householdSize": "Household Size",
+      "householdSizePlaceholder": "Number of people",
+      "mealTypes": "Meal Types",
+      "mealTypesDescription": "Select the meal types you want to track in your meal plans.",
+      "subscriptionStatus": "Subscription Status",
+      "expires": "Expires"
+    },
+    "dietary": {
+      "title": "Dietary Preferences",
+      "description": "Set your dietary restrictions, allergies, and food preferences.",
+      "savePreferences": "Save Preferences",
+      "restrictionsHint": "Select any dietary restrictions that apply to you.",
+      "cuisinesHint": "Select cuisines you enjoy to get personalized recipe recommendations."
+    },
+    "nutritional": {
+      "title": "Nutritional Goals",
+      "description": "Set your daily nutritional targets and health goals.",
+      "dailyCalories": "Daily Calories",
+      "goalType": "Goal Type",
+      "setDailyCaloriesFirst": "Please set daily calories first before selecting a goal type.",
+      "macrosCalculated": "Macros calculated based on {goalType}",
+      "macrosRecalculated": "Macros recalculated for {goalType}",
+      "dailyProtein": "Daily Protein",
+      "dailyCarbs": "Daily Carbs",
+      "dailyFats": "Daily Fats",
+      "dailyFiber": "Daily Fiber",
+      "dailySodium": "Daily Sodium",
+      "dailySugar": "Daily Sugar",
+      "percentageOfCalories": "% of daily calories",
+      "saveGoals": "Save Goals"
+    },
+    "allergies": {
+      "hint": "Select any food allergies you have. This helps us avoid dangerous ingredients.",
+      "warning": {
+        "title": "Important:",
+        "message": "Selected allergies will be used to filter recipes and ingredients. Please ensure accuracy for your safety."
+      }
+    },
+    "settings": {
+      "title": "Display Preferences",
+      "description": "Customize your application display preferences including localization, date formats, and measurement units.",
+      "language": "Language",
+      "country": "Country/Region",
+      "dateFormat": "Date Format",
+      "timeFormat": "Time Format",
+      "timezone": "Timezone",
+      "firstDayOfWeek": "First Day of Week",
+      "firstDayOfWeekLabel": "First Day of Week",
+      "measurementSystem": "Measurement System",
+      "currency": "Currency",
+      "saveGoals": "Save Goals",
+      "saveSettings": "Save Settings",
+      "settingsUpdatedSuccess": "Settings updated successfully",
+      "personalInfoUpdatedSuccess": "Personal information updated successfully",
+      "dietaryPreferencesUpdatedSuccess": "Dietary preferences updated successfully",
+      "nutritionalGoalsUpdatedSuccess": "Nutritional goals updated successfully"
+    }
+  },
+  "recipes": {
+    "title": "Recipes",
+    "description": "Browse and explore the recipe collection",
+    "searchPlaceholder": "Search recipes, meals...",
+    "noRecipes": "No recipes found",
+    "loading": "Loading recipes...",
+    "form": {
+      "basicInfo": "Basic Information",
+      "name": "Recipe Name",
+      "namePlaceholder": "Enter recipe name",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter recipe description",
+      "category": "Category",
+      "categoryPlaceholder": "Select Category",
+      "cuisineType": "Cuisine Type",
+      "cuisineTypePlaceholder": "Select Cuisine",
+      "timingServings": "Timing & Servings",
+      "prepTime": "Prep Time (min)",
+      "cookTime": "Cook Time (min)",
+      "servings": "Servings",
+      "difficultyLevel": "Difficulty Level",
+      "difficultyPlaceholder": "Select Difficulty",
+      "ingredients": "Ingredients",
+      "addIngredient": "Add Ingredient",
+      "ingredientName": "Ingredient name",
+      "ingredientNamePlaceholder": "Ingredient name",
+      "quantity": "Quantity",
+      "unit": "Unit",
+      "instructions": "Instructions",
+      "addStep": "Add Step",
+      "step": "Step",
+      "nutritionalInfo": "Nutritional Information",
+      "calories": "Calories",
+      "protein": "Protein (g)",
+      "carbs": "Carbs (g)",
+      "fats": "Fats (g)",
+      "fiber": "Fiber (g)",
+      "sugar": "Sugar (g)",
+      "sodium": "Sodium (mg)",
+      "unitPlaceholder": "Unit (e.g., cup, tsp)",
+      "instructionsPlaceholder": "Enter step-by-step instructions...",
+      "imageUrl": "Image URL",
+      "imageUrlPlaceholder": "https://example.com/image.jpg",
+      "tags": "Tags",
+      "tagsPlaceholder": "Add tags (e.g., vegetarian, quick, healthy)",
+      "tagsHint": "Press Enter or comma to add a tag. At least one tag is required.",
+      "makePublic": "Make this recipe public",
+      "saving": "Saving...",
+      "updateRecipe": "Update Recipe",
+      "createRecipe": "Create Recipe"
+    },
+    "card": {
+      "prepTime": "Prep time",
+      "servings": "Servings",
+      "calories": "kcal",
+      "addMeal": "Add meal"
+    },
+    "categories": {
+      "BREAKFAST": "Breakfast",
+      "LUNCH": "Lunch",
+      "DINNER": "Dinner",
+      "SNACK": "Snack",
+      "DESSERT": "Dessert",
+      "APPETIZER": "Appetizer",
+      "BEVERAGE": "Beverage",
+      "OTHER": "Other"
+    },
+    "difficulty": {
+      "EASY": "Easy",
+      "MEDIUM": "Medium",
+      "HARD": "Hard",
+      "EXPERT": "Expert"
+    },
+    "detail": {
+      "by": "By",
+      "prepTime": "Prep Time",
+      "cookTime": "Cook Time",
+      "servings": "Servings",
+      "difficulty": "Difficulty",
+      "ingredients": "Ingredients",
+      "instructions": "Instructions",
+      "startCooking": "Start Cooking",
+      "exitCookingMode": "Exit Cooking Mode",
+      "step": "Step",
+      "of": "of",
+      "allStepsCompleted": "All steps completed! Enjoy your meal!",
+      "nutritionalInfo": "Nutritional Information",
+      "perServing": "(Per Serving)",
+      "calories": "Calories",
+      "protein": "Protein",
+      "carbs": "Carbs",
+      "fats": "Fats",
+      "scaling": "Scaling...",
+      "scale": "Scale",
+      "loading": "Loading recipe...",
+      "minutes": "minutes"
+    },
+    "search": {
+      "title": "Search & Filter Recipes",
+      "search": "Search",
+      "searchPlaceholder": "Search recipes...",
+      "category": "Category",
+      "allCategories": "All Categories",
+      "cuisine": "Cuisine",
+      "allCuisines": "All Cuisines",
+      "difficulty": "Difficulty",
+      "allLevels": "All Levels",
+      "maxPrepTime": "Max Prep Time (minutes)",
+      "maxPrepTimePlaceholder": "e.g. 30",
+      "maxCalories": "Max Calories",
+      "maxCaloriesPlaceholder": "e.g. 500",
+      "searchButton": "Search",
+      "clearFilters": "Clear Filters",
+      "resultsFound": "{count} recipe found",
+      "resultsFoundPlural": "{count} recipes found",
+      "cuisineTooltip": "If left empty and you have preferred cuisines set in your profile, only those will be shown. Otherwise, all cuisines will be shown."
+    },
+    "list": {
+      "noRecipes": "No recipes found",
+      "tryAdjusting": "Try adjusting your search filters",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {current} of {total}"
+    },
+    "create": {
+      "title": "Create Recipe",
+      "description": "Add a new recipe to your collection",
+      "success": "Recipe created successfully"
+    },
+    "edit": {
+      "title": "Edit Recipe",
+      "description": "Update your recipe details",
+      "success": "Recipe updated successfully"
+    },
+    "view": {
+      "backToRecipes": "Back to Recipes",
+      "goBack": "Go Back"
+    }
+  },
+  "mealPlans": {
+    "title": "Meal Plans",
+    "description": "Plan your weekly meals",
+    "createPlan": "Create Plan",
+    "weekOf": "Week of {range}",
+    "addMeal": "Add meal",
+    "autoGenerate": {
+      "title": "Auto-Generate Plan",
+      "description": "Let AI create a balanced meal plan based on your preferences.",
+      "button": "Generate Plan"
+    },
+    "useTemplate": {
+      "title": "Use Template",
+      "description": "Start with a pre-made meal plan template.",
+      "button": "Browse Templates"
+    },
+    "copyWeek": {
+      "title": "Copy Previous Week",
+      "description": "Duplicate a previous week's meal plan.",
+      "button": "Copy Week"
+    },
+    "comingSoon": {
+      "title": "Advanced Meal Planning Coming Soon",
+      "description": "We're building an intuitive drag-and-drop meal planning interface with nutritional optimization and smart recommendations."
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome to Vallexia! Your meal planning dashboard will be here soon.",
+    "completeProfile": "Complete Your Profile",
+    "welcomeBack": "Welcome back, {name}!",
+    "welcomeMessage": "Ready to plan your meals for the week? Let's make healthy eating simple and delicious.",
+    "stats": {
+      "recipesSaved": "Recipes Saved",
+      "recipesSavedSubtitle": "Total recipes",
+      "mealsPlanned": "Meals Planned",
+      "mealsPlannedSubtitle": "This week",
+      "groceryItems": "Grocery Items",
+      "groceryItemsSubtitle": "This week's list",
+      "caloriesToday": "Calories Today",
+      "caloriesTodaySubtitle": "Daily goal: {goal}",
+      "browseRecipes": "Browse Recipes",
+      "viewPlans": "View Plans",
+      "viewList": "View List",
+      "trackNutrition": "Track Nutrition",
+      "fromLastWeek": "from last week"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "browseRecipes": "Browse Recipes",
+      "browseRecipesDesc": "Explore recipe collection",
+      "planMeals": "Plan Meals",
+      "planMealsDesc": "Schedule your meals",
+      "createList": "Create List",
+      "createListDesc": "Generate grocery list",
+      "trackNutrition": "Track Nutrition",
+      "trackNutritionDesc": "Monitor your goals"
+    },
+    "recentActivity": {
+      "title": "Recent Activity",
+      "viewAll": "View all activity →"
+    },
+    "recommendations": {
+      "title": "Recommended for You",
+      "refresh": "Refresh Recommendations",
+      "addToPlan": "Add to Plan"
+    },
+    "todaysMeals": {
+      "title": "Today's Meals",
+      "addMeal": "Add Meal",
+      "dailyNutrition": "Daily Nutrition",
+      "calories": "Calories",
+      "protein": "Protein",
+      "carbs": "Carbs",
+      "fat": "Fat"
+    },
+    "weeklyMealPlan": {
+      "title": "This Week's Meal Plan",
+      "viewAll": "View All",
+      "generatePlan": "Generate Plan",
+      "clear": "Clear"
+    }
+  },
+  "groceryLists": {
+    "title": "Grocery Lists",
+    "description": "Manage your shopping lists",
+    "create": "Create List",
+    "generateList": "Generate List",
+    "generateFromPlan": "Generate from Meal Plan",
+    "generateFromPlanDescription": "Automatically create a grocery list from your planned meals",
+    "activeLists": "Active lists",
+    "items": "items",
+    "moreItems": "more items",
+    "edit": "Edit",
+    "shop": "Shop",
+    "shoppingOptimization": "Shopping Optimization",
+    "storeLayout": "Store Layout",
+    "storeLayoutDescription": "Organize your list by store sections for efficient shopping.",
+    "optimizeRoute": "Optimize Route",
+    "priceTracking": "Price Tracking",
+    "priceTrackingDescription": "Track prices and find the best deals on your items.",
+    "trackPrices": "Track Prices",
+    "comingSoon": "Smart Grocery Lists Coming Soon",
+    "comingSoonDescription": "We're developing intelligent grocery list generation with store optimization, price tracking, and smart ingredient consolidation.",
+    "noLists": "No grocery lists found"
+  },
+  "nutrition": {
+    "title": "Nutrition",
+    "tracking": "Nutrition Tracking",
+    "goals": "Nutritional Goals",
+    "description": "Monitor your nutritional goals and progress",
+    "setGoals": "Set Goals",
+    "updateGoals": "Update Goals",
+    "calories": "Calories",
+    "protein": "Protein",
+    "carbs": "Carbs",
+    "fat": "Fat",
+    "fiber": "Fiber",
+    "dailyCalories": "Daily Calories",
+    "goal": "Goal:",
+    "weeklyProgress": "Weekly Progress",
+    "todaysMeals": "Today's Meals",
+    "nutritionalGoals": "Nutritional Goals",
+    "comingSoon": "Advanced Nutrition Tracking Coming Soon",
+    "comingSoonDescription": "We're building comprehensive nutritional analysis with detailed macro tracking, micronutrient monitoring, and personalized recommendations.",
+    "familyUpgrade": {
+      "title": "Planning for multiple people?",
+      "description": "Currently tracking nutrition for your household. Upgrade to <strong>Family</strong> subscription for per-person nutrition goals and individual progress tracking.",
+      "learnMore": "Learn more about Family subscription"
+    },
+    "mealTypes": {
+      "breakfast": "Breakfast",
+      "lunch": "Lunch",
+      "dinner": "Dinner",
+      "snacks": "Snacks"
+    }
+  },
+  "home": {
+    "title": "Home"
+  },
+  "landing": {
+    "signIn": "Sign In",
+    "getStarted": "Get Started",
+    "hero": {
+      "title": "Smart Meal Planning",
+      "subtitle": "Made Simple",
+      "description": "Plan your meals, track nutrition, and generate grocery lists with AI-powered recommendations. Transform your cooking routine with Vallexia.",
+      "startPlanning": "Start Planning Today",
+      "signIn": "Sign In"
+    },
+    "features": {
+      "title": "Everything You Need for Meal Planning",
+      "description": "From recipe management to grocery lists, Vallexia has all the tools you need to plan perfect meals.",
+      "recipeManagement": {
+        "title": "Recipe Management",
+        "description": "Save, organize, and search through your favorite recipes with smart categorization."
+      },
+      "mealPlanning": {
+        "title": "Meal Planning",
+        "description": "Plan your weekly meals with drag-and-drop simplicity and nutritional balance."
+      },
+      "groceryLists": {
+        "title": "Grocery Lists",
+        "description": "Auto-generate shopping lists from your meal plans with smart ingredient consolidation."
+      },
+      "nutritionTracking": {
+        "title": "Nutrition Tracking",
+        "description": "Track macros and micros with detailed nutritional analysis and goal setting."
+      }
+    },
+    "benefits": {
+      "title": "Why Choose Vallexia?",
+      "aiRecommendations": {
+        "title": "AI-Powered Recommendations",
+        "description": "Get personalized meal suggestions based on your preferences and dietary needs."
+      },
+      "timeSaving": {
+        "title": "Time-Saving Automation",
+        "description": "Automatically generate grocery lists and optimize your shopping experience."
+      },
+      "nutritionalBalance": {
+        "title": "Nutritional Balance",
+        "description": "Ensure your meals meet your nutritional goals with detailed tracking and analysis."
+      },
+      "getStarted": {
+        "title": "Ready to Get Started?",
+        "description": "Join thousands of users who have transformed their meal planning with Vallexia.",
+        "button": "Create Your Account"
+      }
+    },
+    "footer": {
+      "tagline": "Smart meal planning made simple. Plan, track, and optimize your nutrition with AI-powered recommendations.",
+      "product": "Product",
+      "features": "Features",
+      "pricing": "Pricing",
+      "api": "API",
+      "support": "Support",
+      "helpCenter": "Help Center",
+      "contactUs": "Contact Us",
+      "privacyPolicy": "Privacy Policy",
+      "copyright": "© 2024 Vallexia. All rights reserved."
+    }
+  },
+  "layout": {
+    "search": "Search",
+    "searchPlaceholder": "Search recipes, meals...",
+    "yourProfile": "Your Profile",
+    "signOut": "Sign out",
+    "navigation": {
+      "dashboard": "Dashboard",
+      "recipes": "Recipes",
+      "mealPlans": "Meal Plans",
+      "groceryLists": "Grocery Lists",
+      "nutrition": "Nutrition",
+      "profile": "Profile",
+      "logout": "Logout"
+    }
+  },
+  "errors": {
+    "notFound": {
+      "404": "404",
+      "title": "Page Not Found",
+      "message": "Sorry, we couldn't find the page you're looking for.",
+      "goToDashboard": "Go to Dashboard",
+      "goToHome": "Go to Home"
+    },
+    "400": "Invalid input. Please check your data and try again.",
+    "401": "Your session has expired. Please log in again.",
+    "403": "You do not have permission to perform this action.",
+    "404": "The requested resource was not found.",
+    "409": "This email is already in use. Please use a different email address.",
+    "422": "The data you provided is invalid. Please check and try again.",
+    "500": "A server error occurred. Please try again later.",
+    "default": "An unexpected error occurred. Please try again.",
+    "timeout": "The request took too long. Please try again.",
+    "networkError": "Network error. Please check your connection and try again.",
+    "validationFailed": "Validation failed"
+  },
+  "validation": {
+    "required": "{field} is required",
+    "email": "Please enter a valid email address",
+    "minLength": "{field} must be at least {min} characters",
+    "maxLength": "{field} must be at most {max} characters",
+    "min": "{field} must be at least {min}",
+    "max": "{field} must be at most {max}",
+    "pattern": "{field} format is invalid"
+  },
+  "constants": {
+    "dietaryRestrictions": {
+      "VEGETARIAN": "Vegetarian",
+      "descriptions": {
+        "VEGETARIAN": "No meat, but may include eggs and dairy",
+        "VEGAN": "No animal products including meat, eggs, dairy, and honey",
+        "GLUTEN_FREE": "No wheat, barley, rye, or other gluten-containing grains",
+        "DAIRY_FREE": "No milk, cheese, yogurt, or other dairy products",
+        "NUT_FREE": "No tree nuts or peanuts",
+        "SOY_FREE": "No soybeans or soy products",
+        "EGG_FREE": "No eggs or egg products",
+        "LOW_CARB": "Reduced carbohydrate intake",
+        "KETO": "Very low carb, high fat diet",
+        "PALEO": "Based on presumed Paleolithic diet",
+        "MEDITERRANEAN": "Based on Mediterranean diet patterns",
+        "LOW_SODIUM": "Reduced sodium intake",
+        "LOW_FAT": "Reduced fat intake",
+        "HIGH_PROTEIN": "Increased protein intake",
+        "HALAL": "Foods permissible under Islamic law",
+        "KOSHER": "Foods conforming to Jewish dietary law"
+      },
+      "VEGAN": "Vegan",
+      "GLUTEN_FREE": "Gluten-Free",
+      "DAIRY_FREE": "Dairy-Free",
+      "NUT_FREE": "Nut-Free",
+      "SOY_FREE": "Soy-Free",
+      "EGG_FREE": "Egg-Free",
+      "LOW_CARB": "Low-Carb",
+      "KETO": "Keto",
+      "PALEO": "Paleo",
+      "MEDITERRANEAN": "Mediterranean",
+      "LOW_SODIUM": "Low-Sodium",
+      "LOW_FAT": "Low-Fat",
+      "HIGH_PROTEIN": "High-Protein",
+      "HALAL": "Halal",
+      "KOSHER": "Kosher"
+    },
+    "allergies": {
+      "PEANUTS": "Peanuts",
+      "TREE_NUTS": "Tree Nuts",
+      "MILK": "Milk",
+      "EGGS": "Eggs",
+      "FISH": "Fish",
+      "SHELLFISH": "Shellfish",
+      "SOY": "Soy",
+      "WHEAT": "Wheat",
+      "SESAME": "Sesame",
+      "MUSTARD": "Mustard",
+      "CELERY": "Celery",
+      "LUPIN": "Lupin",
+      "SULFITES": "Sulfites"
+    },
+    "cuisineTypes": {
+      "AMERICAN": "American",
+      "ITALIAN": "Italian",
+      "MEXICAN": "Mexican",
+      "CHINESE": "Chinese",
+      "JAPANESE": "Japanese",
+      "THAI": "Thai",
+      "INDIAN": "Indian",
+      "FRENCH": "French",
+      "MEDITERRANEAN": "Mediterranean",
+      "GREEK": "Greek",
+      "SPANISH": "Spanish",
+      "GERMAN": "German",
+      "BRITISH": "British",
+      "KOREAN": "Korean",
+      "VIETNAMESE": "Vietnamese",
+      "MIDDLE_EASTERN": "Middle Eastern",
+      "CARIBBEAN": "Caribbean",
+      "AFRICAN": "African",
+      "SOUTH_AMERICAN": "South American"
+    },
+    "goalTypes": {
+      "WEIGHT_LOSS": "Weight Loss",
+      "WEIGHT_GAIN": "Weight Gain",
+      "MUSCLE_GAIN": "Muscle Gain",
+      "MAINTENANCE": "Maintenance",
+      "ATHLETIC_PERFORMANCE": "Athletic Performance",
+      "GENERAL_HEALTH": "General Health"
+    },
+    "subscriptionStatus": {
+      "FREE": "Free",
+      "PREMIUM": "Premium",
+      "FAMILY": "Family",
+      "CANCELLED": "Cancelled",
+      "EXPIRED": "Expired"
+    },
+    "mealTypes": {
+      "BREAKFAST": "Breakfast",
+      "LUNCH": "Lunch",
+      "DINNER": "Dinner",
+      "SNACK": "Snack"
+    },
+    "dateFormats": {
+      "MM_DD_YYYY": "MM/DD/YYYY",
+      "DD_MM_YYYY": "DD/MM/YYYY",
+      "YYYY_MM_DD": "YYYY-MM-DD",
+      "DD_MM_YYYY_DOT": "DD.MM.YYYY"
+    },
+    "measurementSystems": {
+      "METRIC": "Metric",
+      "IMPERIAL": "Imperial"
+    },
+    "firstDayOfWeek": {
+      "SUNDAY": "Sunday",
+      "MONDAY": "Monday"
+    },
+    "languages": {
+      "en": "English",
+      "da": "Danish"
+    },
+    "countries": {
+      "US": "United States",
+      "DK": "Denmark"
+    }
+  }
+}

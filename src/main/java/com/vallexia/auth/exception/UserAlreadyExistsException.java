@@ -6,9 +6,9 @@ import com.vallexia.exception.VallexiaException;
 /**
  * Custom exception for user already exists errors.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-30
  */
 public class UserAlreadyExistsException extends VallexiaException {
   
@@ -33,4 +33,3 @@ public class UserAlreadyExistsException extends VallexiaException {
     super(ErrorCode.USER_ALREADY_EXISTS, message, cause);
   }
 }
-

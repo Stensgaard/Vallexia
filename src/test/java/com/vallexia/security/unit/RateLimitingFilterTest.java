@@ -1,7 +1,7 @@
 package com.vallexia.security.unit;
 
-import com.vallexia.audit.util.IpAddressExtractor;
 import com.vallexia.config.security.RateLimitingConfig;
+import com.vallexia.security.util.IpAddressExtractor;
 import com.vallexia.config.security.RateLimitingProperties;
 import com.vallexia.security.RateLimitingFilter;
 import com.vallexia.security.job.RateLimitingBucketCleanupJob;
@@ -28,9 +28,9 @@ import static org.mockito.Mockito.*;
  * Unit tests for RateLimitingFilter.
  * Tests rate limiting logic, IP validation, and bucket management.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-29
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("RateLimitingFilter Unit Tests")
@@ -311,4 +311,3 @@ class RateLimitingFilterTest {
     verify(filterChain).doFilter(request, response);
   }
 }
-

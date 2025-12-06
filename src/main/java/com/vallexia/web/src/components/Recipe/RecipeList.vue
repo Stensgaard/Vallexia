@@ -35,9 +35,9 @@
       v-else
       class="text-center py-12"
     >
-      <p class="text-gray-500 text-lg">No recipes found</p>
+      <p class="text-gray-500 text-lg">{{ $t('recipes.list.noRecipes') }}</p>
       <p class="text-gray-400 text-sm mt-2">
-        Try adjusting your search filters
+        {{ $t('recipes.list.tryAdjusting') }}
       </p>
     </div>
     
@@ -50,24 +50,27 @@
         :disabled="currentPage === 0"
         class="px-4 py-2 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
       >
-        Previous
+        {{ $t('recipes.list.previous') }}
       </button>
       <span class="px-4 py-2 text-sm text-gray-700">
-        Page {{ currentPage + 1 }} of {{ totalPages }}
+        {{ $t('recipes.list.page', { current: currentPage + 1, total: totalPages }) }}
       </span>
       <button
         @click="$emit('page-change', currentPage + 1)"
         :disabled="currentPage >= totalPages - 1"
         class="px-4 py-2 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
       >
-        Next
+        {{ $t('recipes.list.next') }}
       </button>
     </div>
   </div>
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
 import RecipeCard from './RecipeCard.vue'
+
+const { t } = useI18n()
 
 const props = defineProps({
   recipes: {

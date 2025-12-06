@@ -2,8 +2,8 @@
   <div class="space-y-6">
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900">Recipes</h1>
-        <p class="text-gray-600">Browse and explore the recipe collection</p>
+        <h1 class="text-2xl font-bold text-gray-900">{{ $t('recipes.title') }}</h1>
+        <p class="text-gray-600">{{ $t('recipes.description') }}</p>
       </div>
     </div>
 
@@ -33,7 +33,7 @@
         @click="recipeStore.clearError()"
         class="mt-2 text-sm text-red-600 hover:text-red-700"
       >
-        Dismiss
+        {{ $t('common.dismiss') }}
       </button>
     </div>
   </div>

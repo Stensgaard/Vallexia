@@ -19,9 +19,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit tests for UserMapper.
  * Tests entity-to-DTO mapping with real MapStruct implementation.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 @SpringBootTest(classes = {
     com.vallexia.user.mapper.UserMapperImpl.class
@@ -110,8 +110,8 @@ class UserMapperTest {
     User user = UserTestFixtures.createUserWithProfile();
     user.setHouseholdSize(5);
     user.setMealTypes(new java.util.HashSet<>(java.util.Set.of(
-        com.vallexia.user.entity.enums.MealType.BREAKFAST,
-        com.vallexia.user.entity.enums.MealType.LUNCH
+        com.vallexia.common.enums.SupportedMealCategory.BREAKFAST,
+        com.vallexia.common.enums.SupportedMealCategory.LUNCH
     )));
     
     // When
@@ -120,8 +120,8 @@ class UserMapperTest {
     // Then
     assertThat(dto.getHouseholdSize()).isEqualTo(5);
     assertThat(dto.getMealTypes()).containsExactlyInAnyOrder(
-        com.vallexia.user.entity.enums.MealType.BREAKFAST,
-        com.vallexia.user.entity.enums.MealType.LUNCH
+        com.vallexia.common.enums.SupportedMealCategory.BREAKFAST,
+        com.vallexia.common.enums.SupportedMealCategory.LUNCH
     );
   }
   
@@ -135,9 +135,9 @@ class UserMapperTest {
     user.setEmail("test@example.com");
     user.setHouseholdSize(1);
     user.setMealTypes(new java.util.HashSet<>(java.util.Set.of(
-        com.vallexia.user.entity.enums.MealType.BREAKFAST,
-        com.vallexia.user.entity.enums.MealType.LUNCH,
-        com.vallexia.user.entity.enums.MealType.DINNER
+        com.vallexia.common.enums.SupportedMealCategory.BREAKFAST,
+        com.vallexia.common.enums.SupportedMealCategory.LUNCH,
+        com.vallexia.common.enums.SupportedMealCategory.DINNER
     )));
     user.setEnabled(true);
     user.setSubscriptionStatus(SubscriptionStatus.FREE);
@@ -239,10 +239,10 @@ class UserMapperTest {
     dto.setEmail("new@example.com");
     dto.setHouseholdSize(4);
     dto.setMealTypes(new java.util.HashSet<>(java.util.Set.of(
-        com.vallexia.user.entity.enums.MealType.BREAKFAST,
-        com.vallexia.user.entity.enums.MealType.LUNCH,
-        com.vallexia.user.entity.enums.MealType.DINNER,
-        com.vallexia.user.entity.enums.MealType.SNACK
+        com.vallexia.common.enums.SupportedMealCategory.BREAKFAST,
+        com.vallexia.common.enums.SupportedMealCategory.LUNCH,
+        com.vallexia.common.enums.SupportedMealCategory.DINNER,
+        com.vallexia.common.enums.SupportedMealCategory.SNACK
     )));
     
     // When
@@ -252,10 +252,10 @@ class UserMapperTest {
     assertThat(user.getEmail()).isEqualTo("new@example.com");
     assertThat(user.getHouseholdSize()).isEqualTo(4);
     assertThat(user.getMealTypes()).containsExactlyInAnyOrder(
-        com.vallexia.user.entity.enums.MealType.BREAKFAST,
-        com.vallexia.user.entity.enums.MealType.LUNCH,
-        com.vallexia.user.entity.enums.MealType.DINNER,
-        com.vallexia.user.entity.enums.MealType.SNACK
+        com.vallexia.common.enums.SupportedMealCategory.BREAKFAST,
+        com.vallexia.common.enums.SupportedMealCategory.LUNCH,
+        com.vallexia.common.enums.SupportedMealCategory.DINNER,
+        com.vallexia.common.enums.SupportedMealCategory.SNACK
     );
   }
   
@@ -303,10 +303,10 @@ class UserMapperTest {
     assertThat(user.getEmail()).isEqualTo("updated@example.com");
     assertThat(user.getHouseholdSize()).isEqualTo(4);
     assertThat(user.getMealTypes()).containsExactlyInAnyOrder(
-        com.vallexia.user.entity.enums.MealType.BREAKFAST,
-        com.vallexia.user.entity.enums.MealType.LUNCH,
-        com.vallexia.user.entity.enums.MealType.DINNER,
-        com.vallexia.user.entity.enums.MealType.SNACK
+        com.vallexia.common.enums.SupportedMealCategory.BREAKFAST,
+        com.vallexia.common.enums.SupportedMealCategory.LUNCH,
+        com.vallexia.common.enums.SupportedMealCategory.DINNER,
+        com.vallexia.common.enums.SupportedMealCategory.SNACK
     );
   }
 }

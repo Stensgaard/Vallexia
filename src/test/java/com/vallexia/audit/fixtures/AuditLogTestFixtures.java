@@ -5,6 +5,7 @@ import com.vallexia.audit.entity.enums.EventType;
 import jakarta.servlet.http.HttpServletRequest;
 import org.mockito.Mockito;
 
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,16 +16,15 @@ import static org.mockito.Mockito.when;
  * Test fixtures for audit log testing.
  * Provides reusable test data and mock objects.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 public class AuditLogTestFixtures {
   
   public static final Long TEST_USER_ID = 1L;
   public static final Long TEST_ADMIN_ID = 100L;
   public static final String TEST_USERNAME = "testuser";
-  public static final String TEST_ADMIN_USERNAME = "admin";
   public static final String TEST_IP_ADDRESS = "192.168.1.100";
   public static final String TEST_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)";
   public static final String TEST_REQUEST_URI = "/api/v1/users/profile";
@@ -41,19 +41,19 @@ public class AuditLogTestFixtures {
    * Creates a sample audit log with specified user and event type.
    */
   public static AuditLog createAuditLog(Long userId, String username, EventType eventType) {
-    AuditLog log = new AuditLog();
-    log.setId(1L);
-    log.setEventType(eventType);
-    log.setEventDescription("Test event: " + eventType);
-    log.setUserId(userId);
-    log.setUsername(username);
-    log.setIpAddress(TEST_IP_ADDRESS);
-    log.setUserAgent(TEST_USER_AGENT);
-    log.setRequestMethod(TEST_REQUEST_METHOD);
-    log.setRequestUri(TEST_REQUEST_URI);
-    log.setResponseStatus(200);
-    log.setSuccess(true);
-    log.setTimestamp(LocalDateTime.now());
+    AuditLog log = new AuditLog(
+        eventType,
+        "Test event: " + eventType,
+        userId,
+        username,
+        TEST_IP_ADDRESS,
+        TEST_USER_AGENT,
+        TEST_REQUEST_METHOD,
+        TEST_REQUEST_URI,
+        200,
+        true
+    );
+    setIdAndTimestamp(log, 1L, LocalDateTime.now());
     return log;
   }
   
@@ -61,18 +61,19 @@ public class AuditLogTestFixtures {
    * Creates an audit log for failed login attempt.
    */
   public static AuditLog createFailedLoginLog(String username) {
-    AuditLog log = new AuditLog();
-    log.setId(2L);
-    log.setEventType(EventType.LOGIN_FAILURE);
-    log.setEventDescription("Failed login attempt");
-    log.setUsername(username);
-    log.setIpAddress(TEST_IP_ADDRESS);
-    log.setUserAgent(TEST_USER_AGENT);
-    log.setRequestMethod("POST");
-    log.setRequestUri("/api/v1/auth/login");
-    log.setResponseStatus(401);
-    log.setSuccess(false);
-    log.setTimestamp(LocalDateTime.now());
+    AuditLog log = new AuditLog(
+        EventType.LOGIN_FAILURE,
+        "Failed login attempt",
+        null,
+        username,
+        TEST_IP_ADDRESS,
+        TEST_USER_AGENT,
+        "POST",
+        "/api/v1/auth/login",
+        401,
+        false
+    );
+    setIdAndTimestamp(log, 2L, LocalDateTime.now());
     return log;
   }
   
@@ -80,18 +81,19 @@ public class AuditLogTestFixtures {
    * Creates an audit log for security violation.
    */
   public static AuditLog createSecurityViolationLog(String username) {
-    AuditLog log = new AuditLog();
-    log.setId(3L);
-    log.setEventType(EventType.SECURITY_VIOLATION);
-    log.setEventDescription("Suspicious activity detected");
-    log.setUsername(username);
-    log.setIpAddress(TEST_IP_ADDRESS);
-    log.setUserAgent(TEST_USER_AGENT);
-    log.setRequestMethod("POST");
-    log.setRequestUri("/api/v1/admin/users");
-    log.setResponseStatus(403);
-    log.setSuccess(false);
-    log.setTimestamp(LocalDateTime.now());
+    AuditLog log = new AuditLog(
+        EventType.SECURITY_VIOLATION,
+        "Suspicious activity detected",
+        null,
+        username,
+        TEST_IP_ADDRESS,
+        TEST_USER_AGENT,
+        "POST",
+        "/api/v1/admin/users",
+        403,
+        false
+    );
+    setIdAndTimestamp(log, 3L, LocalDateTime.now());
     return log;
   }
   
@@ -105,8 +107,7 @@ public class AuditLogTestFixtures {
     for (int i = 0; i < count; i++) {
       EventType eventType = eventTypes[i % eventTypes.length];
       AuditLog log = createAuditLog((long) i, "user" + i, eventType);
-      log.setId((long) i);
-      log.setTimestamp(LocalDateTime.now().minusHours(i));
+      setIdAndTimestamp(log, (long) i, LocalDateTime.now().minusHours(i));
       logs.add(log);
     }
     
@@ -123,8 +124,7 @@ public class AuditLogTestFixtures {
     for (int i = 0; i < count; i++) {
       EventType eventType = eventTypes[i % eventTypes.length];
       AuditLog log = createAuditLog(userId, "user" + userId, eventType);
-      log.setId((long) i);
-      log.setTimestamp(LocalDateTime.now().minusHours(i));
+      setIdAndTimestamp(log, (long) i, LocalDateTime.now().minusHours(i));
       logs.add(log);
     }
     
@@ -178,11 +178,100 @@ public class AuditLogTestFixtures {
     
     for (int i = 0; i < count; i++) {
       AuditLog log = createAuditLog();
-      log.setId((long) i);
-      log.setTimestamp(start.plusMinutes(minutesIncrement * i));
+      setIdAndTimestamp(log, (long) i, start.plusMinutes(minutesIncrement * i));
       logs.add(log);
     }
     
     return logs;
+  }
+  
+  /**
+   * Creates an audit log with details field (for testing security exclusion).
+   */
+  public static AuditLog createAuditLogWithDetails(String details) {
+    AuditLog log = new AuditLog(
+        EventType.LOGIN_SUCCESS,
+        "Login successful",
+        1L,
+        TEST_USERNAME,
+        null,
+        null,
+        null,
+        null,
+        null,
+        details,
+        true
+    );
+    setIdAndTimestamp(log, 1L, LocalDateTime.now());
+    return log;
+  }
+  
+  /**
+   * Creates a minimal audit log with only required fields (no HTTP context).
+   */
+  public static AuditLog createMinimalAuditLog(EventType eventType, String description, Long userId) {
+    AuditLog log = new AuditLog(
+        eventType,
+        description,
+        userId,
+        true
+    );
+    setIdAndTimestamp(log, 1L, null);
+    return log;
+  }
+  
+  /**
+   * Creates a complete audit log with all fields populated.
+   */
+  public static AuditLog createCompleteAuditLog(
+      Long id,
+      EventType eventType,
+      String description,
+      Long userId,
+      String username,
+      String ipAddress,
+      String userAgent,
+      String requestMethod,
+      String requestUri,
+      Integer responseStatus,
+      Boolean success,
+      LocalDateTime timestamp) {
+    AuditLog log = new AuditLog(
+        eventType,
+        description,
+        userId,
+        username,
+        ipAddress,
+        userAgent,
+        requestMethod,
+        requestUri,
+        responseStatus,
+        success
+    );
+    setIdAndTimestamp(log, id, timestamp);
+    return log;
+  }
+  
+  /**
+   * Helper method to set id and timestamp using reflection.
+   * These fields are not final and are managed by JPA, so we can set them in tests.
+   * Made public so test classes can use it.
+   */
+  public static void setIdAndTimestamp(AuditLog log, Long id, LocalDateTime timestamp) {
+    try {
+      if (id != null) {
+        Field idField = AuditLog.class.getDeclaredField("id");
+        idField.setAccessible(true);
+        idField.set(log, id);
+      }
+      
+      if (timestamp != null) {
+        Field timestampField = AuditLog.class.getDeclaredField("timestamp");
+        timestampField.setAccessible(true);
+        timestampField.set(log, timestamp);
+      }
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to set id or timestamp via reflection", e);
+    }
   }
 }

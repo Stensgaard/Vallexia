@@ -1,7 +1,5 @@
 package com.vallexia.recipe.service;
 
-import com.vallexia.audit.entity.enums.EventType;
-import com.vallexia.audit.service.AuditService;
 import com.vallexia.recipe.dto.RecipeDto;
 import com.vallexia.recipe.entity.FavoriteRecipe;
 import com.vallexia.recipe.entity.Recipe;
@@ -13,6 +11,7 @@ import com.vallexia.recipe.repository.RecipeRepository;
 import com.vallexia.user.entity.User;
 import com.vallexia.user.exception.UserNotFoundException;
 import com.vallexia.user.repository.UserRepository;
+import com.vallexia.user.service.UserSettingsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,9 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Service for managing user favorite recipes.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 @Slf4j
 @Service
@@ -35,7 +34,8 @@ public class FavoriteRecipeService {
     private final RecipeRepository recipeRepository;
     private final UserRepository userRepository;
     private final RecipeMapper recipeMapper;
-    private final AuditService auditService;
+    private final UserSettingsService userSettingsService;
+    private final RecipeEnrichmentService recipeEnrichmentService;
     
     /**
      * Constructor for dependency injection.
@@ -44,19 +44,22 @@ public class FavoriteRecipeService {
      * @param recipeRepository the recipe repository
      * @param userRepository the user repository
      * @param recipeMapper the recipe mapper
-     * @param auditService the audit service
+     * @param userSettingsService the user settings service (for locale resolution)
+     * @param recipeEnrichmentService the recipe enrichment service
      */
     public FavoriteRecipeService(
             FavoriteRecipeRepository favoriteRecipeRepository,
             RecipeRepository recipeRepository,
             UserRepository userRepository,
             RecipeMapper recipeMapper,
-            AuditService auditService) {
+            UserSettingsService userSettingsService,
+            RecipeEnrichmentService recipeEnrichmentService) {
         this.favoriteRecipeRepository = favoriteRecipeRepository;
         this.recipeRepository = recipeRepository;
         this.userRepository = userRepository;
         this.recipeMapper = recipeMapper;
-        this.auditService = auditService;
+        this.userSettingsService = userSettingsService;
+        this.recipeEnrichmentService = recipeEnrichmentService;
     }
     
     /**
@@ -89,13 +92,6 @@ public class FavoriteRecipeService {
         
         favoriteRecipeRepository.save(favoriteRecipe);
         
-        // Audit log
-        auditService.logEvent(
-            EventType.RECIPE_FAVORITED,
-            userId,
-            String.format("Recipe ID %d favorited by user ID %d", recipeId, userId)
-        );
-        
         log.info("Recipe ID {} added to favorites for user ID {}", recipeId, userId);
     }
     
@@ -106,16 +102,18 @@ public class FavoriteRecipeService {
      * @param userId the user ID
      */
     public void removeFavorite(Long recipeId, Long userId) {
+        if (recipeId == null || userId == null) {
+            throw new IllegalArgumentException("Recipe ID and User ID cannot be null");
+        }
+        
         log.info("Removing recipe ID {} from favorites for user ID {}", recipeId, userId);
         
-        favoriteRecipeRepository.deleteByUserIdAndRecipeId(userId, recipeId);
+        if (!favoriteRecipeRepository.existsByUserIdAndRecipeId(userId, recipeId)) {
+            log.debug("Recipe ID {} is not in favorites for user ID {}", recipeId, userId);
+            return; // Idempotent operation - no error if already removed
+        }
         
-        // Audit log
-        auditService.logEvent(
-            EventType.RECIPE_UNFAVORITED,
-            userId,
-            String.format("Recipe ID %d unfavorited by user ID %d", recipeId, userId)
-        );
+        favoriteRecipeRepository.deleteByUserIdAndRecipeId(userId, recipeId);
         
         log.info("Recipe ID {} removed from favorites for user ID {}", recipeId, userId);
     }
@@ -125,17 +123,24 @@ public class FavoriteRecipeService {
      * 
      * @param userId the user ID
      * @param pageable pagination information
-     * @return Page of favorite recipes
+     * @return Page of favorite recipes with translated content
      */
     @Transactional(readOnly = true)
     public Page<RecipeDto> getUserFavorites(Long userId, Pageable pageable) {
         log.debug("Getting favorites for user ID {}", userId);
         
+        // Get user's locale for translation resolution
+        String userLocale = userSettingsService.getUserLocale(userId);
+        
+        // Get favorites (no locale filtering)
         Page<FavoriteRecipe> favorites = favoriteRecipeRepository.findByUserId(userId, pageable);
         
         return favorites.map(favorite -> {
             Recipe recipe = favorite.getRecipe();
-            return recipeMapper.toRecipeDto(recipe, true); // Always true since these are favorites
+            RecipeDto dto = recipeMapper.toRecipeDto(recipe, true); // Always true since these are favorites
+            
+            // Enrich with translations and ingredient names
+            return recipeEnrichmentService.enrichWithTranslations(dto, recipe, userLocale);
         });
     }
     

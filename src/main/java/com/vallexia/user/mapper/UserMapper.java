@@ -8,9 +8,9 @@ import org.mapstruct.Mapping;
 /**
  * MapStruct mapper for converting between User entity and DTO.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 @Mapper(componentModel = "spring")
 public interface UserMapper {
@@ -33,6 +33,7 @@ public interface UserMapper {
     @Mapping(target = "passwordHash", ignore = true)
     @Mapping(target = "dietaryPreferences", ignore = true)
     @Mapping(target = "nutritionalGoals", ignore = true)
+    @Mapping(target = "userSettings", ignore = true)
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "enabled", ignore = true)
     @Mapping(target = "accountNonExpired", ignore = true)

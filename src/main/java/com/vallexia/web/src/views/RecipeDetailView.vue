@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <div v-if="recipeStore.isLoading" class="text-center py-12">
-      <p class="text-gray-500">Loading recipe...</p>
+      <p class="text-gray-500">{{ $t('recipes.detail.loading') }}</p>
     </div>
 
     <div v-else-if="recipeStore.error" class="bg-red-50 border border-red-200 rounded-lg p-4">
@@ -10,7 +10,7 @@
         @click="router.back()"
         class="mt-2 text-sm text-red-600 hover:text-red-700"
       >
-        Go Back
+        {{ $t('recipes.view.goBack') }}
       </button>
     </div>
 
@@ -24,7 +24,7 @@
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
           </svg>
-          Back to Recipes
+          {{ $t('recipes.view.backToRecipes') }}
         </button>
         
       </div>
@@ -55,6 +55,7 @@
 
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useRecipeStore } from '@/stores/recipe'
 import { useAuthStore } from '@/stores/auth'
@@ -62,10 +63,11 @@ import RecipeDetail from '@/components/Recipe/RecipeDetail.vue'
 import Toast from '@/components/common/Toast.vue'
 import { getErrorMessage } from '@/utils/errorUtils'
 
+const { t } = useI18n()
+
 const route = useRoute()
 const router = useRouter()
 const recipeStore = useRecipeStore()
-const authStore = useAuthStore()
 
 const recipeId = computed(() => Number(route.params.id))
 const targetServings = ref(null)
@@ -111,10 +113,10 @@ const handleScale = async (newServings) => {
     const scaledRecipe = await recipeStore.scaleRecipe(recipeId.value, newServings)
     // Update current recipe with scaled data
     recipeStore.currentRecipe = scaledRecipe
-    showToast('success', 'Success', 'Recipe scaled successfully')
+    showToast('success', t('common.success'), t('recipes.detail.scaling'))
   } catch (error) {
     const errorMessage = getErrorMessage(error)
-    showToast('error', 'Error', errorMessage)
+    showToast('error', t('common.error'), errorMessage)
   } finally {
     scaling.value = false
   }

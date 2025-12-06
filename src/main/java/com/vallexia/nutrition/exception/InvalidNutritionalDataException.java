@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * Exception thrown when nutritional data is invalid or outside acceptable ranges.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-29
  */
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class InvalidNutritionalDataException extends VallexiaException {

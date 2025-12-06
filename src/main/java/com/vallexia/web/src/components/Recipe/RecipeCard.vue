@@ -47,19 +47,19 @@
           v-if="recipe.category"
           class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded"
         >
-          {{ recipe.category }}
+          {{ $t(`recipes.categories.${recipe.category}`) }}
         </span>
         <span
           v-if="recipe.cuisineType"
           class="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded"
         >
-          {{ recipe.cuisineType }}
+          {{ $t(`constants.cuisineTypes.${recipe.cuisineType}`) }}
         </span>
         <span
           v-if="recipe.difficultyLevel"
           class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded"
         >
-          {{ recipe.difficultyLevel }}
+          {{ $t(`recipes.difficulty.${recipe.difficultyLevel}`) }}
         </span>
       </div>
       
@@ -82,7 +82,7 @@
           v-if="recipe.nutritionalInfo?.calories"
           class="text-xs font-medium text-gray-700"
         >
-          {{ Math.round(recipe.nutritionalInfo.calories) }} kcal
+          {{ formatNumber(recipe.nutritionalInfo.calories, 0) }} kcal
         </span>
       </div>
     </div>
@@ -90,6 +90,16 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+import { useSettingsStore } from '@/stores/settings'
+
+const { t } = useI18n()
+const settingsStore = useSettingsStore()
+
+const formatNumber = (number, decimals = 0) => {
+  return settingsStore.formatNumberFn(number, decimals)
+}
+
 defineProps({
   recipe: {
     type: Object,

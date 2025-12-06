@@ -1,12 +1,8 @@
 package com.vallexia.recipe.controller;
 
 import com.vallexia.recipe.dto.*;
-import com.vallexia.recipe.entity.enums.DifficultyLevel;
-import com.vallexia.recipe.entity.enums.RecipeCategory;
 import com.vallexia.recipe.service.*;
-import com.vallexia.recipe.util.EnumPropertyEditor;
 import com.vallexia.security.AuthenticationHelper;
-import com.vallexia.user.entity.enums.CuisineType;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,20 +18,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 /**
  * REST controller for recipe management endpoints.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/recipes")
-@Tag(name = "Recipe Management", description = "Operations related to recipe management, search, and favorites")
+@Tag(
+    name = "Recipe Management", 
+    description = "Operations related to recipe management, search, and favorites")
 public class RecipeController {
     
     private final RecipeService recipeService;
@@ -61,25 +58,11 @@ public class RecipeController {
     }
     
     /**
-     * Initialize data binder to handle empty strings for enum fields.
-     * Converts empty strings to null for enum fields in RecipeSearchCriteria,
-     * ensuring that "All Levels", "All Categories", and "All Cuisines" options
-     * are treated as "no filter" rather than causing binding errors.
-     * 
-     * @param binder the data binder
-     */
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        // Register custom property editors for enum fields
-        binder.registerCustomEditor(DifficultyLevel.class, new EnumPropertyEditor<>(DifficultyLevel.class));
-        binder.registerCustomEditor(RecipeCategory.class, new EnumPropertyEditor<>(RecipeCategory.class));
-        binder.registerCustomEditor(CuisineType.class, new EnumPropertyEditor<>(CuisineType.class));
-    }
-    
-    /**
      * List all public recipes with pagination.
      */
-    @Operation(summary = "List public recipes", description = "Get a paginated list of all public recipes (requires authentication)")
+    @Operation(
+        summary = "List public recipes", 
+        description = "Get a paginated list of all public recipes (requires authentication)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Recipes retrieved successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized")
@@ -102,7 +85,9 @@ public class RecipeController {
     /**
      * Get recipe by ID.
      */
-    @Operation(summary = "Get recipe by ID", description = "Retrieve a specific recipe by its ID (requires authentication)")
+    @Operation(
+        summary = "Get recipe by ID", 
+        description = "Retrieve a specific recipe by its ID (requires authentication)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Recipe retrieved successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
@@ -125,7 +110,9 @@ public class RecipeController {
     /**
      * Create a new recipe.
      */
-    @Operation(summary = "Create recipe", description = "Create a new recipe (requires admin role)")
+    @Operation(
+        summary = "Create recipe", 
+        description = "Create a new recipe (requires authentication and admin role)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Recipe created successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid input data"),
@@ -148,7 +135,9 @@ public class RecipeController {
     /**
      * Update an existing recipe.
      */
-    @Operation(summary = "Update recipe", description = "Update an existing recipe (requires admin role)")
+    @Operation(
+        summary = "Update recipe", 
+        description = "Update an existing recipe (requires authentication and admin role)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Recipe updated successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid input data"),
@@ -173,7 +162,9 @@ public class RecipeController {
     /**
      * Delete a recipe.
      */
-    @Operation(summary = "Delete recipe", description = "Delete a recipe (requires admin role)")
+    @Operation(
+        summary = "Delete recipe", 
+        description = "Delete a recipe (requires authentication and admin role)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Recipe deleted successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
@@ -196,7 +187,9 @@ public class RecipeController {
     /**
      * Get all recipes (including private) - Admin only.
      */
-    @Operation(summary = "Get all recipes", description = "Get all recipes including private ones (requires admin role)")
+    @Operation(
+        summary = "Get all recipes", 
+        description = "Get all recipes including private ones (requires authentication and admin role)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Recipes retrieved successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
@@ -220,7 +213,9 @@ public class RecipeController {
     /**
      * Advanced recipe search with multiple filters.
      */
-    @Operation(summary = "Search recipes", description = "Search recipes with advanced filtering and sorting (requires authentication)")
+    @Operation(
+        summary = "Search recipes", 
+        description = "Search recipes with advanced filtering and sorting (requires authentication)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Search completed successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
@@ -229,7 +224,7 @@ public class RecipeController {
     @GetMapping("/search")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<RecipeSearchResponseDto> searchRecipes(
-            @ModelAttribute RecipeSearchCriteria criteria,
+            @Valid @ModelAttribute RecipeSearchCriteria criteria,
             @Parameter(description = "Page number (0-indexed)") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size,
             Authentication authentication) {
@@ -255,7 +250,9 @@ public class RecipeController {
     /**
      * Get scaled recipe for a specific number of servings.
      */
-    @Operation(summary = "Scale recipe", description = "Get recipe scaled to a different number of servings (requires authentication)")
+    @Operation(
+        summary = "Scale recipe", 
+        description = "Get recipe scaled to a different number of servings (requires authentication)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Scaled recipe retrieved successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
@@ -279,9 +276,11 @@ public class RecipeController {
     /**
      * Add recipe to favorites.
      */
-    @Operation(summary = "Add to favorites", description = "Add a recipe to user's favorites (requires authentication)")
+    @Operation(
+        summary = "Add to favorites", 
+        description = "Add a recipe to user's favorites (requires authentication)")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Recipe added to favorites"),
+        @ApiResponse(responseCode = "204", description = "Recipe added to favorites"),
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "404", description = "Recipe not found")
     })
@@ -301,7 +300,9 @@ public class RecipeController {
     /**
      * Remove recipe from favorites.
      */
-    @Operation(summary = "Remove from favorites", description = "Remove a recipe from user's favorites (requires authentication)")
+    @Operation(
+        summary = "Remove from favorites", 
+        description = "Remove a recipe from user's favorites (requires authentication)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Recipe removed from favorites"),
         @ApiResponse(responseCode = "401", description = "Unauthorized")
@@ -322,7 +323,9 @@ public class RecipeController {
     /**
      * Get user's favorite recipes.
      */
-    @Operation(summary = "Get favorites", description = "Get all recipes favorited by the current user (requires authentication)")
+    @Operation(
+        summary = "Get favorites", 
+        description = "Get all recipes favorited by the current user (requires authentication)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Favorites retrieved successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized")

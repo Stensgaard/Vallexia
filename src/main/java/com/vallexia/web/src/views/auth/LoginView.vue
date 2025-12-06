@@ -16,8 +16,8 @@
         id="usernameOrEmail"
         v-model="form.usernameOrEmail"
         type="text"
-        label="Username or Email"
-        placeholder="Enter your username or email"
+        :label="$t('auth.login.usernameOrEmail')"
+        :placeholder="$t('auth.login.usernameOrEmailPlaceholder')"
         :error="errors.usernameOrEmail"
         :required="true"
         :disabled="authStore.isLoading"
@@ -28,31 +28,18 @@
         id="password"
         v-model="form.password"
         type="password"
-        label="Password"
-        placeholder="Enter your password"
+        :label="$t('auth.login.password')"
+        :placeholder="$t('auth.login.passwordPlaceholder')"
         :error="errors.password"
         :required="true"
         :disabled="authStore.isLoading"
       />
 
-      <!-- Remember Me -->
-      <div class="flex items-center justify-between">
-        <div class="flex items-center">
-          <input
-            id="rememberMe"
-            v-model="form.rememberMe"
-            type="checkbox"
-            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-            :disabled="authStore.isLoading"
-          />
-          <label for="rememberMe" class="ml-2 block text-sm text-gray-900">
-            Remember me
-          </label>
-        </div>
-
+      <!-- Forgot Password -->
+      <div class="flex items-center justify-end">
         <div class="text-sm">
           <a href="#" class="font-medium text-blue-600 hover:text-blue-500">
-            Forgot your password?
+            {{ $t('auth.login.forgotPassword') }}
           </a>
         </div>
       </div>
@@ -65,7 +52,7 @@
           class="btn btn-primary w-full"
         >
           <LoadingSpinner v-if="authStore.isLoading" size="small" color="white" />
-          <span v-else>Sign in</span>
+          <span v-else>{{ $t('auth.login.signIn') }}</span>
         </button>
       </div>
   </form>
@@ -75,19 +62,21 @@
 <script setup>
 import { reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import AuthLayout from '@/views/auth/AuthLayout.vue'
 import FormInput from '@/components/common/FormInput.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ErrorMessage from '@/components/common/ErrorMessage.vue'
 
+const { t } = useI18n()
+
 const router = useRouter()
 const authStore = useAuthStore()
 
 const form = reactive({
   usernameOrEmail: '',
-  password: '',
-  rememberMe: false
+  password: ''
 })
 
 const errors = reactive({
@@ -107,12 +96,12 @@ const validateForm = () => {
   let isValid = true
 
   if (!form.usernameOrEmail.trim()) {
-    errors.usernameOrEmail = 'Username or email is required'
+    errors.usernameOrEmail = t('auth.validation.usernameOrEmailRequired')
     isValid = false
   }
 
   if (!form.password.trim()) {
-    errors.password = 'Password is required'
+    errors.password = t('auth.validation.passwordRequired')
     isValid = false
   }
 

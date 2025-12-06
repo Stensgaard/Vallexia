@@ -16,12 +16,12 @@
         id="username"
         v-model="form.username"
         type="text"
-        label="Username"
-        placeholder="Choose a username"
+        :label="$t('auth.register.username')"
+        :placeholder="$t('auth.register.usernamePlaceholder')"
         :error="errors.username"
         :required="true"
         :disabled="authStore.isLoading"
-        hint="3-20 characters, letters and numbers only"
+        :hint="$t('auth.register.usernameHint')"
       />
 
       <!-- Email Field -->
@@ -29,24 +29,51 @@
         id="email"
         v-model="form.email"
         type="email"
-        label="Email Address"
-        placeholder="Enter your email address"
+        :label="$t('auth.register.email')"
+        :placeholder="$t('auth.register.emailPlaceholder')"
         :error="errors.email"
         :required="true"
         :disabled="authStore.isLoading"
       />
+
+      <!-- Country Field -->
+      <div>
+        <label for="country" class="form-label">
+          {{ $t('auth.register.country') }}
+          <span class="text-red-500">*</span>
+        </label>
+        <select
+          id="country"
+          v-model="form.country"
+          :disabled="authStore.isLoading"
+          :class="['form-input', errors.country ? 'form-input-error' : '']"
+          required
+        >
+          <option value="">{{ $t('auth.register.countryPlaceholder') }}</option>
+          <option
+            v-for="country in countryOptions"
+            :key="country.code"
+            :value="country.code"
+          >
+            {{ country.name }}
+          </option>
+        </select>
+        <div v-if="errors.country" class="form-error">
+          {{ errors.country }}
+        </div>
+      </div>
 
       <!-- Password Field -->
       <FormInput
         id="password"
         v-model="form.password"
         type="password"
-        label="Password"
-        placeholder="Create a strong password"
+        :label="$t('auth.register.password')"
+        :placeholder="$t('auth.register.passwordPlaceholder')"
         :error="errors.password"
         :required="true"
         :disabled="authStore.isLoading"
-        hint="At least 8 characters with uppercase, lowercase, number, and special character"
+        :hint="$t('auth.register.passwordHint')"
       />
 
       <!-- Confirm Password Field -->
@@ -54,8 +81,8 @@
         id="confirmPassword"
         v-model="form.confirmPassword"
         type="password"
-        label="Confirm Password"
-        placeholder="Confirm your password"
+        :label="$t('auth.register.confirmPassword')"
+        :placeholder="$t('auth.register.confirmPasswordPlaceholder')"
         :error="errors.confirmPassword"
         :required="true"
         :disabled="authStore.isLoading"
@@ -71,10 +98,10 @@
           :disabled="authStore.isLoading"
         />
         <label for="acceptTerms" class="ml-2 block text-sm text-gray-900">
-          I agree to the
-          <a href="#" class="text-blue-600 hover:text-blue-500">Terms of Service</a>
-          and
-          <a href="#" class="text-blue-600 hover:text-blue-500">Privacy Policy</a>
+          {{ $t('auth.register.acceptTerms') }}
+          <a href="#" class="text-blue-600 hover:text-blue-500">{{ $t('auth.register.termsOfService') }}</a>
+          {{ $t('auth.register.and') }}
+          <a href="#" class="text-blue-600 hover:text-blue-500">{{ $t('auth.register.privacyPolicy') }}</a>
         </label>
       </div>
       <div v-if="errors.acceptTerms" class="text-sm text-red-600">
@@ -89,7 +116,7 @@
           class="btn btn-primary w-full"
         >
           <LoadingSpinner v-if="authStore.isLoading" size="small" color="white" />
-          <span v-else>Create Account</span>
+          <span v-else>{{ $t('auth.register.createAccount') }}</span>
         </button>
       </div>
   </form>
@@ -97,20 +124,27 @@
 </template>
 
 <script setup>
-import { reactive, computed, onMounted } from 'vue'
+import { reactive, computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
+import { getCountries, ensureLocaleConfigLoaded } from '@/utils/localeConfig'
 import AuthLayout from '@/views/auth/AuthLayout.vue'
 import FormInput from '@/components/common/FormInput.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ErrorMessage from '@/components/common/ErrorMessage.vue'
 
+const { t } = useI18n()
+
 const router = useRouter()
 const authStore = useAuthStore()
+
+const countryOptions = ref([])
 
 const form = reactive({
   username: '',
   email: '',
+  country: '',
   password: '',
   confirmPassword: '',
   acceptTerms: false
@@ -119,6 +153,7 @@ const form = reactive({
 const errors = reactive({
   username: '',
   email: '',
+  country: '',
   password: '',
   confirmPassword: '',
   acceptTerms: ''
@@ -127,6 +162,7 @@ const errors = reactive({
 const isFormValid = computed(() => {
   return form.username.trim() &&
          form.email.trim() &&
+         form.country.trim() &&
          form.password.trim() &&
          form.confirmPassword.trim() &&
          form.acceptTerms
@@ -142,49 +178,64 @@ const validateForm = () => {
 
   // Username validation
   if (!form.username.trim()) {
-    errors.username = 'Username is required'
+    errors.username = t('auth.validation.usernameRequired')
     isValid = false
   } else if (form.username.length < 3 || form.username.length > 20) {
-    errors.username = 'Username must be between 3 and 20 characters'
+    errors.username = t('auth.validation.usernameLength')
     isValid = false
   } else if (!/^[a-zA-Z0-9]+$/.test(form.username)) {
-    errors.username = 'Username can only contain letters and numbers'
+    errors.username = t('auth.validation.usernameFormat')
     isValid = false
   }
 
   // Email validation
   if (!form.email.trim()) {
-    errors.email = 'Email is required'
+    errors.email = t('auth.validation.emailRequired')
     isValid = false
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-    errors.email = 'Please enter a valid email address'
+    errors.email = t('auth.validation.emailInvalid')
     isValid = false
+  }
+
+  // Country validation
+  if (!form.country.trim()) {
+    errors.country = t('auth.validation.countryRequired')
+    isValid = false
+  } else {
+    // Validate country is in available options
+    const validCountry = countryOptions.value.some(
+      country => country.code === form.country
+    )
+    if (!validCountry) {
+      errors.country = t('auth.validation.countryInvalid')
+      isValid = false
+    }
   }
 
   // Password validation
   if (!form.password.trim()) {
-    errors.password = 'Password is required'
+    errors.password = t('auth.validation.passwordRequired')
     isValid = false
   } else if (form.password.length < 8) {
-    errors.password = 'Password must be at least 8 characters'
+    errors.password = t('auth.validation.passwordLength')
     isValid = false
   } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/.test(form.password)) {
-    errors.password = 'Password must contain uppercase, lowercase, number, and special character'
+    errors.password = t('auth.validation.passwordComplexity')
     isValid = false
   }
 
   // Confirm password validation
   if (!form.confirmPassword.trim()) {
-    errors.confirmPassword = 'Please confirm your password'
+    errors.confirmPassword = t('auth.validation.confirmPasswordRequired')
     isValid = false
   } else if (form.password !== form.confirmPassword) {
-    errors.confirmPassword = 'Passwords do not match'
+    errors.confirmPassword = t('auth.validation.passwordsDoNotMatch')
     isValid = false
   }
 
   // Terms acceptance validation
   if (!form.acceptTerms) {
-    errors.acceptTerms = 'You must accept the terms and conditions'
+    errors.acceptTerms = t('auth.validation.termsRequired')
     isValid = false
   }
 
@@ -204,8 +255,16 @@ const handleSubmit = async () => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   // Clear any previous errors when component mounts
   authStore.clearError()
+  
+  // Load locale config to get countries
+  try {
+    await ensureLocaleConfigLoaded()
+    countryOptions.value = getCountries()
+  } catch (error) {
+    console.error('Failed to load locale config:', error)
+  }
 })
 </script>

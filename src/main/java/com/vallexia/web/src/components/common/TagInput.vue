@@ -30,7 +30,7 @@
         :id="id"
         v-model="inputValue"
         type="text"
-        :placeholder="placeholder"
+        :placeholder="placeholder || $t('common.tagInputPlaceholder')"
         :disabled="disabled"
         @keydown.enter.prevent="addTag"
         @keydown.comma.prevent="addTag"
@@ -61,7 +61,7 @@ const props = defineProps({
   },
   placeholder: {
     type: String,
-    default: 'Type and press Enter to add...'
+    default: null
   },
   modelValue: {
     type: Array,
@@ -117,4 +117,3 @@ const removeTag = (index) => {
   emit('update:modelValue', [...tags.value])
 }
 </script>
-

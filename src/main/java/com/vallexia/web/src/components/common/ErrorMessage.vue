@@ -33,7 +33,7 @@
             :class="buttonClasses"
             @click="$emit('dismiss')"
           >
-            <span class="sr-only">Dismiss</span>
+            <span class="sr-only">{{ t('common.dismiss') }}</span>
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
             </svg>
@@ -46,6 +46,9 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   show: {
@@ -69,45 +72,40 @@ const props = defineProps({
 
 const emit = defineEmits(['dismiss'])
 
-const alertClasses = computed(() => {
-  const baseClasses = 'rounded-md p-4'
-  const typeClasses = {
-    info: 'bg-blue-50 border border-blue-200',
-    success: 'bg-green-50 border border-green-200',
-    warning: 'bg-yellow-50 border border-yellow-200',
-    error: 'bg-red-50 border border-red-200'
+// Extract type classes to avoid duplication
+const TYPE_CLASSES = {
+  info: {
+    alert: 'bg-blue-50 border border-blue-200',
+    text: 'text-blue-800',
+    button: 'text-blue-500 hover:text-blue-600'
+  },
+  success: {
+    alert: 'bg-green-50 border border-green-200',
+    text: 'text-green-800',
+    button: 'text-green-500 hover:text-green-600'
+  },
+  warning: {
+    alert: 'bg-yellow-50 border border-yellow-200',
+    text: 'text-yellow-800',
+    button: 'text-yellow-500 hover:text-yellow-600'
+  },
+  error: {
+    alert: 'bg-red-50 border border-red-200',
+    text: 'text-red-800',
+    button: 'text-red-500 hover:text-red-600'
   }
-  
-  return `${baseClasses} ${typeClasses[props.type]}`
+}
+
+const alertClasses = computed(() => {
+  return `rounded-md p-4 ${TYPE_CLASSES[props.type]?.alert || TYPE_CLASSES.info.alert}`
 })
 
 const textClasses = computed(() => {
-  const typeClasses = {
-    info: 'text-blue-800',
-    success: 'text-green-800',
-    warning: 'text-yellow-800',
-    error: 'text-red-800'
-  }
-  
-  return `text-sm font-medium ${typeClasses[props.type]}`
+  return `text-sm font-medium ${TYPE_CLASSES[props.type]?.text || TYPE_CLASSES.info.text}`
 })
 
 const buttonClasses = computed(() => {
-  const typeClasses = {
-    info: 'text-blue-500 hover:text-blue-600',
-    success: 'text-green-500 hover:text-green-600',
-    warning: 'text-yellow-500 hover:text-yellow-600',
-    error: 'text-red-500 hover:text-red-600'
-  }
-  
-  return `inline-flex rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 ${typeClasses[props.type]}`
+  const colorClasses = TYPE_CLASSES[props.type]?.button || TYPE_CLASSES.info.button
+  return `inline-flex rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 ${colorClasses}`
 })
 </script>
-
-
-
-
-
-
-
-

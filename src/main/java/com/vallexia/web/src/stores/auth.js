@@ -2,8 +2,20 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { authService } from '@/services/authService'
 import { getErrorMessage } from '@/utils/errorUtils'
+import { getSubscriptionStatuses, createEnumFromList, getDefaultSubscriptionStatusCode } from '@/utils/localeConfig'
 
 export const useAuthStore = defineStore('auth', () => {
+  const subscriptionStatuses = getSubscriptionStatuses()
+  const subscriptionStatusEnum = createEnumFromList(subscriptionStatuses)
+  const defaultSubscriptionStatus = getDefaultSubscriptionStatusCode() || 'FREE'
+
+  const sanitizeSubscriptionStatus = (status) => {
+    if (status && subscriptionStatusEnum[status]) {
+      return status
+    }
+    return defaultSubscriptionStatus
+  }
+
   // State
   const user = ref(null)
   const accessToken = ref(localStorage.getItem('accessToken'))
@@ -35,7 +47,7 @@ export const useAuthStore = defineStore('auth', () => {
         id: response.id,
         username: response.username,
         email: response.email,
-        subscriptionStatus: response.subscriptionStatus,
+        subscriptionStatus: sanitizeSubscriptionStatus(response.subscriptionStatus),
         householdSize: response.householdSize || 1
       }
 
@@ -66,7 +78,7 @@ export const useAuthStore = defineStore('auth', () => {
         id: response.id,
         username: response.username,
         email: response.email,
-        subscriptionStatus: response.subscriptionStatus,
+        subscriptionStatus: sanitizeSubscriptionStatus(response.subscriptionStatus),
         householdSize: response.householdSize || 1
       }
 
@@ -152,7 +164,7 @@ export const useAuthStore = defineStore('auth', () => {
         id: profile.id,
         username: profile.username,
         email: profile.email,
-        subscriptionStatus: profile.subscriptionStatus || 'FREE',
+        subscriptionStatus: sanitizeSubscriptionStatus(profile.subscriptionStatus),
         householdSize: profile.householdSize || 1
       }
     } catch (err) {

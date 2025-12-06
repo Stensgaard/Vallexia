@@ -3,9 +3,9 @@ package com.vallexia.recipe.entity.enums;
 /**
  * Enumeration of fields that can be used for sorting recipe search results.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 public enum RecipeSortBy {
     NAME,

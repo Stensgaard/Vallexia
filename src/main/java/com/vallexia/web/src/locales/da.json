@@ -1,0 +1,676 @@
+{
+  "common": {
+    "save": "Gem",
+    "cancel": "Annuller",
+    "delete": "Slet",
+    "edit": "Rediger",
+    "loading": "Indlæser...",
+    "dismiss": "Afvis",
+    "confirm": "Bekræft",
+    "close": "Luk",
+    "search": "Søg",
+    "filter": "Filtrer",
+    "clear": "Ryd",
+    "apply": "Anvend",
+    "reset": "Nulstil",
+    "back": "Tilbage",
+    "next": "Næste",
+    "previous": "Forrige",
+    "submit": "Send",
+    "create": "Opret",
+    "update": "Opdater",
+    "view": "Vis",
+    "add": "Tilføj",
+    "remove": "Fjern",
+    "select": "Vælg",
+    "selectAll": "Vælg alle",
+    "deselectAll": "Fravælg alle",
+    "noResults": "Ingen resultater fundet",
+    "noData": "Ingen data tilgængelig",
+    "required": "Påkrævet",
+    "optional": "Valgfri",
+    "tagInputPlaceholder": "Tilføj tags...",
+    "actions": "Handlinger",
+    "status": "Status",
+    "expires": "Udløber",
+    "expiresAt": "Udløber: {date}",
+    "saveChanges": "Gem ændringer",
+    "cancelChanges": "Annuller ændringer",
+    "areYouSure": "Er du sikker?",
+    "thisActionCannotBeUndone": "Denne handling kan ikke fortrydes.",
+    "confirmAction": "Bekræft handling",
+    "success": "Succes",
+    "error": "Fejl",
+    "appTitle": "Vallexia - Smart Måltidsplanlægning App"
+  },
+  "auth": {
+    "login": {
+      "title": "Log ind",
+      "usernameOrEmail": "Brugernavn eller e-mail",
+      "usernameOrEmailPlaceholder": "Indtast dit brugernavn eller e-mail",
+      "password": "Adgangskode",
+      "passwordPlaceholder": "Indtast din adgangskode",
+      "forgotPassword": "Glemt din adgangskode?",
+      "signIn": "Log ind",
+      "noAccount": "Har du ikke en konto?",
+      "signUp": "Tilmeld dig"
+    },
+    "register": {
+      "title": "Opret konto",
+      "username": "Brugernavn",
+      "usernamePlaceholder": "Vælg et brugernavn",
+      "usernameHint": "3-20 tegn, kun bogstaver og tal",
+      "email": "E-mailadresse",
+      "emailPlaceholder": "Indtast din e-mailadresse",
+      "password": "Adgangskode",
+      "passwordPlaceholder": "Opret en stærk adgangskode",
+      "passwordHint": "Mindst 8 tegn med store og små bogstaver, tal og specialtegn",
+      "confirmPassword": "Bekræft adgangskode",
+      "confirmPasswordPlaceholder": "Bekræft din adgangskode",
+      "country": "Land",
+      "countryPlaceholder": "Vælg dit land",
+      "acceptTerms": "Jeg accepterer",
+      "termsOfService": "Servicevilkårene",
+      "and": "og",
+      "privacyPolicy": "Fortrolighedspolitikken",
+      "createAccount": "Opret konto",
+      "alreadyHaveAccount": "Har du allerede en konto?",
+      "signIn": "Log ind"
+    },
+    "validation": {
+      "usernameRequired": "Brugernavn er påkrævet",
+      "usernameLength": "Brugernavn skal være mellem 3 og 20 tegn",
+      "usernameFormat": "Brugernavn kan kun indeholde bogstaver og tal",
+      "emailRequired": "E-mail er påkrævet",
+      "emailInvalid": "Indtast venligst en gyldig e-mailadresse",
+      "passwordRequired": "Adgangskode er påkrævet",
+      "passwordLength": "Adgangskode skal være mindst 8 tegn",
+      "passwordComplexity": "Adgangskode skal indeholde store og små bogstaver, tal og specialtegn",
+      "confirmPasswordRequired": "Bekræft venligst din adgangskode",
+      "passwordsDoNotMatch": "Adgangskoderne matcher ikke",
+      "countryRequired": "Land er påkrævet",
+      "countryInvalid": "Vælg venligst et gyldigt land",
+      "termsRequired": "Du skal acceptere vilkårene og betingelserne",
+      "usernameOrEmailRequired": "Brugernavn eller e-mail er påkrævet"
+    },
+    "meta": {
+      "signInTitle": "Log ind på din konto",
+      "signInSubtitle": "Velkommen tilbage! Log venligst ind for at fortsætte.",
+      "registerTitle": "Opret din konto",
+      "registerSubtitle": "Bliv medlem af Vallexia og start med at planlægge dine måltider i dag!"
+    }
+  },
+  "profile": {
+    "title": "Profiladministration",
+    "description": "Administrer dine personlige oplysninger, diætpræferencer og ernæringsmål.",
+    "tabs": {
+      "personal": "Personlige oplysninger",
+      "dietary": "Diætpræferencer",
+      "nutritional": "Ernæringsmål",
+      "settings": "Visningsindstillinger",
+      "ariaLabel": "Faner"
+    },
+    "personal": {
+      "title": "Personlige oplysninger",
+      "description": "Opdater dine personlige detaljer og profiloplysninger.",
+      "email": "E-mailadresse",
+      "emailPlaceholder": "Indtast din e-mailadresse",
+      "householdSize": "Husstandsstørrelse",
+      "householdSizePlaceholder": "Antal personer",
+      "mealTypes": "Måltidstyper",
+      "mealTypesDescription": "Vælg de måltidstyper, du vil spore i dine måltidsplaner.",
+      "subscriptionStatus": "Abonnementsstatus",
+      "expires": "Udløber"
+    },
+    "dietary": {
+      "title": "Diætpræferencer",
+      "description": "Indstil dine diætrestriktioner, allergier og madpræferencer.",
+      "savePreferences": "Gem præferencer",
+      "restrictionsHint": "Vælg eventuelle diætrestriktioner, der gælder for dig.",
+      "cuisinesHint": "Vælg køkkenstile, du nyder, for at få personlige opskriftanbefalinger."
+    },
+    "nutritional": {
+      "title": "Ernæringsmål",
+      "description": "Indstil dine daglige ernæringsmål og sundhedsmål.",
+      "dailyCalories": "Daglige kalorier",
+      "goalType": "Måltype",
+      "dailyProtein": "Dagligt protein",
+      "dailyCarbs": "Daglige kulhydrater",
+      "dailyFats": "Daglige fedtstoffer",
+      "dailyFiber": "Daglig fiber",
+      "dailySodium": "Dagligt natrium",
+      "dailySugar": "Dagligt sukker",
+      "percentageOfCalories": "% af daglige kalorier",
+      "saveGoals": "Gem mål"
+    },
+    "allergies": {
+      "hint": "Vælg eventuelle fødevareallergier, du har. Dette hjælper os med at undgå farlige ingredienser.",
+      "warning": {
+        "title": "Vigtigt:",
+        "message": "Valgte allergier vil blive brugt til at filtrere opskrifter og ingredienser. Sørg venligst for nøjagtighed for din sikkerhed."
+      }
+    },
+    "settings": {
+      "title": "Visningsindstillinger",
+      "description": "Tilpas dine applikationsvisningsindstillinger, herunder lokalisering, datoformater og måleenheder.",
+      "language": "Sprog",
+      "country": "Land/Område",
+      "dateFormat": "Datoformat",
+      "timeFormat": "Tidsformat",
+      "timezone": "Tidszone",
+      "firstDayOfWeek": "Første dag i ugen",
+      "firstDayOfWeekLabel": "Første dag i ugen",
+      "measurementSystem": "Målesystem",
+      "currency": "Valuta",
+      "saveGoals": "Gem mål",
+      "saveSettings": "Gem indstillinger",
+      "settingsUpdatedSuccess": "Indstillinger opdateret med succes",
+      "personalInfoUpdatedSuccess": "Personlige oplysninger opdateret med succes",
+      "dietaryPreferencesUpdatedSuccess": "Diætpræferencer opdateret med succes",
+      "nutritionalGoalsUpdatedSuccess": "Ernæringsmål opdateret med succes"
+    }
+  },
+  "recipes": {
+    "title": "Opskrifter",
+    "description": "Gennemse og udforsk opskriftssamlingen",
+    "searchPlaceholder": "Søg efter opskrifter, måltider...",
+    "noRecipes": "Ingen opskrifter fundet",
+    "loading": "Indlæser opskrifter...",
+    "form": {
+      "basicInfo": "Grundlæggende information",
+      "name": "Opskriftnavn",
+      "namePlaceholder": "Indtast opskriftnavn",
+      "description": "Beskrivelse",
+      "descriptionPlaceholder": "Indtast opskriftbeskrivelse",
+      "category": "Kategori",
+      "categoryPlaceholder": "Vælg kategori",
+      "cuisineType": "Køkkenstil",
+      "cuisineTypePlaceholder": "Vælg køkkenstil",
+      "timingServings": "Tid og portioner",
+      "prepTime": "Forberedelsestid (min)",
+      "cookTime": "Tilberedningstid (min)",
+      "servings": "Portioner",
+      "difficultyLevel": "Sværhedsgrad",
+      "difficultyPlaceholder": "Vælg sværhedsgrad",
+      "ingredients": "Ingredienser",
+      "addIngredient": "Tilføj ingrediens",
+      "ingredientName": "Ingrediensnavn",
+      "ingredientNamePlaceholder": "Ingrediensnavn",
+      "quantity": "Mængde",
+      "unit": "Enhed",
+      "instructions": "Instruktioner",
+      "addStep": "Tilføj trin",
+      "step": "Trin",
+      "nutritionalInfo": "Ernæringsoplysninger",
+      "calories": "Kalorier",
+      "protein": "Protein (g)",
+      "carbs": "Kulhydrater (g)",
+      "fats": "Fedtstoffer (g)",
+      "fiber": "Fiber (g)",
+      "sugar": "Sukker (g)",
+      "sodium": "Natrium (mg)",
+      "unitPlaceholder": "Enhed (f.eks. kop, tsk)",
+      "instructionsPlaceholder": "Indtast trin-for-trin instruktioner...",
+      "imageUrl": "Billede URL",
+      "imageUrlPlaceholder": "https://eksempel.com/billede.jpg",
+      "tags": "Tags",
+      "tagsPlaceholder": "Tilføj tags (f.eks. vegetarisk, hurtig, sund)",
+      "tagsHint": "Tryk Enter eller komma for at tilføje et tag. Mindst ét tag er påkrævet.",
+      "makePublic": "Gør denne opskrift offentlig",
+      "saving": "Gemmer...",
+      "updateRecipe": "Opdater opskrift",
+      "createRecipe": "Opret opskrift"
+    },
+    "card": {
+      "prepTime": "Forberedelsestid",
+      "servings": "Portioner",
+      "calories": "kcal",
+      "addMeal": "Tilføj måltid"
+    },
+    "categories": {
+      "BREAKFAST": "Morgenmad",
+      "LUNCH": "Frokost",
+      "DINNER": "Aftensmad",
+      "SNACK": "Snack",
+      "DESSERT": "Dessert",
+      "APPETIZER": "Forret",
+      "BEVERAGE": "Drikkevare",
+      "OTHER": "Andet"
+    },
+    "difficulty": {
+      "EASY": "Let",
+      "MEDIUM": "Medium",
+      "HARD": "Svær",
+      "EXPERT": "Ekspert"
+    },
+    "detail": {
+      "by": "Af",
+      "prepTime": "Forberedelsestid",
+      "cookTime": "Tilberedningstid",
+      "servings": "Portioner",
+      "difficulty": "Sværhedsgrad",
+      "ingredients": "Ingredienser",
+      "instructions": "Instruktioner",
+      "startCooking": "Start tilberedning",
+      "exitCookingMode": "Afslut tilberedningstilstand",
+      "step": "Trin",
+      "of": "af",
+      "allStepsCompleted": "Alle trin gennemført! Nyd dit måltid!",
+      "nutritionalInfo": "Ernæringsoplysninger",
+      "perServing": "(Pr. portion)",
+      "calories": "Kalorier",
+      "protein": "Protein",
+      "carbs": "Kulhydrater",
+      "fats": "Fedtstoffer",
+      "scaling": "Skalering...",
+      "scale": "Skaler",
+      "loading": "Indlæser opskrift...",
+      "minutes": "minutter"
+    },
+    "search": {
+      "title": "Søg og filtrer opskrifter",
+      "search": "Søg",
+      "searchPlaceholder": "Søg efter opskrifter...",
+      "category": "Kategori",
+      "allCategories": "Alle kategorier",
+      "cuisine": "Køkkenstil",
+      "allCuisines": "Alle køkkenstile",
+      "difficulty": "Sværhedsgrad",
+      "allLevels": "Alle niveauer",
+      "maxPrepTime": "Maks. forberedelsestid (minutter)",
+      "maxPrepTimePlaceholder": "f.eks. 30",
+      "maxCalories": "Maks. kalorier",
+      "maxCaloriesPlaceholder": "f.eks. 500",
+      "searchButton": "Søg",
+      "clearFilters": "Ryd filtre",
+      "resultsFound": "{count} opskrift fundet",
+      "resultsFoundPlural": "{count} opskrifter fundet",
+      "cuisineTooltip": "Hvis tomt, og du har foretrukne køkkenstile sat i din profil, vises kun disse. Ellers vises alle køkkenstile."
+    },
+    "list": {
+      "noRecipes": "Ingen opskrifter fundet",
+      "tryAdjusting": "Prøv at justere dine søgefiltre",
+      "previous": "Forrige",
+      "next": "Næste",
+      "page": "Side {current} af {total}"
+    },
+    "create": {
+      "title": "Opret opskrift",
+      "description": "Tilføj en ny opskrift til din samling",
+      "success": "Opskrift oprettet med succes"
+    },
+    "edit": {
+      "title": "Rediger opskrift",
+      "description": "Opdater dine opskriftdetaljer",
+      "success": "Opskrift opdateret med succes"
+    },
+    "view": {
+      "backToRecipes": "Tilbage til opskrifter",
+      "goBack": "Gå tilbage"
+    }
+  },
+  "mealPlans": {
+    "title": "Måltidsplaner",
+    "description": "Planlæg dine ugentlige måltider",
+    "createPlan": "Opret plan",
+    "weekOf": "Uge af {range}",
+    "addMeal": "Tilføj måltid",
+    "autoGenerate": {
+      "title": "Auto-generer plan",
+      "description": "Lad AI oprette en afbalanceret måltidsplan baseret på dine præferencer.",
+      "button": "Generer plan"
+    },
+    "useTemplate": {
+      "title": "Brug skabelon",
+      "description": "Start med en færdiglavet måltidsplanskabelon.",
+      "button": "Gennemse skabeloner"
+    },
+    "copyWeek": {
+      "title": "Kopier forrige uge",
+      "description": "Dupliker en tidligere uges måltidsplan.",
+      "button": "Kopier uge"
+    },
+    "comingSoon": {
+      "title": "Avanceret måltidsplanlægning kommer snart",
+      "description": "Vi bygger et intuitivt træk-og-slip måltidsplanlægningsinterface med ernæringsoptimering og smarte anbefalinger."
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Velkommen til Vallexia! Dit måltidsplanlægningsdashboard vil være her snart.",
+    "completeProfile": "Fuldfør din profil",
+    "welcomeBack": "Velkommen tilbage, {name}!",
+    "welcomeMessage": "Klar til at planlægge dine måltider for ugen? Lad os gøre sund spisning enkelt og lækkert.",
+    "stats": {
+      "recipesSaved": "Gemte opskrifter",
+      "recipesSavedSubtitle": "Samlede opskrifter",
+      "mealsPlanned": "Planlagte måltider",
+      "mealsPlannedSubtitle": "Denne uge",
+      "groceryItems": "Indkøbsvarer",
+      "groceryItemsSubtitle": "Denne uges liste",
+      "caloriesToday": "Kalorier i dag",
+      "caloriesTodaySubtitle": "Dagligt mål: {goal}",
+      "browseRecipes": "Gennemse opskrifter",
+      "viewPlans": "Vis planer",
+      "viewList": "Vis liste",
+      "trackNutrition": "Spor ernæring",
+      "fromLastWeek": "fra sidste uge"
+    },
+    "quickActions": {
+      "title": "Hurtige handlinger",
+      "browseRecipes": "Gennemse opskrifter",
+      "browseRecipesDesc": "Udforsk opskriftssamling",
+      "planMeals": "Planlæg måltider",
+      "planMealsDesc": "Planlæg dine måltider",
+      "createList": "Opret liste",
+      "createListDesc": "Generer indkøbsliste",
+      "trackNutrition": "Spor ernæring",
+      "trackNutritionDesc": "Overvåg dine mål"
+    },
+    "recentActivity": {
+      "title": "Seneste aktivitet",
+      "viewAll": "Vis al aktivitet →"
+    },
+    "recommendations": {
+      "title": "Anbefalet til dig",
+      "refresh": "Opdater anbefalinger",
+      "addToPlan": "Tilføj til plan"
+    },
+    "todaysMeals": {
+      "title": "Dagens måltider",
+      "addMeal": "Tilføj måltid",
+      "dailyNutrition": "Daglig ernæring",
+      "calories": "Kalorier",
+      "protein": "Protein",
+      "carbs": "Kulhydrater",
+      "fat": "Fedt"
+    },
+    "weeklyMealPlan": {
+      "title": "Denne uges måltidsplan",
+      "viewAll": "Vis alle",
+      "generatePlan": "Generer plan",
+      "clear": "Ryd"
+    }
+  },
+  "groceryLists": {
+    "title": "Indkøbslister",
+    "description": "Administrer dine indkøbslister",
+    "create": "Opret liste",
+    "generateList": "Generer liste",
+    "generateFromPlan": "Generer fra måltidsplan",
+    "generateFromPlanDescription": "Opret automatisk en indkøbsliste fra dine planlagte måltider",
+    "activeLists": "Aktive lister",
+    "items": "varer",
+    "moreItems": "flere varer",
+    "edit": "Rediger",
+    "shop": "Køb",
+    "shoppingOptimization": "Indkøbsoptimering",
+    "storeLayout": "Butikslayout",
+    "storeLayoutDescription": "Organiser din liste efter butikssektioner for effektivt indkøb.",
+    "optimizeRoute": "Optimer rute",
+    "priceTracking": "Prissporing",
+    "priceTrackingDescription": "Spor priser og find de bedste tilbud på dine varer.",
+    "trackPrices": "Spor priser",
+    "comingSoon": "Smarte indkøbslister kommer snart",
+    "comingSoonDescription": "Vi udvikler intelligent indkøbslistegenerering med butiksoptimering, prissporing og smart ingredienskonsolidering.",
+    "noLists": "Ingen indkøbslister fundet"
+  },
+  "nutrition": {
+    "title": "Ernæring",
+    "tracking": "Ernæringssporing",
+    "goals": "Ernæringsmål",
+    "description": "Overvåg dine ernæringsmål og fremskridt",
+    "setGoals": "Indstil mål",
+    "updateGoals": "Opdater mål",
+    "calories": "Kalorier",
+    "protein": "Protein",
+    "carbs": "Kulhydrater",
+    "fat": "Fedt",
+    "fiber": "Fiber",
+    "dailyCalories": "Daglige kalorier",
+    "goal": "Mål:",
+    "weeklyProgress": "Ugentligt fremskridt",
+    "todaysMeals": "Dagens måltider",
+    "nutritionalGoals": "Ernæringsmål",
+    "comingSoon": "Avanceret ernæringssporing kommer snart",
+    "comingSoonDescription": "Vi bygger omfattende ernæringsanalyse med detaljeret makrosporing, mikronæringsstoffovervågning og personlige anbefalinger.",
+    "familyUpgrade": {
+      "title": "Planlægger for flere personer?",
+      "description": "Sporer i øjeblikket ernæring for din husstand. Opgrader til <strong>Familie</strong> abonnement for pr. person ernæringsmål og individuel fremskridtssporing.",
+      "learnMore": "Læs mere om Familie abonnement"
+    },
+    "mealTypes": {
+      "breakfast": "Morgenmad",
+      "lunch": "Frokost",
+      "dinner": "Aftensmad",
+      "snacks": "Snacks"
+    }
+  },
+  "home": {
+    "title": "Hjem"
+  },
+  "landing": {
+    "signIn": "Log ind",
+    "getStarted": "Kom i gang",
+    "hero": {
+      "title": "Smart måltidsplanlægning",
+      "subtitle": "Gjort enkelt",
+      "description": "Planlæg dine måltider, spor ernæring og generer indkøbslister med AI-drevne anbefalinger. Transformer din madlavningsrutine med Vallexia.",
+      "startPlanning": "Start planlægning i dag",
+      "signIn": "Log ind"
+    },
+    "features": {
+      "title": "Alt hvad du har brug for til måltidsplanlægning",
+      "description": "Fra opskriftadministration til indkøbslister har Vallexia alle de værktøjer, du har brug for til at planlægge perfekte måltider.",
+      "recipeManagement": {
+        "title": "Opskriftadministration",
+        "description": "Gem, organiser og søg gennem dine yndlingsopskrifter med smart kategorisering."
+      },
+      "mealPlanning": {
+        "title": "Måltidsplanlægning",
+        "description": "Planlæg dine ugentlige måltider med træk-og-slip enkelhed og ernæringsmæssig balance."
+      },
+      "groceryLists": {
+        "title": "Indkøbslister",
+        "description": "Auto-generer indkøbslister fra dine måltidsplaner med smart ingredienskonsolidering."
+      },
+      "nutritionTracking": {
+        "title": "Ernæringssporing",
+        "description": "Spor makroer og mikroer med detaljeret ernæringsanalyse og målindstilling."
+      }
+    },
+    "benefits": {
+      "title": "Hvorfor vælge Vallexia?",
+      "aiRecommendations": {
+        "title": "AI-drevne anbefalinger",
+        "description": "Få personlige måltidsforslag baseret på dine præferencer og diætbehov."
+      },
+      "timeSaving": {
+        "title": "Tidssparende automatisering",
+        "description": "Generer automatisk indkøbslister og optimer din indkøbsoplevelse."
+      },
+      "nutritionalBalance": {
+        "title": "Ernæringsmæssig balance",
+        "description": "Sikr, at dine måltider opfylder dine ernæringsmål med detaljeret sporing og analyse."
+      },
+      "getStarted": {
+        "title": "Klar til at komme i gang?",
+        "description": "Bliv en del af tusindvis af brugere, der har transformeret deres måltidsplanlægning med Vallexia.",
+        "button": "Opret din konto"
+      }
+    },
+    "footer": {
+      "tagline": "Smart måltidsplanlægning gjort enkelt. Planlæg, spor og optimer din ernæring med AI-drevne anbefalinger.",
+      "product": "Produkt",
+      "features": "Funktioner",
+      "pricing": "Priser",
+      "api": "API",
+      "support": "Support",
+      "helpCenter": "Hjælpecenter",
+      "contactUs": "Kontakt os",
+      "privacyPolicy": "Fortrolighedspolitik",
+      "copyright": "© 2024 Vallexia. Alle rettigheder forbeholdes."
+    }
+  },
+  "layout": {
+    "search": "Søg",
+    "searchPlaceholder": "Søg efter opskrifter, måltider...",
+    "yourProfile": "Din profil",
+    "signOut": "Log ud",
+    "navigation": {
+      "dashboard": "Oversigt",
+      "recipes": "Opskrifter",
+      "mealPlans": "Måltidsplaner",
+      "groceryLists": "Indkøbslister",
+      "nutrition": "Ernæring",
+      "profile": "Profil",
+      "logout": "Log ud"
+    }
+  },
+  "errors": {
+    "notFound": {
+      "404": "404",
+      "title": "Side ikke fundet",
+      "message": "Beklager, vi kunne ikke finde den side, du leder efter.",
+      "goToDashboard": "Gå til dashboard",
+      "goToHome": "Gå til hjem"
+    },
+    "400": "Ugyldig input. Tjek venligst dine data og prøv igen.",
+    "401": "Din session er udløbet. Log venligst ind igen.",
+    "403": "Du har ikke tilladelse til at udføre denne handling.",
+    "404": "Den ønskede ressource blev ikke fundet.",
+    "409": "Denne e-mail er allerede i brug. Brug venligst en anden e-mailadresse.",
+    "422": "De data, du har angivet, er ugyldige. Tjek venligst og prøv igen.",
+    "500": "Der opstod en serverfejl. Prøv venligst igen senere.",
+    "default": "Der opstod en uventet fejl. Prøv venligst igen.",
+    "timeout": "Anmodningen tog for lang tid. Prøv venligst igen.",
+    "networkError": "Netværksfejl. Tjek venligst din forbindelse og prøv igen.",
+    "validationFailed": "Validering mislykkedes"
+  },
+  "validation": {
+    "required": "{field} er påkrævet",
+    "email": "Indtast venligst en gyldig e-mailadresse",
+    "minLength": "{field} skal være mindst {min} tegn",
+    "maxLength": "{field} må højst være {max} tegn",
+    "min": "{field} skal være mindst {min}",
+    "max": "{field} må højst være {max}",
+    "pattern": "{field} format er ugyldigt"
+  },
+  "constants": {
+    "dietaryRestrictions": {
+      "VEGETARIAN": "Vegetarisk",
+      "descriptions": {
+        "VEGETARIAN": "Intet kød, men kan inkludere æg og mælkeprodukter",
+        "VEGAN": "Ingen animalske produkter inklusive kød, æg, mælkeprodukter og honning",
+        "GLUTEN_FREE": "Ingen hvede, byg, rug eller andre glutenholdige korn",
+        "DAIRY_FREE": "Ingen mælk, ost, yoghurt eller andre mælkeprodukter",
+        "NUT_FREE": "Ingen trænødder eller jordnødder",
+        "SOY_FREE": "Ingen sojabønner eller sojaprodukter",
+        "EGG_FREE": "Ingen æg eller ægprodukter",
+        "LOW_CARB": "Reduceret kulhydratindtag",
+        "KETO": "Meget lavt kulhydrat, højt fedt diæt",
+        "PALEO": "Baseret på formodet paleolitisk diæt",
+        "MEDITERRANEAN": "Baseret på middelhavsdiætmønstre",
+        "LOW_SODIUM": "Reduceret natriumindtag",
+        "LOW_FAT": "Reduceret fedtindtag",
+        "HIGH_PROTEIN": "Øget proteinindtag",
+        "HALAL": "Fødevarer tilladt under islamisk lov",
+        "KOSHER": "Fødevarer i overensstemmelse med jødisk diætlov"
+      },
+      "VEGAN": "Vegansk",
+      "GLUTEN_FREE": "Glutenfri",
+      "DAIRY_FREE": "Mælkefri",
+      "NUT_FREE": "Nødefri",
+      "SOY_FREE": "Sojafri",
+      "EGG_FREE": "Æggefri",
+      "LOW_CARB": "Lavt kulhydrat",
+      "KETO": "Keto",
+      "PALEO": "Paleo",
+      "MEDITERRANEAN": "Middelhavs",
+      "LOW_SODIUM": "Lavt natrium",
+      "LOW_FAT": "Fedtfattig",
+      "HIGH_PROTEIN": "Højt protein",
+      "HALAL": "Halal",
+      "KOSHER": "Kosher"
+    },
+    "allergies": {
+      "PEANUTS": "Jordnødder",
+      "TREE_NUTS": "Trænødder",
+      "MILK": "Mælk",
+      "EGGS": "Æg",
+      "FISH": "Fisk",
+      "SHELLFISH": "Skaldyr",
+      "SOY": "Soja",
+      "WHEAT": "Hvede",
+      "SESAME": "Sesam",
+      "MUSTARD": "Sennep",
+      "CELERY": "Selleri",
+      "LUPIN": "Lupin",
+      "SULFITES": "Sulfitter"
+    },
+    "cuisineTypes": {
+      "AMERICAN": "Amerikansk",
+      "ITALIAN": "Italiensk",
+      "MEXICAN": "Mexicansk",
+      "CHINESE": "Kinesisk",
+      "JAPANESE": "Japansk",
+      "THAI": "Thai",
+      "INDIAN": "Indisk",
+      "FRENCH": "Fransk",
+      "MEDITERRANEAN": "Middelhavs",
+      "GREEK": "Græsk",
+      "SPANISH": "Spansk",
+      "GERMAN": "Tysk",
+      "BRITISH": "Britisk",
+      "KOREAN": "Koreansk",
+      "VIETNAMESE": "Vietnamesisk",
+      "MIDDLE_EASTERN": "Mellemøstlig",
+      "CARIBBEAN": "Caribisk",
+      "AFRICAN": "Afrikansk",
+      "SOUTH_AMERICAN": "Sydamerikansk"
+    },
+    "goalTypes": {
+      "WEIGHT_LOSS": "Vægttab",
+      "WEIGHT_GAIN": "Vægtøgning",
+      "MUSCLE_GAIN": "Muskeltilvækst",
+      "MAINTENANCE": "Vedligeholdelse",
+      "ATHLETIC_PERFORMANCE": "Atletisk præstation",
+      "GENERAL_HEALTH": "Generel sundhed"
+    },
+    "subscriptionStatus": {
+      "FREE": "Gratis",
+      "PREMIUM": "Premium",
+      "FAMILY": "Familie",
+      "CANCELLED": "Annulleret",
+      "EXPIRED": "Udløbet"
+    },
+    "mealTypes": {
+      "BREAKFAST": "Morgenmad",
+      "LUNCH": "Frokost",
+      "DINNER": "Aftensmad",
+      "SNACK": "Snack"
+    },
+    "dateFormats": {
+      "MM_DD_YYYY": "MM/DD/YYYY",
+      "DD_MM_YYYY": "DD/MM/YYYY",
+      "YYYY_MM_DD": "YYYY-MM-DD",
+      "DD_MM_YYYY_DOT": "DD.MM.YYYY"
+    },
+    "measurementSystems": {
+      "METRIC": "Metrisk",
+      "IMPERIAL": "Imperial"
+    },
+    "firstDayOfWeek": {
+      "SUNDAY": "Søndag",
+      "MONDAY": "Mandag"
+    },
+    "languages": {
+      "en": "Engelsk",
+      "da": "Dansk"
+    },
+    "countries": {
+      "US": "USA",
+      "DK": "Danmark"
+    }
+  }
+}

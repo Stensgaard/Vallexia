@@ -4,14 +4,14 @@ spring:
     activate:
       on-profile: dev
   datasource:
-    url: jdbc:postgresql://postgres:5432/vallexia_dev
+    url: jdbc:postgresql://${DB_HOST:localhost}:5432/vallexia_dev
     username: vallexia_user
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   
   data:
     redis:
-      host: redis
+      host: ${REDIS_HOST:localhost}
       port: 6379
       password: ${REDIS_PASSWORD:}
       timeout: 2000ms
@@ -51,8 +51,10 @@ app:
     lockout:
       max-failed-attempts: 5
       duration-minutes: 15
-  audit:
+  security:
+    # Comma-separated list of trusted proxy IP addresses for extracting real client IP
     trusted-proxies: ${TRUSTED_PROXIES:}
+  audit:
     retention-days: ${AUDIT_RETENTION_DAYS:90}
     fallback-log-path: ${AUDIT_FALLBACK_LOG_PATH:deployment/logs/audit-fallback.log}
   cors:
@@ -78,8 +80,8 @@ app:
 
 logging:
   level:
-    '[com.vallexia]': DEBUG
-    '[org.springframework.security]': DEBUG
+    '[com.vallexia]': INFO
+    '[org.springframework.security]': WARN
     '[org.hibernate.SQL]': DEBUG
     '[org.hibernate.type.descriptor.sql.BasicBinder]': DEBUG
   pattern:

@@ -1,6 +1,8 @@
 package com.vallexia.audit.controller;
 
+import com.vallexia.audit.dto.AuditLogDto;
 import com.vallexia.audit.entity.AuditLog;
+import com.vallexia.audit.mapper.AuditLogMapper;
 import com.vallexia.audit.service.AuditService;
 import com.vallexia.security.AuthenticationHelper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,9 +25,9 @@ import java.time.LocalDateTime;
  * REST controller for audit log operations.
  * Provides endpoints for querying audit logs with proper access control.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 @RestController
 @RequestMapping("/api/v1/audit-logs")
@@ -35,16 +37,20 @@ public class AuditLogController {
   
   private final AuditService auditService;
   private final AuthenticationHelper authenticationHelper;
+  private final AuditLogMapper auditLogMapper;
   
   /**
    * Constructor for dependency injection.
    * 
    * @param auditService the audit service
    * @param authenticationHelper the authentication helper
+   * @param auditLogMapper the audit log mapper
    */
-  public AuditLogController(AuditService auditService, AuthenticationHelper authenticationHelper) {
+  public AuditLogController(AuditService auditService, AuthenticationHelper authenticationHelper, 
+                            AuditLogMapper auditLogMapper) {
     this.auditService = auditService;
     this.authenticationHelper = authenticationHelper;
+    this.auditLogMapper = auditLogMapper;
   }
   
   /**
@@ -65,7 +71,7 @@ public class AuditLogController {
       @ApiResponse(responseCode = "500", description = "Internal server error")
   })
   @GetMapping("/me")
-  public ResponseEntity<Page<AuditLog>> getMyAuditLogs(
+  public ResponseEntity<Page<AuditLogDto>> getMyAuditLogs(
       @Parameter(description = "Page number (0-based)", example = "0") 
       @RequestParam(defaultValue = "0") int page,
       @Parameter(description = "Number of records per page", example = "20")
@@ -75,8 +81,9 @@ public class AuditLogController {
     Long currentUserId = authenticationHelper.getCurrentUserId();
     Pageable pageable = PageRequest.of(page, size);
     Page<AuditLog> auditLogs = auditService.getUserAuditLogs(currentUserId, pageable);
+    Page<AuditLogDto> auditLogDtos = auditLogs.map(auditLogMapper::toDto);
     
-    return ResponseEntity.ok(auditLogs);
+    return ResponseEntity.ok(auditLogDtos);
   }
   
   /**
@@ -99,7 +106,7 @@ public class AuditLogController {
   })
   @GetMapping("/user/{userId}")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<Page<AuditLog>> getUserAuditLogs(
+  public ResponseEntity<Page<AuditLogDto>> getUserAuditLogs(
       @Parameter(description = "User ID", example = "1", required = true)
       @PathVariable Long userId,
       @Parameter(description = "Page number (0-based)", example = "0")
@@ -109,8 +116,9 @@ public class AuditLogController {
     
     Pageable pageable = PageRequest.of(page, size);
     Page<AuditLog> auditLogs = auditService.getUserAuditLogs(userId, pageable);
+    Page<AuditLogDto> auditLogDtos = auditLogs.map(auditLogMapper::toDto);
     
-    return ResponseEntity.ok(auditLogs);
+    return ResponseEntity.ok(auditLogDtos);
   }
   
   /**
@@ -132,7 +140,7 @@ public class AuditLogController {
   })
   @GetMapping
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<Page<AuditLog>> getAllAuditLogs(
+  public ResponseEntity<Page<AuditLogDto>> getAllAuditLogs(
       @Parameter(description = "Page number (0-based)", example = "0")
       @RequestParam(defaultValue = "0") int page,
       @Parameter(description = "Number of records per page", example = "20")
@@ -140,8 +148,9 @@ public class AuditLogController {
     
     Pageable pageable = PageRequest.of(page, size);
     Page<AuditLog> auditLogs = auditService.getAuditLogs(pageable);
+    Page<AuditLogDto> auditLogDtos = auditLogs.map(auditLogMapper::toDto);
     
-    return ResponseEntity.ok(auditLogs);
+    return ResponseEntity.ok(auditLogDtos);
   }
   
   /**
@@ -164,7 +173,7 @@ public class AuditLogController {
   })
   @GetMapping("/failed-logins")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<Page<AuditLog>> getFailedLoginAttempts(
+  public ResponseEntity<Page<AuditLogDto>> getFailedLoginAttempts(
       @Parameter(description = "Username to query", example = "john.doe", required = true)
       @RequestParam String username,
       @Parameter(description = "Page number (0-based)", example = "0")
@@ -174,8 +183,9 @@ public class AuditLogController {
     
     Pageable pageable = PageRequest.of(page, size);
     Page<AuditLog> auditLogs = auditService.getFailedLoginAttempts(username, pageable);
+    Page<AuditLogDto> auditLogDtos = auditLogs.map(auditLogMapper::toDto);
     
-    return ResponseEntity.ok(auditLogs);
+    return ResponseEntity.ok(auditLogDtos);
   }
   
   /**
@@ -197,7 +207,7 @@ public class AuditLogController {
   })
   @GetMapping("/security-violations")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<Page<AuditLog>> getSecurityViolations(
+  public ResponseEntity<Page<AuditLogDto>> getSecurityViolations(
       @Parameter(description = "Page number (0-based)", example = "0")
       @RequestParam(defaultValue = "0") int page,
       @Parameter(description = "Number of records per page", example = "20")
@@ -205,8 +215,9 @@ public class AuditLogController {
     
     Pageable pageable = PageRequest.of(page, size);
     Page<AuditLog> auditLogs = auditService.getSecurityViolations(pageable);
+    Page<AuditLogDto> auditLogDtos = auditLogs.map(auditLogMapper::toDto);
     
-    return ResponseEntity.ok(auditLogs);
+    return ResponseEntity.ok(auditLogDtos);
   }
   
   /**
@@ -231,7 +242,7 @@ public class AuditLogController {
   })
   @GetMapping("/date-range")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<Page<AuditLog>> getAuditLogsByDateRange(
+  public ResponseEntity<Page<AuditLogDto>> getAuditLogsByDateRange(
       @Parameter(description = "Start date and time in ISO 8601 format", example = "2024-01-01T00:00:00", required = true)
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
       @Parameter(description = "End date and time in ISO 8601 format", example = "2024-01-31T23:59:59", required = true)
@@ -243,7 +254,8 @@ public class AuditLogController {
     
     Pageable pageable = PageRequest.of(page, size);
     Page<AuditLog> auditLogs = auditService.getAuditLogsByDateRange(start, end, pageable);
+    Page<AuditLogDto> auditLogDtos = auditLogs.map(auditLogMapper::toDto);
     
-    return ResponseEntity.ok(auditLogs);
+    return ResponseEntity.ok(auditLogDtos);
   }
 }

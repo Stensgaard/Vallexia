@@ -12,9 +12,9 @@ import java.time.LocalDateTime;
 /**
  * Join entity representing a user's favorite recipe.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 @Entity
 @Table(name = "favorite_recipes", 

@@ -1,54 +1,41 @@
 package com.vallexia.config.security;
 
-import jakarta.annotation.PostConstruct;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.validation.annotation.Validated;
 
 /**
  * Configuration properties for JWT settings.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-29
  */
-@Slf4j
 @Data
+@Validated
 @ConfigurationProperties(prefix = "app.jwt")
 public class JwtProperties {
   
   /**
    * JWT secret key for signing tokens.
+   * Must be at least 32 characters for security (256 bits).
    */
+  @NotBlank(message = "JWT secret must not be blank")
+  @Size(min = 32, message = "JWT secret must be at least 32 characters long for security")
   private String secret;
   
   /**
    * Access token expiration time in milliseconds.
    */
+  @Min(value = 1, message = "Access token expiration must be at least 1 millisecond")
   private long accessTokenExpiration;
   
   /**
    * Refresh token expiration time in milliseconds.
    */
+  @Min(value = 1, message = "Refresh token expiration must be at least 1 millisecond")
   private long refreshTokenExpiration;
-  
-  /**
-   * Validate JWT secret key size after properties are loaded.
-   * Ensures secret is at least 256 bits (32 characters) for security.
-   */
-  @PostConstruct
-  public void validateSecret() {
-    if (secret == null || secret.trim().isEmpty()) {
-      throw new IllegalStateException(
-          "JWT secret is not configured. Set JWT_SECRET environment variable.");
-    }
-    
-    if (secret.length() < 32) {
-      throw new IllegalStateException(
-          "JWT secret must be at least 32 characters long for security. Current length: "
-              + secret.length());
-    }
-    
-    log.info("JWT secret validation passed");
-  }
 }

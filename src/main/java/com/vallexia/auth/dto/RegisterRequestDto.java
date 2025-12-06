@@ -1,5 +1,6 @@
 package com.vallexia.auth.dto;
 
+import com.vallexia.common.validator.ValidCountry;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -11,9 +12,9 @@ import lombok.NoArgsConstructor;
 /**
  * Data Transfer Object for user registration request.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 @Data
 @NoArgsConstructor
@@ -43,4 +44,8 @@ public class RegisterRequestDto {
     
     @NotBlank(message = "Password confirmation is required")
     private String confirmPassword;
+    
+    @NotBlank(message = "Country is required")
+    @ValidCountry(message = "Invalid country code")
+    private String country;
 }

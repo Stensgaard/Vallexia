@@ -11,7 +11,7 @@ import com.vallexia.recipe.fixtures.RecipeTestFixtures;
 import com.vallexia.recipe.mapper.RecipeMapper;
 import com.vallexia.recipe.repository.*;
 import com.vallexia.recipe.service.FavoriteRecipeService;
-import com.vallexia.recipe.service.NutritionalCalculationService;
+import com.vallexia.recipe.service.RecipeNutritionService;
 import com.vallexia.recipe.service.RecipeService;
 import com.vallexia.security.AuthenticationHelper;
 import com.vallexia.user.entity.User;
@@ -33,9 +33,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+
+import org.mockito.ArgumentMatchers;
+import org.springframework.data.jpa.domain.Specification;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -47,9 +49,9 @@ import static org.mockito.Mockito.*;
  * Unit tests for RecipeService.
  * Tests business logic with mocked dependencies.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.WARN)
@@ -78,7 +80,7 @@ class RecipeServiceTest {
   private FavoriteRecipeService favoriteRecipeService;
   
   @Mock
-  private NutritionalCalculationService nutritionalCalculationService;
+  private RecipeNutritionService recipeNutritionService;
   
   @Mock
   private AuditService auditService;
@@ -86,8 +88,87 @@ class RecipeServiceTest {
   @Mock
   private AuthenticationHelper authenticationHelper;
   
+  @Mock
+  private com.vallexia.user.service.UserSettingsService userSettingsService;
+  
+  @Mock
+  private com.vallexia.recipe.service.RecipeEnrichmentService recipeEnrichmentService;
+  
+  @Mock
+  private com.vallexia.recipe.repository.RecipeTranslationRepository recipeTranslationRepository;
+  
   @InjectMocks
   private RecipeService recipeService;
+  
+  // ==================== Helper Methods ====================
+  
+  /**
+   * Sets up user locale mock with default English language.
+   */
+  private void setupUserLocaleMock() {
+    when(userSettingsService.getUserLocale(any(Long.class)))
+        .thenReturn("en");
+    when(userSettingsService.getUserLocale(null))
+        .thenReturn("en");
+  }
+  
+  /**
+   * Sets up recipe enrichment service mock to return enriched DTO.
+   */
+  private void setupRecipeEnrichmentServiceMock() {
+    when(recipeEnrichmentService.enrichWithTranslations(any(RecipeDto.class), any(Recipe.class), any(String.class)))
+        .thenAnswer(invocation -> {
+          RecipeDto dto = invocation.getArgument(0);
+          return dto; // Return the DTO as-is for testing
+        });
+  }
+  
+  /**
+   * Sets up nutritional info mapper mock to convert DTO to entity.
+   */
+  private void setupNutritionalInfoMapperMock() {
+    when(recipeMapper.toNutritionalInfo(any(com.vallexia.recipe.dto.NutritionalInfoDto.class)))
+        .thenAnswer(invocation -> {
+          NutritionalInfo ni = new NutritionalInfo();
+          com.vallexia.recipe.dto.NutritionalInfoDto nutritionalDto = invocation.getArgument(0);
+          if (nutritionalDto != null) {
+            ni.setCalories(nutritionalDto.getCalories());
+            ni.setProtein(nutritionalDto.getProtein());
+            ni.setCarbs(nutritionalDto.getCarbs());
+            ni.setFats(nutritionalDto.getFats());
+          }
+          return ni;
+        });
+  }
+  
+  /**
+   * Sets up nutritional info repository mock to return saved entity.
+   */
+  private void setupNutritionalInfoRepositoryMock() {
+    when(nutritionalInfoRepository.save(any(NutritionalInfo.class)))
+        .thenAnswer(invocation -> invocation.getArgument(0));
+  }
+  
+  /**
+   * Sets up favorite recipe service mock.
+   * 
+   * @param isFavorite whether the recipe should be marked as favorite
+   * @param userId user ID to check favorite status for
+   */
+  private void setupFavoriteRecipeMock(boolean isFavorite, Long userId) {
+    when(favoriteRecipeService.isFavorite(any(Long.class), eq(userId)))
+        .thenReturn(isFavorite);
+  }
+  
+  /**
+   * Sets up favorite recipe service mock with any user ID.
+   * 
+   * @param isFavorite whether the recipe should be marked as favorite
+   */
+  private void setupFavoriteRecipeMock(boolean isFavorite) {
+    when(favoriteRecipeService.isFavorite(any(), any()))
+        .thenReturn(isFavorite);
+  }
   
   // ==================== createRecipe() Tests ====================
   
@@ -119,30 +200,11 @@ class RecipeServiceTest {
         .thenReturn(recipeIngredient);
     when(recipeIngredientRepository.saveAll(anyList()))
         .thenReturn(mockIngredients);
-    when(recipeMapper.toNutritionalInfo(any(com.vallexia.recipe.dto.NutritionalInfoDto.class)))
-        .thenAnswer(invocation -> {
-          NutritionalInfo ni = new NutritionalInfo();
-          com.vallexia.recipe.dto.NutritionalInfoDto nutritionalDto = invocation.getArgument(0);
-          if (nutritionalDto != null) {
-            ni.setCalories(nutritionalDto.getCalories());
-            ni.setProtein(nutritionalDto.getProtein());
-            ni.setCarbs(nutritionalDto.getCarbs());
-            ni.setFats(nutritionalDto.getFats());
-          }
-          return ni;
-        });
-    when(nutritionalCalculationService.calculateRecipeNutrition(anyList()))
-        .thenAnswer(invocation -> {
-          NutritionalInfo ni = new NutritionalInfo();
-          ni.setCalories(BigDecimal.valueOf(100.0));
-          ni.setProtein(BigDecimal.valueOf(10.0));
-          return ni;
-        });
-    when(nutritionalInfoRepository.save(any(NutritionalInfo.class)))
-        .thenAnswer(invocation -> invocation.getArgument(0));
-    doNothing().when(nutritionalCalculationService).updateRecipeNutrition(any(Recipe.class));
-    when(favoriteRecipeService.isFavorite(any(Long.class), eq(UserTestFixtures.TEST_USER_ID)))
-        .thenReturn(false);
+    setupNutritionalInfoMapperMock();
+    setupNutritionalInfoRepositoryMock();
+    setupUserLocaleMock();
+    setupRecipeEnrichmentServiceMock();
+    setupFavoriteRecipeMock(false, UserTestFixtures.TEST_USER_ID);
     when(recipeMapper.toRecipeDto(recipe, false))
         .thenReturn(expectedDto);
     
@@ -198,30 +260,11 @@ class RecipeServiceTest {
         .thenReturn(testRecipeIngredient);
     when(recipeIngredientRepository.saveAll(anyList()))
         .thenReturn(List.of(testRecipeIngredient));
-    // Mock toNutritionalInfo in case DTO has nutritionalInfo
-    when(recipeMapper.toNutritionalInfo(any(com.vallexia.recipe.dto.NutritionalInfoDto.class)))
-        .thenAnswer(invocation -> {
-          NutritionalInfo ni = new NutritionalInfo();
-          com.vallexia.recipe.dto.NutritionalInfoDto nutritionalDto = invocation.getArgument(0);
-          if (nutritionalDto != null) {
-            ni.setCalories(nutritionalDto.getCalories());
-            ni.setProtein(nutritionalDto.getProtein());
-          }
-          return ni;
-        });
-    // Mock calculateRecipeNutrition in case updateRecipeNutrition executes
-    NutritionalInfo mockNutritionalInfo = new NutritionalInfo();
-    mockNutritionalInfo.setCalories(BigDecimal.valueOf(100.0));
-    mockNutritionalInfo.setProtein(BigDecimal.valueOf(10.0));
-    when(nutritionalCalculationService.calculateRecipeNutrition(anyList()))
-        .thenReturn(mockNutritionalInfo);
-    when(nutritionalInfoRepository.save(any(NutritionalInfo.class)))
-        .thenAnswer(invocation -> invocation.getArgument(0));
-    // CRITICAL: Must stub updateRecipeNutrition to prevent real execution
-    doNothing().when(nutritionalCalculationService).updateRecipeNutrition(any(Recipe.class));
+    setupNutritionalInfoMapperMock();
+    setupNutritionalInfoRepositoryMock();
     doNothing().when(auditService).logEvent(any(EventType.class), any(Long.class), any(String.class));
-    when(favoriteRecipeService.isFavorite(any(), any()))
-        .thenReturn(false);
+    setupUserLocaleMock();
+    setupFavoriteRecipeMock(false);
     when(recipeMapper.toRecipeDto(any(), any()))
         .thenReturn(expectedDto);
     
@@ -265,20 +308,10 @@ class RecipeServiceTest {
         .thenReturn(new RecipeIngredient());
     when(recipeIngredientRepository.saveAll(anyList()))
         .thenReturn(savedIngredients);
-    when(recipeMapper.toNutritionalInfo(any(com.vallexia.recipe.dto.NutritionalInfoDto.class)))
-        .thenAnswer(invocation -> {
-          NutritionalInfo ni = new NutritionalInfo();
-          com.vallexia.recipe.dto.NutritionalInfoDto nutritionalDto = invocation.getArgument(0);
-          if (nutritionalDto != null) {
-            ni.setCalories(nutritionalDto.getCalories());
-            ni.setProtein(nutritionalDto.getProtein());
-          }
-          return ni;
-        });
-    when(nutritionalInfoRepository.save(any(NutritionalInfo.class)))
-        .thenAnswer(invocation -> invocation.getArgument(0));
-    when(favoriteRecipeService.isFavorite(any(), any()))
-        .thenReturn(false);
+    setupNutritionalInfoMapperMock();
+    setupNutritionalInfoRepositoryMock();
+    setupUserLocaleMock();
+    setupFavoriteRecipeMock(false);
     when(recipeMapper.toRecipeDto(any(), any()))
         .thenReturn(expectedDto);
     
@@ -302,6 +335,8 @@ class RecipeServiceTest {
     
     when(recipeRepository.findById(RecipeTestFixtures.TEST_RECIPE_ID))
         .thenReturn(Optional.of(recipe));
+    setupUserLocaleMock();
+    setupRecipeEnrichmentServiceMock();
     when(favoriteRecipeService.isFavorite(RecipeTestFixtures.TEST_RECIPE_ID, UserTestFixtures.TEST_USER_ID))
         .thenReturn(true);
     when(recipeMapper.toRecipeDto(recipe, true))
@@ -314,6 +349,7 @@ class RecipeServiceTest {
     assertThat(result).isNotNull();
     assertThat(result.getId()).isEqualTo(RecipeTestFixtures.TEST_RECIPE_ID);
     verify(recipeRepository).findById(RecipeTestFixtures.TEST_RECIPE_ID);
+    verify(recipeEnrichmentService).enrichWithTranslations(any(RecipeDto.class), eq(recipe), eq("en"));
   }
   
   @Test
@@ -386,6 +422,8 @@ class RecipeServiceTest {
         .thenReturn(true); // Admin role allows updating any recipe
     when(recipeRepository.save(any(Recipe.class)))
         .thenReturn(recipe);
+    setupUserLocaleMock();
+    setupRecipeEnrichmentServiceMock();
     when(favoriteRecipeService.isFavorite(any(), any()))
         .thenReturn(false);
     when(recipeMapper.toRecipeDto(any(), any()))
@@ -498,8 +536,10 @@ class RecipeServiceTest {
     Page<Recipe> recipePage = new PageImpl<>(recipes, pageable, 1);
     RecipeDto recipeDto = new RecipeDto();
     
-    when(recipeRepository.findByIsPublicTrue(pageable))
+    when(recipeRepository.findAll(ArgumentMatchers.<Specification<Recipe>>any(), any(Pageable.class)))
         .thenReturn(recipePage);
+    setupUserLocaleMock();
+    setupRecipeEnrichmentServiceMock();
     when(favoriteRecipeService.isFavorite(any(Long.class), eq(1L)))
         .thenReturn(false);
     when(recipeMapper.toRecipeDto(recipe, false))
@@ -511,7 +551,8 @@ class RecipeServiceTest {
     // Then
     assertThat(result).isNotNull();
     assertThat(result.getContent()).hasSize(1);
-    verify(recipeRepository).findByIsPublicTrue(pageable);
+    verify(recipeRepository).findAll(ArgumentMatchers.<Specification<Recipe>>any(), any(Pageable.class));
     verify(favoriteRecipeService).isFavorite(any(Long.class), eq(1L));
+    verify(recipeEnrichmentService).enrichWithTranslations(any(RecipeDto.class), eq(recipe), eq("en"));
   }
 }

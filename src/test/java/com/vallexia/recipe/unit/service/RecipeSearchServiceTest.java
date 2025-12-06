@@ -5,7 +5,6 @@ import com.vallexia.recipe.dto.RecipeSearchCriteria;
 import com.vallexia.recipe.dto.RecipeSearchResponseDto;
 import com.vallexia.recipe.entity.Recipe;
 import com.vallexia.recipe.entity.enums.DifficultyLevel;
-import com.vallexia.recipe.entity.enums.RecipeCategory;
 import com.vallexia.recipe.entity.enums.RecipeSortBy;
 import com.vallexia.recipe.entity.enums.RecipeSortOrder;
 import com.vallexia.recipe.entity.enums.RestrictionMatchMode;
@@ -13,9 +12,10 @@ import com.vallexia.recipe.fixtures.RecipeTestFixtures;
 import com.vallexia.recipe.mapper.RecipeMapper;
 import com.vallexia.recipe.repository.RecipeRepository;
 import com.vallexia.recipe.service.RecipeSearchService;
-import com.vallexia.user.entity.enums.Allergy;
-import com.vallexia.user.entity.enums.CuisineType;
-import com.vallexia.user.entity.enums.DietaryRestriction;
+import com.vallexia.common.enums.SupportedAllergy;
+import com.vallexia.common.enums.SupportedCuisineType;
+import com.vallexia.common.enums.SupportedDietaryRestriction;
+import com.vallexia.common.enums.SupportedMealCategory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,9 +43,9 @@ import static org.mockito.Mockito.*;
  * Unit tests for RecipeSearchService.
  * Tests advanced search functionality with various criteria.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -62,8 +62,32 @@ class RecipeSearchServiceTest {
   @Mock
   private com.vallexia.recipe.service.FavoriteRecipeService favoriteRecipeService;
   
+  @Mock
+  private com.vallexia.user.service.UserSettingsService userSettingsService;
+  
+  @Mock
+  private com.vallexia.user.service.DietaryPreferencesService dietaryPreferencesService;
+  
+  @Mock
+  private com.vallexia.recipe.service.RecipeEnrichmentService recipeEnrichmentService;
+  
   @InjectMocks
   private RecipeSearchService recipeSearchService;
+  
+  /**
+   * Helper method to set up common mocks for locale and DTO enrichment.
+   */
+  private void setupCommonMocks() {
+    when(userSettingsService.getUserLocale(any(Long.class)))
+        .thenReturn("en");
+    when(userSettingsService.getUserLocale(null))
+        .thenReturn("en");
+    when(recipeEnrichmentService.enrichWithTranslations(any(RecipeDto.class), any(Recipe.class), any(String.class)))
+        .thenAnswer(invocation -> {
+          RecipeDto dto = invocation.getArgument(0);
+          return dto; // Return the DTO as-is for testing
+        });
+  }
   
   // ==================== searchRecipes() Tests ====================
   
@@ -71,6 +95,7 @@ class RecipeSearchServiceTest {
   @DisplayName("Should search recipes with text query")
   void shouldSearchRecipesWithTextQuery() {
     // Given
+    setupCommonMocks();
     RecipeSearchCriteria criteria = new RecipeSearchCriteria();
     criteria.setQuery("pasta");
     Pageable pageable = PageRequest.of(0, 20);
@@ -100,8 +125,9 @@ class RecipeSearchServiceTest {
   @DisplayName("Should search recipes with category filter")
   void shouldSearchRecipesWithCategoryFilter() {
     // Given
+    setupCommonMocks();
     RecipeSearchCriteria criteria = new RecipeSearchCriteria();
-    criteria.setCategory(RecipeCategory.DINNER);
+    criteria.setCategory(SupportedMealCategory.DINNER);
     Pageable pageable = PageRequest.of(0, 20);
     
     Recipe recipe = RecipeTestFixtures.createRecipe();
@@ -125,10 +151,11 @@ class RecipeSearchServiceTest {
   
   @Test
   @DisplayName("Should search recipes with cuisine type filter")
-  void shouldSearchRecipesWithCuisineTypeFilter() {
+  void shouldSearchRecipesWithSupportedCuisineTypeFilter() {
     // Given
+    setupCommonMocks();
     RecipeSearchCriteria criteria = new RecipeSearchCriteria();
-    criteria.setCuisineType(CuisineType.ITALIAN);
+    criteria.setCuisineType(SupportedCuisineType.ITALIAN);
     Pageable pageable = PageRequest.of(0, 20);
     
     Recipe recipe = RecipeTestFixtures.createRecipe();
@@ -154,6 +181,7 @@ class RecipeSearchServiceTest {
   @DisplayName("Should search recipes with difficulty level filter")
   void shouldSearchRecipesWithDifficultyLevelFilter() {
     // Given
+    setupCommonMocks();
     RecipeSearchCriteria criteria = new RecipeSearchCriteria();
     criteria.setDifficultyLevel(DifficultyLevel.EASY);
     Pageable pageable = PageRequest.of(0, 20);
@@ -181,6 +209,7 @@ class RecipeSearchServiceTest {
   @DisplayName("Should search recipes with time range filters")
   void shouldSearchRecipesWithTimeRangeFilters() {
     // Given
+    setupCommonMocks();
     RecipeSearchCriteria criteria = new RecipeSearchCriteria();
     criteria.setMinPrepTime(10);
     criteria.setMaxPrepTime(30);
@@ -211,6 +240,7 @@ class RecipeSearchServiceTest {
   @DisplayName("Should search recipes with calories range filter")
   void shouldSearchRecipesWithCaloriesRangeFilter() {
     // Given
+    setupCommonMocks();
     RecipeSearchCriteria criteria = new RecipeSearchCriteria();
     criteria.setMinCalories(BigDecimal.valueOf(200.0));
     criteria.setMaxCalories(BigDecimal.valueOf(500.0));
@@ -239,10 +269,11 @@ class RecipeSearchServiceTest {
   @DisplayName("Should search recipes with combined filters")
   void shouldSearchRecipesWithCombinedFilters() {
     // Given
+    setupCommonMocks();
     RecipeSearchCriteria criteria = new RecipeSearchCriteria();
     criteria.setQuery("pasta");
-    criteria.setCategory(RecipeCategory.DINNER);
-    criteria.setCuisineType(CuisineType.ITALIAN);
+    criteria.setCategory(SupportedMealCategory.DINNER);
+    criteria.setCuisineType(SupportedCuisineType.ITALIAN);
     criteria.setDifficultyLevel(DifficultyLevel.MEDIUM);
     criteria.setMinCalories(BigDecimal.valueOf(300.0));
     Pageable pageable = PageRequest.of(0, 20);
@@ -273,6 +304,7 @@ class RecipeSearchServiceTest {
   @DisplayName("Should return empty results when no recipes match criteria")
   void shouldReturnEmptyResultsWhenNoRecipesMatchCriteria() {
     // Given
+    setupCommonMocks();
     RecipeSearchCriteria criteria = new RecipeSearchCriteria();
     criteria.setQuery("nonexistent");
     Pageable pageable = PageRequest.of(0, 20);
@@ -295,15 +327,16 @@ class RecipeSearchServiceTest {
   
   @Test
   @DisplayName("Should filter recipes by dietary restrictions (OR mode)")
-  void shouldFilterRecipesByDietaryRestrictionsOR() {
+  void shouldFilterRecipesBySupportedDietaryRestrictionsOR() {
     // Given
+    setupCommonMocks();
     RecipeSearchCriteria criteria = new RecipeSearchCriteria();
-    criteria.setDietaryRestrictions(List.of(DietaryRestriction.DAIRY_FREE, DietaryRestriction.VEGETARIAN));
+    criteria.setDietaryRestrictions(List.of(SupportedDietaryRestriction.DAIRY_FREE, SupportedDietaryRestriction.VEGETARIAN));
     criteria.setRestrictionMatchMode(RestrictionMatchMode.OR);
     Pageable pageable = PageRequest.of(0, 20);
     
     Recipe recipe = RecipeTestFixtures.createRecipe();
-    recipe.addDietaryRestriction(DietaryRestriction.DAIRY_FREE);
+    recipe.addDietaryRestriction(SupportedDietaryRestriction.DAIRY_FREE);
     Page<Recipe> recipePage = new PageImpl<>(List.of(recipe), pageable, 1);
     RecipeDto recipeDto = new RecipeDto();
     
@@ -325,16 +358,17 @@ class RecipeSearchServiceTest {
   
   @Test
   @DisplayName("Should filter recipes by dietary restrictions (AND mode)")
-  void shouldFilterRecipesByDietaryRestrictionsAND() {
+  void shouldFilterRecipesBySupportedDietaryRestrictionsAND() {
     // Given
+    setupCommonMocks();
     RecipeSearchCriteria criteria = new RecipeSearchCriteria();
-    criteria.setDietaryRestrictions(List.of(DietaryRestriction.DAIRY_FREE, DietaryRestriction.GLUTEN_FREE));
+    criteria.setDietaryRestrictions(List.of(SupportedDietaryRestriction.DAIRY_FREE, SupportedDietaryRestriction.GLUTEN_FREE));
     criteria.setRestrictionMatchMode(RestrictionMatchMode.AND);
     Pageable pageable = PageRequest.of(0, 20);
     
     Recipe recipe = RecipeTestFixtures.createRecipe();
-    recipe.addDietaryRestriction(DietaryRestriction.DAIRY_FREE);
-    recipe.addDietaryRestriction(DietaryRestriction.GLUTEN_FREE);
+    recipe.addDietaryRestriction(SupportedDietaryRestriction.DAIRY_FREE);
+    recipe.addDietaryRestriction(SupportedDietaryRestriction.GLUTEN_FREE);
     Page<Recipe> recipePage = new PageImpl<>(List.of(recipe), pageable, 1);
     RecipeDto recipeDto = new RecipeDto();
     
@@ -356,10 +390,11 @@ class RecipeSearchServiceTest {
   
   @Test
   @DisplayName("Should filter recipes by dietary restrictions excluding incompatible allergens")
-  void shouldFilterRecipesByDietaryRestrictionsExcludingIncompatibleAllergens() {
+  void shouldFilterRecipesBySupportedDietaryRestrictionsExcludingIncompatibleAllergens() {
     // Given
+    setupCommonMocks();
     RecipeSearchCriteria criteria = new RecipeSearchCriteria();
-    criteria.setDietaryRestrictions(List.of(DietaryRestriction.DAIRY_FREE));
+    criteria.setDietaryRestrictions(List.of(SupportedDietaryRestriction.DAIRY_FREE));
     criteria.setRestrictionMatchMode(RestrictionMatchMode.OR);
     Pageable pageable = PageRequest.of(0, 20);
     
@@ -390,13 +425,14 @@ class RecipeSearchServiceTest {
   @DisplayName("Should exclude recipes with user allergies when excludeAllergens is true")
   void shouldExcludeRecipesWithUserAllergies() {
     // Given
+    setupCommonMocks();
     RecipeSearchCriteria criteria = new RecipeSearchCriteria();
     criteria.setExcludeAllergens(true);
     Pageable pageable = PageRequest.of(0, 20);
-    List<Allergy> userAllergies = List.of(Allergy.MILK, Allergy.EGGS);
+    List<SupportedAllergy> userAllergies = List.of(SupportedAllergy.MILK, SupportedAllergy.EGGS);
     
     Recipe recipe = RecipeTestFixtures.createRecipe();
-    recipe.addAllergen(Allergy.MILK);
+    recipe.addAllergen(SupportedAllergy.MILK);
     // Recipe with MILK allergen should be excluded
     Page<Recipe> emptyPage = new PageImpl<>(List.of(), pageable, 0);
     
@@ -416,13 +452,14 @@ class RecipeSearchServiceTest {
   @DisplayName("Should not exclude recipes when excludeAllergens is false")
   void shouldNotExcludeRecipesWhenExcludeAllergensIsFalse() {
     // Given
+    setupCommonMocks();
     RecipeSearchCriteria criteria = new RecipeSearchCriteria();
     criteria.setExcludeAllergens(false);
     Pageable pageable = PageRequest.of(0, 20);
-    List<Allergy> userAllergies = List.of(Allergy.MILK);
+    List<SupportedAllergy> userAllergies = List.of(SupportedAllergy.MILK);
     
     Recipe recipe = RecipeTestFixtures.createRecipe();
-    recipe.addAllergen(Allergy.MILK);
+    recipe.addAllergen(SupportedAllergy.MILK);
     Page<Recipe> recipePage = new PageImpl<>(List.of(recipe), pageable, 1);
     RecipeDto recipeDto = new RecipeDto();
     
@@ -446,10 +483,11 @@ class RecipeSearchServiceTest {
   @DisplayName("Should not exclude recipes when user has no allergies")
   void shouldNotExcludeRecipesWhenUserHasNoAllergies() {
     // Given
+    setupCommonMocks();
     RecipeSearchCriteria criteria = new RecipeSearchCriteria();
     criteria.setExcludeAllergens(true);
     Pageable pageable = PageRequest.of(0, 20);
-    List<Allergy> userAllergies = List.of(); // Empty list
+    List<SupportedAllergy> userAllergies = List.of(); // Empty list
     
     Recipe recipe = RecipeTestFixtures.createRecipe();
     Page<Recipe> recipePage = new PageImpl<>(List.of(recipe), pageable, 1);
@@ -477,13 +515,14 @@ class RecipeSearchServiceTest {
   @DisplayName("Should filter recipes by preferred cuisines when no explicit cuisine filter")
   void shouldFilterRecipesByPreferredCuisines() {
     // Given
+    setupCommonMocks();
     RecipeSearchCriteria criteria = new RecipeSearchCriteria();
     // No explicit cuisineType set
     Pageable pageable = PageRequest.of(0, 20);
-    Set<CuisineType> preferredCuisines = Set.of(CuisineType.ITALIAN, CuisineType.FRENCH);
+    Set<SupportedCuisineType> preferredCuisines = Set.of(SupportedCuisineType.ITALIAN, SupportedCuisineType.FRENCH);
     
     Recipe recipe = RecipeTestFixtures.createRecipe();
-    recipe.setCuisineType(CuisineType.ITALIAN);
+    recipe.setCuisineType(SupportedCuisineType.ITALIAN);
     Page<Recipe> recipePage = new PageImpl<>(List.of(recipe), pageable, 1);
     RecipeDto recipeDto = new RecipeDto();
     
@@ -507,13 +546,14 @@ class RecipeSearchServiceTest {
   @DisplayName("Should use explicit cuisine filter over preferred cuisines")
   void shouldUseExplicitCuisineFilterOverPreferredCuisines() {
     // Given
+    setupCommonMocks();
     RecipeSearchCriteria criteria = new RecipeSearchCriteria();
-    criteria.setCuisineType(CuisineType.MEXICAN); // Explicit filter
+    criteria.setCuisineType(SupportedCuisineType.MEXICAN); // Explicit filter
     Pageable pageable = PageRequest.of(0, 20);
-    Set<CuisineType> preferredCuisines = Set.of(CuisineType.ITALIAN, CuisineType.FRENCH);
+    Set<SupportedCuisineType> preferredCuisines = Set.of(SupportedCuisineType.ITALIAN, SupportedCuisineType.FRENCH);
     
     Recipe recipe = RecipeTestFixtures.createRecipe();
-    recipe.setCuisineType(CuisineType.MEXICAN);
+    recipe.setCuisineType(SupportedCuisineType.MEXICAN);
     Page<Recipe> recipePage = new PageImpl<>(List.of(recipe), pageable, 1);
     RecipeDto recipeDto = new RecipeDto();
     
@@ -539,6 +579,7 @@ class RecipeSearchServiceTest {
   @DisplayName("Should sort recipes by name ascending")
   void shouldSortRecipesByNameAscending() {
     // Given
+    setupCommonMocks();
     RecipeSearchCriteria criteria = new RecipeSearchCriteria();
     criteria.setSortBy(RecipeSortBy.NAME);
     criteria.setSortOrder(RecipeSortOrder.ASC);
@@ -567,6 +608,7 @@ class RecipeSearchServiceTest {
   @DisplayName("Should sort recipes by calories descending")
   void shouldSortRecipesByCaloriesDescending() {
     // Given
+    setupCommonMocks();
     RecipeSearchCriteria criteria = new RecipeSearchCriteria();
     criteria.setSortBy(RecipeSortBy.CALORIES);
     criteria.setSortOrder(RecipeSortOrder.DESC);
@@ -595,14 +637,15 @@ class RecipeSearchServiceTest {
   
   @Test
   @DisplayName("Should filter recipes with dietary restrictions and allergens combined")
-  void shouldFilterRecipesWithDietaryRestrictionsAndAllergensCombined() {
+  void shouldFilterRecipesWithSupportedDietaryRestrictionsAndAllergensCombined() {
     // Given
+    setupCommonMocks();
     RecipeSearchCriteria criteria = new RecipeSearchCriteria();
-    criteria.setDietaryRestrictions(List.of(DietaryRestriction.DAIRY_FREE));
+    criteria.setDietaryRestrictions(List.of(SupportedDietaryRestriction.DAIRY_FREE));
     criteria.setRestrictionMatchMode(RestrictionMatchMode.OR);
     criteria.setExcludeAllergens(true);
     Pageable pageable = PageRequest.of(0, 20);
-    List<Allergy> userAllergies = List.of(Allergy.PEANUTS);
+    List<SupportedAllergy> userAllergies = List.of(SupportedAllergy.PEANUTS);
     
     Recipe recipe = RecipeTestFixtures.createRecipe();
     // Recipe should match DAIRY_FREE (no MILK allergen) and not have PEANUTS
@@ -628,22 +671,23 @@ class RecipeSearchServiceTest {
   @DisplayName("Should filter recipes with all filters combined")
   void shouldFilterRecipesWithAllFiltersCombined() {
     // Given
+    setupCommonMocks();
     RecipeSearchCriteria criteria = new RecipeSearchCriteria();
     criteria.setQuery("pasta");
-    criteria.setCategory(RecipeCategory.DINNER);
-    criteria.setCuisineType(CuisineType.ITALIAN);
+    criteria.setCategory(SupportedMealCategory.DINNER);
+    criteria.setCuisineType(SupportedCuisineType.ITALIAN);
     criteria.setDifficultyLevel(DifficultyLevel.MEDIUM);
-    criteria.setDietaryRestrictions(List.of(DietaryRestriction.VEGETARIAN));
+    criteria.setDietaryRestrictions(List.of(SupportedDietaryRestriction.VEGETARIAN));
     criteria.setRestrictionMatchMode(RestrictionMatchMode.OR);
     criteria.setMinCalories(BigDecimal.valueOf(200.0));
     criteria.setMaxCalories(BigDecimal.valueOf(500.0));
     criteria.setExcludeAllergens(true);
     Pageable pageable = PageRequest.of(0, 20);
-    List<Allergy> userAllergies = List.of(Allergy.SHELLFISH);
-    Set<CuisineType> preferredCuisines = Set.of(CuisineType.ITALIAN);
+    List<SupportedAllergy> userAllergies = List.of(SupportedAllergy.SHELLFISH);
+    Set<SupportedCuisineType> preferredCuisines = Set.of(SupportedCuisineType.ITALIAN);
     
     Recipe recipe = RecipeTestFixtures.createRecipe();
-    recipe.addDietaryRestriction(DietaryRestriction.VEGETARIAN);
+    recipe.addDietaryRestriction(SupportedDietaryRestriction.VEGETARIAN);
     Page<Recipe> recipePage = new PageImpl<>(List.of(recipe), pageable, 1);
     RecipeDto recipeDto = new RecipeDto();
     

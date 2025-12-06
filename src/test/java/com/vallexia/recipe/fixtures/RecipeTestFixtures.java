@@ -6,10 +6,9 @@ import com.vallexia.recipe.dto.NutritionalInfoDto;
 import com.vallexia.recipe.dto.UpdateRecipeDto;
 import com.vallexia.recipe.entity.*;
 import com.vallexia.recipe.entity.enums.DifficultyLevel;
-import com.vallexia.recipe.entity.enums.RecipeCategory;
-import com.vallexia.user.entity.enums.CuisineType;
-import com.vallexia.user.entity.User;
+import com.vallexia.common.enums.SupportedCuisineType;
 import com.vallexia.user.fixtures.UserTestFixtures;
+import com.vallexia.common.enums.SupportedMealCategory;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -22,9 +21,9 @@ import java.util.Set;
  * Test fixtures for recipe testing.
  * Provides reusable test data and builder methods.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 public class RecipeTestFixtures {
   
@@ -68,8 +67,8 @@ public class RecipeTestFixtures {
     recipe.setTotalTimeMinutes(TEST_TOTAL_TIME);
     recipe.setServings(TEST_SERVINGS);
     recipe.setDifficultyLevel(DifficultyLevel.MEDIUM);
-    recipe.setCategory(RecipeCategory.DINNER);
-    recipe.setCuisineType(CuisineType.ITALIAN);
+    recipe.setCategory(SupportedMealCategory.DINNER);
+    recipe.setCuisineType(SupportedCuisineType.ITALIAN);
     recipe.setImageUrl("https://example.com/recipe.jpg");
     recipe.setIsPublic(true);
     recipe.setTags(new HashSet<>(Set.of("easy", "italian", "dinner")));
@@ -79,43 +78,11 @@ public class RecipeTestFixtures {
   }
   
   /**
-   * Creates a recipe with specified creator.
-   */
-  public static Recipe createRecipe(User creator) {
-    Recipe recipe = createRecipe();
-    recipe.setCreator(creator);
-    return recipe;
-  }
-  
-  /**
    * Creates a private recipe.
    */
   public static Recipe createPrivateRecipe() {
     Recipe recipe = createRecipe();
     recipe.setIsPublic(false);
-    return recipe;
-  }
-  
-  /**
-   * Creates a recipe with all timing information.
-   */
-  public static Recipe createRecipeWithTiming() {
-    Recipe recipe = createRecipe();
-    recipe.setPrepTimeMinutes(20);
-    recipe.setCookTimeMinutes(45);
-    recipe.calculateTotalTime();
-    return recipe;
-  }
-  
-  /**
-   * Creates a recipe with ingredients.
-   */
-  public static Recipe createRecipeWithIngredients() {
-    Recipe recipe = createRecipe();
-    List<RecipeIngredient> ingredients = new ArrayList<>();
-    ingredients.add(createRecipeIngredient(recipe, createIngredient("Flour"), BigDecimal.valueOf(2.0), "cups"));
-    ingredients.add(createRecipeIngredient(recipe, createIngredient("Eggs"), BigDecimal.valueOf(3.0), "pieces"));
-    recipe.setIngredients(ingredients);
     return recipe;
   }
   
@@ -202,15 +169,6 @@ public class RecipeTestFixtures {
   }
   
   /**
-   * Creates per-serving nutritional info.
-   */
-  public static NutritionalInfo createPerServingNutritionalInfo(Recipe recipe) {
-    NutritionalInfo nutritionalInfo = createNutritionalInfo(recipe);
-    nutritionalInfo.setPerServing(true);
-    return nutritionalInfo;
-  }
-  
-  /**
    * Creates a CreateRecipeDto.
    */
   public static CreateRecipeDto createCreateRecipeDto() {
@@ -222,8 +180,8 @@ public class RecipeTestFixtures {
     dto.setCookTimeMinutes(TEST_COOK_TIME);
     dto.setServings(TEST_SERVINGS);
     dto.setDifficultyLevel(DifficultyLevel.MEDIUM);
-    dto.setCategory(RecipeCategory.DINNER);
-    dto.setCuisineType(CuisineType.ITALIAN);
+    dto.setCategory(SupportedMealCategory.DINNER);
+    dto.setCuisineType(SupportedCuisineType.ITALIAN);
     dto.setImageUrl("https://example.com/recipe.jpg");
     dto.setIsPublic(true);
     
@@ -260,18 +218,6 @@ public class RecipeTestFixtures {
   }
   
   /**
-   * Creates a minimal CreateRecipeDto with only required fields.
-   */
-  public static CreateRecipeDto createMinimalCreateRecipeDto() {
-    CreateRecipeDto dto = new CreateRecipeDto();
-    dto.setName(TEST_RECIPE_NAME);
-    dto.setInstructions(TEST_RECIPE_INSTRUCTIONS);
-    dto.setServings(TEST_SERVINGS);
-    dto.setCategory(RecipeCategory.DINNER);
-    return dto;
-  }
-  
-  /**
    * Creates an UpdateRecipeDto.
    */
   public static UpdateRecipeDto createUpdateRecipeDto() {
@@ -281,80 +227,5 @@ public class RecipeTestFixtures {
     dto.setServings(6);
     dto.setDifficultyLevel(DifficultyLevel.EASY);
     return dto;
-  }
-  
-  /**
-   * Creates an UpdateRecipeDto with all fields.
-   */
-  public static UpdateRecipeDto createFullUpdateRecipeDto() {
-    UpdateRecipeDto dto = new UpdateRecipeDto();
-    dto.setName("Updated Recipe");
-    dto.setDescription("Updated description");
-    dto.setInstructions("Updated instructions");
-    dto.setPrepTimeMinutes(20);
-    dto.setCookTimeMinutes(40);
-    dto.setServings(6);
-    dto.setDifficultyLevel(DifficultyLevel.HARD);
-    dto.setCategory(RecipeCategory.LUNCH);
-    dto.setCuisineType(CuisineType.MEXICAN);
-    dto.setIsPublic(false);
-    
-    // Update ingredients
-    List<IngredientDto> ingredients = new ArrayList<>();
-    IngredientDto ingredient = new IngredientDto();
-    ingredient.setName("Updated Ingredient");
-    ingredient.setQuantity(BigDecimal.valueOf(3.0));
-    ingredient.setUnit("cups");
-    ingredient.setDisplayOrder(0);
-    ingredients.add(ingredient);
-    dto.setIngredients(ingredients);
-    
-    // Update nutritional info
-    NutritionalInfoDto nutritionalInfo = new NutritionalInfoDto();
-    nutritionalInfo.setCalories(BigDecimal.valueOf(300.0));
-    nutritionalInfo.setProtein(BigDecimal.valueOf(15.0));
-    dto.setNutritionalInfo(nutritionalInfo);
-    
-    // Update tags
-    dto.setTags(new HashSet<>(Set.of("updated", "mexican")));
-    
-    return dto;
-  }
-  
-  /**
-   * Creates an invalid CreateRecipeDto for testing validation.
-   */
-  public static CreateRecipeDto createInvalidCreateRecipeDto() {
-    CreateRecipeDto dto = new CreateRecipeDto();
-    // Missing required fields: name, instructions, servings, category
-    dto.setServings(0); // Invalid - must be >= 1
-    return dto;
-  }
-  
-  /**
-   * Creates a recipe with specified category.
-   */
-  public static Recipe createRecipeWithCategory(RecipeCategory category) {
-    Recipe recipe = createRecipe();
-    recipe.setCategory(category);
-    return recipe;
-  }
-  
-  /**
-   * Creates a recipe with specified cuisine type.
-   */
-  public static Recipe createRecipeWithCuisine(CuisineType cuisineType) {
-    Recipe recipe = createRecipe();
-    recipe.setCuisineType(cuisineType);
-    return recipe;
-  }
-  
-  /**
-   * Creates a recipe with specified difficulty level.
-   */
-  public static Recipe createRecipeWithDifficulty(DifficultyLevel difficultyLevel) {
-    Recipe recipe = createRecipe();
-    recipe.setDifficultyLevel(difficultyLevel);
-    return recipe;
   }
 }

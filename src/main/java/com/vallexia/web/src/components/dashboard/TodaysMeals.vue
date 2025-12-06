@@ -1,11 +1,11 @@
 <template>
-  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex flex-col h-full">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-semibold text-gray-900">Today's Meals</h3>
+      <h3 class="text-lg font-semibold text-gray-900">{{ t('dashboard.todaysMeals.title') }}</h3>
       <span class="text-sm text-gray-500">{{ todayDate }}</span>
     </div>
 
-    <div class="space-y-4">
+    <div class="flex-1 space-y-4">
       <div
         v-for="meal in todaysMeals"
         :key="meal.type"
@@ -23,15 +23,16 @@
         
         <div class="text-right">
           <div v-if="meal.nutrition" class="text-sm text-gray-600">
-            <div>{{ meal.nutrition.calories }} cal</div>
-            <div class="text-xs text-gray-500">{{ meal.nutrition.protein }}g protein</div>
+            <div>{{ formatNumber(meal.nutrition.calories, 0) }} cal</div>
+            <div class="text-xs text-gray-500">{{ formatNutritionalValue(meal.nutrition.protein) }} protein</div>
           </div>
           <button
             v-else
             @click="addMeal(meal.type)"
+            :aria-label="t('dashboard.todaysMeals.addMeal', { mealType: meal.type })"
             class="text-blue-600 hover:text-blue-700 text-sm font-medium"
           >
-            Add Meal
+            {{ t('dashboard.todaysMeals.addMeal') }}
           </button>
         </div>
       </div>
@@ -39,23 +40,15 @@
 
     <!-- Daily nutrition summary -->
     <div v-if="dailyNutrition" class="mt-6 pt-4 border-t border-gray-200">
-      <h4 class="text-sm font-medium text-gray-900 mb-3">Daily Nutrition</h4>
+      <h4 class="text-sm font-medium text-gray-900 mb-3">{{ t('dashboard.todaysMeals.dailyNutrition') }}</h4>
       <div class="grid grid-cols-4 gap-4">
-        <div class="text-center">
-          <div class="text-lg font-semibold text-gray-900">{{ dailyNutrition.calories }}</div>
-          <div class="text-xs text-gray-500">Calories</div>
-        </div>
-        <div class="text-center">
-          <div class="text-lg font-semibold text-gray-900">{{ dailyNutrition.protein }}g</div>
-          <div class="text-xs text-gray-500">Protein</div>
-        </div>
-        <div class="text-center">
-          <div class="text-lg font-semibold text-gray-900">{{ dailyNutrition.carbs }}g</div>
-          <div class="text-xs text-gray-500">Carbs</div>
-        </div>
-        <div class="text-center">
-          <div class="text-lg font-semibold text-gray-900">{{ dailyNutrition.fat }}g</div>
-          <div class="text-xs text-gray-500">Fat</div>
+        <div
+          v-for="item in nutritionSummaryItems"
+          :key="item.key"
+          class="text-center"
+        >
+          <div class="text-lg font-semibold text-gray-900">{{ item.value }}</div>
+          <div class="text-xs text-gray-500">{{ item.label }}</div>
         </div>
       </div>
     </div>
@@ -64,9 +57,22 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useSettingsStore } from '@/stores/settings'
+import { useFormattedValue } from '@/composables/useFormattedValue'
+
+const { t } = useI18n()
+const settingsStore = useSettingsStore()
+
+// Use composable for formatted values with proper Vue reactivity
+const { formatNutritionalValue } = useFormattedValue()
+
+const formatNumber = (number, decimals = 0) => {
+  return settingsStore.formatNumberFn(number, decimals)
+}
 
 const todayDate = computed(() => {
-  return new Date().toLocaleDateString('en-US', { 
+  return new Date().toLocaleDateString(settingsStore.locale, { 
     weekday: 'long', 
     year: 'numeric', 
     month: 'long', 
@@ -74,7 +80,7 @@ const todayDate = computed(() => {
   })
 })
 
-// Mock data - replace with actual data from store/API
+// TODO: Replace with actual data from store/API
 const todaysMeals = ref([
   {
     type: 'breakfast',
@@ -117,8 +123,36 @@ const dailyNutrition = computed(() => {
   }), { calories: 0, protein: 0, carbs: 0, fat: 0 })
 })
 
+const nutritionSummaryItems = computed(() => {
+  if (!dailyNutrition.value) return []
+  
+  return [
+    {
+      key: 'calories',
+      value: formatNumber(dailyNutrition.value.calories, 0),
+      label: t('dashboard.todaysMeals.calories')
+    },
+    {
+      key: 'protein',
+      value: formatNutritionalValue(dailyNutrition.value.protein),
+      label: t('dashboard.todaysMeals.protein')
+    },
+    {
+      key: 'carbs',
+      value: formatNutritionalValue(dailyNutrition.value.carbs),
+      label: t('dashboard.todaysMeals.carbs')
+    },
+    {
+      key: 'fat',
+      value: formatNutritionalValue(dailyNutrition.value.fat),
+      label: t('dashboard.todaysMeals.fat')
+    }
+  ]
+})
+
+const emit = defineEmits(['add-meal'])
+
 const addMeal = (mealType) => {
-  // TODO: Open meal selection modal
-  console.log('Add meal for', mealType)
+  emit('add-meal', mealType)
 }
 </script>

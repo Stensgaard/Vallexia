@@ -1,10 +1,10 @@
 package com.vallexia.recipe.dto;
 
 import com.vallexia.recipe.entity.enums.DifficultyLevel;
-import com.vallexia.recipe.entity.enums.RecipeCategory;
-import com.vallexia.user.entity.enums.Allergy;
-import com.vallexia.user.entity.enums.CuisineType;
-import com.vallexia.user.entity.enums.DietaryRestriction;
+import com.vallexia.common.enums.SupportedAllergy;
+import com.vallexia.common.enums.SupportedCuisineType;
+import com.vallexia.common.enums.SupportedDietaryRestriction;
+import com.vallexia.common.enums.SupportedMealCategory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,9 +18,9 @@ import java.util.Set;
 /**
  * Data Transfer Object for recipe responses.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 @Data
 @NoArgsConstructor
@@ -49,13 +49,15 @@ public class RecipeDto {
     
     private DifficultyLevel difficultyLevel;
     
-    private RecipeCategory category;
+    private SupportedMealCategory category;
     
-    private CuisineType cuisineType;
+    private SupportedCuisineType cuisineType;
     
     private String imageUrl;
     
     private Boolean isPublic;
+    
+    private String baseLocale;
     
     private NutritionalInfoDto nutritionalInfo;
     
@@ -63,9 +65,9 @@ public class RecipeDto {
     
     private Set<String> tags = new HashSet<>();
     
-    private Set<DietaryRestriction> dietaryRestrictions = new HashSet<>();
+    private Set<SupportedDietaryRestriction> dietaryRestrictions = new HashSet<>();
     
-    private Set<Allergy> allergens = new HashSet<>();
+    private Set<SupportedAllergy> allergens = new HashSet<>();
     
     private Boolean isFavorite;
     

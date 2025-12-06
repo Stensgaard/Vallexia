@@ -9,9 +9,9 @@ import org.springframework.data.domain.Sort;
 /**
  * Helper class for applying sorting to recipe search queries.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 public final class RecipeSortHelper {
     

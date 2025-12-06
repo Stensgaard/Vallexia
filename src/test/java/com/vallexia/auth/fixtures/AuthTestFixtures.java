@@ -4,21 +4,18 @@ import com.vallexia.auth.dto.JwtResponseDto;
 import com.vallexia.auth.dto.LoginRequestDto;
 import com.vallexia.auth.dto.RefreshTokenRequestDto;
 import com.vallexia.auth.dto.RegisterRequestDto;
-import com.vallexia.user.entity.enums.Role;
 import com.vallexia.user.entity.User;
 import com.vallexia.user.fixtures.UserTestFixtures;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Test fixtures for authentication testing.
  * Provides reusable test data and builder methods.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-30
  */
 public class AuthTestFixtures {
   
@@ -27,10 +24,8 @@ public class AuthTestFixtures {
   public static final String TEST_ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test.access.token";
   public static final String TEST_REFRESH_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test.refresh.token";
   public static final String TEST_INVALID_TOKEN = "invalid.token.here";
-  public static final String TEST_EMPTY_TOKEN = "";
   public static final String TEST_BLACKLISTED_TOKEN = "blacklisted.token.here";
   public static final LocalDateTime TEST_TOKEN_EXPIRES_AT = LocalDateTime.now().plusHours(1);
-  public static final LocalDateTime TEST_TOKEN_EXPIRED_AT = LocalDateTime.now().minusHours(1);
   
   /**
    * Creates a valid RegisterRequestDto.
@@ -54,24 +49,6 @@ public class AuthTestFixtures {
   }
   
   /**
-   * Creates a RegisterRequestDto with existing username.
-   */
-  public static RegisterRequestDto createRegisterRequestDtoWithExistingUsername() {
-    RegisterRequestDto dto = createRegisterRequestDto();
-    dto.setUsername("existinguser");
-    return dto;
-  }
-  
-  /**
-   * Creates a RegisterRequestDto with existing email.
-   */
-  public static RegisterRequestDto createRegisterRequestDtoWithExistingEmail() {
-    RegisterRequestDto dto = createRegisterRequestDto();
-    dto.setEmail("existing@example.com");
-    return dto;
-  }
-  
-  /**
    * Creates a valid LoginRequestDto with username.
    */
   public static LoginRequestDto createLoginRequestDto() {
@@ -88,15 +65,6 @@ public class AuthTestFixtures {
     LoginRequestDto dto = new LoginRequestDto();
     dto.setUsernameOrEmail(UserTestFixtures.TEST_EMAIL);
     dto.setPassword(TEST_PASSWORD);
-    return dto;
-  }
-  
-  /**
-   * Creates a LoginRequestDto with invalid credentials.
-   */
-  public static LoginRequestDto createLoginRequestDtoWithInvalidPassword() {
-    LoginRequestDto dto = createLoginRequestDto();
-    dto.setPassword("WrongPass123!");
     return dto;
   }
   
@@ -149,19 +117,6 @@ public class AuthTestFixtures {
   public static User createUserNearLockout(int maxAttempts) {
     User user = UserTestFixtures.createUser();
     user.setFailedLoginAttempts(maxAttempts - 1);
-    return user;
-  }
-  
-  /**
-   * Creates a user with multiple roles.
-   */
-  public static User createUserWithRoles(Role... roles) {
-    User user = UserTestFixtures.createUser();
-    Set<Role> roleSet = new HashSet<>();
-    for (Role role : roles) {
-      roleSet.add(role);
-    }
-    user.setRoles(roleSet);
     return user;
   }
 }

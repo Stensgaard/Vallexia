@@ -2,7 +2,7 @@ package com.vallexia.nutrition.unit.validator;
 
 import com.vallexia.nutrition.exception.InvalidNutritionalDataException;
 import com.vallexia.nutrition.validator.NutritionalDataValidator;
-import com.vallexia.user.entity.NutritionalGoals;
+import com.vallexia.nutrition.entity.NutritionalGoals;
 import com.vallexia.user.entity.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,9 +14,9 @@ import static org.assertj.core.api.Assertions.*;
 /**
  * Unit tests for NutritionalDataValidator.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-29
  */
 @DisplayName("NutritionalDataValidator Unit Tests")
 class NutritionalDataValidatorTest {
@@ -365,4 +365,3 @@ class NutritionalDataValidatorTest {
       .hasMessageContaining("500");
   }
 }
-

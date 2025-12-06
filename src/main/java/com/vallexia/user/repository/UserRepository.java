@@ -2,8 +2,6 @@ package com.vallexia.user.repository;
 
 import com.vallexia.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -11,28 +9,12 @@ import java.util.Optional;
 /**
  * Repository interface for User entity operations.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    
-    /**
-     * Find user by username.
-     * 
-     * @param username the username to search for
-     * @return Optional containing the user if found
-     */
-    Optional<User> findByUsername(String username);
-    
-    /**
-     * Find user by email.
-     * 
-     * @param email the email to search for
-     * @return Optional containing the user if found
-     */
-    Optional<User> findByEmail(String email);
     
     /**
      * Check if username exists.
@@ -51,16 +33,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
     
     /**
-     * Find user by username or email.
-     * 
-     * @param username the username to search for
-     * @param email the email to search for
-     * @return Optional containing the user if found
-     */
-    @Query("SELECT u FROM User u WHERE u.username = :username OR u.email = :email")
-    Optional<User> findByUsernameOrEmail(@Param("username") String username, @Param("email") String email);
-    
-    /**
      * Find enabled user by username.
      * 
      * @param username the username to search for
@@ -75,4 +47,23 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return Optional containing the enabled user if found
      */
     Optional<User> findByEmailAndEnabledTrue(String email);
+    
+    /**
+     * Find user by username (regardless of enabled status).
+     * Username is immutable and preferred for account status checks.
+     * 
+     * @param username the username to search for
+     * @return Optional containing the user if found
+     */
+    Optional<User> findByUsername(String username);
+    
+    /**
+     * Find user by email (regardless of enabled status).
+     * Note: Email can be changed by users, so username lookup is preferred when possible.
+     * This method is needed to support login with email address.
+     * 
+     * @param email the email to search for
+     * @return Optional containing the user if found
+     */
+    Optional<User> findByEmail(String email);
 }

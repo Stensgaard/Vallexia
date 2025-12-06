@@ -1,12 +1,15 @@
 package com.vallexia.recipe.dto;
 
 import com.vallexia.recipe.entity.enums.DifficultyLevel;
-import com.vallexia.recipe.entity.enums.RecipeCategory;
 import com.vallexia.recipe.entity.enums.RecipeSortBy;
 import com.vallexia.recipe.entity.enums.RecipeSortOrder;
 import com.vallexia.recipe.entity.enums.RestrictionMatchMode;
-import com.vallexia.user.entity.enums.CuisineType;
-import com.vallexia.user.entity.enums.DietaryRestriction;
+import com.vallexia.common.enums.SupportedCuisineType;
+import com.vallexia.common.enums.SupportedDietaryRestriction;
+import com.vallexia.common.enums.SupportedMealCategory;
+import com.vallexia.common.validator.ValidCuisineType;
+import com.vallexia.common.validator.ValidDietaryRestriction;
+import com.vallexia.common.validator.ValidMealCategory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,9 +21,9 @@ import java.util.List;
 /**
  * Search criteria for recipe search operations.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 @Data
 @NoArgsConstructor
@@ -29,11 +32,14 @@ public class RecipeSearchCriteria {
     
     private String query; // Text search on name/description
     
-    private RecipeCategory category;
+    @ValidMealCategory
+    private SupportedMealCategory category;
     
-    private CuisineType cuisineType;
+    @ValidCuisineType
+    private SupportedCuisineType cuisineType;
     
-    private List<DietaryRestriction> dietaryRestrictions = new ArrayList<>();
+    @ValidDietaryRestriction
+    private List<SupportedDietaryRestriction> dietaryRestrictions = new ArrayList<>();
     
     private DifficultyLevel difficultyLevel;
     

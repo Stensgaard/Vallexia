@@ -4,6 +4,8 @@
  * @module errorUtils
  */
 
+import { i18n } from '../i18n.js'
+
 /**
  * Extracts a user-friendly error message from an API error response.
  * 
@@ -16,6 +18,7 @@
  * @returns {string} User-friendly error message
  */
 export function getErrorMessage(error) {
+  const t = i18n.global.t
   // Check if error has a response with data
   if (error.response?.data) {
     const errorData = error.response.data
@@ -44,7 +47,7 @@ export function getErrorMessage(error) {
         .map(error => `• ${error}`)
         .join('\n')
       
-      return fieldErrors || errorData.message || 'Validation failed'
+      return fieldErrors || errorData.message || t('errors.validationFailed')
     }
     
     // Use the message from the error response
@@ -57,33 +60,33 @@ export function getErrorMessage(error) {
   if (error.response) {
     switch (error.response.status) {
       case 400:
-        return 'Invalid input. Please check your data and try again.'
+        return t('errors.400')
       case 401:
-        return 'Your session has expired. Please log in again.'
+        return t('errors.401')
       case 403:
-        return 'You do not have permission to perform this action.'
+        return t('errors.403')
       case 404:
-        return 'The requested resource was not found.'
+        return t('errors.404')
       case 409:
-        return 'This email is already in use. Please use a different email address.'
+        return t('errors.409')
       case 422:
-        return 'The data you provided is invalid. Please check and try again.'
+        return t('errors.422')
       case 500:
-        return 'A server error occurred. Please try again later.'
+        return t('errors.500')
       default:
-        return 'An unexpected error occurred. Please try again.'
+        return t('errors.default')
     }
   }
   
   // Network or other errors
   if (error.message) {
     if (error.message.includes('timeout')) {
-      return 'The request took too long. Please try again.'
+      return t('errors.timeout')
     }
     if (error.message.includes('Network Error')) {
-      return 'Network error. Please check your connection and try again.'
+      return t('errors.networkError')
     }
   }
   
-  return 'An unexpected error occurred. Please try again.'
+  return t('errors.default')
 }

@@ -25,9 +25,9 @@ import static org.mockito.Mockito.*;
  * Unit tests for AuditLogRepository.
  * Tests repository query methods with mocked implementations.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("AuditLogRepository Unit Tests")
@@ -85,147 +85,6 @@ class AuditLogRepositoryTest {
     assertThat(result).isNotNull();
     assertThat(result.getContent()).hasSize(10);
     verify(auditLogRepository).findByUserIdOrderByTimestampDesc(userId, pageable);
-  }
-  
-  // ==================== findByUsernameOrderByTimestampDesc() Tests ====================
-  
-  @Test
-  @DisplayName("Should find audit logs by username without pagination")
-  void shouldFindAuditLogsByUsernameWithoutPagination() {
-    // Given
-    String username = AuditLogTestFixtures.TEST_USERNAME;
-    List<AuditLog> userLogs = AuditLogTestFixtures.createUserAuditLogs(
-        AuditLogTestFixtures.TEST_USER_ID, 5);
-    
-    when(auditLogRepository.findByUsernameOrderByTimestampDesc(username))
-        .thenReturn(userLogs);
-    
-    // When
-    List<AuditLog> result = auditLogRepository
-        .findByUsernameOrderByTimestampDesc(username);
-    
-    // Then
-    assertThat(result).isNotNull();
-    assertThat(result).hasSize(5);
-    verify(auditLogRepository).findByUsernameOrderByTimestampDesc(username);
-  }
-  
-  @Test
-  @DisplayName("Should find audit logs by username with pagination")
-  void shouldFindAuditLogsByUsernameWithPagination() {
-    // Given
-    String username = AuditLogTestFixtures.TEST_USERNAME;
-    Pageable pageable = PageRequest.of(0, 10);
-    
-    when(auditLogRepository.findByUsernameOrderByTimestampDesc(username, pageable))
-        .thenReturn(mockPage);
-    
-    // When
-    Page<AuditLog> result = auditLogRepository
-        .findByUsernameOrderByTimestampDesc(username, pageable);
-    
-    // Then
-    assertThat(result).isNotNull();
-    assertThat(result.getContent()).hasSize(10);
-    verify(auditLogRepository).findByUsernameOrderByTimestampDesc(username, pageable);
-  }
-  
-  // ==================== findByEventTypeOrderByTimestampDesc() Tests ====================
-  
-  @Test
-  @DisplayName("Should find audit logs by event type without pagination")
-  void shouldFindAuditLogsByEventTypeWithoutPagination() {
-    // Given
-    EventType eventType = EventType.LOGIN_SUCCESS;
-    List<AuditLog> eventLogs = List.of(
-        AuditLogTestFixtures.createAuditLog(
-            AuditLogTestFixtures.TEST_USER_ID,
-            AuditLogTestFixtures.TEST_USERNAME,
-            eventType
-        )
-    );
-    
-    when(auditLogRepository.findByEventTypeOrderByTimestampDesc(eventType))
-        .thenReturn(eventLogs);
-    
-    // When
-    List<AuditLog> result = auditLogRepository
-        .findByEventTypeOrderByTimestampDesc(eventType);
-    
-    // Then
-    assertThat(result).isNotNull();
-    assertThat(result).hasSize(1);
-    assertThat(result.get(0).getEventType()).isEqualTo(eventType);
-    verify(auditLogRepository).findByEventTypeOrderByTimestampDesc(eventType);
-  }
-  
-  @Test
-  @DisplayName("Should find audit logs by event type with pagination")
-  void shouldFindAuditLogsByEventTypeWithPagination() {
-    // Given
-    EventType eventType = EventType.SECURITY_VIOLATION;
-    Pageable pageable = PageRequest.of(0, 10);
-    List<AuditLog> violations = List.of(
-        AuditLogTestFixtures.createSecurityViolationLog(
-            AuditLogTestFixtures.TEST_USERNAME
-        )
-    );
-    Page<AuditLog> page = new PageImpl<>(violations, pageable, 1);
-    
-    when(auditLogRepository.findByEventTypeOrderByTimestampDesc(eventType, pageable))
-        .thenReturn(page);
-    
-    // When
-    Page<AuditLog> result = auditLogRepository
-        .findByEventTypeOrderByTimestampDesc(eventType, pageable);
-    
-    // Then
-    assertThat(result).isNotNull();
-    assertThat(result.getContent()).hasSize(1);
-    assertThat(result.getContent().get(0).getEventType()).isEqualTo(eventType);
-    verify(auditLogRepository).findByEventTypeOrderByTimestampDesc(eventType, pageable);
-  }
-  
-  // ==================== findByIpAddressOrderByTimestampDesc() Tests ====================
-  
-  @Test
-  @DisplayName("Should find audit logs by IP address without pagination")
-  void shouldFindAuditLogsByIpAddressWithoutPagination() {
-    // Given
-    String ipAddress = AuditLogTestFixtures.TEST_IP_ADDRESS;
-    List<AuditLog> ipLogs = AuditLogTestFixtures.createAuditLogList(3);
-    
-    when(auditLogRepository.findByIpAddressOrderByTimestampDesc(ipAddress))
-        .thenReturn(ipLogs);
-    
-    // When
-    List<AuditLog> result = auditLogRepository
-        .findByIpAddressOrderByTimestampDesc(ipAddress);
-    
-    // Then
-    assertThat(result).isNotNull();
-    assertThat(result).hasSize(3);
-    verify(auditLogRepository).findByIpAddressOrderByTimestampDesc(ipAddress);
-  }
-  
-  @Test
-  @DisplayName("Should find audit logs by IP address with pagination")
-  void shouldFindAuditLogsByIpAddressWithPagination() {
-    // Given
-    String ipAddress = "203.0.113.50";
-    Pageable pageable = PageRequest.of(0, 10);
-    
-    when(auditLogRepository.findByIpAddressOrderByTimestampDesc(ipAddress, pageable))
-        .thenReturn(mockPage);
-    
-    // When
-    Page<AuditLog> result = auditLogRepository
-        .findByIpAddressOrderByTimestampDesc(ipAddress, pageable);
-    
-    // Then
-    assertThat(result).isNotNull();
-    assertThat(result.getContent()).hasSize(10);
-    verify(auditLogRepository).findByIpAddressOrderByTimestampDesc(ipAddress, pageable);
   }
   
   // ==================== findByTimestampBetweenOrderByTimestampDesc() Tests ====================
@@ -393,30 +252,5 @@ class AuditLogRepositoryTest {
     assertThat(result).isNotNull();
     assertThat(result.getContent()).hasSize(10);
     verify(auditLogRepository).findAllByOrderByTimestampDesc(pageable);
-  }
-  
-  // ==================== countEventsByType() Tests ====================
-  
-  @Test
-  @DisplayName("Should count events by type within date range")
-  void shouldCountEventsByTypeWithinDateRange() {
-    // Given
-    LocalDateTime start = LocalDateTime.now().minusDays(30);
-    LocalDateTime end = LocalDateTime.now();
-    List<Object[]> counts = List.of(
-        new Object[]{EventType.LOGIN_SUCCESS, 50L},
-        new Object[]{EventType.LOGIN_FAILURE, 10L},
-        new Object[]{EventType.API_ACCESS, 200L}
-    );
-    
-    when(auditLogRepository.countEventsByType(start, end)).thenReturn(counts);
-    
-    // When
-    List<Object[]> result = auditLogRepository.countEventsByType(start, end);
-    
-    // Then
-    assertThat(result).isNotNull();
-    assertThat(result).hasSize(3);
-    verify(auditLogRepository).countEventsByType(start, end);
   }
 }

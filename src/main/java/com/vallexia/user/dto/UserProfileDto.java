@@ -1,6 +1,8 @@
 package com.vallexia.user.dto;
 
-import com.vallexia.user.entity.enums.MealType;
+import com.vallexia.common.enums.SupportedMealCategory;
+import com.vallexia.common.validator.ValidMealCategory;
+import com.vallexia.common.validator.ValidSubscriptionStatus;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -19,9 +21,9 @@ import java.util.Set;
 /**
  * Data Transfer Object for user profile information.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 @Data
 @NoArgsConstructor
@@ -46,8 +48,10 @@ public class UserProfileDto {
     private Integer householdSize;
     
     @NotEmpty(message = "At least one meal type must be selected")
-    private Set<MealType> mealTypes = new HashSet<>();
+    @ValidMealCategory
+    private Set<SupportedMealCategory> mealTypes = new HashSet<>();
     
+    @ValidSubscriptionStatus
     private String subscriptionStatus;
     
     private LocalDateTime subscriptionExpiresAt;    

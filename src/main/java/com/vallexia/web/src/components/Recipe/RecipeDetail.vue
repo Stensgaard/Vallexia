@@ -6,9 +6,9 @@
         <div class="flex-1">
           <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ recipe.name }}</h1>
           <div class="flex items-center gap-4 text-sm text-gray-600">
-            <span v-if="recipe.creatorUsername">By {{ recipe.creatorUsername }}</span>
-            <span v-if="recipe.category">{{ recipe.category }}</span>
-            <span v-if="recipe.cuisineType">{{ recipe.cuisineType }}</span>
+            <span v-if="recipe.creatorUsername">{{ $t('recipes.detail.by') }} {{ recipe.creatorUsername }}</span>
+            <span v-if="recipe.category">{{ $t(`recipes.categories.${recipe.category}`) }}</span>
+            <span v-if="recipe.cuisineType">{{ $t(`constants.cuisineTypes.${recipe.cuisineType}`) }}</span>
           </div>
         </div>
         <button
@@ -45,15 +45,15 @@
     <!-- Meta Info -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
       <div v-if="recipe.prepTimeMinutes" class="bg-gray-50 p-4 rounded-lg">
-        <div class="text-sm text-gray-600">Prep Time</div>
-        <div class="text-xl font-semibold">{{ recipe.prepTimeMinutes }} min</div>
+        <div class="text-sm text-gray-600">{{ $t('recipes.detail.prepTime') }}</div>
+        <div class="text-xl font-semibold">{{ recipe.prepTimeMinutes }} {{ $t('recipes.detail.minutes') }}</div>
       </div>
       <div v-if="recipe.cookTimeMinutes" class="bg-gray-50 p-4 rounded-lg">
-        <div class="text-sm text-gray-600">Cook Time</div>
-        <div class="text-xl font-semibold">{{ recipe.cookTimeMinutes }} min</div>
+        <div class="text-sm text-gray-600">{{ $t('recipes.detail.cookTime') }}</div>
+        <div class="text-xl font-semibold">{{ recipe.cookTimeMinutes }} {{ $t('recipes.detail.minutes') }}</div>
       </div>
       <div v-if="recipe.servings" class="bg-gray-50 p-4 rounded-lg">
-        <div class="text-sm text-gray-600">Servings</div>
+        <div class="text-sm text-gray-600">{{ $t('recipes.detail.servings') }}</div>
         <div class="flex items-center gap-2">
           <input
             :value="targetServings || recipe.servings"
@@ -67,13 +67,13 @@
             :disabled="scaling || !targetServings || targetServings < 1 || (targetServings || recipe.servings) === recipe.servings"
             class="px-3 py-1 text-xs bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
           >
-            {{ scaling ? 'Scaling...' : 'Scale' }}
+            {{ scaling ? $t('recipes.detail.scaling') : $t('recipes.detail.scale') }}
           </button>
         </div>
       </div>
       <div v-if="recipe.difficultyLevel" class="bg-gray-50 p-4 rounded-lg">
-        <div class="text-sm text-gray-600">Difficulty</div>
-        <div class="text-xl font-semibold">{{ recipe.difficultyLevel }}</div>
+        <div class="text-sm text-gray-600">{{ $t('recipes.detail.difficulty') }}</div>
+        <div class="text-xl font-semibold">{{ $t(`recipes.difficulty.${recipe.difficultyLevel}`) }}</div>
       </div>
     </div>
 
@@ -81,7 +81,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
       <!-- Ingredients -->
       <div v-if="recipe.ingredients && recipe.ingredients.length > 0">
-        <h2 class="text-2xl font-semibold mb-4">Ingredients</h2>
+        <h2 class="text-2xl font-semibold mb-4">{{ $t('recipes.detail.ingredients') }}</h2>
         <ul class="space-y-2">
           <li
             v-for="(ingredient, index) in recipe.ingredients"
@@ -94,7 +94,7 @@
             <div class="flex-1">
               <span class="font-medium">{{ ingredient.name }}</span>
               <span v-if="ingredient.quantity" class="text-gray-700 ml-2">
-                {{ ingredient.quantity }} {{ ingredient.unit || '' }}
+                {{ formatIngredientQuantity(ingredient.quantity, ingredient.unit) }}
               </span>
               <p v-if="ingredient.notes" class="text-sm text-gray-600 mt-1">{{ ingredient.notes }}</p>
             </div>
@@ -104,12 +104,9 @@
 
       <!-- Instructions -->
       <div v-if="recipe.instructions">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-2xl font-semibold">Instructions</h2>
-          <div class="flex items-center gap-3">
-            <div v-if="isCookingMode" class="text-sm text-gray-600">
-              Step {{ completedStepsCount }} of {{ parsedInstructions.length }}
-            </div>
+        <div class="mb-4">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-2xl font-semibold">{{ $t('recipes.detail.instructions') }}</h2>
             <button
               v-if="!isCookingMode"
               @click="startCookingMode"
@@ -118,7 +115,7 @@
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
               </svg>
-              Start Cooking
+              {{ $t('recipes.detail.startCooking') }}
             </button>
             <button
               v-else
@@ -128,8 +125,11 @@
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
-              Exit Cooking Mode
+              {{ $t('recipes.detail.exitCookingMode') }}
             </button>
+          </div>
+          <div v-if="isCookingMode" class="text-sm text-gray-600">
+            {{ $t('recipes.detail.step') }} {{ completedStepsCount }} {{ $t('recipes.detail.of') }} {{ parsedInstructions.length }}
           </div>
         </div>
         <ul class="space-y-2">
@@ -163,7 +163,7 @@
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
             </svg>
-            <span class="font-semibold">All steps completed! Enjoy your meal!</span>
+            <span class="font-semibold">{{ $t('recipes.detail.allStepsCompleted') }}</span>
           </div>
         </div>
       </div>
@@ -172,25 +172,25 @@
     <!-- Nutritional Info -->
     <div v-if="recipe.nutritionalInfo" class="mb-6">
       <div class="flex items-center gap-2 mb-4">
-        <h2 class="text-2xl font-semibold">Nutritional Information</h2>
-        <span class="text-sm text-gray-500">(Per Serving)</span>
+        <h2 class="text-2xl font-semibold">{{ $t('recipes.detail.nutritionalInfo') }}</h2>
+        <span class="text-sm text-gray-500">{{ $t('recipes.detail.perServing') }}</span>
       </div>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div v-if="recipe.nutritionalInfo.calories" class="bg-blue-50 p-4 rounded-lg">
-          <div class="text-sm text-blue-600">Calories</div>
-          <div class="text-xl font-semibold">{{ Math.round(recipe.nutritionalInfo.calories) }}</div>
+          <div class="text-sm text-blue-600">{{ $t('recipes.detail.calories') }}</div>
+          <div class="text-xl font-semibold">{{ formatNumber(recipe.nutritionalInfo.calories, 0) }}</div>
         </div>
         <div v-if="recipe.nutritionalInfo.protein" class="bg-green-50 p-4 rounded-lg">
-          <div class="text-sm text-green-600">Protein</div>
-          <div class="text-xl font-semibold">{{ Math.round(recipe.nutritionalInfo.protein) }}g</div>
+          <div class="text-sm text-green-600">{{ $t('recipes.detail.protein') }}</div>
+          <div class="text-xl font-semibold">{{ formatNutritionalValue(recipe.nutritionalInfo.protein) }}</div>
         </div>
         <div v-if="recipe.nutritionalInfo.carbs" class="bg-purple-50 p-4 rounded-lg">
-          <div class="text-sm text-purple-600">Carbs</div>
-          <div class="text-xl font-semibold">{{ Math.round(recipe.nutritionalInfo.carbs) }}g</div>
+          <div class="text-sm text-purple-600">{{ $t('recipes.detail.carbs') }}</div>
+          <div class="text-xl font-semibold">{{ formatNutritionalValue(recipe.nutritionalInfo.carbs) }}</div>
         </div>
         <div v-if="recipe.nutritionalInfo.fats" class="bg-orange-50 p-4 rounded-lg">
-          <div class="text-sm text-orange-600">Fats</div>
-          <div class="text-xl font-semibold">{{ Math.round(recipe.nutritionalInfo.fats) }}g</div>
+          <div class="text-sm text-orange-600">{{ $t('recipes.detail.fats') }}</div>
+          <div class="text-xl font-semibold">{{ formatNutritionalValue(recipe.nutritionalInfo.fats) }}</div>
         </div>
       </div>
     </div>
@@ -208,12 +208,25 @@
   </div>
   
   <div v-else class="text-center py-12">
-    <p class="text-gray-500">Loading recipe...</p>
+    <p class="text-gray-500">{{ $t('recipes.detail.loading') }}</p>
   </div>
 </template>
 
 <script setup>
 import { computed, ref, watch, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useSettingsStore } from '@/stores/settings'
+import { useFormattedValue } from '@/composables/useFormattedValue'
+
+const { t } = useI18n()
+const settingsStore = useSettingsStore()
+
+const formatNumber = (number, decimals = 0) => {
+  return settingsStore.formatNumberFn(number, decimals)
+}
+
+// Use composable for formatted values with proper Vue reactivity
+const { formatIngredientQuantity, formatNutritionalValue } = useFormattedValue()
 
 const props = defineProps({
   recipe: {

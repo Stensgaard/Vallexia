@@ -11,8 +11,7 @@
     <div class="text-3xl font-bold text-gray-900 mb-2">{{ value }}</div>
     
     <div v-if="change !== null" class="flex items-center">
-      <component
-        :is="change >= 0 ? 'svg' : 'svg'"
+      <svg
         :class="[
           'h-4 w-4 mr-1',
           change >= 0 ? 'text-green-500' : 'text-red-500'
@@ -35,7 +34,7 @@
           stroke-width="2"
           d="M17 7l-9.2 9.2M7 7v10h10"
         />
-      </component>
+      </svg>
       <span
         :class="[
           'text-sm font-medium',
@@ -44,12 +43,13 @@
       >
         {{ Math.abs(change) }}%
       </span>
-      <span class="text-sm text-gray-500 ml-1">from last week</span>
+      <span class="text-sm text-gray-500 ml-1">{{ t('dashboard.stats.fromLastWeek') }}</span>
     </div>
     
     <div v-if="actionText" class="mt-4">
       <button
         @click="$emit('action')"
+        :aria-label="actionText"
         class="text-sm text-blue-600 hover:text-blue-700 font-medium"
       >
         {{ actionText }} →
@@ -59,6 +59,10 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 defineProps({
   title: {
     type: String,

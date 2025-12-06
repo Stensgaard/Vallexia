@@ -2,11 +2,11 @@
   <div class="space-y-6">
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900">Grocery Lists</h1>
-        <p class="text-gray-600">Manage your shopping lists</p>
+        <h1 class="text-2xl font-bold text-gray-900">{{ $t('groceryLists.title') }}</h1>
+        <p class="text-gray-600">{{ $t('groceryLists.description') }}</p>
       </div>
       <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium">
-        Create List
+        {{ $t('groceryLists.create') }}
       </button>
     </div>
 
@@ -14,11 +14,11 @@
     <div class="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-6 border border-green-200">
       <div class="flex items-center justify-between">
         <div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">Generate from Meal Plan</h3>
-          <p class="text-gray-600">Automatically create a grocery list from your planned meals</p>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ $t('groceryLists.generateFromPlan') }}</h3>
+          <p class="text-gray-600">{{ $t('groceryLists.generateFromPlanDescription') }}</p>
         </div>
         <button class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md font-medium">
-          Generate List
+          {{ $t('groceryLists.generateList') }}
         </button>
       </div>
     </div>
@@ -45,18 +45,18 @@
             <span class="text-gray-500">{{ item.quantity }}</span>
           </div>
           <div v-if="list.items.length > 3" class="text-xs text-gray-500">
-            +{{ list.items.length - 3 }} more items
+            +{{ list.items.length - 3 }} {{ $t('groceryLists.moreItems') }}
           </div>
         </div>
 
         <div class="flex items-center justify-between">
-          <span class="text-sm font-medium text-gray-900">{{ list.items.length }} items</span>
+          <span class="text-sm font-medium text-gray-900">{{ list.items.length }} {{ $t('groceryLists.items') }}</span>
           <div class="flex space-x-2">
             <button class="text-blue-600 hover:text-blue-700 text-sm font-medium">
-              Edit
+              {{ $t('groceryLists.edit') }}
             </button>
             <button class="text-green-600 hover:text-green-700 text-sm font-medium">
-              Shop
+              {{ $t('groceryLists.shop') }}
             </button>
           </div>
         </div>
@@ -65,20 +65,20 @@
 
     <!-- Shopping optimization -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-gray-900 mb-4">Shopping Optimization</h3>
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ $t('groceryLists.shoppingOptimization') }}</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <h4 class="font-medium text-gray-900 mb-2">Store Layout</h4>
-          <p class="text-sm text-gray-600 mb-4">Organize your list by store sections for efficient shopping.</p>
+          <h4 class="font-medium text-gray-900 mb-2">{{ $t('groceryLists.storeLayout') }}</h4>
+          <p class="text-sm text-gray-600 mb-4">{{ $t('groceryLists.storeLayoutDescription') }}</p>
           <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium">
-            Optimize Route
+            {{ $t('groceryLists.optimizeRoute') }}
           </button>
         </div>
         <div>
-          <h4 class="font-medium text-gray-900 mb-2">Price Tracking</h4>
-          <p class="text-sm text-gray-600 mb-4">Track prices and find the best deals on your items.</p>
+          <h4 class="font-medium text-gray-900 mb-2">{{ $t('groceryLists.priceTracking') }}</h4>
+          <p class="text-sm text-gray-600 mb-4">{{ $t('groceryLists.priceTrackingDescription') }}</p>
           <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium">
-            Track Prices
+            {{ $t('groceryLists.trackPrices') }}
           </button>
         </div>
       </div>
@@ -89,15 +89,19 @@
       <svg class="mx-auto h-12 w-12 text-blue-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
       </svg>
-      <h3 class="text-lg font-semibold text-gray-900 mb-2">Smart Grocery Lists Coming Soon</h3>
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ $t('groceryLists.comingSoon') }}</h3>
       <p class="text-gray-600">
-        We're developing intelligent grocery list generation with store optimization, price tracking, and smart ingredient consolidation.
+        {{ $t('groceryLists.comingSoonDescription') }}
       </p>
     </div>
   </div>
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 // Mock data for grocery lists
 const groceryLists = [
   {

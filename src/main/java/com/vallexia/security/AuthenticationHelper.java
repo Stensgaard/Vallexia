@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
  * Helper component for extracting authentication information from Spring Security context.
  * Provides centralized methods for accessing current user details from Authentication objects.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-29
  */
 @Component
 public class AuthenticationHelper {
@@ -45,24 +45,6 @@ public class AuthenticationHelper {
   }
   
   /**
-   * Get the current username from SecurityContext.
-   * 
-   * @return the current username or null if not authenticated
-   */
-  public String getCurrentUsername() {
-    Authentication authentication = getAuthentication();
-    if (authentication == null || authentication.getPrincipal() == null) {
-      return null;
-    }
-    
-    if (authentication.getPrincipal() instanceof UserPrincipal) {
-      return ((UserPrincipal) authentication.getPrincipal()).getUsername();
-    }
-    
-    return null;
-  }
-  
-  /**
    * Check if the current user has a specific role.
    * 
    * @param role the role to check (e.g., "ROLE_ADMIN")
@@ -77,16 +59,6 @@ public class AuthenticationHelper {
     return authentication.getAuthorities().stream()
         .map(GrantedAuthority::getAuthority)
         .anyMatch(authority -> authority.equals(role));
-  }
-  
-  /**
-   * Check if the current user is authenticated.
-   * 
-   * @return true if authenticated, false otherwise
-   */
-  public boolean isAuthenticated() {
-    Authentication authentication = getAuthentication();
-    return authentication != null && authentication.isAuthenticated();
   }
   
   /**
@@ -109,33 +81,4 @@ public class AuthenticationHelper {
     return userPrincipal.getId();
   }
   
-  /**
-   * Extract the current UserPrincipal from the authentication object.
-   * 
-   * @param authentication the Spring Security authentication object
-   * @return the current UserPrincipal
-   * @throws AuthenticationException if authentication is null or principal is null
-   */
-  public UserPrincipal getCurrentUserPrincipal(Authentication authentication) {
-    if (authentication == null || authentication.getPrincipal() == null) {
-      throw new AuthenticationException("User not authenticated");
-    }
-    
-    if (!(authentication.getPrincipal() instanceof UserPrincipal)) {
-      throw new AuthenticationException("Invalid authentication principal type");
-    }
-    
-    return (UserPrincipal) authentication.getPrincipal();
-  }
-  
-  /**
-   * Extract the current username from the authentication object.
-   * 
-   * @param authentication the Spring Security authentication object
-   * @return the current user's username
-   * @throws AuthenticationException if authentication is null or principal is null
-   */
-  public String getCurrentUsername(Authentication authentication) {
-    return getCurrentUserPrincipal(authentication).getUsername();
-  }
 }

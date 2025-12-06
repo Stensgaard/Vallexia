@@ -2,8 +2,8 @@ package com.vallexia.recipe.service.specification;
 
 import com.vallexia.recipe.dto.RecipeSearchCriteria;
 import com.vallexia.recipe.entity.Recipe;
-import com.vallexia.user.entity.enums.Allergy;
-import com.vallexia.user.entity.enums.CuisineType;
+import com.vallexia.common.enums.SupportedAllergy;
+import com.vallexia.common.enums.SupportedCuisineType;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -15,9 +15,9 @@ import java.util.Set;
 /**
  * Builder for creating JPA Specifications from recipe search criteria.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 public final class RecipeSpecificationBuilder {
     
@@ -37,7 +37,7 @@ public final class RecipeSpecificationBuilder {
      * @return JPA Specification
      */
     public static Specification<Recipe> buildSpecification(
-            RecipeSearchCriteria criteria, List<Allergy> userAllergies, Set<CuisineType> preferredCuisines) {
+            RecipeSearchCriteria criteria, List<SupportedAllergy> userAllergies, Set<SupportedCuisineType> preferredCuisines) {
         Specification<Recipe> spec = (root, query, cb) -> cb.conjunction();
         
         // Text search on name and description
@@ -177,7 +177,7 @@ public final class RecipeSpecificationBuilder {
      * @param userAllergies list of user's allergies
      * @return Specification that excludes recipes with matching allergens
      */
-    private static Specification<Recipe> allergenFilter(List<Allergy> userAllergies) {
+    private static Specification<Recipe> allergenFilter(List<SupportedAllergy> userAllergies) {
         return (root, query, cb) -> {
             // Note: query is always provided by JPA Specifications framework (linter warnings are false positives)
             // Exclude recipes that have ANY of the user's allergies
@@ -207,7 +207,7 @@ public final class RecipeSpecificationBuilder {
      * @param preferredCuisines set of user's preferred cuisine types
      * @return Specification that filters recipes by preferred cuisines
      */
-    private static Specification<Recipe> preferredCuisinesFilter(Set<CuisineType> preferredCuisines) {
+    private static Specification<Recipe> preferredCuisinesFilter(Set<SupportedCuisineType> preferredCuisines) {
         return (root, query, cb) -> {
             // Recipe matches if it has ANY of the preferred cuisines
             return root.get("cuisineType").in(preferredCuisines);

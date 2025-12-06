@@ -18,9 +18,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit tests for RecipeMapper.
  * Tests entity-to-DTO mapping with real MapStruct implementation.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 @SpringBootTest(classes = {
     com.vallexia.recipe.mapper.RecipeMapperImpl.class

@@ -1,10 +1,14 @@
 package com.vallexia.recipe.dto;
 
 import com.vallexia.recipe.entity.enums.DifficultyLevel;
-import com.vallexia.recipe.entity.enums.RecipeCategory;
-import com.vallexia.user.entity.enums.Allergy;
-import com.vallexia.user.entity.enums.CuisineType;
-import com.vallexia.user.entity.enums.DietaryRestriction;
+import com.vallexia.common.enums.SupportedAllergy;
+import com.vallexia.common.enums.SupportedCuisineType;
+import com.vallexia.common.enums.SupportedDietaryRestriction;
+import com.vallexia.common.enums.SupportedMealCategory;
+import com.vallexia.common.validator.ValidAllergy;
+import com.vallexia.common.validator.ValidCuisineType;
+import com.vallexia.common.validator.ValidDietaryRestriction;
+import com.vallexia.common.validator.ValidMealCategory;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -16,16 +20,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * Data Transfer Object for creating a new recipe.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 @Data
 @NoArgsConstructor
@@ -55,14 +61,23 @@ public class CreateRecipeDto {
     private DifficultyLevel difficultyLevel;
     
     @NotNull(message = "Category is required")
-    private RecipeCategory category;
+    @ValidMealCategory
+    private SupportedMealCategory category;
     
-    private CuisineType cuisineType;
+    @ValidCuisineType
+    private SupportedCuisineType cuisineType;
     
     @Size(max = 500, message = "Image URL must not exceed 500 characters")
     private String imageUrl;
     
     private Boolean isPublic = false;
+    
+    /**
+     * Optional translations for the recipe in different locales.
+     * Key is the locale code (e.g., "en", "da"), value is the translation DTO.
+     */
+    @Valid
+    private Map<String, RecipeTranslationDto> translations = new HashMap<>();
     
     @Valid
     private List<IngredientDto> ingredients = new ArrayList<>();
@@ -74,7 +89,9 @@ public class CreateRecipeDto {
     private Set<String> tags = new HashSet<>();
     
     @NotEmpty(message = "At least one dietary restriction is required")
-    private Set<DietaryRestriction> dietaryRestrictions = new HashSet<>();
+    @ValidDietaryRestriction
+    private Set<SupportedDietaryRestriction> dietaryRestrictions = new HashSet<>();
     
-    private Set<Allergy> allergens = new HashSet<>();
+    @ValidAllergy
+    private Set<SupportedAllergy> allergens = new HashSet<>();
 }

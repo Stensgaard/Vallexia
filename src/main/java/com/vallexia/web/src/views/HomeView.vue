@@ -3,59 +3,59 @@
     <!-- Welcome section -->
     <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg p-6 text-white">
       <h1 class="text-2xl font-bold mb-2">
-        Welcome back, {{ userFullName }}!
+        {{ $t('dashboard.welcomeBack', { name: userFullName }) }}
       </h1>
       <p class="text-blue-100">
-        Ready to plan your meals for the week? Let's make healthy eating simple and delicious.
+        {{ $t('dashboard.welcomeMessage') }}
       </p>
     </div>
 
     <!-- Quick stats -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <QuickStatsCard
-        title="Recipes Saved"
-        subtitle="Total recipes"
+        :title="$t('dashboard.stats.recipesSaved')"
+        :subtitle="$t('dashboard.stats.recipesSavedSubtitle')"
         :value="stats.recipesSaved"
         :change="12"
-        action-text="Browse Recipes"
+        :action-text="$t('dashboard.stats.browseRecipes')"
         @action="router.push('/recipes')"
       />
       <QuickStatsCard
-        title="Meals Planned"
-        subtitle="This week"
+        :title="$t('dashboard.stats.mealsPlanned')"
+        :subtitle="$t('dashboard.stats.mealsPlannedSubtitle')"
         :value="stats.mealsPlanned"
         :change="-5"
-        action-text="View Plans"
+        :action-text="$t('dashboard.stats.viewPlans')"
         @action="router.push('/meal-plans')"
       />
       <QuickStatsCard
-        title="Grocery Items"
-        subtitle="This week's list"
+        :title="$t('dashboard.stats.groceryItems')"
+        :subtitle="$t('dashboard.stats.groceryItemsSubtitle')"
         :value="stats.groceryItems"
         :change="8"
-        action-text="View List"
+        :action-text="$t('dashboard.stats.viewList')"
         @action="router.push('/grocery-lists')"
       />
       <QuickStatsCard
-        title="Calories Today"
-        subtitle="Daily goal: 2000"
+        :title="$t('dashboard.stats.caloriesToday')"
+        :subtitle="$t('dashboard.stats.caloriesTodaySubtitle', { goal: 2000 })"
         :value="stats.caloriesToday"
         :change="null"
-        action-text="Track Nutrition"
+        :action-text="$t('dashboard.stats.trackNutrition')"
         @action="router.push('/nutrition')"
       />
     </div>
 
     <!-- Main content grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
       <!-- Weekly meal plan (primary focus) -->
-      <div class="lg:col-span-2">
-        <WeeklyMealPlanOverview />
+      <div class="lg:col-span-2 flex">
+        <WeeklyMealPlanOverview class="flex-1" />
       </div>
 
       <!-- Today's meals -->
-      <div class="lg:col-span-1">
-        <TodaysMeals />
+      <div class="lg:col-span-1 flex">
+        <TodaysMeals class="flex-1" />
       </div>
     </div>
 
@@ -63,7 +63,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Quick actions -->
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ $t('dashboard.quickActions.title') }}</h3>
         <div class="grid grid-cols-2 gap-4">
           <button
             @click="router.push('/recipes')"
@@ -73,9 +73,9 @@
               <svg class="h-6 w-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
-              <span class="font-medium text-gray-900">Browse Recipes</span>
+              <span class="font-medium text-gray-900">{{ $t('dashboard.quickActions.browseRecipes') }}</span>
             </div>
-            <p class="text-sm text-gray-600">Explore recipe collection</p>
+            <p class="text-sm text-gray-600">{{ $t('dashboard.quickActions.browseRecipesDesc') }}</p>
           </button>
 
           <button
@@ -86,9 +86,9 @@
               <svg class="h-6 w-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <span class="font-medium text-gray-900">Plan Meals</span>
+              <span class="font-medium text-gray-900">{{ $t('dashboard.quickActions.planMeals') }}</span>
             </div>
-            <p class="text-sm text-gray-600">Schedule your meals</p>
+            <p class="text-sm text-gray-600">{{ $t('dashboard.quickActions.planMealsDesc') }}</p>
           </button>
 
           <button
@@ -99,9 +99,9 @@
               <svg class="h-6 w-6 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
               </svg>
-              <span class="font-medium text-gray-900">Create List</span>
+              <span class="font-medium text-gray-900">{{ $t('dashboard.quickActions.createList') }}</span>
             </div>
-            <p class="text-sm text-gray-600">Generate grocery list</p>
+            <p class="text-sm text-gray-600">{{ $t('dashboard.quickActions.createListDesc') }}</p>
           </button>
 
           <button
@@ -112,16 +112,16 @@
               <svg class="h-6 w-6 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
-              <span class="font-medium text-gray-900">Track Nutrition</span>
+              <span class="font-medium text-gray-900">{{ $t('dashboard.quickActions.trackNutrition') }}</span>
             </div>
-            <p class="text-sm text-gray-600">Monitor your goals</p>
+            <p class="text-sm text-gray-600">{{ $t('dashboard.quickActions.trackNutritionDesc') }}</p>
           </button>
         </div>
       </div>
 
       <!-- Recent activity -->
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ $t('dashboard.recentActivity.title') }}</h3>
         <div class="space-y-4">
           <div
             v-for="activity in recentActivity"
@@ -140,7 +140,7 @@
           </div>
         </div>
         <button class="mt-4 text-sm text-blue-600 hover:text-blue-700 font-medium">
-          View all activity →
+          {{ $t('dashboard.recentActivity.viewAll') }}
         </button>
       </div>
     </div>
@@ -148,9 +148,9 @@
     <!-- Recommendations -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold text-gray-900">Recommended for You</h3>
+        <h3 class="text-lg font-semibold text-gray-900">{{ $t('dashboard.recommendations.title') }}</h3>
         <button class="text-sm text-blue-600 hover:text-blue-700 font-medium">
-          Refresh Recommendations
+          {{ $t('dashboard.recommendations.refresh') }}
         </button>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -174,7 +174,7 @@
           <div class="mt-2 flex items-center justify-between">
             <span class="text-xs text-gray-500">{{ recommendation.calories }} cal</span>
             <button class="text-xs text-blue-600 hover:text-blue-700 font-medium">
-              Add to Plan
+              {{ $t('dashboard.recommendations.addToPlan') }}
             </button>
           </div>
         </div>

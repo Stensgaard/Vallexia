@@ -1,7 +1,5 @@
 package com.vallexia.recipe.unit.service;
 
-import com.vallexia.audit.entity.enums.EventType;
-import com.vallexia.audit.service.AuditService;
 import com.vallexia.recipe.dto.RecipeDto;
 import com.vallexia.recipe.entity.FavoriteRecipe;
 import com.vallexia.recipe.entity.Recipe;
@@ -35,16 +33,15 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for FavoriteRecipeService.
  * Tests favorite recipe management operations.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -64,7 +61,10 @@ class FavoriteRecipeServiceTest {
   private RecipeMapper recipeMapper;
   
   @Mock
-  private AuditService auditService;
+  private com.vallexia.user.service.UserSettingsService userSettingsService;
+  
+  @Mock
+  private com.vallexia.recipe.service.RecipeEnrichmentService recipeEnrichmentService;
   
   @InjectMocks
   private FavoriteRecipeService favoriteRecipeService;
@@ -92,7 +92,6 @@ class FavoriteRecipeServiceTest {
     
     // Then
     verify(favoriteRecipeRepository).save(any(FavoriteRecipe.class));
-    verify(auditService).logEvent(eq(EventType.RECIPE_FAVORITED), eq(UserTestFixtures.TEST_USER_ID), any(String.class));
   }
   
   @Test
@@ -151,14 +150,49 @@ class FavoriteRecipeServiceTest {
   @DisplayName("Should remove recipe from favorites successfully")
   void shouldRemoveRecipeFromFavoritesSuccessfully() {
     // Given
+    when(favoriteRecipeRepository.existsByUserIdAndRecipeId(UserTestFixtures.TEST_USER_ID, RecipeTestFixtures.TEST_RECIPE_ID))
+        .thenReturn(true);
     doNothing().when(favoriteRecipeRepository).deleteByUserIdAndRecipeId(UserTestFixtures.TEST_USER_ID, RecipeTestFixtures.TEST_RECIPE_ID);
     
     // When
     favoriteRecipeService.removeFavorite(RecipeTestFixtures.TEST_RECIPE_ID, UserTestFixtures.TEST_USER_ID);
     
     // Then
+    verify(favoriteRecipeRepository).existsByUserIdAndRecipeId(UserTestFixtures.TEST_USER_ID, RecipeTestFixtures.TEST_RECIPE_ID);
     verify(favoriteRecipeRepository).deleteByUserIdAndRecipeId(UserTestFixtures.TEST_USER_ID, RecipeTestFixtures.TEST_RECIPE_ID);
-    verify(auditService).logEvent(eq(EventType.RECIPE_UNFAVORITED), eq(UserTestFixtures.TEST_USER_ID), any(String.class));
+  }
+  
+  @Test
+  @DisplayName("Should handle removing non-existent favorite gracefully")
+  void shouldHandleRemovingNonExistentFavoriteGracefully() {
+    // Given
+    when(favoriteRecipeRepository.existsByUserIdAndRecipeId(UserTestFixtures.TEST_USER_ID, RecipeTestFixtures.TEST_RECIPE_ID))
+        .thenReturn(false);
+    
+    // When
+    favoriteRecipeService.removeFavorite(RecipeTestFixtures.TEST_RECIPE_ID, UserTestFixtures.TEST_USER_ID);
+    
+    // Then
+    verify(favoriteRecipeRepository).existsByUserIdAndRecipeId(UserTestFixtures.TEST_USER_ID, RecipeTestFixtures.TEST_RECIPE_ID);
+    verify(favoriteRecipeRepository, never()).deleteByUserIdAndRecipeId(any(), any());
+  }
+  
+  @Test
+  @DisplayName("Should throw IllegalArgumentException when recipeId is null")
+  void shouldThrowIllegalArgumentExceptionWhenRecipeIdIsNull() {
+    // When & Then
+    assertThatThrownBy(() -> favoriteRecipeService.removeFavorite(null, UserTestFixtures.TEST_USER_ID))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Recipe ID and User ID cannot be null");
+  }
+  
+  @Test
+  @DisplayName("Should throw IllegalArgumentException when userId is null")
+  void shouldThrowIllegalArgumentExceptionWhenUserIdIsNull() {
+    // When & Then
+    assertThatThrownBy(() -> favoriteRecipeService.removeFavorite(RecipeTestFixtures.TEST_RECIPE_ID, null))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Recipe ID and User ID cannot be null");
   }
   
   // ==================== getUserFavorites() Tests ====================
@@ -174,11 +208,16 @@ class FavoriteRecipeServiceTest {
     Pageable pageable = PageRequest.of(0, 20);
     Page<FavoriteRecipe> favoritesPage = new PageImpl<>(favorites, pageable, 1);
     RecipeDto recipeDto = new RecipeDto();
+    RecipeDto enrichedDto = new RecipeDto();
     
     when(favoriteRecipeRepository.findByUserId(UserTestFixtures.TEST_USER_ID, pageable))
         .thenReturn(favoritesPage);
+    when(userSettingsService.getUserLocale(UserTestFixtures.TEST_USER_ID))
+        .thenReturn("en");
     when(recipeMapper.toRecipeDto(recipe, true))
         .thenReturn(recipeDto);
+    when(recipeEnrichmentService.enrichWithTranslations(recipeDto, recipe, "en"))
+        .thenReturn(enrichedDto);
     
     // When
     Page<RecipeDto> result = favoriteRecipeService.getUserFavorites(UserTestFixtures.TEST_USER_ID, pageable);
@@ -187,6 +226,8 @@ class FavoriteRecipeServiceTest {
     assertThat(result).isNotNull();
     assertThat(result.getContent()).hasSize(1);
     verify(favoriteRecipeRepository).findByUserId(UserTestFixtures.TEST_USER_ID, pageable);
+    verify(userSettingsService).getUserLocale(UserTestFixtures.TEST_USER_ID);
+    verify(recipeEnrichmentService).enrichWithTranslations(recipeDto, recipe, "en");
   }
   
   // ==================== isFavorite() Tests ====================

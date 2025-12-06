@@ -9,10 +9,11 @@ import com.vallexia.recipe.repository.RecipeRepository;
 import com.vallexia.recipe.service.specification.RecipeSortHelper;
 import com.vallexia.recipe.service.specification.RecipeSpecificationBuilder;
 import com.vallexia.user.dto.DietaryPreferencesDto;
-import com.vallexia.user.entity.enums.Allergy;
-import com.vallexia.user.entity.enums.CuisineType;
-import com.vallexia.user.entity.enums.DietaryRestriction;
+import com.vallexia.common.enums.SupportedAllergy;
+import com.vallexia.common.enums.SupportedCuisineType;
+import com.vallexia.common.enums.SupportedDietaryRestriction;
 import com.vallexia.user.service.DietaryPreferencesService;
+import com.vallexia.user.service.UserSettingsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,9 +28,9 @@ import java.util.Set;
 /**
  * Service for advanced recipe search with multiple filters and criteria.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 @Slf4j
 @Service
@@ -40,6 +41,8 @@ public class RecipeSearchService {
     private final RecipeMapper recipeMapper;
     private final FavoriteRecipeService favoriteRecipeService;
     private final DietaryPreferencesService dietaryPreferencesService;
+    private final UserSettingsService userSettingsService;
+    private final RecipeEnrichmentService recipeEnrichmentService;
     
     /**
      * Constructor for dependency injection.
@@ -48,16 +51,22 @@ public class RecipeSearchService {
      * @param recipeMapper the recipe mapper
      * @param favoriteRecipeService the favorite recipe service
      * @param dietaryPreferencesService the dietary preferences service
+     * @param userSettingsService the user settings service (for locale resolution)
+     * @param recipeEnrichmentService the recipe enrichment service
      */
     public RecipeSearchService(
             RecipeRepository recipeRepository,
             RecipeMapper recipeMapper,
             FavoriteRecipeService favoriteRecipeService,
-            DietaryPreferencesService dietaryPreferencesService) {
+            DietaryPreferencesService dietaryPreferencesService,
+            UserSettingsService userSettingsService,
+            RecipeEnrichmentService recipeEnrichmentService) {
         this.recipeRepository = recipeRepository;
         this.recipeMapper = recipeMapper;
         this.favoriteRecipeService = favoriteRecipeService;
         this.dietaryPreferencesService = dietaryPreferencesService;
+        this.userSettingsService = userSettingsService;
+        this.recipeEnrichmentService = recipeEnrichmentService;
     }
     
     /**
@@ -72,9 +81,9 @@ public class RecipeSearchService {
         log.debug("Preparing search criteria with user preferences for user ID {}", userId);
         
         // Fetch user allergies, preferred cuisines, and dietary restrictions for filtering
-        List<Allergy> userAllergies = null;
-        Set<CuisineType> preferredCuisines = null;
-        List<DietaryRestriction> userDietaryRestrictions = null;
+        List<SupportedAllergy> userAllergies = null;
+        Set<SupportedCuisineType> preferredCuisines = null;
+        List<SupportedDietaryRestriction> userDietaryRestrictions = null;
         
         try {
             DietaryPreferencesDto dietaryPreferences = dietaryPreferencesService.getDietaryPreferences(userId);
@@ -114,10 +123,13 @@ public class RecipeSearchService {
      * @param preferredCuisines user's preferred cuisines (for automatic filtering, can be null or empty)
      * @return search response with paginated results
      */
-    public RecipeSearchResponseDto searchRecipes(RecipeSearchCriteria criteria, Pageable pageable, Long userId, List<Allergy> userAllergies, Set<CuisineType> preferredCuisines) {
+    public RecipeSearchResponseDto searchRecipes(RecipeSearchCriteria criteria, Pageable pageable, Long userId, List<SupportedAllergy> userAllergies, Set<SupportedCuisineType> preferredCuisines) {
         log.debug("Searching recipes with criteria: {} for user ID {}", criteria, userId);
         
-        // Build specification from criteria
+        // Get user's locale for translation resolution
+        String userLocale = userSettingsService.getUserLocale(userId);
+        
+        // Build specification from criteria (no locale filtering)
         Specification<Recipe> spec = RecipeSpecificationBuilder.buildSpecification(criteria, userAllergies, preferredCuisines);
         
         // Apply sorting
@@ -126,10 +138,13 @@ public class RecipeSearchService {
         // Execute search
         Page<Recipe> recipePage = recipeRepository.findAll(spec, sortedPageable);
         
-        // Convert to DTOs with favorite status
+        // Convert to DTOs with favorite status and resolve translations
         Page<RecipeDto> recipeDtoPage = recipePage.map(recipe -> {
             boolean isFavorite = userId != null && favoriteRecipeService.isFavorite(recipe.getId(), userId);
-            return recipeMapper.toRecipeDto(recipe, isFavorite);
+            RecipeDto dto = recipeMapper.toRecipeDto(recipe, isFavorite);
+            
+            // Enrich with translations and ingredient names
+            return recipeEnrichmentService.enrichWithTranslations(dto, recipe, userLocale);
         });
         
         // Build response
@@ -157,8 +172,8 @@ public class RecipeSearchService {
      * @param criteria search criteria (may have been modified with user preferences)
      */
     public record UserSearchPreferences(
-            List<Allergy> userAllergies,
-            Set<CuisineType> preferredCuisines,
+            List<SupportedAllergy> userAllergies,
+            Set<SupportedCuisineType> preferredCuisines,
             RecipeSearchCriteria criteria
     ) {}
 }

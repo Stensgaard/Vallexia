@@ -1,11 +1,11 @@
 package com.vallexia.recipe.entity;
 
 import com.vallexia.recipe.entity.enums.DifficultyLevel;
-import com.vallexia.recipe.entity.enums.RecipeCategory;
-import com.vallexia.user.entity.enums.Allergy;
-import com.vallexia.user.entity.enums.CuisineType;
-import com.vallexia.user.entity.enums.DietaryRestriction;
+import com.vallexia.common.enums.SupportedAllergy;
+import com.vallexia.common.enums.SupportedCuisineType;
+import com.vallexia.common.enums.SupportedDietaryRestriction;
 import com.vallexia.user.entity.User;
+import com.vallexia.common.enums.SupportedMealCategory;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -25,9 +25,9 @@ import java.util.Set;
 /**
  * Recipe entity representing a recipe with ingredients, instructions, and nutritional information.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 @Entity
 @Table(name = "recipes")
@@ -79,11 +79,11 @@ public class Recipe {
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
-    private RecipeCategory category;
+    private SupportedMealCategory category;
     
     @Enumerated(EnumType.STRING)
     @Column(name = "cuisine_type", length = 50)
-    private CuisineType cuisineType;
+    private SupportedCuisineType cuisineType;
     
     @Size(max = 500)
     @Column(name = "image_url", length = 500)
@@ -92,8 +92,14 @@ public class Recipe {
     @Column(name = "is_public", nullable = false)
     private Boolean isPublic = false;
     
+    @Column(name = "base_locale", nullable = false, length = 10)
+    private String baseLocale = "en";
+    
     @OneToOne(mappedBy = "recipe", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private NutritionalInfo nutritionalInfo;
+    
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<RecipeTranslation> translations = new ArrayList<>();
     
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @OrderBy("displayOrder ASC")
@@ -109,14 +115,14 @@ public class Recipe {
     @CollectionTable(name = "recipe_dietary_restrictions", 
                    joinColumns = @JoinColumn(name = "recipe_id"))
     @Column(name = "restriction", length = 50)
-    private Set<DietaryRestriction> dietaryRestrictions = new HashSet<>();
+    private Set<SupportedDietaryRestriction> dietaryRestrictions = new HashSet<>();
     
     @ElementCollection(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "recipe_allergens", 
                    joinColumns = @JoinColumn(name = "recipe_id"))
     @Column(name = "allergy", length = 50)
-    private Set<Allergy> allergens = new HashSet<>();
+    private Set<SupportedAllergy> allergens = new HashSet<>();
     
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<FavoriteRecipe> favoriteRecipes = new ArrayList<>();
@@ -175,7 +181,7 @@ public class Recipe {
     /**
      * Add a dietary restriction to the recipe.
      */
-    public void addDietaryRestriction(DietaryRestriction restriction) {
+    public void addDietaryRestriction(SupportedDietaryRestriction restriction) {
         if (restriction != null) {
             this.dietaryRestrictions.add(restriction);
         }
@@ -184,7 +190,7 @@ public class Recipe {
     /**
      * Remove a dietary restriction from the recipe.
      */
-    public void removeDietaryRestriction(DietaryRestriction restriction) {
+    public void removeDietaryRestriction(SupportedDietaryRestriction restriction) {
         if (restriction != null) {
             this.dietaryRestrictions.remove(restriction);
         }
@@ -193,7 +199,7 @@ public class Recipe {
     /**
      * Add an allergen to the recipe.
      */
-    public void addAllergen(Allergy allergen) {
+    public void addAllergen(SupportedAllergy allergen) {
         if (allergen != null) {
             this.allergens.add(allergen);
         }
@@ -202,7 +208,7 @@ public class Recipe {
     /**
      * Remove an allergen from the recipe.
      */
-    public void removeAllergen(Allergy allergen) {
+    public void removeAllergen(SupportedAllergy allergen) {
         if (allergen != null) {
             this.allergens.remove(allergen);
         }

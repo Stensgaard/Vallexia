@@ -2,12 +2,12 @@
   <form @submit.prevent="handleSubmit" class="space-y-6">
     <!-- Basic Information -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold mb-4">Basic Information</h3>
+      <h3 class="text-lg font-semibold mb-4">{{ $t('recipes.form.basicInfo') }}</h3>
       
       <div class="space-y-4">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">
-            Recipe Name <span class="text-red-500">*</span>
+            {{ $t('recipes.form.name') }} <span class="text-red-500">*</span>
           </label>
           <input
             v-model="formData.name"
@@ -18,7 +18,7 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('recipes.form.description') }}</label>
           <textarea
             v-model="formData.description"
             rows="3"
@@ -28,41 +28,37 @@
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Category <span class="text-red-500">*</span></label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('recipes.form.category') }} <span class="text-red-500">*</span></label>
             <select
               v-model="formData.category"
               required
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">Select Category</option>
-              <option value="BREAKFAST">Breakfast</option>
-              <option value="LUNCH">Lunch</option>
-              <option value="DINNER">Dinner</option>
-              <option value="SNACK">Snack</option>
-              <option value="DESSERT">Dessert</option>
-              <option value="APPETIZER">Appetizer</option>
-              <option value="BEVERAGE">Beverage</option>
-              <option value="OTHER">Other</option>
+              <option value="">{{ $t('recipes.form.categoryPlaceholder') }}</option>
+              <option
+                v-for="category in mealCategories"
+                :key="category.code"
+                :value="category.code"
+              >
+                {{ $t(`recipes.categories.${category.code}`) || category.name }}
+              </option>
             </select>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Cuisine Type</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('recipes.form.cuisineType') }}</label>
             <select
               v-model="formData.cuisineType"
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">Select Cuisine</option>
-              <option value="ITALIAN">Italian</option>
-              <option value="MEXICAN">Mexican</option>
-              <option value="CHINESE">Chinese</option>
-              <option value="JAPANESE">Japanese</option>
-              <option value="FRENCH">French</option>
-              <option value="INDIAN">Indian</option>
-              <option value="AMERICAN">American</option>
-              <option value="THAI">Thai</option>
-              <option value="MEDITERRANEAN">Mediterranean</option>
-              <option value="OTHER">Other</option>
+              <option value="">{{ $t('recipes.form.cuisineTypePlaceholder') }}</option>
+              <option
+                v-for="cuisineType in cuisineOptions"
+                :key="cuisineType.code"
+                :value="cuisineType.code"
+              >
+                {{ $t(`constants.cuisineTypes.${cuisineType.code}`) || cuisineType.name }}
+              </option>
             </select>
           </div>
         </div>
@@ -71,11 +67,11 @@
 
     <!-- Timing & Servings -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold mb-4">Timing & Servings</h3>
+      <h3 class="text-lg font-semibold mb-4">{{ $t('recipes.form.timingServings') }}</h3>
       
       <div class="grid grid-cols-3 gap-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Prep Time (min)</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('recipes.form.prepTime') }}</label>
           <input
             v-model.number="formData.prepTimeMinutes"
             type="number"
@@ -85,7 +81,7 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Cook Time (min)</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('recipes.form.cookTime') }}</label>
           <input
             v-model.number="formData.cookTimeMinutes"
             type="number"
@@ -96,7 +92,7 @@
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">
-            Servings <span class="text-red-500">*</span>
+            {{ $t('recipes.form.servings') }} <span class="text-red-500">*</span>
           </label>
           <input
             v-model.number="formData.servings"
@@ -109,16 +105,19 @@
       </div>
 
       <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Difficulty Level</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('recipes.form.difficultyLevel') }}</label>
         <select
           v-model="formData.difficultyLevel"
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option value="">Select Difficulty</option>
-          <option value="EASY">Easy</option>
-          <option value="MEDIUM">Medium</option>
-          <option value="HARD">Hard</option>
-          <option value="EXPERT">Expert</option>
+          <option value="">{{ $t('recipes.form.difficultyPlaceholder') }}</option>
+          <option
+            v-for="difficulty in difficultyOptions"
+            :key="difficulty.code"
+            :value="difficulty.code"
+          >
+            {{ $t(`recipes.difficulty.${difficulty.code}`) || difficulty.name }}
+          </option>
         </select>
       </div>
     </div>
@@ -126,13 +125,13 @@
     <!-- Ingredients -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold">Ingredients</h3>
+        <h3 class="text-lg font-semibold">{{ $t('recipes.form.ingredients') }}</h3>
         <button
           type="button"
           @click="addIngredient"
           class="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
         >
-          Add Ingredient
+          {{ $t('recipes.form.addIngredient') }}
         </button>
       </div>
       
@@ -146,7 +145,7 @@
             <input
               v-model="ingredient.name"
               type="text"
-              placeholder="Ingredient name"
+              :placeholder="$t('recipes.form.ingredientNamePlaceholder')"
               required
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -157,7 +156,7 @@
               type="number"
               step="0.1"
               min="0"
-              placeholder="Quantity"
+              :placeholder="$t('recipes.form.quantity')"
               required
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -166,7 +165,7 @@
             <input
               v-model="ingredient.unit"
               type="text"
-              placeholder="Unit (e.g., cup, tsp)"
+              :placeholder="$t('recipes.form.unitPlaceholder')"
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -186,23 +185,23 @@
     <!-- Instructions -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <h3 class="text-lg font-semibold mb-4">
-        Instructions <span class="text-red-500">*</span>
+        {{ $t('recipes.form.instructions') }} <span class="text-red-500">*</span>
       </h3>
       <textarea
         v-model="formData.instructions"
         rows="10"
         required
-        placeholder="Enter step-by-step instructions..."
+        :placeholder="$t('recipes.form.instructionsPlaceholder')"
         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
       ></textarea>
     </div>
 
     <!-- Nutritional Info -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold mb-4">Nutritional Information</h3>
+      <h3 class="text-lg font-semibold mb-4">{{ $t('recipes.form.nutritionalInfo') }}</h3>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Calories</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('recipes.form.calories') }}</label>
           <input
             v-model.number="formData.nutritionalInfo.calories"
             type="number"
@@ -212,7 +211,7 @@
           />
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Protein (g)</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('recipes.form.protein') }} ({{ nutritionalUnit }})</label>
           <input
             v-model.number="formData.nutritionalInfo.protein"
             type="number"
@@ -222,7 +221,7 @@
           />
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Carbs (g)</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('recipes.form.carbs') }} ({{ nutritionalUnit }})</label>
           <input
             v-model.number="formData.nutritionalInfo.carbs"
             type="number"
@@ -232,7 +231,7 @@
           />
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Fats (g)</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('recipes.form.fats') }} ({{ nutritionalUnit }})</label>
           <input
             v-model.number="formData.nutritionalInfo.fats"
             type="number"
@@ -246,12 +245,24 @@
 
     <!-- Image URL -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <label class="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+      <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('recipes.form.imageUrl') }}</label>
       <input
         v-model="formData.imageUrl"
         type="url"
-        placeholder="https://example.com/image.jpg"
+        :placeholder="$t('recipes.form.imageUrlPlaceholder')"
         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+
+    <!-- Tags -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <TagInput
+        id="recipe-tags"
+        v-model="formData.tags"
+        :label="$t('recipes.form.tags')"
+        :placeholder="$t('recipes.form.tagsPlaceholder')"
+        :required="true"
+        :hint="$t('recipes.form.tagsHint')"
       />
     </div>
 
@@ -263,7 +274,7 @@
           type="checkbox"
           class="mr-2"
         />
-        <span class="text-sm font-medium text-gray-700">Make this recipe public</span>
+        <span class="text-sm font-medium text-gray-700">{{ $t('recipes.form.makePublic') }}</span>
       </label>
     </div>
 
@@ -274,21 +285,35 @@
         @click="$emit('cancel')"
         class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
       >
-        Cancel
+        {{ $t('common.cancel') }}
       </button>
       <button
         type="submit"
         :disabled="loading"
         class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {{ loading ? 'Saving...' : (recipeId ? 'Update Recipe' : 'Create Recipe') }}
+        {{ loading ? $t('recipes.form.saving') : (recipeId ? $t('recipes.form.updateRecipe') : $t('recipes.form.createRecipe')) }}
       </button>
     </div>
   </form>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useSettingsStore } from '@/stores/settings'
+import { getMealCategories, getCuisineTypes, getDifficultyLevels } from '@/utils/localeConfig'
+import TagInput from '@/components/common/TagInput.vue'
+
+const { t } = useI18n()
+const settingsStore = useSettingsStore()
+
+const mealCategories = computed(() => getMealCategories())
+const cuisineOptions = computed(() => getCuisineTypes())
+const difficultyOptions = computed(() => getDifficultyLevels())
+const nutritionalUnit = computed(() => {
+  return settingsStore.measurementSystem === 'IMPERIAL' ? 'oz' : 'g'
+})
 
 const props = defineProps({
   recipe: {
@@ -317,6 +342,7 @@ const formData = ref({
   cuisineType: props.recipe?.cuisineType || '',
   imageUrl: props.recipe?.imageUrl || '',
   isPublic: props.recipe?.isPublic !== undefined ? props.recipe.isPublic : true,
+  tags: props.recipe?.tags ? Array.from(props.recipe.tags) : [],
   ingredients: props.recipe?.ingredients?.length > 0
     ? props.recipe.ingredients.map(ing => ({
         name: ing.name || '',
@@ -348,6 +374,7 @@ watch(() => props.recipe, (newRecipe) => {
       cuisineType: newRecipe.cuisineType || '',
       imageUrl: newRecipe.imageUrl || '',
       isPublic: newRecipe.isPublic !== undefined ? newRecipe.isPublic : true,
+      tags: newRecipe.tags ? Array.from(newRecipe.tags) : [],
       ingredients: newRecipe.ingredients?.length > 0
         ? newRecipe.ingredients.map(ing => ({
             name: ing.name || '',
@@ -389,8 +416,14 @@ const handleSubmit = () => {
     ing => ing.name && ing.name.trim() !== ''
   )
 
+  // Convert tags array to Set for backend (backend expects Set<String>)
+  const tagsSet = formData.value.tags && formData.value.tags.length > 0
+    ? new Set(formData.value.tags)
+    : new Set()
+
   const submitData = {
     ...formData.value,
+    tags: tagsSet,
     ingredients: cleanedIngredients.length > 0 ? cleanedIngredients : null,
     nutritionalInfo: Object.values(formData.value.nutritionalInfo).some(v => v != null)
       ? formData.value.nutritionalInfo

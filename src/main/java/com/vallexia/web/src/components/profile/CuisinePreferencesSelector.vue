@@ -7,16 +7,16 @@
     
     <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
       <label
-        v-for="(value, key) in options"
-        :key="key"
+        v-for="option in translatedOptions"
+        :key="option.code"
         class="relative flex flex-col items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 focus-within:ring-2 focus-within:ring-blue-500"
-        :class="{ 'bg-blue-50 border-blue-300': selectedValues.includes(value) }"
+        :class="{ 'bg-blue-50 border-blue-300': selectedValues.includes(option.code) }"
       >
         <div class="flex items-center h-5 mb-2">
           <input
-            :id="`${id}-${key}`"
+            :id="`${id}-${option.code}`"
             v-model="selectedValues"
-            :value="value"
+            :value="option.code"
             type="checkbox"
             class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             @change="handleChange"
@@ -24,8 +24,7 @@
         </div>
         
         <div class="text-center">
-          <div class="text-2xl mb-1">{{ getFlag(value) }}</div>
-          <div class="text-sm font-medium text-gray-900">{{ getLabel(value) }}</div>
+          <div class="text-sm font-medium text-gray-900">{{ option.name || option.code }}</div>
         </div>
       </label>
     </div>
@@ -34,13 +33,16 @@
     <p v-if="error" class="text-sm text-red-600">{{ error }}</p>
     
     <!-- Hint -->
-    <p v-if="hint && !error" class="text-sm text-gray-500">{{ hint }}</p>
+    <p v-if="!error" class="text-sm text-gray-500">{{ hint || $t('profile.dietary.cuisinesHint') }}</p>
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
-import { CUISINE_TYPES, CUISINE_TYPES_LABELS } from '@/utils/constants'
+import { ref, watch, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { getCuisineTypes } from '@/utils/localeConfig'
+
+const { t, te } = useI18n()
 
 const props = defineProps({
   id: {
@@ -61,7 +63,7 @@ const props = defineProps({
   },
   hint: {
     type: String,
-    default: 'Select cuisines you enjoy to get personalized recipe recommendations.'
+    default: ''
   },
   required: {
     type: Boolean,
@@ -75,37 +77,23 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
-const options = CUISINE_TYPES
 const selectedValues = ref([...props.modelValue])
+
+const translatedOptions = computed(() => {
+  return getCuisineTypes().map((option) => {
+    const key = `constants.cuisineTypes.${option.code}`
+    return {
+      code: option.code,
+      name: te(key) ? t(key) : option.name
+    }
+  })
+})
 
 watch(() => props.modelValue, (newValue) => {
   selectedValues.value = [...newValue]
 }, { deep: true })
 
-const getLabel = (value) => {
-  return CUISINE_TYPES_LABELS[value] || value
-}
-
-const getFlag = (value) => {
-  const flags = {
-    [CUISINE_TYPES.ITALIAN]: '🇮🇹',
-    [CUISINE_TYPES.MEXICAN]: '🇲🇽',
-    [CUISINE_TYPES.CHINESE]: '🇨🇳',
-    [CUISINE_TYPES.JAPANESE]: '🇯🇵',
-    [CUISINE_TYPES.INDIAN]: '🇮🇳',
-    [CUISINE_TYPES.THAI]: '🇹🇭',
-    [CUISINE_TYPES.MEDITERRANEAN]: '🌊',
-    [CUISINE_TYPES.AMERICAN]: '🇺🇸',
-    [CUISINE_TYPES.FRENCH]: '🇫🇷',
-    [CUISINE_TYPES.GREEK]: '🇬🇷',
-    [CUISINE_TYPES.KOREAN]: '🇰🇷',
-    [CUISINE_TYPES.VIETNAMESE]: '🇻🇳'
-  }
-  return flags[value] || '🍽️'
-}
-
 const handleChange = () => {
   emit('update:modelValue', [...selectedValues.value])
 }
 </script>
-

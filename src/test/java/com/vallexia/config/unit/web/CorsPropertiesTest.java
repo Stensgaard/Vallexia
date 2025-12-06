@@ -1,27 +1,45 @@
 package com.vallexia.config.unit.web;
 
 import com.vallexia.config.web.CorsProperties;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Unit tests for CorsProperties validation.
- * Tests CORS configuration validation logic with @PostConstruct.
+ * Tests CORS configuration validation using Bean Validation and @PostConstruct.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-29
  */
 @DisplayName("CorsProperties Validation Tests")
 class CorsPropertiesTest {
   
-  private CorsProperties createProperties() {
+  private static final Validator VALIDATOR;
+  
+  static {
+    // Validator factory is created once per test class - no need to close in unit tests
+    @SuppressWarnings("resource")
+    LocalValidatorFactoryBean factory = new LocalValidatorFactoryBean();
+    factory.afterPropertiesSet();
+    VALIDATOR = factory.getValidator();
+  }
+  
+  private Validator createValidator() {
+    return VALIDATOR;
+  }
+  
+  private CorsProperties createValidProperties() {
     CorsProperties properties = new CorsProperties();
     properties.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
     properties.setAllowedMethods(Arrays.asList("GET", "POST"));
@@ -31,29 +49,83 @@ class CorsPropertiesTest {
   }
   
   @Test
-  @DisplayName("Should throw exception when origins is null")
-  void shouldThrowExceptionWhenOriginsIsNull() {
+  @DisplayName("Should fail Bean Validation when origins is null")
+  void shouldFailBeanValidationWhenOriginsIsNull() {
     // Given
     CorsProperties properties = new CorsProperties();
     properties.setAllowedOrigins(null);
+    properties.setAllowedMethods(List.of("GET"));
+    properties.setAllowedHeaders(List.of("Authorization"));
+    Validator validator = createValidator();
     
-    // When/Then
-    assertThatThrownBy(() -> properties.validateCorsConfiguration())
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessageContaining("CORS allowed origins must be configured");
+    // When
+    Set<ConstraintViolation<CorsProperties>> violations = validator.validate(properties);
+    
+    // Then
+    assertThat(violations).isNotEmpty();
+    assertThat(violations).anyMatch(v -> 
+        v.getPropertyPath().toString().equals("allowedOrigins") &&
+        v.getMessage().contains("CORS allowed origins must be configured"));
   }
   
   @Test
-  @DisplayName("Should throw exception when origins is empty")
-  void shouldThrowExceptionWhenOriginsIsEmpty() {
+  @DisplayName("Should fail Bean Validation when origins is empty")
+  void shouldFailBeanValidationWhenOriginsIsEmpty() {
     // Given
     CorsProperties properties = new CorsProperties();
     properties.setAllowedOrigins(List.of());
+    properties.setAllowedMethods(List.of("GET"));
+    properties.setAllowedHeaders(List.of("Authorization"));
+    Validator validator = createValidator();
     
-    // When/Then
-    assertThatThrownBy(() -> properties.validateCorsConfiguration())
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessageContaining("CORS allowed origins must be configured");
+    // When
+    Set<ConstraintViolation<CorsProperties>> violations = validator.validate(properties);
+    
+    // Then
+    assertThat(violations).isNotEmpty();
+    assertThat(violations).anyMatch(v -> 
+        v.getPropertyPath().toString().equals("allowedOrigins") &&
+        v.getMessage().contains("CORS allowed origins must be configured"));
+  }
+  
+  @Test
+  @DisplayName("Should fail Bean Validation when methods is null")
+  void shouldFailBeanValidationWhenMethodsIsNull() {
+    // Given
+    CorsProperties properties = new CorsProperties();
+    properties.setAllowedOrigins(List.of("http://localhost:5173"));
+    properties.setAllowedMethods(null);
+    properties.setAllowedHeaders(List.of("Authorization"));
+    Validator validator = createValidator();
+    
+    // When
+    Set<ConstraintViolation<CorsProperties>> violations = validator.validate(properties);
+    
+    // Then
+    assertThat(violations).isNotEmpty();
+    assertThat(violations).anyMatch(v -> 
+        v.getPropertyPath().toString().equals("allowedMethods") &&
+        v.getMessage().contains("CORS allowed methods must be configured"));
+  }
+  
+  @Test
+  @DisplayName("Should fail Bean Validation when methods is empty")
+  void shouldFailBeanValidationWhenMethodsIsEmpty() {
+    // Given
+    CorsProperties properties = new CorsProperties();
+    properties.setAllowedOrigins(List.of("http://localhost:5173"));
+    properties.setAllowedMethods(List.of());
+    properties.setAllowedHeaders(List.of("Authorization"));
+    Validator validator = createValidator();
+    
+    // When
+    Set<ConstraintViolation<CorsProperties>> violations = validator.validate(properties);
+    
+    // Then
+    assertThat(violations).isNotEmpty();
+    assertThat(violations).anyMatch(v -> 
+        v.getPropertyPath().toString().equals("allowedMethods") &&
+        v.getMessage().contains("CORS allowed methods must be configured"));
   }
   
   @Test
@@ -105,38 +177,10 @@ class CorsPropertiesTest {
   }
   
   @Test
-  @DisplayName("Should throw exception when methods is null")
-  void shouldThrowExceptionWhenMethodsIsNull() {
-    // Given
-    CorsProperties properties = new CorsProperties();
-    properties.setAllowedOrigins(List.of("http://localhost:5173"));
-    properties.setAllowedMethods(null);
-    
-    // When/Then
-    assertThatThrownBy(() -> properties.validateCorsConfiguration())
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessageContaining("CORS allowed methods must be configured");
-  }
-  
-  @Test
-  @DisplayName("Should throw exception when methods is empty")
-  void shouldThrowExceptionWhenMethodsIsEmpty() {
-    // Given
-    CorsProperties properties = new CorsProperties();
-    properties.setAllowedOrigins(List.of("http://localhost:5173"));
-    properties.setAllowedMethods(List.of());
-    
-    // When/Then
-    assertThatThrownBy(() -> properties.validateCorsConfiguration())
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessageContaining("CORS allowed methods must be configured");
-  }
-  
-  @Test
   @DisplayName("Should validate successfully with valid configuration")
   void shouldValidateSuccessfullyWithValidConfiguration() {
     // Given
-    CorsProperties properties = createProperties();
+    CorsProperties properties = createValidProperties();
     
     // When - should not throw exception
     properties.validateCorsConfiguration();
@@ -162,4 +206,3 @@ class CorsPropertiesTest {
     assertThat(properties.getAllowedOrigins()).contains("localhost:5173");
   }
 }
-

@@ -1,7 +1,7 @@
 package com.vallexia.nutrition.validator;
 
 import com.vallexia.nutrition.exception.InvalidNutritionalDataException;
-import com.vallexia.user.entity.NutritionalGoals;
+import com.vallexia.nutrition.entity.NutritionalGoals;
 
 import java.math.BigDecimal;
 
@@ -20,9 +20,9 @@ import java.math.BigDecimal;
  * Only daily calories is required. When macros are provided, they must be within
  * the specified ranges.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-29
  */
 public class NutritionalDataValidator {
   

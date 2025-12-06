@@ -17,14 +17,17 @@ import org.springframework.web.bind.annotation.*;
 /**
  * REST controller for dietary preferences management endpoints.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/users/dietary-preferences")
-@Tag(name = "Dietary Preferences Management", description = "Operations related to dietary preferences management")
+@Tag(
+    name = "Dietary Preferences Management", 
+    description = "Operations related to dietary preferences management"
+)
 public class DietaryPreferencesController {
     
     private final DietaryPreferencesService dietaryPreferencesService;
@@ -48,7 +51,9 @@ public class DietaryPreferencesController {
      * @param authentication current authentication
      * @return DietaryPreferencesDto
      */
-    @Operation(summary = "Get current user's dietary preferences", description = "Retrieves the authenticated user's dietary preferences")
+    @Operation(
+        summary = "Get current user's dietary preferences", 
+        description = "Retrieves the authenticated user's dietary preferences")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Dietary preferences retrieved successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing JWT token"),
@@ -72,7 +77,9 @@ public class DietaryPreferencesController {
      * @param authentication current authentication
      * @return updated DietaryPreferencesDto
      */
-    @Operation(summary = "Update current user's dietary preferences", description = "Updates the authenticated user's dietary preferences")
+    @Operation(
+        summary = "Update current user's dietary preferences", 
+        description = "Updates the authenticated user's dietary preferences")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Dietary preferences updated successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid input data"),
@@ -98,7 +105,9 @@ public class DietaryPreferencesController {
      * @param authentication current authentication
      * @return no content
      */
-    @Operation(summary = "Delete current user's dietary preferences", description = "Deletes the authenticated user's dietary preferences (GDPR compliance)")
+    @Operation(
+        summary = "Delete current user's dietary preferences", 
+        description = "Deletes the authenticated user's dietary preferences (GDPR compliance)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Dietary preferences deleted successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing JWT token"),

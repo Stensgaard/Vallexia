@@ -11,9 +11,9 @@ import java.time.LocalDateTime;
 /**
  * MapStruct mapper for authentication-related data transformations.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-30
  */
 @Mapper(componentModel = "spring")
 public interface AuthMapper {
@@ -30,6 +30,7 @@ public interface AuthMapper {
   @Mapping(target = "roles", ignore = true)         // Handle separately
   @Mapping(target = "dietaryPreferences", ignore = true)
   @Mapping(target = "nutritionalGoals", ignore = true)
+  @Mapping(target = "userSettings", ignore = true)
   @Mapping(target = "enabled", constant = "true")
   @Mapping(target = "accountNonExpired", constant = "true")
   @Mapping(target = "accountNonLocked", constant = "true")
@@ -48,14 +49,19 @@ public interface AuthMapper {
    * Create JwtResponseDto from User entity and token details.
    * Custom method implementation provided for complex mapping.
    * 
-   * @param user the user entity
+   * @param user the user entity (must not be null)
    * @param accessToken JWT access token
    * @param refreshToken JWT refresh token
    * @param expiresAt token expiration time
    * @return JWT response DTO
+   * @throws IllegalArgumentException if user is null
    */
   default JwtResponseDto toJwtResponse(User user, String accessToken, 
                                        String refreshToken, LocalDateTime expiresAt) {
+    if (user == null) {
+      throw new IllegalArgumentException("User cannot be null");
+    }
+    
     return JwtResponseDto.builder()
         .accessToken(accessToken)
         .refreshToken(refreshToken)

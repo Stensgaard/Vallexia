@@ -1,14 +1,14 @@
 <template>
   <div class="space-y-6">
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Profile Management</h1>
-      <p class="mt-2 text-gray-600">Manage your personal information, dietary preferences, and nutritional goals.</p>
+      <h1 class="text-3xl font-bold text-gray-900">{{ $t('profile.title') }}</h1>
+      <p class="mt-2 text-gray-600">{{ $t('profile.description') }}</p>
     </div>
 
     <!-- Profile Tabs -->
     <div class="bg-white shadow rounded-lg">
       <div class="border-b border-gray-200">
-        <nav class="-mb-px flex space-x-8 px-6" aria-label="Tabs">
+        <nav class="-mb-px flex space-x-8 px-6" :aria-label="$t('profile.tabs.ariaLabel')">
           <button
             v-for="tab in tabs"
             :key="tab.id"
@@ -23,16 +23,16 @@
       <div class="p-6">
         <!-- Personal Information Tab -->
         <div v-if="activeTab === 'personal'" class="space-y-6">
-          <h2 class="text-xl font-semibold text-gray-900">Personal Information</h2>
-          <p class="text-gray-600">Update your personal details and profile information.</p>
+          <h2 class="text-xl font-semibold text-gray-900">{{ $t('profile.personal.title') }}</h2>
+          <p class="text-gray-600">{{ $t('profile.personal.description') }}</p>
           
           <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <FormInput
               id="email"
               v-model="personalForm.email"
               type="email"
-              label="Email Address"
-              placeholder="Enter your email address"
+              :label="$t('profile.personal.email')"
+              :placeholder="$t('profile.personal.emailPlaceholder')"
               :error="personalErrors.email"
             />
             
@@ -40,8 +40,8 @@
               id="householdSize"
               v-model.number="personalForm.householdSize"
               type="number"
-              label="Household Size"
-              placeholder="Number of people"
+              :label="$t('profile.personal.householdSize')"
+              :placeholder="$t('profile.personal.householdSizePlaceholder')"
               :error="personalErrors.householdSize"
               :min="1"
               :max="20"
@@ -51,32 +51,32 @@
           <!-- Meal Types Selection -->
           <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-              Meal Types
+              {{ $t('profile.personal.mealTypes') }}
               <span class="text-red-500">*</span>
             </label>
             <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
               <label
-                v-for="(label, type) in MEAL_TYPES_LABELS"
-                :key="type"
+                v-for="mealType in translatedMealTypes"
+                :key="mealType.code"
                 class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
-                :class="personalForm.mealTypes.includes(type) ? 'border-blue-500 bg-blue-50' : 'border-gray-300'"
+                :class="personalForm.mealTypes.includes(mealType.code) ? 'border-blue-500 bg-blue-50' : 'border-gray-300'"
               >
                 <input
                   type="checkbox"
-                  :value="type"
+                  :value="mealType.code"
                   v-model="personalForm.mealTypes"
                   class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-                <span class="ml-2 text-sm text-gray-700">{{ label }}</span>
+                <span class="ml-2 text-sm text-gray-700">{{ mealType.name }}</span>
               </label>
             </div>
             <p v-if="personalErrors.mealTypes" class="text-sm text-red-600">{{ personalErrors.mealTypes }}</p>
-            <p v-else class="text-sm text-gray-500">Select the meal types you want to track in your meal plans.</p>
+            <p v-else class="text-sm text-gray-500">{{ $t('profile.personal.mealTypesDescription') }}</p>
           </div>
           
           <!-- Subscription Status Display -->
           <div class="mt-6 p-4 bg-gray-50 rounded-lg">
-            <h3 class="text-sm font-medium text-gray-900 mb-2">Subscription Status</h3>
+            <h3 class="text-sm font-medium text-gray-900 mb-2">{{ $t('profile.personal.subscriptionStatus') }}</h3>
             <div class="flex items-center">
               <span 
                 :class="subscriptionStatusClasses"
@@ -85,7 +85,7 @@
                 {{ subscriptionStatusLabel }}
               </span>
               <span v-if="personalForm.subscriptionExpiresAt" class="ml-2 text-sm text-gray-500">
-                Expires: {{ formatDate(personalForm.subscriptionExpiresAt) }}
+                {{ $t('common.expiresAt', { date: formatDate(personalForm.subscriptionExpiresAt) }) }}
               </span>
             </div>
           </div>
@@ -97,15 +97,15 @@
               class="btn btn-primary"
             >
               <LoadingSpinner v-if="isPersonalLoading" size="small" color="white" />
-              <span v-else>Save Changes</span>
+              <span v-else>{{ $t('common.saveChanges') }}</span>
             </button>
           </div>
         </div>
 
         <!-- Dietary Preferences Tab -->
         <div v-if="activeTab === 'dietary'" class="space-y-6">
-          <h2 class="text-xl font-semibold text-gray-900">Dietary Preferences</h2>
-          <p class="text-gray-600">Set your dietary restrictions, allergies, and food preferences.</p>
+          <h2 class="text-xl font-semibold text-gray-900">{{ $t('profile.dietary.title') }}</h2>
+          <p class="text-gray-600">{{ $t('profile.dietary.description') }}</p>
           
           <DietaryRestrictionsSelector
             id="dietary-restrictions"
@@ -132,21 +132,22 @@
               class="btn btn-primary"
             >
               <LoadingSpinner v-if="isDietaryLoading" size="small" color="white" />
-              <span v-else>Save Preferences</span>
+              <span v-else>{{ $t('profile.dietary.savePreferences') }}</span>
             </button>
           </div>
         </div>
 
         <!-- Nutritional Goals Tab -->
         <div v-if="activeTab === 'nutritional'" class="space-y-6">
-          <h2 class="text-xl font-semibold text-gray-900">Nutritional Goals</h2>
-          <p class="text-gray-600">Set your daily nutritional targets and health goals.</p>
+          <h2 class="text-xl font-semibold text-gray-900">{{ $t('profile.nutritional.title') }}</h2>
+          <p class="text-gray-600">{{ $t('profile.nutritional.description') }}</p>
           
           <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <NutritionGoalInput
               id="daily-calories"
               v-model="nutritionForm.dailyCalories"
-              label="Daily Calories"
+              @blur="handleDailyCaloriesChange"
+              :label="$t('profile.nutritional.dailyCalories')"
               unit="cal"
               :min="800"
               :max="5000"
@@ -154,13 +155,18 @@
             />
             
             <div class="space-y-1">
-              <label class="block text-sm font-medium text-gray-700">Goal Type</label>
+              <label class="block text-sm font-medium text-gray-700">{{ $t('profile.nutritional.goalType') }}</label>
               <select
                 v-model="nutritionForm.goalType"
+                @change="handleGoalTypeChange"
                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
               >
-                <option v-for="(value, key) in goalTypeOptions" :key="key" :value="value">
-                  {{ getGoalTypeLabel(value) }}
+                <option
+                  v-for="option in translatedGoalTypes"
+                  :key="option.code"
+                  :value="option.code"
+                >
+                  {{ option.name }}
                 </option>
               </select>
             </div>
@@ -170,39 +176,42 @@
             <NutritionGoalInput
               id="daily-protein"
               v-model="nutritionForm.dailyProtein"
-              label="Daily Protein"
+              :label="$t('profile.nutritional.dailyProtein')"
               unit="g"
               :min="0"
               :max="500"
               :show-percentage="true"
-              :daily-calories="nutritionForm.dailyCalories"
-              :calories-per-gram="4"
+              :daily-calories="normalizedDailyCalories"
+              :macro-calories="nutritionForm.proteinCalories"
+              macro-type="protein"
               :error="nutritionErrors.dailyProtein"
             />
             
             <NutritionGoalInput
               id="daily-carbs"
               v-model="nutritionForm.dailyCarbs"
-              label="Daily Carbs"
+              :label="$t('profile.nutritional.dailyCarbs')"
               unit="g"
               :min="0"
               :max="1000"
               :show-percentage="true"
-              :daily-calories="nutritionForm.dailyCalories"
-              :calories-per-gram="4"
+              :daily-calories="normalizedDailyCalories"
+              :macro-calories="nutritionForm.carbCalories"
+              macro-type="carbs"
               :error="nutritionErrors.dailyCarbs"
             />
             
             <NutritionGoalInput
               id="daily-fats"
               v-model="nutritionForm.dailyFats"
-              label="Daily Fats"
+              :label="$t('profile.nutritional.dailyFats')"
               unit="g"
               :min="0"
               :max="500"
               :show-percentage="true"
-              :daily-calories="nutritionForm.dailyCalories"
-              :calories-per-gram="9"
+              :daily-calories="normalizedDailyCalories"
+              :macro-calories="nutritionForm.fatCalories"
+              macro-type="fats"
               :error="nutritionErrors.dailyFats"
             />
           </div>
@@ -211,7 +220,7 @@
             <NutritionGoalInput
               id="daily-fiber"
               v-model="nutritionForm.dailyFiber"
-              label="Daily Fiber"
+              :label="$t('profile.nutritional.dailyFiber')"
               unit="g"
               :min="0"
               :max="100"
@@ -221,7 +230,7 @@
             <NutritionGoalInput
               id="daily-sodium"
               v-model="nutritionForm.dailySodium"
-              label="Daily Sodium"
+              :label="$t('profile.nutritional.dailySodium')"
               unit="mg"
               :min="0"
               :max="10000"
@@ -231,7 +240,7 @@
             <NutritionGoalInput
               id="daily-sugar"
               v-model="nutritionForm.dailySugar"
-              label="Daily Sugar"
+              :label="$t('profile.nutritional.dailySugar')"
               unit="g"
               :min="0"
               :max="200"
@@ -246,7 +255,143 @@
               class="btn btn-primary"
             >
               <LoadingSpinner v-if="isNutritionLoading" size="small" color="white" />
-              <span v-else>Save Goals</span>
+              <span v-else>{{ $t('profile.nutritional.saveGoals') }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div v-if="activeTab === 'settings'" class="space-y-6">
+          <h2 class="text-xl font-semibold text-gray-900">{{ $t('profile.settings.title') }}</h2>
+          <p class="text-gray-600">{{ $t('profile.settings.description') }}</p>
+          
+          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <!-- Language Selector -->
+            <div class="space-y-1">
+              <label class="block text-sm font-medium text-gray-700">{{ $t('profile.settings.language') }}</label>
+              <select
+                v-model="settingsForm.language"
+                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+                <option v-for="lang in translatedLanguages" :key="lang.code" :value="lang.code">
+                  {{ lang.name }}
+                </option>
+              </select>
+              <p v-if="settingsErrors.language" class="text-sm text-red-600">{{ settingsErrors.language }}</p>
+            </div>
+
+            <!-- Country Selector -->
+            <div class="space-y-1">
+              <label class="block text-sm font-medium text-gray-700">{{ $t('profile.settings.country') }}</label>
+              <select
+                v-model="settingsForm.country"
+                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+                <option v-for="country in translatedCountries" :key="country.code" :value="country.code">
+                  {{ country.name }}
+                </option>
+              </select>
+              <p v-if="settingsErrors.country" class="text-sm text-red-600">{{ settingsErrors.country }}</p>
+            </div>
+
+            <!-- Date Format Selector -->
+            <div class="space-y-1">
+              <label class="block text-sm font-medium text-gray-700">{{ $t('profile.settings.dateFormat') }}</label>
+              <select
+                v-model="settingsForm.dateFormat"
+                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+                <option
+                  v-for="dateFormat in dateFormatOptions"
+                  :key="dateFormat.code"
+                  :value="dateFormat.code"
+                >
+                  {{ dateFormat.format }}
+                </option>
+              </select>
+              <p v-if="settingsErrors.dateFormat" class="text-sm text-red-600">{{ settingsErrors.dateFormat }}</p>
+            </div>
+
+            <!-- Timezone Selector -->
+            <div class="space-y-1">
+              <label class="block text-sm font-medium text-gray-700">{{ $t('profile.settings.timezone') }}</label>
+              <select
+                v-model="settingsForm.timezone"
+                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+                <option v-for="tz in timezoneOptions" :key="tz.value" :value="tz.value">
+                  {{ tz.label }}
+                </option>
+              </select>
+              <p v-if="settingsErrors.timezone" class="text-sm text-red-600">{{ settingsErrors.timezone }}</p>
+            </div>
+
+            <!-- First Day of Week Selector -->
+            <div class="space-y-1">
+              <label class="block text-sm font-medium text-gray-700">{{ $t('profile.settings.firstDayOfWeekLabel') }}</label>
+              <div class="flex space-x-4">
+                <label
+                  v-for="day in translatedFirstDayOptions"
+                  :key="day.code"
+                  class="flex items-center"
+                >
+                  <input
+                    type="radio"
+                    v-model="settingsForm.firstDayOfWeek"
+                    :value="day.code"
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                  />
+                  <span class="ml-2 text-sm text-gray-700">{{ day.name }}</span>
+                </label>
+              </div>
+              <p v-if="settingsErrors.firstDayOfWeek" class="text-sm text-red-600">{{ settingsErrors.firstDayOfWeek }}</p>
+            </div>
+
+            <!-- Measurement System Selector -->
+            <div class="space-y-1">
+              <label class="block text-sm font-medium text-gray-700">{{ $t('profile.settings.measurementSystem') }}</label>
+              <div class="flex space-x-4">
+                <label
+                  v-for="system in translatedMeasurementSystems"
+                  :key="system.code"
+                  class="flex items-center"
+                >
+                  <input
+                    type="radio"
+                    v-model="settingsForm.measurementSystem"
+                    :value="system.code"
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                  />
+                  <span class="ml-2 text-sm text-gray-700">{{ system.name }}</span>
+                </label>
+              </div>
+              <p v-if="settingsErrors.measurementSystem" class="text-sm text-red-600">{{ settingsErrors.measurementSystem }}</p>
+            </div>
+
+            <!-- Currency Selector -->
+            <div class="space-y-1">
+              <label class="block text-sm font-medium text-gray-700">{{ $t('profile.settings.currency') }}</label>
+              <select
+                v-model="settingsForm.currency"
+                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+                <option v-for="currency in currencyOptions" :key="currency.code" :value="currency.code">
+                  {{ currency.name }} ({{ currency.code }})
+                </option>
+              </select>
+              <p v-if="settingsErrors.currency" class="text-sm text-red-600">{{ settingsErrors.currency }}</p>
+            </div>
+
+          </div>
+          
+          <div class="flex justify-end">
+            <button
+              @click="updateSettings"
+              :disabled="isSettingsLoading"
+              class="btn btn-primary"
+            >
+              <LoadingSpinner v-if="isSettingsLoading" size="small" color="white" />
+              <span v-else>{{ $t('profile.settings.saveSettings') }}</span>
             </button>
           </div>
         </div>
@@ -267,35 +412,58 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+import { reactive, ref, computed, onMounted, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { userService } from '@/services/userService'
 import FormInput from '@/components/common/FormInput.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
-import ErrorMessage from '@/components/common/ErrorMessage.vue'
-import TagInput from '@/components/common/TagInput.vue'
 import DietaryRestrictionsSelector from '@/components/profile/DietaryRestrictionsSelector.vue'
 import AllergiesSelector from '@/components/profile/AllergiesSelector.vue'
 import CuisinePreferencesSelector from '@/components/profile/CuisinePreferencesSelector.vue'
 import NutritionGoalInput from '@/components/profile/NutritionGoalInput.vue'
 import Toast from '@/components/common/Toast.vue'
-import { 
-  GOAL_TYPES,
-  GOAL_TYPES_LABELS,
-  SUBSCRIPTION_STATUS_LABELS,
-  MEAL_TYPES,
-  MEAL_TYPES_LABELS
-} from '@/utils/constants'
+import {
+  SUPPORTED_LANGUAGES,
+  getDefaultLanguage,
+  getSupportedLanguageCodes
+} from '@/i18n'
+import {
+  getCountries,
+  getTimezones,
+  getDefaultCountry,
+  getDefaultTimezone,
+  getDateFormats,
+  getDefaultDateFormatCode,
+  getMeasurementSystems,
+  getDefaultMeasurementSystemCode,
+  getCurrencies,
+  getMealTypes,
+  getFirstDayOfWeek,
+  getDefaultFirstDayOfWeekCode,
+  getDietaryRestrictions,
+  getAllergies,
+  getCuisineTypes,
+  getGoalTypes,
+  getSubscriptionStatuses,
+  getDefaultGoalTypeCode,
+  getDefaultSubscriptionStatusCode,
+  getDefaultMealTypeCodes,
+  createEnumFromList,
+  ensureLocaleConfigLoaded
+} from '@/utils/localeConfig'
+import { useSettingsStore } from '@/stores/settings'
 import { getErrorMessage } from '@/utils/errorUtils'
+import { validateValue, filterValidValues, validateEnumValue } from '@/utils/validationUtils'
+import { getSubscriptionDisplayName } from '@/utils/subscriptionUtils'
 
-const router = useRouter()
-const authStore = useAuthStore()
+const { t, te } = useI18n()
+const settingsStore = useSettingsStore()
 
 const activeTab = ref('personal')
 const isPersonalLoading = ref(false)
 const isDietaryLoading = ref(false)
 const isNutritionLoading = ref(false)
+const isSettingsLoading = ref(false)
 
 // Toast state
 const toast = reactive({
@@ -305,18 +473,51 @@ const toast = reactive({
   message: ''
 })
 
-const tabs = [
-  { id: 'personal', name: 'Personal Info' },
-  { id: 'dietary', name: 'Dietary Preferences' },
-  { id: 'nutritional', name: 'Nutritional Goals' }
-]
+const countryOptions = ref([])
+const timezoneOptions = ref([])
+const dateFormatOptions = ref([])
+const measurementOptions = ref([])
+const currencyOptions = ref([])
+const mealTypeOptions = ref([])
+const firstDayOptions = ref([])
+const dietaryRestrictionOptions = ref([])
+const allergyOptions = ref([])
+const cuisineTypeOptions = ref([])
+const goalTypeOptions = ref([])
+const subscriptionStatusOptions = ref([])
+
+const refreshLocaleOptions = () => {
+  countryOptions.value = [...getCountries()]
+  timezoneOptions.value = [...getTimezones()]
+  dateFormatOptions.value = [...getDateFormats()]
+  measurementOptions.value = [...getMeasurementSystems()]
+  currencyOptions.value = [...getCurrencies()]
+  mealTypeOptions.value = [...getMealTypes()]
+  firstDayOptions.value = [...getFirstDayOfWeek()]
+  dietaryRestrictionOptions.value = [...getDietaryRestrictions()]
+  allergyOptions.value = [...getAllergies()]
+  cuisineTypeOptions.value = [...getCuisineTypes()]
+  goalTypeOptions.value = [...getGoalTypes()]
+  subscriptionStatusOptions.value = [...getSubscriptionStatuses()]
+}
+
+const tabs = computed(() => [
+  { id: 'personal', name: t('profile.tabs.personal') },
+  { id: 'dietary', name: t('profile.tabs.dietary') },
+  { id: 'nutritional', name: t('profile.tabs.nutritional') },
+  { id: 'settings', name: t('profile.tabs.settings') }
+])
 
 // Personal Info Form
+const defaultGoalTypeCode = getDefaultGoalTypeCode() || 'MAINTENANCE'
+const defaultSubscriptionStatusCode = getDefaultSubscriptionStatusCode() || 'FREE'
+const defaultMealTypeSelection = getDefaultMealTypeCodes()
+
 const personalForm = reactive({
   email: '',
   householdSize: 1,
-  mealTypes: [],
-  subscriptionStatus: 'FREE',
+  mealTypes: defaultMealTypeSelection,
+  subscriptionStatus: defaultSubscriptionStatusCode,
   subscriptionExpiresAt: null
 })
 
@@ -348,7 +549,20 @@ const nutritionForm = reactive({
   dailyFiber: 25,
   dailySodium: 2300,
   dailySugar: 50,
-  goalType: 'MAINTENANCE'
+  goalType: defaultGoalTypeCode,
+  proteinCalories: null,
+  carbCalories: null,
+  fatCalories: null
+})
+
+// Computed property to ensure dailyCalories is always a number or null
+const normalizedDailyCalories = computed(() => {
+  const value = nutritionForm.dailyCalories
+  if (value === null || value === undefined || value === '') {
+    return null
+  }
+  const numValue = Number(value)
+  return isNaN(numValue) ? null : numValue
 })
 
 const nutritionErrors = reactive({
@@ -362,12 +576,95 @@ const nutritionErrors = reactive({
   goalType: ''
 })
 
-// Options
-const goalTypeOptions = GOAL_TYPES
+// Settings Form
+const defaultFirstDayCode = getDefaultFirstDayOfWeekCode() || 'MONDAY'
+
+const settingsForm = reactive({
+  language: getDefaultLanguage(),
+  country: getDefaultCountry(),
+  dateFormat: getDefaultDateFormatCode(),
+  timezone: getDefaultTimezone(),
+  firstDayOfWeek: defaultFirstDayCode,
+  measurementSystem: getDefaultMeasurementSystemCode(),
+  currency: null
+})
+
+const settingsErrors = reactive({
+  language: '',
+  country: '',
+  dateFormat: '',
+  timezone: '',
+  firstDayOfWeek: '',
+  measurementSystem: '',
+  currency: ''
+})
 
 // Computed properties
+const translatedLanguages = computed(() => {
+  return SUPPORTED_LANGUAGES.map((lang) => {
+    const key = `constants.languages.${lang.code}`
+    return {
+      code: lang.code,
+      name: te(key) ? t(key) : lang.name
+    }
+  })
+})
+
+const translatedCountries = computed(() => {
+  return countryOptions.value.map((country) => {
+    const key = `constants.countries.${country.code}`
+    return {
+      code: country.code,
+      name: te(key) ? t(key) : country.name
+    }
+  })
+})
+
+const translatedMeasurementSystems = computed(() => {
+  return measurementOptions.value.map((system) => {
+    const key = `constants.measurementSystems.${system.code}`
+    return {
+      code: system.code,
+      name: te(key) ? t(key) : system.name
+    }
+  })
+})
+
+const translatedMealTypes = computed(() => {
+  return mealTypeOptions.value.map((type) => {
+    const key = `constants.mealTypes.${type.code}`
+    return {
+      code: type.code,
+      name: te(key) ? t(key) : type.name
+    }
+  })
+})
+
+const translatedFirstDayOptions = computed(() => {
+  return firstDayOptions.value.map((option) => {
+    const key = `constants.firstDayOfWeek.${option.code}`
+    return {
+      code: option.code,
+      name: te(key) ? t(key) : option.name
+    }
+  })
+})
+
+const translatedGoalTypes = computed(() => {
+  return goalTypeOptions.value.map((option) => {
+    const key = `constants.goalTypes.${option.code}`
+    return {
+      code: option.code,
+      name: te(key) ? t(key) : option.name
+    }
+  })
+})
+
+const subscriptionStatusEnum = computed(() => createEnumFromList(subscriptionStatusOptions.value))
+const goalTypeEnum = computed(() => createEnumFromList(goalTypeOptions.value))
+
 const subscriptionStatusLabel = computed(() => {
-  return SUBSCRIPTION_STATUS_LABELS[personalForm.subscriptionStatus] || personalForm.subscriptionStatus
+  return getSubscriptionDisplayName(personalForm.subscriptionStatus)
 })
 
 const subscriptionStatusClasses = computed(() => {
@@ -398,12 +695,14 @@ const tabClasses = (tabId) => {
 }
 
 const getGoalTypeLabel = (value) => {
-  return GOAL_TYPES_LABELS[value] || value
+  const key = `constants.goalTypes.${value}`
+  const option = goalTypeOptions.value.find((item) => item.code === value)
+  return te(key) ? t(key) : option?.name || value
 }
 
 const formatDate = (dateString) => {
   if (!dateString) return ''
-  return new Date(dateString).toLocaleDateString()
+  return settingsStore.formatDateFn(new Date(dateString))
 }
 
 const showToast = (type, title, message) => {
@@ -418,10 +717,10 @@ const updatePersonalInfo = async () => {
   
   try {
     await userService.updateProfile(personalForm)
-    showToast('success', 'Success', 'Personal information updated successfully')
+    showToast('success', t('common.success'), t('profile.settings.personalInfoUpdatedSuccess'))
   } catch (error) {
     const errorMessage = getErrorMessage(error)
-    showToast('error', 'Error', errorMessage)
+    showToast('error', t('common.error'), errorMessage)
   } finally {
     isPersonalLoading.value = false
   }
@@ -432,12 +731,64 @@ const updateDietaryPreferences = async () => {
   
   try {
     await userService.updateDietaryPreferences(dietaryForm)
-    showToast('success', 'Success', 'Dietary preferences updated successfully')
+    showToast('success', t('common.success'), t('profile.settings.dietaryPreferencesUpdatedSuccess'))
   } catch (error) {
     const errorMessage = getErrorMessage(error)
-    showToast('error', 'Error', errorMessage)
+    showToast('error', t('common.error'), errorMessage)
   } finally {
     isDietaryLoading.value = false
+  }
+}
+
+const handleDailyCaloriesChange = async () => {
+  if (!nutritionForm.goalType) {
+    return
+  }
+  
+  if (!nutritionForm.dailyCalories) {
+    showToast('warning', t('common.warning'), t('profile.nutritional.setDailyCaloriesFirst'))
+    return
+  }
+  
+  try {
+    const breakdown = await userService.calculateMacrosFromGoalType(
+      nutritionForm.dailyCalories,
+      nutritionForm.goalType
+    )
+    
+    nutritionForm.dailyProtein = breakdown.protein
+    nutritionForm.dailyCarbs = breakdown.carbs
+    nutritionForm.dailyFats = breakdown.fats
+    
+    const goalTypeName = translatedGoalTypes.value.find(gt => gt.code === nutritionForm.goalType)?.name || nutritionForm.goalType
+    showToast('success', t('common.success'), t('profile.nutritional.macrosRecalculated', { goalType: goalTypeName }))
+  } catch (error) {
+    const errorMessage = getErrorMessage(error)
+    showToast('error', t('common.error'), errorMessage)
+  }
+}
+
+const handleGoalTypeChange = async () => {
+  if (!nutritionForm.dailyCalories || !nutritionForm.goalType) {
+    showToast('warning', t('common.warning'), t('profile.nutritional.setDailyCaloriesFirst'))
+    return
+  }
+  
+  try {
+    const breakdown = await userService.calculateMacrosFromGoalType(
+      nutritionForm.dailyCalories,
+      nutritionForm.goalType
+    )
+    
+    nutritionForm.dailyProtein = breakdown.protein
+    nutritionForm.dailyCarbs = breakdown.carbs
+    nutritionForm.dailyFats = breakdown.fats
+    
+    const goalTypeName = translatedGoalTypes.value.find(gt => gt.code === nutritionForm.goalType)?.name || nutritionForm.goalType
+    showToast('success', t('common.success'), t('profile.nutritional.macrosCalculated', { goalType: goalTypeName }))
+  } catch (error) {
+    const errorMessage = getErrorMessage(error)
+    showToast('error', t('common.error'), errorMessage)
   }
 }
 
@@ -445,45 +796,171 @@ const updateNutritionalGoals = async () => {
   isNutritionLoading.value = true
   
   try {
-    await userService.updateNutritionalGoals(nutritionForm)
-    showToast('success', 'Success', 'Nutritional goals updated successfully')
+    const updatedGoals = await userService.updateNutritionalGoals(nutritionForm)
+    nutritionForm.proteinCalories = updatedGoals.proteinCalories
+    nutritionForm.carbCalories = updatedGoals.carbCalories
+    nutritionForm.fatCalories = updatedGoals.fatCalories
+    showToast('success', t('common.success'), t('profile.settings.nutritionalGoalsUpdatedSuccess'))
   } catch (error) {
     const errorMessage = getErrorMessage(error)
-    showToast('error', 'Error', errorMessage)
+    showToast('error', t('common.error'), errorMessage)
   } finally {
     isNutritionLoading.value = false
   }
 }
 
+const updateSettings = async () => {
+  isSettingsLoading.value = true
+  
+  try {
+    const settingsData = { ...settingsForm }
+    await settingsStore.updateSettings(settingsData)
+    showToast('success', t('common.success'), t('profile.settings.settingsUpdatedSuccess'))
+  } catch (error) {
+    const errorMessage = getErrorMessage(error)
+    showToast('error', t('common.error'), errorMessage)
+  } finally {
+    isSettingsLoading.value = false
+  }
+}
+
 onMounted(async () => {
+  await ensureLocaleConfigLoaded()
+  refreshLocaleOptions()
+
   try {
     // Load personal profile
     const profile = await userService.getProfile()
     personalForm.email = profile.email || ''
     personalForm.householdSize = profile.householdSize || 1
-    personalForm.mealTypes = profile.mealTypes || [MEAL_TYPES.BREAKFAST, MEAL_TYPES.LUNCH, MEAL_TYPES.DINNER]
-    personalForm.subscriptionStatus = profile.subscriptionStatus || 'FREE'
+    
+    // Validate mealTypes array - filter invalid values and ensure at least one valid meal type
+    const validMealTypes = filterValidValues(
+      profile.mealTypes || [],
+      mealTypeOptions.value,
+      'mealTypes'
+    )
+    const fallbackMealTypes = mealTypeOptions.value.slice(0, 3).map(type => type.code)
+    personalForm.mealTypes = validMealTypes.length > 0 
+      ? validMealTypes 
+      : fallbackMealTypes
+    
+    // Validate subscriptionStatus
+    personalForm.subscriptionStatus = validateEnumValue(
+      profile.subscriptionStatus,
+      subscriptionStatusEnum.value,
+      defaultSubscriptionStatusCode,
+      'subscriptionStatus'
+    )
     personalForm.subscriptionExpiresAt = profile.subscriptionExpiresAt || null
     
     // Load dietary preferences
     const dietaryPreferences = await userService.getDietaryPreferences()
-    dietaryForm.restrictions = dietaryPreferences.restrictions || []
-    dietaryForm.allergies = dietaryPreferences.allergies || []
-    dietaryForm.preferredCuisines = dietaryPreferences.preferredCuisines || []
+    
+    // Filter restrictions array to only include valid values
+    dietaryForm.restrictions = filterValidValues(
+      dietaryPreferences.restrictions || [],
+      dietaryRestrictionOptions.value,
+      'dietary restrictions'
+    )
+    
+    // Filter allergies array to only include valid values
+    dietaryForm.allergies = filterValidValues(
+      dietaryPreferences.allergies || [],
+      allergyOptions.value,
+      'allergies'
+    )
+    
+    // Filter preferredCuisines array to only include valid values
+    dietaryForm.preferredCuisines = filterValidValues(
+      dietaryPreferences.preferredCuisines || [],
+      cuisineTypeOptions.value,
+      'preferred cuisines'
+    )
     
     // Load nutritional goals
     const nutritionalGoals = await userService.getNutritionalGoals()
-    nutritionForm.dailyCalories = nutritionalGoals.dailyCalories || 2000
-    nutritionForm.dailyProtein = nutritionalGoals.dailyProtein || 150
-    nutritionForm.dailyCarbs = nutritionalGoals.dailyCarbs || 250
-    nutritionForm.dailyFats = nutritionalGoals.dailyFats || 67
-    nutritionForm.dailyFiber = nutritionalGoals.dailyFiber || 25
-    nutritionForm.dailySodium = nutritionalGoals.dailySodium || 2300
-    nutritionForm.dailySugar = nutritionalGoals.dailySugar || 50
-    nutritionForm.goalType = nutritionalGoals.goalType || 'MAINTENANCE'
+    nutritionForm.dailyCalories = nutritionalGoals.dailyCalories ? Number(nutritionalGoals.dailyCalories) : 2000
+    nutritionForm.dailyProtein = nutritionalGoals.dailyProtein ? Number(nutritionalGoals.dailyProtein) : 150
+    nutritionForm.dailyCarbs = nutritionalGoals.dailyCarbs ? Number(nutritionalGoals.dailyCarbs) : 250
+    nutritionForm.dailyFats = nutritionalGoals.dailyFats ? Number(nutritionalGoals.dailyFats) : 67
+    nutritionForm.dailyFiber = nutritionalGoals.dailyFiber ? Number(nutritionalGoals.dailyFiber) : 25
+    nutritionForm.dailySodium = nutritionalGoals.dailySodium ? Number(nutritionalGoals.dailySodium) : 2300
+    nutritionForm.dailySugar = nutritionalGoals.dailySugar ? Number(nutritionalGoals.dailySugar) : 50
+    nutritionForm.proteinCalories = nutritionalGoals.proteinCalories
+    nutritionForm.carbCalories = nutritionalGoals.carbCalories
+    nutritionForm.fatCalories = nutritionalGoals.fatCalories
+    
+    // Validate goalType
+    nutritionForm.goalType = validateEnumValue(
+      nutritionalGoals.goalType,
+      goalTypeEnum.value,
+      defaultGoalTypeCode,
+      'goalType'
+    )
+    
+    // Load settings
+    const settings = await settingsStore.loadSettings()
+    if (settings) {
+      // Validate language against SUPPORTED_LANGUAGES
+      settingsForm.language = validateValue(
+        settings.language,
+        getSupportedLanguageCodes(),
+        getDefaultLanguage(),
+        'language'
+      )
+      
+      // Validate country against supported countries
+      settingsForm.country = validateValue(
+        settings.country,
+        countryOptions.value,
+        getDefaultCountry(),
+        'country'
+      )
+      
+      const dateFormatCode = settings.dateFormat || getDefaultDateFormatCode()
+      settingsForm.dateFormat = validateValue(
+        dateFormatCode,
+        dateFormatOptions.value,
+        getDefaultDateFormatCode(),
+        'dateFormat'
+      )
+      
+      // Validate timezone against supported timezones
+      settingsForm.timezone = validateValue(
+        settings.timezone,
+        timezoneOptions.value,
+        getDefaultTimezone(),
+        'timezone'
+      )
+      
+      // Validate firstDayOfWeek
+      settingsForm.firstDayOfWeek = validateValue(
+        settings.firstDayOfWeek,
+        firstDayOptions.value,
+        defaultFirstDayCode,
+        'firstDayOfWeek'
+      )
+      
+      // Validate measurementSystem
+      settingsForm.measurementSystem = validateValue(
+        settings.measurementSystem,
+        measurementOptions.value,
+        getDefaultMeasurementSystemCode(),
+        'measurementSystem'
+      )
+      
+      // Validate currency (default to null for country default)
+      settingsForm.currency = validateValue(
+        settings.currency,
+        currencyOptions.value.map(c => c.code),
+        null,
+        'currency'
+      )
+    }
   } catch (error) {
     const errorMessage = getErrorMessage(error)
-    showToast('error', 'Error', errorMessage)
+    showToast('error', t('common.error'), errorMessage)
   }
 })
 </script>

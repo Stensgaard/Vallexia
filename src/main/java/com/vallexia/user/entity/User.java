@@ -1,5 +1,7 @@
 package com.vallexia.user.entity;
 
+import com.vallexia.nutrition.entity.NutritionalGoals;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -11,7 +13,7 @@ import lombok.AllArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.vallexia.user.entity.enums.MealType;
+import com.vallexia.common.enums.SupportedMealCategory;
 import com.vallexia.user.entity.enums.Role;
 import com.vallexia.user.entity.enums.SubscriptionStatus;
 
@@ -22,9 +24,9 @@ import java.util.Set;
 /**
  * User entity representing application users with authentication and profile information.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 @Entity
 @Table(name = "users", 
@@ -63,6 +65,9 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private NutritionalGoals nutritionalGoals;
     
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private UserSettings userSettings;
+    
     @ElementCollection(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
@@ -94,7 +99,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "user_meal_types", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "meal_type")
-    private Set<MealType> mealTypes = new HashSet<>(Set.of(MealType.BREAKFAST, MealType.LUNCH, MealType.DINNER));
+    private Set<SupportedMealCategory> mealTypes = new HashSet<>(Set.of(SupportedMealCategory.BREAKFAST, SupportedMealCategory.LUNCH, SupportedMealCategory.DINNER));
     
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

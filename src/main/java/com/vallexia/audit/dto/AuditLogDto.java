@@ -12,9 +12,9 @@ import java.time.LocalDateTime;
  * Data Transfer Object for audit log information.
  * Note: The details field is intentionally excluded for security reasons.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 @Data
 @Builder

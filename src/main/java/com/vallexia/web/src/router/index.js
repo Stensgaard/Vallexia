@@ -16,8 +16,8 @@ const router = createRouter({
       component: () => import('@/views/auth/LoginView.vue'),
       meta: {
         requiresGuest: true,
-        title: 'Sign in to your account',
-        subtitle: 'Welcome back! Please sign in to continue.'
+        title: 'signInTitle',
+        subtitle: 'signInSubtitle'
       }
     },
     {
@@ -26,8 +26,8 @@ const router = createRouter({
       component: () => import('@/views/auth/RegisterView.vue'),
       meta: {
         requiresGuest: true,
-        title: 'Create your account',
-        subtitle: 'Join Vallexia and start planning your meals today!'
+        title: 'registerTitle',
+        subtitle: 'registerSubtitle'
       }
     },
     {
@@ -85,8 +85,13 @@ const router = createRouter({
 })
 
 // Navigation guards
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
+  
+  // Wait for auth initialization to complete before checking auth state
+  if (!authStore.isInitialized) {
+    await authStore.initializeAuth()
+  }
   
   // Check auth state directly from raw values to avoid computed property timing issues
   const hasAuth = !!(authStore.accessToken && authStore.user)

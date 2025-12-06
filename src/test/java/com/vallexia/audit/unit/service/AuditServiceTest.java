@@ -5,8 +5,8 @@ import com.vallexia.audit.entity.enums.EventType;
 import com.vallexia.audit.fixtures.AuditLogTestFixtures;
 import com.vallexia.audit.repository.AuditLogRepository;
 import com.vallexia.audit.service.AuditService;
-import com.vallexia.audit.util.IpAddressExtractor;
 import com.vallexia.config.audit.AuditProperties;
+import com.vallexia.security.util.IpAddressExtractor;
 import com.vallexia.security.AuthenticationHelper;
 import com.vallexia.security.util.InputSanitizer;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,9 +39,9 @@ import static org.mockito.Mockito.*;
  * Unit tests for AuditService.
  * Tests business logic and access control with mocked dependencies.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-10-27
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)

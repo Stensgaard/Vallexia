@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <div v-if="loadingRecipe" class="text-center py-12">
-      <p class="text-gray-500">Loading recipe...</p>
+      <p class="text-gray-500">{{ $t('recipes.detail.loading') }}</p>
     </div>
 
     <div v-else-if="recipeStore.error && !recipeStore.currentRecipe" class="bg-red-50 border border-red-200 rounded-lg p-4">
@@ -10,21 +10,21 @@
         @click="router.back()"
         class="mt-2 text-sm text-red-600 hover:text-red-700"
       >
-        Go Back
+        {{ $t('recipes.view.goBack') }}
       </button>
     </div>
 
     <div v-else-if="recipeStore.currentRecipe">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900">Edit Recipe</h1>
-          <p class="text-gray-600">Update your recipe details</p>
+          <h1 class="text-2xl font-bold text-gray-900">{{ $t('recipes.edit.title') }}</h1>
+          <p class="text-gray-600">{{ $t('recipes.edit.description') }}</p>
         </div>
         <button
           @click="router.back()"
           class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
         >
-          Cancel
+          {{ $t('common.cancel') }}
         </button>
       </div>
 
@@ -51,11 +51,14 @@
 
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useRecipeStore } from '@/stores/recipe'
 import RecipeForm from '@/components/Recipe/RecipeForm.vue'
 import Toast from '@/components/common/Toast.vue'
 import { getErrorMessage } from '@/utils/errorUtils'
+
+const { t } = useI18n()
 
 const route = useRoute()
 const router = useRouter()
@@ -83,7 +86,7 @@ onMounted(async () => {
     await recipeStore.fetchRecipe(recipeId.value)
   } catch (error) {
     const errorMessage = getErrorMessage(error)
-    showToast('error', 'Error', errorMessage)
+    showToast('error', t('common.error'), errorMessage)
   } finally {
     loadingRecipe.value = false
   }
@@ -92,11 +95,11 @@ onMounted(async () => {
 const handleSubmit = async (formData) => {
   try {
     await recipeStore.updateRecipe(recipeId.value, formData)
-    showToast('success', 'Success', 'Recipe updated successfully')
+    showToast('success', t('common.success'), t('recipes.edit.success'))
     router.push(`/recipes/${recipeId.value}`)
   } catch (error) {
     const errorMessage = getErrorMessage(error)
-    showToast('error', 'Error', errorMessage)
+    showToast('error', t('common.error'), errorMessage)
   }
 }
 </script>

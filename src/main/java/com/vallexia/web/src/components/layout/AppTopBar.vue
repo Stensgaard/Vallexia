@@ -17,7 +17,7 @@
         <!-- Center - Search bar -->
         <div class="flex-1 flex items-center justify-center px-2 lg:ml-6 lg:justify-end">
           <div class="max-w-lg w-full lg:max-w-xs">
-            <label for="search" class="sr-only">Search</label>
+            <label for="search" class="sr-only">{{ $t('layout.search') }}</label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -28,7 +28,7 @@
                 id="search"
                 v-model="searchQuery"
                 class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                placeholder="Search recipes, meals..."
+                :placeholder="$t('layout.searchPlaceholder')"
                 type="search"
               />
             </div>
@@ -47,37 +47,46 @@
           <!-- User menu -->
           <div ref="userMenuRef" class="relative">
             <button
-              @click="userMenuOpen = !userMenuOpen"
-              class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              type="button"
+              class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              @click="toggleUserMenu"
+              :aria-expanded="showUserMenu"
+              :aria-label="$t('layout.yourProfile')"
             >
-              <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                <span class="text-sm font-medium text-blue-600">
-                  {{ userInitials }}
-                </span>
-              </div>
+              <span class="text-sm font-medium text-blue-600">
+                {{ userInitials }}
+              </span>
             </button>
 
-            <!-- Dropdown menu -->
-            <div
-              v-if="userMenuOpen"
-              class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+            <transition
+              enter-active-class="transition ease-out duration-100"
+              enter-from-class="transform opacity-0 scale-95"
+              enter-to-class="transform opacity-100 scale-100"
+              leave-active-class="transition ease-in duration-75"
+              leave-from-class="transform opacity-100 scale-100"
+              leave-to-class="transform opacity-0 scale-95"
             >
-              <div class="py-1">
-                <RouterLink
-                  to="/profile"
-                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  @click="userMenuOpen = false"
-                >
-                  Your Profile
-                </RouterLink>
-                <button
-                  @click="handleLogout"
-                  class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Sign out
-                </button>
+              <div
+                v-if="showUserMenu"
+                class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-20"
+              >
+                <div class="py-1">
+                  <RouterLink
+                    to="/profile"
+                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    @click="closeUserMenu"
+                  >
+                    {{ $t('layout.yourProfile') }}
+                  </RouterLink>
+                  <button
+                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    @click="handleLogout"
+                  >
+                    {{ $t('layout.signOut') }}
+                  </button>
+                </div>
               </div>
-            </div>
+            </transition>
           </div>
         </div>
       </div>
@@ -86,18 +95,17 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { RouterLink } from 'vue-router'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { useRouter, RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 defineEmits(['toggle-sidebar'])
 
-const router = useRouter()
 const authStore = useAuthStore()
+const router = useRouter()
 
 const searchQuery = ref('')
-const userMenuOpen = ref(false)
+const showUserMenu = ref(false)
 const userMenuRef = ref(null)
 
 const userInitials = computed(() => {
@@ -106,28 +114,34 @@ const userInitials = computed(() => {
   return u.slice(0, 2).toUpperCase()
 })
 
-const handleLogout = async () => {
-  try {
-    await authStore.logout()
-    router.push('/login')
-  } catch (error) {
-    // Logout errors are non-critical, silently fail
-  }
-  userMenuOpen.value = false
+const toggleUserMenu = () => {
+  showUserMenu.value = !showUserMenu.value
 }
 
-// Close menu when clicking outside
-const handleClickOutside = (event) => {
-  if (userMenuRef.value && !userMenuRef.value.contains(event.target)) {
-    userMenuOpen.value = false
+const closeUserMenu = () => {
+  showUserMenu.value = false
+}
+
+const handleDocumentClick = (event) => {
+  if (!userMenuRef.value) {
+    return
   }
+  if (!userMenuRef.value.contains(event.target)) {
+    closeUserMenu()
+  }
+}
+
+const handleLogout = async () => {
+  closeUserMenu()
+  await authStore.logout()
+  router.push('/login')
 }
 
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
+  document.addEventListener('click', handleDocumentClick)
 })
 
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside)
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleDocumentClick)
 })
 </script>

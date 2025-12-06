@@ -14,9 +14,9 @@ import java.util.List;
 /**
  * Ingredient entity representing a food ingredient that can be used in recipes.
  * 
- * @author Vallexia Team
+ * @author Henrik Stensgaard
  * @version 1.0
- * @since 2024-01-01
+ * @since 2025-11-14
  */
 @Entity
 @Table(name = "ingredients", uniqueConstraints = {
@@ -36,6 +36,9 @@ public class Ingredient {
     
     @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RecipeIngredient> recipeIngredients = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<IngredientTranslation> translations = new ArrayList<>();
     
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

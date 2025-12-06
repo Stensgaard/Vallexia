@@ -9,10 +9,10 @@
           </svg>
         </div>
         <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
-          {{ headerTitle }}
+          {{ headerTitleTranslated }}
         </h2>
         <p class="mt-2 text-sm text-gray-600">
-          {{ headerSubtitle }}
+          {{ headerSubtitleTranslated }}
         </p>
       </div>
 
@@ -26,15 +26,15 @@
         <slot name="footer">
           <p class="text-sm text-gray-600">
             <RouterLink to="/" class="font-medium text-blue-600 hover:text-blue-500">
-              ← Back to Home
+              ← {{ $t('common.back') }} {{ $t('home.title') }}
             </RouterLink>
           </p>
           <p class="text-sm text-gray-600">
             <RouterLink v-if="showLoginLink" to="/login" class="font-medium text-blue-600 hover:text-blue-500">
-              Already have an account? Sign in
+              {{ $t('auth.register.alreadyHaveAccount') }} {{ $t('auth.register.signIn') }}
             </RouterLink>
             <RouterLink v-if="showRegisterLink" to="/register" class="font-medium text-blue-600 hover:text-blue-500">
-              Don't have an account? Sign up
+              {{ $t('auth.login.noAccount') }} {{ $t('auth.login.signUp') }}
             </RouterLink>
           </p>
         </slot>
@@ -45,8 +45,10 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute, RouterLink } from 'vue-router'
 
+const { t } = useI18n()
 const route = useRoute()
 
 const props = defineProps({
@@ -66,6 +68,32 @@ const headerTitle = computed(() => {
 
 const headerSubtitle = computed(() => {
   return props.subtitle || route.meta.subtitle || ''
+})
+
+const headerTitleTranslated = computed(() => {
+  const title = headerTitle.value
+  if (!title) return ''
+  // If it's a translation key (looks like a key), translate it
+  if (title.includes('Title') || title.includes('Subtitle')) {
+    const translated = t(`auth.meta.${title}`)
+    // If translation exists (not the same as the key), return it
+    return translated !== `auth.meta.${title}` ? translated : title
+  }
+  // Otherwise return as-is (for custom titles passed as props)
+  return title
+})
+
+const headerSubtitleTranslated = computed(() => {
+  const subtitle = headerSubtitle.value
+  if (!subtitle) return ''
+  // If it's a translation key (looks like a key), translate it
+  if (subtitle.includes('Title') || subtitle.includes('Subtitle')) {
+    const translated = t(`auth.meta.${subtitle}`)
+    // If translation exists (not the same as the key), return it
+    return translated !== `auth.meta.${subtitle}` ? translated : subtitle
+  }
+  // Otherwise return as-is (for custom subtitles passed as props)
+  return subtitle
 })
 
 const showLoginLink = computed(() => {
