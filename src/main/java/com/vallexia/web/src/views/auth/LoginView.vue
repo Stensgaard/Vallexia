@@ -35,21 +35,8 @@
         :disabled="authStore.isLoading"
       />
 
-      <!-- Remember Me -->
-      <div class="flex items-center justify-between">
-        <div class="flex items-center">
-          <input
-            id="rememberMe"
-            v-model="form.rememberMe"
-            type="checkbox"
-            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-            :disabled="authStore.isLoading"
-          />
-          <label for="rememberMe" class="ml-2 block text-sm text-gray-900">
-            {{ $t('auth.login.rememberMe') }}
-          </label>
-        </div>
-
+      <!-- Forgot Password -->
+      <div class="flex items-center justify-end">
         <div class="text-sm">
           <a href="#" class="font-medium text-blue-600 hover:text-blue-500">
             {{ $t('auth.login.forgotPassword') }}
@@ -89,8 +76,7 @@ const authStore = useAuthStore()
 
 const form = reactive({
   usernameOrEmail: '',
-  password: '',
-  rememberMe: false
+  password: ''
 })
 
 const errors = reactive({

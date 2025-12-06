@@ -36,6 +36,33 @@
         :disabled="authStore.isLoading"
       />
 
+      <!-- Country Field -->
+      <div>
+        <label for="country" class="form-label">
+          {{ $t('auth.register.country') }}
+          <span class="text-red-500">*</span>
+        </label>
+        <select
+          id="country"
+          v-model="form.country"
+          :disabled="authStore.isLoading"
+          :class="['form-input', errors.country ? 'form-input-error' : '']"
+          required
+        >
+          <option value="">{{ $t('auth.register.countryPlaceholder') }}</option>
+          <option
+            v-for="country in countryOptions"
+            :key="country.code"
+            :value="country.code"
+          >
+            {{ country.name }}
+          </option>
+        </select>
+        <div v-if="errors.country" class="form-error">
+          {{ errors.country }}
+        </div>
+      </div>
+
       <!-- Password Field -->
       <FormInput
         id="password"
@@ -97,10 +124,11 @@
 </template>
 
 <script setup>
-import { reactive, computed, onMounted } from 'vue'
+import { reactive, computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
+import { getCountries, ensureLocaleConfigLoaded } from '@/utils/localeConfig'
 import AuthLayout from '@/views/auth/AuthLayout.vue'
 import FormInput from '@/components/common/FormInput.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
@@ -111,9 +139,12 @@ const { t } = useI18n()
 const router = useRouter()
 const authStore = useAuthStore()
 
+const countryOptions = ref([])
+
 const form = reactive({
   username: '',
   email: '',
+  country: '',
   password: '',
   confirmPassword: '',
   acceptTerms: false
@@ -122,6 +153,7 @@ const form = reactive({
 const errors = reactive({
   username: '',
   email: '',
+  country: '',
   password: '',
   confirmPassword: '',
   acceptTerms: ''
@@ -130,6 +162,7 @@ const errors = reactive({
 const isFormValid = computed(() => {
   return form.username.trim() &&
          form.email.trim() &&
+         form.country.trim() &&
          form.password.trim() &&
          form.confirmPassword.trim() &&
          form.acceptTerms
@@ -162,6 +195,21 @@ const validateForm = () => {
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
     errors.email = t('auth.validation.emailInvalid')
     isValid = false
+  }
+
+  // Country validation
+  if (!form.country.trim()) {
+    errors.country = t('auth.validation.countryRequired')
+    isValid = false
+  } else {
+    // Validate country is in available options
+    const validCountry = countryOptions.value.some(
+      country => country.code === form.country
+    )
+    if (!validCountry) {
+      errors.country = t('auth.validation.countryInvalid')
+      isValid = false
+    }
   }
 
   // Password validation
@@ -207,8 +255,16 @@ const handleSubmit = async () => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   // Clear any previous errors when component mounts
   authStore.clearError()
+  
+  // Load locale config to get countries
+  try {
+    await ensureLocaleConfigLoaded()
+    countryOptions.value = getCountries()
+  } catch (error) {
+    console.error('Failed to load locale config:', error)
+  }
 })
 </script>
