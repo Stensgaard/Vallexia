@@ -216,6 +216,7 @@
 import { computed, ref, watch, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useSettingsStore } from '@/stores/settings'
+import { useFormattedValue } from '@/composables/useFormattedValue'
 
 const { t } = useI18n()
 const settingsStore = useSettingsStore()
@@ -224,34 +225,8 @@ const formatNumber = (number, decimals = 0) => {
   return settingsStore.formatNumberFn(number, decimals)
 }
 
-const formatIngredientQuantity = (quantity, unit) => {
-  if (!quantity && quantity !== 0) {
-    return ''
-  }
-  
-  // If it's a weight unit, use formatWeightFn
-  if (unit && settingsStore.getDisplayUnitFn(unit) !== unit) {
-    return settingsStore.formatWeightFn(quantity, unit || 'g', 2)
-  }
-  
-  // For volume and count units, just format the number
-  const decimals = quantity % 1 === 0 ? 0 : 2
-  return `${formatNumber(quantity, decimals)} ${unit || ''}`
-}
-
-const formatNutritionalValue = (value) => {
-  if (!value && value !== 0) {
-    return ''
-  }
-  
-  // Nutritional values are stored in grams, convert to ounces if imperial
-  const unit = settingsStore.measurementSystem === 'IMPERIAL' ? 'oz' : 'g'
-  const displayValue = unit === 'oz' 
-    ? settingsStore.convertWeightFn(value, 'g', 'oz')
-    : value
-  
-  return `${formatNumber(displayValue, 1)}${unit}`
-}
+// Use composable for formatted values with proper Vue reactivity
+const { formatIngredientQuantity, formatNutritionalValue } = useFormattedValue()
 
 const props = defineProps({
   recipe: {

@@ -25,11 +25,11 @@
         >
           <option value="">{{ $t('recipes.search.allCategories') }}</option>
           <option
-            v-for="category in Object.values(RECIPE_CATEGORIES)"
-            :key="category"
-            :value="category"
+            v-for="category in mealCategories"
+            :key="category.code"
+            :value="category.code"
           >
-            {{ $t(`recipes.categories.${category}`) }}
+            {{ $t(`recipes.categories.${category.code}`) || category.name }}
           </option>
         </select>
       </div>
@@ -75,11 +75,11 @@
         >
           <option value="">{{ $t('recipes.search.allCuisines') }}</option>
           <option
-            v-for="cuisineType in Object.values(CUISINE_TYPES)"
-            :key="cuisineType"
-            :value="cuisineType"
+            v-for="cuisineType in cuisineOptions"
+            :key="cuisineType.code"
+            :value="cuisineType.code"
           >
-            {{ $t(`constants.cuisineTypes.${cuisineType}`) }}
+            {{ $t(`constants.cuisineTypes.${cuisineType.code}`) || cuisineType.name }}
           </option>
         </select>
       </div>
@@ -94,11 +94,11 @@
         >
           <option value="">{{ $t('recipes.search.allLevels') }}</option>
           <option
-            v-for="difficulty in Object.values(DIFFICULTY_LEVELS)"
-            :key="difficulty"
-            :value="difficulty"
+            v-for="difficulty in difficultyOptions"
+            :key="difficulty.code"
+            :value="difficulty.code"
           >
-            {{ $t(`recipes.difficulty.${difficulty}`) }}
+            {{ $t(`recipes.difficulty.${difficulty.code}`) || difficulty.name }}
           </option>
         </select>
       </div>
@@ -152,11 +152,14 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { CUISINE_TYPES, RECIPE_CATEGORIES, DIFFICULTY_LEVELS } from '@/utils/constants'
+import { getMealCategories, getCuisineTypes, getDifficultyLevels } from '@/utils/localeConfig'
 
 const { t } = useI18n()
+const mealCategories = computed(() => getMealCategories())
+const cuisineOptions = computed(() => getCuisineTypes())
+const difficultyOptions = computed(() => getDifficultyLevels())
 
 const props = defineProps({
   criteria: {

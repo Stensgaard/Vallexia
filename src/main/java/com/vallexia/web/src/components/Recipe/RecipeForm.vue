@@ -36,11 +36,11 @@
             >
               <option value="">{{ $t('recipes.form.categoryPlaceholder') }}</option>
               <option
-                v-for="category in Object.values(RECIPE_CATEGORIES)"
-                :key="category"
-                :value="category"
+                v-for="category in mealCategories"
+                :key="category.code"
+                :value="category.code"
               >
-                {{ $t(`recipes.categories.${category}`) }}
+                {{ $t(`recipes.categories.${category.code}`) || category.name }}
               </option>
             </select>
           </div>
@@ -53,11 +53,11 @@
             >
               <option value="">{{ $t('recipes.form.cuisineTypePlaceholder') }}</option>
               <option
-                v-for="cuisineType in Object.values(CUISINE_TYPES)"
-                :key="cuisineType"
-                :value="cuisineType"
+                v-for="cuisineType in cuisineOptions"
+                :key="cuisineType.code"
+                :value="cuisineType.code"
               >
-                {{ $t(`constants.cuisineTypes.${cuisineType}`) }}
+                {{ $t(`constants.cuisineTypes.${cuisineType.code}`) || cuisineType.name }}
               </option>
             </select>
           </div>
@@ -112,11 +112,11 @@
         >
           <option value="">{{ $t('recipes.form.difficultyPlaceholder') }}</option>
           <option
-            v-for="difficulty in Object.values(DIFFICULTY_LEVELS)"
-            :key="difficulty"
-            :value="difficulty"
+            v-for="difficulty in difficultyOptions"
+            :key="difficulty.code"
+            :value="difficulty.code"
           >
-            {{ $t(`recipes.difficulty.${difficulty}`) }}
+            {{ $t(`recipes.difficulty.${difficulty.code}`) || difficulty.name }}
           </option>
         </select>
       </div>
@@ -254,6 +254,18 @@
       />
     </div>
 
+    <!-- Tags -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <TagInput
+        id="recipe-tags"
+        v-model="formData.tags"
+        :label="$t('recipes.form.tags')"
+        :placeholder="$t('recipes.form.tagsPlaceholder')"
+        :required="true"
+        :hint="$t('recipes.form.tagsHint')"
+      />
+    </div>
+
     <!-- Public/Private -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <label class="flex items-center">
@@ -290,11 +302,15 @@
 import { ref, watch, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useSettingsStore } from '@/stores/settings'
-import { MEAL_TYPES, CUISINE_TYPES, RECIPE_CATEGORIES, DIFFICULTY_LEVELS } from '@/utils/constants'
+import { getMealCategories, getCuisineTypes, getDifficultyLevels } from '@/utils/localeConfig'
+import TagInput from '@/components/common/TagInput.vue'
 
 const { t } = useI18n()
 const settingsStore = useSettingsStore()
 
+const mealCategories = computed(() => getMealCategories())
+const cuisineOptions = computed(() => getCuisineTypes())
+const difficultyOptions = computed(() => getDifficultyLevels())
 const nutritionalUnit = computed(() => {
   return settingsStore.measurementSystem === 'IMPERIAL' ? 'oz' : 'g'
 })
@@ -326,6 +342,7 @@ const formData = ref({
   cuisineType: props.recipe?.cuisineType || '',
   imageUrl: props.recipe?.imageUrl || '',
   isPublic: props.recipe?.isPublic !== undefined ? props.recipe.isPublic : true,
+  tags: props.recipe?.tags ? Array.from(props.recipe.tags) : [],
   ingredients: props.recipe?.ingredients?.length > 0
     ? props.recipe.ingredients.map(ing => ({
         name: ing.name || '',
@@ -357,6 +374,7 @@ watch(() => props.recipe, (newRecipe) => {
       cuisineType: newRecipe.cuisineType || '',
       imageUrl: newRecipe.imageUrl || '',
       isPublic: newRecipe.isPublic !== undefined ? newRecipe.isPublic : true,
+      tags: newRecipe.tags ? Array.from(newRecipe.tags) : [],
       ingredients: newRecipe.ingredients?.length > 0
         ? newRecipe.ingredients.map(ing => ({
             name: ing.name || '',
@@ -398,8 +416,14 @@ const handleSubmit = () => {
     ing => ing.name && ing.name.trim() !== ''
   )
 
+  // Convert tags array to Set for backend (backend expects Set<String>)
+  const tagsSet = formData.value.tags && formData.value.tags.length > 0
+    ? new Set(formData.value.tags)
+    : new Set()
+
   const submitData = {
     ...formData.value,
+    tags: tagsSet,
     ingredients: cleanedIngredients.length > 0 ? cleanedIngredients : null,
     nutritionalInfo: Object.values(formData.value.nutritionalInfo).some(v => v != null)
       ? formData.value.nutritionalInfo
