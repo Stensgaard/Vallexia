@@ -6,7 +6,6 @@ export const authService = {
    * @param {Object} credentials - Login credentials
    * @param {string} credentials.usernameOrEmail - Username or email
    * @param {string} credentials.password - Password
-   * @param {boolean} credentials.rememberMe - Remember me flag
    * @returns {Promise<Object>} JWT response with tokens and user info
    */
   async login(credentials) {
@@ -19,6 +18,7 @@ export const authService = {
    * @param {Object} userData - User registration data
    * @param {string} userData.username - Username
    * @param {string} userData.email - Email
+   * @param {string} userData.country - Country code (ISO 3166-1 alpha-2)
    * @param {string} userData.password - Password
    * @param {string} userData.confirmPassword - Password confirmation
    * @returns {Promise<Object>} JWT response with tokens and user info

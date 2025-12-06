@@ -73,6 +73,22 @@ export const userService = {
   },
 
   /**
+   * Calculate macros from goal type and daily calories
+   * @param {number} dailyCalories - Daily calories target
+   * @param {string} goalType - Goal type (e.g., 'WEIGHT_LOSS', 'MUSCLE_GAIN')
+   * @returns {Promise<Object>} Calculated macros with protein, carbs, fats in grams
+   */
+  async calculateMacrosFromGoalType(dailyCalories, goalType) {
+    const response = await api.get('/v1/users/nutritional-goals/calculate-macros', {
+      params: {
+        dailyCalories,
+        goalType
+      }
+    })
+    return response.data
+  },
+
+  /**
    * Get current user's settings
    * @returns {Promise<Object>} User settings data
    */
@@ -86,7 +102,7 @@ export const userService = {
    * @param {Object} settingsData - Updated settings data
    * @param {string} settingsData.language - Language code
    * @param {string} settingsData.country - Country code
-   * @param {string} settingsData.dateFormat - Date format
+   * @param {string} settingsData.dateFormat - Date format code
    * @param {string} settingsData.timezone - Timezone
    * @param {string} settingsData.firstDayOfWeek - First day of week
    * @param {string} settingsData.measurementSystem - Measurement system

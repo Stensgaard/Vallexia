@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { getActivePinia } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
 
 // Create axios instance
@@ -28,11 +29,24 @@ const processQueue = (error, token = null) => {
   failedQueue = []
 }
 
+const getAuthStore = () => {
+  try {
+    const activePinia = getActivePinia()
+    if (!activePinia) {
+      return null
+    }
+    return useAuthStore(activePinia)
+  } catch (error) {
+    // Pinia not yet initialized
+    return null
+  }
+}
+
 // Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
-    const authStore = useAuthStore()
-    if (authStore.accessToken) {
+    const authStore = getAuthStore()
+    if (authStore?.accessToken) {
       config.headers.Authorization = `Bearer ${authStore.accessToken}`
     }
     return config
@@ -61,8 +75,8 @@ api.interceptors.response.use(
       if (isRefreshRequest) {
         // Refresh token itself failed - clear auth data
         // Router guard will handle navigation
-        const authStore = useAuthStore()
-        authStore.clearAuthData()
+        const authStore = getAuthStore()
+        authStore?.clearAuthData()
         return Promise.reject(error)
       }
       
@@ -85,7 +99,12 @@ api.interceptors.response.use(
       isRefreshing = true
       
       try {
-        const authStore = useAuthStore()
+        const authStore = getAuthStore()
+        if (!authStore) {
+          isRefreshing = false
+          processQueue(error, null)
+          return Promise.reject(error)
+        }
         const newToken = await authStore.refreshAccessToken()
         
         // Process queued requests with new token
@@ -101,8 +120,8 @@ api.interceptors.response.use(
         isRefreshing = false
         processQueue(refreshError, null)
         
-        const authStore = useAuthStore()
-        authStore.clearAuthData()
+        const authStore = getAuthStore()
+        authStore?.clearAuthData()
         return Promise.reject(refreshError)
       }
     }
