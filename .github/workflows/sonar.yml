@@ -58,6 +58,7 @@ jobs:
           DB_PASSWORD: postgres
           REDIS_HOST: localhost
           REDIS_PORT: 6379
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
       
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@master
@@ -67,6 +68,7 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
           args: >
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
             -Dsonar.sources=src/main/java
             -Dsonar.tests=src/test/java
