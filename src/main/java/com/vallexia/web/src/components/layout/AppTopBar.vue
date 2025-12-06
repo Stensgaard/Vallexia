@@ -45,42 +45,48 @@
           </button>
 
           <!-- User menu -->
-          <div
-            ref="userMenuRef"
-            class="relative"
-            @mouseenter="userMenuOpen = true"
-            @mouseleave="userMenuOpen = false"
-          >
+          <div ref="userMenuRef" class="relative">
             <button
-              class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              type="button"
+              class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              @click="toggleUserMenu"
+              :aria-expanded="showUserMenu"
+              :aria-label="$t('layout.yourProfile')"
             >
-              <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                <span class="text-sm font-medium text-blue-600">
-                  {{ userInitials }}
-                </span>
-              </div>
+              <span class="text-sm font-medium text-blue-600">
+                {{ userInitials }}
+              </span>
             </button>
 
-            <!-- Dropdown menu -->
-            <div
-              v-if="userMenuOpen"
-              class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+            <transition
+              enter-active-class="transition ease-out duration-100"
+              enter-from-class="transform opacity-0 scale-95"
+              enter-to-class="transform opacity-100 scale-100"
+              leave-active-class="transition ease-in duration-75"
+              leave-from-class="transform opacity-100 scale-100"
+              leave-to-class="transform opacity-0 scale-95"
             >
-              <div class="py-1">
-                <RouterLink
-                  to="/profile"
-                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  {{ $t('layout.yourProfile') }}
-                </RouterLink>
-                <button
-                  @click="handleLogout"
-                  class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  {{ $t('layout.signOut') }}
-                </button>
+              <div
+                v-if="showUserMenu"
+                class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-20"
+              >
+                <div class="py-1">
+                  <RouterLink
+                    to="/profile"
+                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    @click="closeUserMenu"
+                  >
+                    {{ $t('layout.yourProfile') }}
+                  </RouterLink>
+                  <button
+                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    @click="handleLogout"
+                  >
+                    {{ $t('layout.signOut') }}
+                  </button>
+                </div>
               </div>
-            </div>
+            </transition>
           </div>
         </div>
       </div>
@@ -89,18 +95,17 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { RouterLink } from 'vue-router'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { useRouter, RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 defineEmits(['toggle-sidebar'])
 
-const router = useRouter()
 const authStore = useAuthStore()
+const router = useRouter()
 
 const searchQuery = ref('')
-const userMenuOpen = ref(false)
+const showUserMenu = ref(false)
 const userMenuRef = ref(null)
 
 const userInitials = computed(() => {
@@ -109,12 +114,34 @@ const userInitials = computed(() => {
   return u.slice(0, 2).toUpperCase()
 })
 
-const handleLogout = async () => {
-  try {
-    await authStore.logout()
-    router.push('/')
-  } catch (error) {
-    // Logout errors are non-critical, silently fail
+const toggleUserMenu = () => {
+  showUserMenu.value = !showUserMenu.value
+}
+
+const closeUserMenu = () => {
+  showUserMenu.value = false
+}
+
+const handleDocumentClick = (event) => {
+  if (!userMenuRef.value) {
+    return
+  }
+  if (!userMenuRef.value.contains(event.target)) {
+    closeUserMenu()
   }
 }
+
+const handleLogout = async () => {
+  closeUserMenu()
+  await authStore.logout()
+  router.push('/login')
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleDocumentClick)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleDocumentClick)
+})
 </script>
