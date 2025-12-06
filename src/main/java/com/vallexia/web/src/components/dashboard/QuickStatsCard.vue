@@ -7,14 +7,14 @@
         <span class="text-sm text-gray-500">{{ subtitle }}</span>
       </div>
     </div>
-    
+
     <div class="text-3xl font-bold text-gray-900 mb-2">{{ value }}</div>
-    
+
     <div v-if="change !== null" class="flex items-center">
       <svg
         :class="[
           'h-4 w-4 mr-1',
-          change >= 0 ? 'text-green-500' : 'text-red-500'
+          change >= 0 ? 'text-green-500' : 'text-red-500',
         ]"
         fill="none"
         stroke="currentColor"
@@ -38,19 +38,21 @@
       <span
         :class="[
           'text-sm font-medium',
-          change >= 0 ? 'text-green-600' : 'text-red-600'
+          change >= 0 ? 'text-green-600' : 'text-red-600',
         ]"
       >
         {{ Math.abs(change) }}%
       </span>
-      <span class="text-sm text-gray-500 ml-1">{{ t('dashboard.stats.fromLastWeek') }}</span>
+      <span class="text-sm text-gray-500 ml-1">{{
+        t("dashboard.stats.fromLastWeek")
+      }}</span>
     </div>
-    
+
     <div v-if="actionText" class="mt-4">
       <button
-        @click="$emit('action')"
         :aria-label="actionText"
         class="text-sm text-blue-600 hover:text-blue-700 font-medium"
+        @click="$emit('action')"
       >
         {{ actionText }} →
       </button>
@@ -59,36 +61,36 @@
 </template>
 
 <script setup>
-import { useI18n } from 'vue-i18n'
+import { useI18n } from "vue-i18n";
 
-const { t } = useI18n()
+const { t } = useI18n();
 
 defineProps({
   title: {
     type: String,
-    required: true
+    required: true,
   },
   subtitle: {
     type: String,
-    default: ''
+    default: "",
   },
   value: {
     type: [String, Number],
-    required: true
+    required: true,
   },
   change: {
     type: Number,
-    default: null
+    default: null,
   },
   icon: {
     type: String,
-    default: 'svg'
+    default: "svg",
   },
   actionText: {
     type: String,
-    default: ''
-  }
-})
+    default: "",
+  },
+});
 
-defineEmits(['action'])
+defineEmits(["action"]);
 </script>

@@ -10,14 +10,14 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { RouterView } from 'vue-router'
-import MainLayout from '@/components/layout/MainLayout.vue'
+import { computed } from "vue";
+import { useRoute } from "vue-router";
+import { RouterView } from "vue-router";
+import MainLayout from "@/components/layout/MainLayout.vue";
 
-const route = useRoute()
+const route = useRoute();
 
 const requiresMainLayout = computed(() => {
-  return route.meta.layout === 'main'
-})
+  return route.meta.layout === "main";
+});
 </script>

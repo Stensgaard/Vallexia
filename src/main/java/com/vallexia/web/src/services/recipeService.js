@@ -1,4 +1,4 @@
-import api from './api'
+import api from "./api";
 
 /**
  * Recipe service for managing recipe operations
@@ -15,10 +15,10 @@ export const recipeService = {
     const params = new URLSearchParams({
       page: page.toString(),
       size: size.toString(),
-      ...filters
-    })
-    const response = await api.get(`/v1/recipes?${params}`)
-    return response.data
+      ...filters,
+    });
+    const response = await api.get(`/v1/recipes?${params}`);
+    return response.data;
   },
 
   /**
@@ -27,8 +27,8 @@ export const recipeService = {
    * @returns {Promise<Object>} Recipe DTO
    */
   async getRecipeById(id) {
-    const response = await api.get(`/v1/recipes/${id}`)
-    return response.data
+    const response = await api.get(`/v1/recipes/${id}`);
+    return response.data;
   },
 
   /**
@@ -39,13 +39,13 @@ export const recipeService = {
    */
   async createRecipe(recipeData) {
     try {
-      const response = await api.post('/v1/recipes', recipeData)
-      return response.data
+      const response = await api.post("/v1/recipes", recipeData);
+      return response.data;
     } catch (error) {
       if (error.response?.status === 403) {
-        throw new Error('Admin role required to create recipes')
+        throw new Error("Admin role required to create recipes");
       }
-      throw error
+      throw error;
     }
   },
 
@@ -58,13 +58,13 @@ export const recipeService = {
    */
   async updateRecipe(id, recipeData) {
     try {
-      const response = await api.put(`/v1/recipes/${id}`, recipeData)
-      return response.data
+      const response = await api.put(`/v1/recipes/${id}`, recipeData);
+      return response.data;
     } catch (error) {
       if (error.response?.status === 403) {
-        throw new Error('Admin role required to update recipes')
+        throw new Error("Admin role required to update recipes");
       }
-      throw error
+      throw error;
     }
   },
 
@@ -76,12 +76,12 @@ export const recipeService = {
    */
   async deleteRecipe(id) {
     try {
-      await api.delete(`/v1/recipes/${id}`)
+      await api.delete(`/v1/recipes/${id}`);
     } catch (error) {
       if (error.response?.status === 403) {
-        throw new Error('Admin role required to delete recipes')
+        throw new Error("Admin role required to delete recipes");
       }
-      throw error
+      throw error;
     }
   },
 
@@ -97,11 +97,11 @@ export const recipeService = {
       page: page.toString(),
       size: size.toString(),
       ...Object.fromEntries(
-        Object.entries(criteria).filter(([_, v]) => v != null && v !== '')
-      )
-    })
-    const response = await api.get(`/v1/recipes/search?${params}`)
-    return response.data
+        Object.entries(criteria).filter(([_, v]) => v != null && v !== ""),
+      ),
+    });
+    const response = await api.get(`/v1/recipes/search?${params}`);
+    return response.data;
   },
 
   /**
@@ -112,10 +112,10 @@ export const recipeService = {
    */
   async scaleRecipe(id, servings) {
     const params = new URLSearchParams({
-      servings: servings.toString()
-    })
-    const response = await api.get(`/v1/recipes/${id}/scale?${params}`)
-    return response.data
+      servings: servings.toString(),
+    });
+    const response = await api.get(`/v1/recipes/${id}/scale?${params}`);
+    return response.data;
   },
 
   /**
@@ -124,7 +124,7 @@ export const recipeService = {
    * @returns {Promise<void>}
    */
   async addFavorite(id) {
-    await api.post(`/v1/recipes/${id}/favorite`)
+    await api.post(`/v1/recipes/${id}/favorite`);
   },
 
   /**
@@ -133,7 +133,7 @@ export const recipeService = {
    * @returns {Promise<void>}
    */
   async removeFavorite(id) {
-    await api.delete(`/v1/recipes/${id}/favorite`)
+    await api.delete(`/v1/recipes/${id}/favorite`);
   },
 
   /**
@@ -145,9 +145,9 @@ export const recipeService = {
   async getFavorites(page = 0, size = 20) {
     const params = new URLSearchParams({
       page: page.toString(),
-      size: size.toString()
-    })
-    const response = await api.get(`/v1/recipes/favorites?${params}`)
-    return response.data
-  }
-}
+      size: size.toString(),
+    });
+    const response = await api.get(`/v1/recipes/favorites?${params}`);
+    return response.data;
+  },
+};

@@ -1,11 +1,13 @@
 <template>
   <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-    <h3 class="text-lg font-semibold mb-4">{{ $t('recipes.search.title') }}</h3>
-    
+    <h3 class="text-lg font-semibold mb-4">{{ $t("recipes.search.title") }}</h3>
+
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <!-- Search Query -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('recipes.search.search') }}</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">{{
+          $t("recipes.search.search")
+        }}</label>
         <input
           v-model="localCriteria.query"
           type="text"
@@ -17,13 +19,15 @@
 
       <!-- Category -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('recipes.search.category') }}</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">{{
+          $t("recipes.search.category")
+        }}</label>
         <select
           v-model="localCriteria.category"
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           @change="updateCriteria"
         >
-          <option value="">{{ $t('recipes.search.allCategories') }}</option>
+          <option value="">{{ $t("recipes.search.allCategories") }}</option>
           <option
             v-for="category in mealCategories"
             :key="category.code"
@@ -37,7 +41,9 @@
       <!-- Cuisine Type -->
       <div>
         <div class="flex items-center gap-1 mb-1">
-          <label class="block text-sm font-medium text-gray-700">{{ $t('recipes.search.cuisine') }}</label>
+          <label class="block text-sm font-medium text-gray-700">{{
+            $t("recipes.search.cuisine")
+          }}</label>
           <div class="relative group">
             <button
               type="button"
@@ -62,9 +68,11 @@
             <div
               class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-2 w-72 text-xs text-white bg-gray-900 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none z-50"
             >
-              {{ $t('recipes.search.cuisineTooltip') }}
+              {{ $t("recipes.search.cuisineTooltip") }}
               <!-- Tooltip arrow -->
-              <div class="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+              <div
+                class="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"
+              ></div>
             </div>
           </div>
         </div>
@@ -73,26 +81,31 @@
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           @change="updateCriteria"
         >
-          <option value="">{{ $t('recipes.search.allCuisines') }}</option>
+          <option value="">{{ $t("recipes.search.allCuisines") }}</option>
           <option
             v-for="cuisineType in cuisineOptions"
             :key="cuisineType.code"
             :value="cuisineType.code"
           >
-            {{ $t(`constants.cuisineTypes.${cuisineType.code}`) || cuisineType.name }}
+            {{
+              $t(`constants.cuisineTypes.${cuisineType.code}`) ||
+              cuisineType.name
+            }}
           </option>
         </select>
       </div>
 
       <!-- Difficulty Level -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('recipes.search.difficulty') }}</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">{{
+          $t("recipes.search.difficulty")
+        }}</label>
         <select
           v-model="localCriteria.difficultyLevel"
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           @change="updateCriteria"
         >
-          <option value="">{{ $t('recipes.search.allLevels') }}</option>
+          <option value="">{{ $t("recipes.search.allLevels") }}</option>
           <option
             v-for="difficulty in difficultyOptions"
             :key="difficulty.code"
@@ -105,7 +118,9 @@
 
       <!-- Prep Time Range -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('recipes.search.maxPrepTime') }}</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">{{
+          $t("recipes.search.maxPrepTime")
+        }}</label>
         <input
           v-model.number="localCriteria.maxPrepTime"
           type="number"
@@ -117,7 +132,9 @@
 
       <!-- Calories Range -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('recipes.search.maxCalories') }}</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">{{
+          $t("recipes.search.maxCalories")
+        }}</label>
         <input
           v-model.number="localCriteria.maxCalories"
           type="number"
@@ -130,85 +147,94 @@
 
     <div class="flex items-center gap-2 mt-4">
       <button
-        @click="applySearch"
         class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+        @click="applySearch"
       >
-        {{ $t('recipes.search.searchButton') }}
+        {{ $t("recipes.search.searchButton") }}
       </button>
       <button
-        @click="clearFilters"
         class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
+        @click="clearFilters"
       >
-        {{ $t('recipes.search.clearFilters') }}
+        {{ $t("recipes.search.clearFilters") }}
       </button>
-      <span
-        v-if="totalResults > 0"
-        class="text-sm text-gray-600 ml-2"
-      >
-        {{ totalResults === 1 ? $t('recipes.search.resultsFound', { count: totalResults }) : $t('recipes.search.resultsFoundPlural', { count: totalResults }) }}
+      <span v-if="totalResults > 0" class="text-sm text-gray-600 ml-2">
+        {{
+          totalResults === 1
+            ? $t("recipes.search.resultsFound", { count: totalResults })
+            : $t("recipes.search.resultsFoundPlural", { count: totalResults })
+        }}
       </span>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { getMealCategories, getCuisineTypes, getDifficultyLevels } from '@/utils/localeConfig'
+import { ref, watch, computed } from "vue";
+import { useI18n } from "vue-i18n";
+import {
+  getMealCategories,
+  getCuisineTypes,
+  getDifficultyLevels,
+} from "@/utils/localeConfig";
 
-const { t } = useI18n()
-const mealCategories = computed(() => getMealCategories())
-const cuisineOptions = computed(() => getCuisineTypes())
-const difficultyOptions = computed(() => getDifficultyLevels())
+const { t } = useI18n();
+const mealCategories = computed(() => getMealCategories());
+const cuisineOptions = computed(() => getCuisineTypes());
+const difficultyOptions = computed(() => getDifficultyLevels());
 
 const props = defineProps({
   criteria: {
     type: Object,
     default: () => ({
-      category: '',
-      cuisineType: '',
-      difficultyLevel: ''
-    })
+      category: "",
+      cuisineType: "",
+      difficultyLevel: "",
+    }),
   },
   totalResults: {
     type: Number,
-    default: 0
-  }
-})
+    default: 0,
+  },
+});
 
-const emit = defineEmits(['search', 'criteria-changed'])
+const emit = defineEmits(["search", "criteria-changed"]);
 
 const localCriteria = ref({
-  category: '',
-  cuisineType: '',
-  difficultyLevel: '',
-  ...props.criteria
-})
+  category: "",
+  cuisineType: "",
+  difficultyLevel: "",
+  ...props.criteria,
+});
 
-watch(() => props.criteria, (newVal) => {
-  localCriteria.value = {
-    category: '',
-    cuisineType: '',
-    difficultyLevel: '',
-    ...newVal
-  }
-}, { deep: true })
+watch(
+  () => props.criteria,
+  (newVal) => {
+    localCriteria.value = {
+      category: "",
+      cuisineType: "",
+      difficultyLevel: "",
+      ...newVal,
+    };
+  },
+  { deep: true },
+);
 
 const updateCriteria = () => {
-  emit('criteria-changed', { ...localCriteria.value })
-}
+  emit("criteria-changed", { ...localCriteria.value });
+};
 
 const applySearch = () => {
-  emit('search', { ...localCriteria.value })
-}
+  emit("search", { ...localCriteria.value });
+};
 
 const clearFilters = () => {
   localCriteria.value = {
-    category: '',
-    cuisineType: '',
-    difficultyLevel: ''
-  }
-  emit('criteria-changed', { ...localCriteria.value })
-  emit('search', { ...localCriteria.value })
-}
+    category: "",
+    cuisineType: "",
+    difficultyLevel: "",
+  };
+  emit("criteria-changed", { ...localCriteria.value });
+  emit("search", { ...localCriteria.value });
+};
 </script>

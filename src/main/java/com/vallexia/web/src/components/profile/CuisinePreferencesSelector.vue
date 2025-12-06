@@ -4,13 +4,15 @@
       {{ label }}
       <span v-if="required" class="text-red-500">*</span>
     </label>
-    
+
     <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
       <label
         v-for="option in translatedOptions"
         :key="option.code"
         class="relative flex flex-col items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 focus-within:ring-2 focus-within:ring-blue-500"
-        :class="{ 'bg-blue-50 border-blue-300': selectedValues.includes(option.code) }"
+        :class="{
+          'bg-blue-50 border-blue-300': selectedValues.includes(option.code),
+        }"
       >
         <div class="flex items-center h-5 mb-2">
           <input
@@ -22,78 +24,86 @@
             @change="handleChange"
           />
         </div>
-        
+
         <div class="text-center">
-          <div class="text-sm font-medium text-gray-900">{{ option.name || option.code }}</div>
+          <div class="text-sm font-medium text-gray-900">
+            {{ option.name || option.code }}
+          </div>
         </div>
       </label>
     </div>
-    
+
     <!-- Error Message -->
     <p v-if="error" class="text-sm text-red-600">{{ error }}</p>
-    
+
     <!-- Hint -->
-    <p v-if="!error" class="text-sm text-gray-500">{{ hint || $t('profile.dietary.cuisinesHint') }}</p>
+    <p v-if="!error" class="text-sm text-gray-500">
+      {{ hint || $t("profile.dietary.cuisinesHint") }}
+    </p>
   </div>
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { getCuisineTypes } from '@/utils/localeConfig'
+import { ref, watch, computed } from "vue";
+import { useI18n } from "vue-i18n";
+import { getCuisineTypes } from "@/utils/localeConfig";
 
-const { t, te } = useI18n()
+const { t, te } = useI18n();
 
 const props = defineProps({
   id: {
     type: String,
-    required: true
+    required: true,
   },
   label: {
     type: String,
-    default: 'Preferred Cuisines'
+    default: "Preferred Cuisines",
   },
   modelValue: {
     type: Array,
-    default: () => []
+    default: () => [],
   },
   error: {
     type: String,
-    default: ''
+    default: "",
   },
   hint: {
     type: String,
-    default: ''
+    default: "",
   },
   required: {
     type: Boolean,
-    default: false
+    default: false,
   },
   disabled: {
     type: Boolean,
-    default: false
-  }
-})
+    default: false,
+  },
+});
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(["update:modelValue"]);
 
-const selectedValues = ref([...props.modelValue])
+const selectedValues = ref([...props.modelValue]);
 
 const translatedOptions = computed(() => {
   return getCuisineTypes().map((option) => {
-    const key = `constants.cuisineTypes.${option.code}`
+    const key = `constants.cuisineTypes.${option.code}`;
     return {
       code: option.code,
-      name: te(key) ? t(key) : option.name
-    }
-  })
-})
+      name: te(key) ? t(key) : option.name,
+    };
+  });
+});
 
-watch(() => props.modelValue, (newValue) => {
-  selectedValues.value = [...newValue]
-}, { deep: true })
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    selectedValues.value = [...newValue];
+  },
+  { deep: true },
+);
 
 const handleChange = () => {
-  emit('update:modelValue', [...selectedValues.value])
-}
+  emit("update:modelValue", [...selectedValues.value]);
+};
 </script>

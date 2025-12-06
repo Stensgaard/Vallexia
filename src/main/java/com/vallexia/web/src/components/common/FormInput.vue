@@ -4,7 +4,7 @@
       {{ label }}
       <span v-if="required" class="text-red-500">*</span>
     </label>
-    
+
     <div class="relative">
       <input
         :id="id"
@@ -18,16 +18,19 @@
         @blur="$emit('blur')"
         @focus="$emit('focus')"
       />
-      
-      <div v-if="loading" class="absolute inset-y-0 right-0 flex items-center pr-3">
+
+      <div
+        v-if="loading"
+        class="absolute inset-y-0 right-0 flex items-center pr-3"
+      >
         <div class="spinner w-4 h-4"></div>
       </div>
     </div>
-    
+
     <div v-if="error" class="form-error">
       {{ error }}
     </div>
-    
+
     <div v-if="hint" class="text-sm text-gray-500 mt-1">
       {{ hint }}
     </div>
@@ -35,58 +38,58 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed } from "vue";
 
 const props = defineProps({
   modelValue: {
     type: [String, Number],
-    default: ''
+    default: "",
   },
   id: {
     type: String,
-    required: true
+    required: true,
   },
   type: {
     type: String,
-    default: 'text'
+    default: "text",
   },
   label: {
     type: String,
-    default: ''
+    default: "",
   },
   placeholder: {
     type: String,
-    default: ''
+    default: "",
   },
   error: {
     type: String,
-    default: ''
+    default: "",
   },
   hint: {
     type: String,
-    default: ''
+    default: "",
   },
   required: {
     type: Boolean,
-    default: false
+    default: false,
   },
   disabled: {
     type: Boolean,
-    default: false
+    default: false,
   },
   loading: {
     type: Boolean,
-    default: false
-  }
-})
+    default: false,
+  },
+});
 
-const emit = defineEmits(['update:modelValue', 'blur', 'focus'])
+const emit = defineEmits(["update:modelValue", "blur", "focus"]);
 
 const inputClasses = computed(() => {
-  const baseClasses = 'form-input'
-  const errorClasses = props.error ? 'form-input-error' : ''
-  const disabledClasses = props.disabled ? 'opacity-50 cursor-not-allowed' : ''
-  
-  return `${baseClasses} ${errorClasses} ${disabledClasses}`.trim()
-})
+  const baseClasses = "form-input";
+  const errorClasses = props.error ? "form-input-error" : "";
+  const disabledClasses = props.disabled ? "opacity-50 cursor-not-allowed" : "";
+
+  return `${baseClasses} ${errorClasses} ${disabledClasses}`.trim();
+});
 </script>

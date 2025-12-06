@@ -1,48 +1,50 @@
-import api from './api'
+import api from "./api";
 
 class LocaleService {
   constructor() {
-    this.cachedLocales = null
-    this.fetchPromise = null
-    this.cachedConfig = null
-    this.configPromise = null
+    this.cachedLocales = null;
+    this.fetchPromise = null;
+    this.cachedConfig = null;
+    this.configPromise = null;
   }
 
   async getSupportedLocales(forceRefresh = false) {
     if (this.cachedLocales && !forceRefresh) {
-      return this.cachedLocales
+      return this.cachedLocales;
     }
 
     if (this.fetchPromise && !forceRefresh) {
-      return this.fetchPromise
+      return this.fetchPromise;
     }
 
-    this.fetchPromise = api.get('/v1/locales')
+    this.fetchPromise = api
+      .get("/v1/locales")
       .then((response) => {
-        this.cachedLocales = response.data || []
-        return this.cachedLocales
+        this.cachedLocales = response.data || [];
+        return this.cachedLocales;
       })
       .catch((error) => {
         // Clear cached promise so future calls can retry
-        this.fetchPromise = null
-        throw error
-      })
+        this.fetchPromise = null;
+        throw error;
+      });
 
-    return this.fetchPromise
+    return this.fetchPromise;
   }
 
   async getLocaleConfig(forceRefresh = false) {
     if (this.cachedConfig && !forceRefresh) {
-      return this.cachedConfig
+      return this.cachedConfig;
     }
 
     if (this.configPromise && !forceRefresh) {
-      return this.configPromise
+      return this.configPromise;
     }
 
-    this.configPromise = api.get('/v1/locales/config')
+    this.configPromise = api
+      .get("/v1/locales/config")
       .then((response) => {
-        const data = response.data || {}
+        const data = response.data || {};
         this.cachedConfig = {
           locales: data.locales || [],
           countries: data.countries || [],
@@ -62,17 +64,17 @@ class LocaleService {
           difficultyLevels: data.difficultyLevels || [],
           goalTypes: data.goalTypes || [],
           subscriptionStatuses: data.subscriptionStatuses || [],
-          mealTypes: data.mealCategories || []
-        }
-        return this.cachedConfig
+          mealTypes: data.mealCategories || [],
+        };
+        return this.cachedConfig;
       })
       .catch((error) => {
-        this.configPromise = null
-        throw error
-      })
+        this.configPromise = null;
+        throw error;
+      });
 
-    return this.configPromise
+    return this.configPromise;
   }
 }
 
-export const localeService = new LocaleService()
+export const localeService = new LocaleService();

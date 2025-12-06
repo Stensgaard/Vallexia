@@ -29,7 +29,7 @@
                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            
+
             <!-- Error Icon -->
             <svg
               v-else-if="type === 'error'"
@@ -45,7 +45,7 @@
                 d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            
+
             <!-- Warning Icon -->
             <svg
               v-else-if="type === 'warning'"
@@ -61,7 +61,7 @@
                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
               />
             </svg>
-            
+
             <!-- Info Icon -->
             <svg
               v-else
@@ -78,19 +78,24 @@
               />
             </svg>
           </div>
-          
+
           <div class="ml-3 flex-1 pt-0.5">
             <p class="text-sm font-medium text-gray-900">{{ title }}</p>
-            <p v-if="message" class="mt-1 text-sm text-gray-500 whitespace-pre-line">{{ message }}</p>
+            <p
+              v-if="message"
+              class="mt-1 text-sm text-gray-500 whitespace-pre-line"
+            >
+              {{ message }}
+            </p>
           </div>
-          
+
           <div v-if="dismissible" class="ml-4 flex-shrink-0 flex">
             <button
-              @click="dismiss"
               :aria-label="t('common.close')"
               class="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              @click="dismiss"
             >
-              <span class="sr-only">{{ t('common.close') }}</span>
+              <span class="sr-only">{{ t("common.close") }}</span>
               <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path
                   fill-rule="evenodd"
@@ -108,77 +113,80 @@
 
 <script>
 // Constants must be in module scope (not <script setup>) to be used in defineProps
-export const TOAST_TYPES = ['success', 'error', 'warning', 'info']
+export const TOAST_TYPES = ["success", "error", "warning", "info"];
 
 export const TYPE_ICON_CLASSES = {
-  success: 'text-green-400',
-  error: 'text-red-400',
-  warning: 'text-yellow-400',
-  info: 'text-blue-400'
-}
+  success: "text-green-400",
+  error: "text-red-400",
+  warning: "text-yellow-400",
+  info: "text-blue-400",
+};
 </script>
 
 <script setup>
-import { watch, onUnmounted } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { watch, onUnmounted } from "vue";
+import { useI18n } from "vue-i18n";
 
-const { t } = useI18n()
+const { t } = useI18n();
 
 const props = defineProps({
   show: {
     type: Boolean,
-    default: false
+    default: false,
   },
   type: {
     type: String,
-    default: 'info',
-    validator: (value) => TOAST_TYPES.includes(value)
+    default: "info",
+    validator: (value) => TOAST_TYPES.includes(value),
   },
   title: {
     type: String,
-    required: true
+    required: true,
   },
   message: {
     type: String,
-    default: ''
+    default: "",
   },
   dismissible: {
     type: Boolean,
-    default: true
+    default: true,
   },
   duration: {
     type: Number,
-    default: 5000 // Auto-dismiss after 5 seconds
-  }
-})
+    default: 5000, // Auto-dismiss after 5 seconds
+  },
+});
 
-const emit = defineEmits(['dismiss'])
+const emit = defineEmits(["dismiss"]);
 
-let timeoutId = null
+let timeoutId = null;
 
 const clearAutoDismissTimeout = () => {
   if (timeoutId) {
-    clearTimeout(timeoutId)
-    timeoutId = null
+    clearTimeout(timeoutId);
+    timeoutId = null;
   }
-}
+};
 
 const dismiss = () => {
-  clearAutoDismissTimeout()
-  emit('dismiss')
-}
+  clearAutoDismissTimeout();
+  emit("dismiss");
+};
 
-watch(() => props.show, (newValue) => {
-  clearAutoDismissTimeout()
-  
-  if (newValue && props.duration > 0) {
-    timeoutId = setTimeout(() => {
-      dismiss()
-    }, props.duration)
-  }
-})
+watch(
+  () => props.show,
+  (newValue) => {
+    clearAutoDismissTimeout();
+
+    if (newValue && props.duration > 0) {
+      timeoutId = setTimeout(() => {
+        dismiss();
+      }, props.duration);
+    }
+  },
+);
 
 onUnmounted(() => {
-  clearAutoDismissTimeout()
-})
+  clearAutoDismissTimeout();
+});
 </script>

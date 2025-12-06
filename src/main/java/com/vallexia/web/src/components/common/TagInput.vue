@@ -1,12 +1,18 @@
 <template>
   <div class="space-y-2">
-    <label v-if="label" :for="id" class="block text-sm font-medium text-gray-700">
+    <label
+      v-if="label"
+      :for="id"
+      class="block text-sm font-medium text-gray-700"
+    >
       {{ label }}
       <span v-if="required" class="text-red-500">*</span>
     </label>
-    
+
     <!-- Input Field -->
-    <div class="flex flex-wrap gap-2 p-2 border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
+    <div
+      class="flex flex-wrap gap-2 p-2 border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500"
+    >
       <!-- Tags -->
       <span
         v-for="(tag, index) in tags"
@@ -16,15 +22,19 @@
         {{ tag }}
         <button
           type="button"
-          @click="removeTag(index)"
           class="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full text-blue-400 hover:bg-blue-200 hover:text-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          @click="removeTag(index)"
         >
           <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            <path
+              fill-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            />
           </svg>
         </button>
       </span>
-      
+
       <!-- Input -->
       <input
         :id="id"
@@ -32,88 +42,92 @@
         type="text"
         :placeholder="placeholder || $t('common.tagInputPlaceholder')"
         :disabled="disabled"
+        class="flex-1 min-w-0 border-0 focus:ring-0 focus:outline-none text-sm"
         @keydown.enter.prevent="addTag"
         @keydown.comma.prevent="addTag"
         @blur="addTag"
-        class="flex-1 min-w-0 border-0 focus:ring-0 focus:outline-none text-sm"
       />
     </div>
-    
+
     <!-- Error Message -->
     <p v-if="error" class="text-sm text-red-600">{{ error }}</p>
-    
+
     <!-- Hint -->
     <p v-if="hint && !error" class="text-sm text-gray-500">{{ hint }}</p>
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch } from "vue";
 
 const props = defineProps({
   id: {
     type: String,
-    required: true
+    required: true,
   },
   label: {
     type: String,
-    default: ''
+    default: "",
   },
   placeholder: {
     type: String,
-    default: null
+    default: null,
   },
   modelValue: {
     type: Array,
-    default: () => []
+    default: () => [],
   },
   error: {
     type: String,
-    default: ''
+    default: "",
   },
   hint: {
     type: String,
-    default: ''
+    default: "",
   },
   required: {
     type: Boolean,
-    default: false
+    default: false,
   },
   disabled: {
     type: Boolean,
-    default: false
+    default: false,
   },
   maxTags: {
     type: Number,
-    default: null
-  }
-})
+    default: null,
+  },
+});
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(["update:modelValue"]);
 
-const inputValue = ref('')
-const tags = ref([...props.modelValue])
+const inputValue = ref("");
+const tags = ref([...props.modelValue]);
 
-watch(() => props.modelValue, (newValue) => {
-  tags.value = [...newValue]
-}, { deep: true })
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    tags.value = [...newValue];
+  },
+  { deep: true },
+);
 
 const addTag = () => {
-  const tag = inputValue.value.trim().toLowerCase()
-  
+  const tag = inputValue.value.trim().toLowerCase();
+
   if (tag && !tags.value.includes(tag)) {
     if (props.maxTags && tags.value.length >= props.maxTags) {
-      return
+      return;
     }
-    
-    tags.value.push(tag)
-    inputValue.value = ''
-    emit('update:modelValue', [...tags.value])
+
+    tags.value.push(tag);
+    inputValue.value = "";
+    emit("update:modelValue", [...tags.value]);
   }
-}
+};
 
 const removeTag = (index) => {
-  tags.value.splice(index, 1)
-  emit('update:modelValue', [...tags.value])
-}
+  tags.value.splice(index, 1);
+  emit("update:modelValue", [...tags.value]);
+};
 </script>

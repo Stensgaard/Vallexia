@@ -1,6 +1,6 @@
 <template>
   <AuthLayout>
-    <form @submit.prevent="handleSubmit" class="space-y-6">
+    <form class="space-y-6" @submit.prevent="handleSubmit">
       <!-- Global Error Message -->
       <ErrorMessage
         v-if="authStore.error"
@@ -39,7 +39,7 @@
       <!-- Country Field -->
       <div>
         <label for="country" class="form-label">
-          {{ $t('auth.register.country') }}
+          {{ $t("auth.register.country") }}
           <span class="text-red-500">*</span>
         </label>
         <select
@@ -49,7 +49,7 @@
           :class="['form-input', errors.country ? 'form-input-error' : '']"
           required
         >
-          <option value="">{{ $t('auth.register.countryPlaceholder') }}</option>
+          <option value="">{{ $t("auth.register.countryPlaceholder") }}</option>
           <option
             v-for="country in countryOptions"
             :key="country.code"
@@ -87,7 +87,7 @@
         :required="true"
         :disabled="authStore.isLoading"
       />
-      
+
       <!-- Terms and Conditions -->
       <div class="flex items-center">
         <input
@@ -98,10 +98,14 @@
           :disabled="authStore.isLoading"
         />
         <label for="acceptTerms" class="ml-2 block text-sm text-gray-900">
-          {{ $t('auth.register.acceptTerms') }}
-          <a href="#" class="text-blue-600 hover:text-blue-500">{{ $t('auth.register.termsOfService') }}</a>
-          {{ $t('auth.register.and') }}
-          <a href="#" class="text-blue-600 hover:text-blue-500">{{ $t('auth.register.privacyPolicy') }}</a>
+          {{ $t("auth.register.acceptTerms") }}
+          <a href="#" class="text-blue-600 hover:text-blue-500">{{
+            $t("auth.register.termsOfService")
+          }}</a>
+          {{ $t("auth.register.and") }}
+          <a href="#" class="text-blue-600 hover:text-blue-500">{{
+            $t("auth.register.privacyPolicy")
+          }}</a>
         </label>
       </div>
       <div v-if="errors.acceptTerms" class="text-sm text-red-600">
@@ -115,156 +119,164 @@
           :disabled="authStore.isLoading || !isFormValid"
           class="btn btn-primary w-full"
         >
-          <LoadingSpinner v-if="authStore.isLoading" size="small" color="white" />
-          <span v-else>{{ $t('auth.register.createAccount') }}</span>
+          <LoadingSpinner
+            v-if="authStore.isLoading"
+            size="small"
+            color="white"
+          />
+          <span v-else>{{ $t("auth.register.createAccount") }}</span>
         </button>
       </div>
-  </form>
+    </form>
   </AuthLayout>
 </template>
 
 <script setup>
-import { reactive, computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { useAuthStore } from '@/stores/auth'
-import { getCountries, ensureLocaleConfigLoaded } from '@/utils/localeConfig'
-import AuthLayout from '@/views/auth/AuthLayout.vue'
-import FormInput from '@/components/common/FormInput.vue'
-import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
-import ErrorMessage from '@/components/common/ErrorMessage.vue'
+import { reactive, computed, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { useAuthStore } from "@/stores/auth";
+import { getCountries, ensureLocaleConfigLoaded } from "@/utils/localeConfig";
+import AuthLayout from "@/views/auth/AuthLayout.vue";
+import FormInput from "@/components/common/FormInput.vue";
+import LoadingSpinner from "@/components/common/LoadingSpinner.vue";
+import ErrorMessage from "@/components/common/ErrorMessage.vue";
 
-const { t } = useI18n()
+const { t } = useI18n();
 
-const router = useRouter()
-const authStore = useAuthStore()
+const router = useRouter();
+const authStore = useAuthStore();
 
-const countryOptions = ref([])
+const countryOptions = ref([]);
 
 const form = reactive({
-  username: '',
-  email: '',
-  country: '',
-  password: '',
-  confirmPassword: '',
-  acceptTerms: false
-})
+  username: "",
+  email: "",
+  country: "",
+  password: "",
+  confirmPassword: "",
+  acceptTerms: false,
+});
 
 const errors = reactive({
-  username: '',
-  email: '',
-  country: '',
-  password: '',
-  confirmPassword: '',
-  acceptTerms: ''
-})
+  username: "",
+  email: "",
+  country: "",
+  password: "",
+  confirmPassword: "",
+  acceptTerms: "",
+});
 
 const isFormValid = computed(() => {
-  return form.username.trim() &&
-         form.email.trim() &&
-         form.country.trim() &&
-         form.password.trim() &&
-         form.confirmPassword.trim() &&
-         form.acceptTerms
-})
+  return (
+    form.username.trim() &&
+    form.email.trim() &&
+    form.country.trim() &&
+    form.password.trim() &&
+    form.confirmPassword.trim() &&
+    form.acceptTerms
+  );
+});
 
 const validateForm = () => {
   // Clear previous errors
-  Object.keys(errors).forEach(key => {
-    errors[key] = ''
-  })
+  Object.keys(errors).forEach((key) => {
+    errors[key] = "";
+  });
 
-  let isValid = true
+  let isValid = true;
 
   // Username validation
   if (!form.username.trim()) {
-    errors.username = t('auth.validation.usernameRequired')
-    isValid = false
+    errors.username = t("auth.validation.usernameRequired");
+    isValid = false;
   } else if (form.username.length < 3 || form.username.length > 20) {
-    errors.username = t('auth.validation.usernameLength')
-    isValid = false
+    errors.username = t("auth.validation.usernameLength");
+    isValid = false;
   } else if (!/^[a-zA-Z0-9]+$/.test(form.username)) {
-    errors.username = t('auth.validation.usernameFormat')
-    isValid = false
+    errors.username = t("auth.validation.usernameFormat");
+    isValid = false;
   }
 
   // Email validation
   if (!form.email.trim()) {
-    errors.email = t('auth.validation.emailRequired')
-    isValid = false
+    errors.email = t("auth.validation.emailRequired");
+    isValid = false;
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-    errors.email = t('auth.validation.emailInvalid')
-    isValid = false
+    errors.email = t("auth.validation.emailInvalid");
+    isValid = false;
   }
 
   // Country validation
   if (!form.country.trim()) {
-    errors.country = t('auth.validation.countryRequired')
-    isValid = false
+    errors.country = t("auth.validation.countryRequired");
+    isValid = false;
   } else {
     // Validate country is in available options
     const validCountry = countryOptions.value.some(
-      country => country.code === form.country
-    )
+      (country) => country.code === form.country,
+    );
     if (!validCountry) {
-      errors.country = t('auth.validation.countryInvalid')
-      isValid = false
+      errors.country = t("auth.validation.countryInvalid");
+      isValid = false;
     }
   }
 
   // Password validation
   if (!form.password.trim()) {
-    errors.password = t('auth.validation.passwordRequired')
-    isValid = false
+    errors.password = t("auth.validation.passwordRequired");
+    isValid = false;
   } else if (form.password.length < 8) {
-    errors.password = t('auth.validation.passwordLength')
-    isValid = false
-  } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/.test(form.password)) {
-    errors.password = t('auth.validation.passwordComplexity')
-    isValid = false
+    errors.password = t("auth.validation.passwordLength");
+    isValid = false;
+  } else if (
+    !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/.test(form.password)
+  ) {
+    errors.password = t("auth.validation.passwordComplexity");
+    isValid = false;
   }
 
   // Confirm password validation
   if (!form.confirmPassword.trim()) {
-    errors.confirmPassword = t('auth.validation.confirmPasswordRequired')
-    isValid = false
+    errors.confirmPassword = t("auth.validation.confirmPasswordRequired");
+    isValid = false;
   } else if (form.password !== form.confirmPassword) {
-    errors.confirmPassword = t('auth.validation.passwordsDoNotMatch')
-    isValid = false
+    errors.confirmPassword = t("auth.validation.passwordsDoNotMatch");
+    isValid = false;
   }
 
   // Terms acceptance validation
   if (!form.acceptTerms) {
-    errors.acceptTerms = t('auth.validation.termsRequired')
-    isValid = false
+    errors.acceptTerms = t("auth.validation.termsRequired");
+    isValid = false;
   }
 
-  return isValid
-}
+  return isValid;
+};
 
 const handleSubmit = async () => {
   if (!validateForm()) {
-    return
+    return;
   }
 
   try {
-    await authStore.register(form)
-    router.push('/dashboard')
+    await authStore.register(form);
+    router.push("/dashboard");
   } catch (error) {
     // Error is handled by the store and displayed in the template
   }
-}
+};
 
 onMounted(async () => {
   // Clear any previous errors when component mounts
-  authStore.clearError()
-  
+  authStore.clearError();
+
   // Load locale config to get countries
   try {
-    await ensureLocaleConfigLoaded()
-    countryOptions.value = getCountries()
+    await ensureLocaleConfigLoaded();
+    countryOptions.value = getCountries();
   } catch (error) {
-    console.error('Failed to load locale config:', error)
+    console.error("Failed to load locale config:", error);
   }
-})
+});
 </script>

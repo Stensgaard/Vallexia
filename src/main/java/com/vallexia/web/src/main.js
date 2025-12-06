@@ -1,33 +1,33 @@
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import { watch } from 'vue'
-import App from './App.vue'
-import router from './router'
-import { useAuthStore } from './stores/auth'
-import { useSettingsStore } from './stores/settings'
+import { createApp } from "vue";
+import { createPinia } from "pinia";
+import { watch } from "vue";
+import App from "./App.vue";
+import router from "./router";
+import { useAuthStore } from "./stores/auth";
+import { useSettingsStore } from "./stores/settings";
 
 // Import global styles
-import './assets/css/main.css'
+import "./assets/css/main.css";
 
 // Import i18n configuration and helpers
 import {
   i18n,
   ensureSupportedLanguagesLoaded,
   getDefaultLanguage,
-  isSupportedLanguage
-} from './i18n'
-import { ensureLocaleConfigLoaded } from './utils/localeConfig'
+  isSupportedLanguage,
+} from "./i18n";
+import { ensureLocaleConfigLoaded } from "./utils/localeConfig";
 
 const showConfigErrorScreen = (message) => {
-  const root = document.getElementById('app')
+  const root = document.getElementById("app");
   if (!root) {
-    return
+    return;
   }
 
   // Use English text for error screen (appears before i18n is initialized)
-  const title = 'Unable to load configuration'
-  const defaultMessage = 'Please check your connection and try again.'
-  const retryText = 'Retry'
+  const title = "Unable to load configuration";
+  const defaultMessage = "Please check your connection and try again.";
+  const retryText = "Retry";
 
   // Create safe HTML structure using innerHTML for static content
   root.innerHTML = `
@@ -43,75 +43,77 @@ const showConfigErrorScreen = (message) => {
         </button>
       </div>
     </div>
-  `
+  `;
 
-  const errorMessageEl = document.getElementById('error-message')
+  const errorMessageEl = document.getElementById("error-message");
   if (errorMessageEl) {
-    errorMessageEl.textContent = message || defaultMessage
+    errorMessageEl.textContent = message || defaultMessage;
   }
 
-  const retryBtn = document.getElementById('retry-locale-config')
+  const retryBtn = document.getElementById("retry-locale-config");
   if (retryBtn) {
-    retryBtn.addEventListener('click', () => {
-      root.innerHTML = ''
-      bootstrap()
-    })
+    retryBtn.addEventListener("click", () => {
+      root.innerHTML = "";
+      bootstrap();
+    });
   }
-}
+};
 
 const loadLocaleDependencies = async () => {
   await Promise.all([
     ensureSupportedLanguagesLoaded(),
-    ensureLocaleConfigLoaded()
-  ])
-}
+    ensureLocaleConfigLoaded(),
+  ]);
+};
 
 const bootstrap = async () => {
   try {
-    await loadLocaleDependencies()
+    await loadLocaleDependencies();
   } catch (error) {
     if (import.meta.env.DEV) {
-      console.error('Failed to load locale configuration', error)
+      console.error("Failed to load locale configuration", error);
     }
-    showConfigErrorScreen(error?.message || 'Failed to load locale configuration.')
-    return
+    showConfigErrorScreen(
+      error?.message || "Failed to load locale configuration.",
+    );
+    return;
   }
 
-  const app = createApp(App)
-  const pinia = createPinia()
+  const app = createApp(App);
+  const pinia = createPinia();
 
-  app.use(pinia)
-  app.use(router)
-  app.use(i18n)
+  app.use(pinia);
+  app.use(router);
+  app.use(i18n);
 
-  const authStore = useAuthStore()
-  const settingsStore = useSettingsStore()
+  const authStore = useAuthStore();
+  const settingsStore = useSettingsStore();
 
   const applyLocale = (localeCode) => {
     if (isSupportedLanguage(localeCode)) {
-      i18n.global.locale.value = localeCode
+      i18n.global.locale.value = localeCode;
     }
-  }
+  };
 
   // Function to load settings and update locale
   const loadUserSettingsAndUpdateLocale = async () => {
     try {
-      await settingsStore.loadSettings()
+      await settingsStore.loadSettings();
       // Set locale from user settings, overriding any temporary locale changes
       if (settingsStore.settings?.language) {
-        applyLocale(settingsStore.settings.language)
+        applyLocale(settingsStore.settings.language);
       } else {
-        applyLocale(getDefaultLanguage())
+        applyLocale(getDefaultLanguage());
       }
     } catch (error) {
       // Log warning for debugging while still allowing app to continue
       if (import.meta.env.DEV) {
-        console.warn('Failed to load user settings on initialization:', error)
+        console.warn("Failed to load user settings on initialization:", error);
       }
       // Apply default language as fallback
-      applyLocale(getDefaultLanguage())
+      applyLocale(getDefaultLanguage());
     }
-  }
+  };
 
   // Watch for authentication state changes
   watch(
@@ -119,41 +121,45 @@ const bootstrap = async () => {
     async (isAuthenticated, wasAuthenticated) => {
       // If user just logged in (changed from false to true), load their settings
       if (!wasAuthenticated && isAuthenticated) {
-        await loadUserSettingsAndUpdateLocale()
+        await loadUserSettingsAndUpdateLocale();
       }
-      
+
       // Only redirect if auth was lost (changed from true to false), not on initial load
-      if (wasAuthenticated && !isAuthenticated && router.currentRoute.value.meta?.requiresAuth) {
+      if (
+        wasAuthenticated &&
+        !isAuthenticated &&
+        router.currentRoute.value.meta?.requiresAuth
+      ) {
         // Auth was lost while on a protected route - redirect to homepage
-        router.replace('/')
+        router.replace("/");
       }
-    }
-  )
+    },
+  );
 
   // Watch for language changes in settings store
   watch(
     () => settingsStore.settings?.language,
     (newLanguage) => {
       if (newLanguage) {
-        applyLocale(newLanguage)
+        applyLocale(newLanguage);
       }
-    }
-  )
+    },
+  );
 
   try {
-    await authStore.initializeAuth()
+    await authStore.initializeAuth();
     // Load user settings if authenticated
     if (authStore.isAuthenticated) {
-      await loadUserSettingsAndUpdateLocale()
+      await loadUserSettingsAndUpdateLocale();
     }
   } catch (error) {
     // Log error for debugging but don't block app mounting
     if (import.meta.env.DEV) {
-      console.error('Auth initialization error:', error)
+      console.error("Auth initialization error:", error);
     }
   } finally {
-    app.mount('#app')
+    app.mount("#app");
   }
-}
+};
 
-bootstrap()
+bootstrap();
