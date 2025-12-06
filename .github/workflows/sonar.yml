@@ -60,10 +60,10 @@ jobs:
       - name: Check cache status
         run: |
           if [ -d ".dependency-check-data" ] && [ "$(ls -A .dependency-check-data 2>/dev/null)" ]; then
-            echo "✅ Cache restored - NVD database found"
+            echo "Cache restored - NVD database found"
             du -sh .dependency-check-data
           else
-            echo "ℹ️  Cache miss - will download NVD database"
+            echo "Cache miss - will download NVD database"
           fi
       
       - name: Run tests with coverage
