@@ -16,11 +16,14 @@ import {
   isWeightUnit
 } from '@/utils/unitConversionUtils'
 import { getErrorMessage } from '@/utils/errorUtils'
+import { validateEnumValue, validateValue } from '@/utils/validationUtils'
 import { 
-  MEASUREMENT_SYSTEMS, 
-  FIRST_DAY_OF_WEEK
-} from '@/utils/constants'
-import { validateEnumValue } from '@/utils/validationUtils'
+  getMeasurementSystems, 
+  getDefaultMeasurementSystemCode,
+  getFirstDayOfWeek,
+  getDefaultFirstDayOfWeekCode,
+  getFormatForDateCode
+} from '@/utils/localeConfig'
 
 export const useSettingsStore = defineStore('settings', () => {
   // State
@@ -34,30 +37,32 @@ export const useSettingsStore = defineStore('settings', () => {
   })
 
   const dateFormat = computed(() => {
-    // Backend returns format strings like 'MM/DD/YYYY', but we may need enum keys for frontend
-    return settings.value?.dateFormat || 'MM/DD/YYYY'
+    const code = settings.value?.dateFormat
+    if (!code) {
+      return 'MM/DD/YYYY'
+    }
+    return getFormatForDateCode(code) || code
   })
 
   const measurementSystem = computed(() => {
+    const defaultCode = getDefaultMeasurementSystemCode() || 'METRIC'
     if (!settings.value?.measurementSystem) {
-      return MEASUREMENT_SYSTEMS.METRIC
+      return defaultCode
     }
-    return validateEnumValue(
+    return validateValue(
       settings.value.measurementSystem,
-      MEASUREMENT_SYSTEMS,
-      MEASUREMENT_SYSTEMS.METRIC,
+      getMeasurementSystems(),
+      defaultCode,
       'measurementSystem'
     )
   })
 
   const firstDayOfWeek = computed(() => {
-    if (!settings.value?.firstDayOfWeek) {
-      return FIRST_DAY_OF_WEEK.MONDAY
-    }
-    return validateEnumValue(
-      settings.value.firstDayOfWeek,
-      FIRST_DAY_OF_WEEK,
-      FIRST_DAY_OF_WEEK.MONDAY,
+    const defaultCode = getDefaultFirstDayOfWeekCode() || 'MONDAY'
+    return validateValue(
+      settings.value?.firstDayOfWeek || defaultCode,
+      getFirstDayOfWeek(),
+      defaultCode,
       'firstDayOfWeek'
     )
   })
@@ -100,26 +105,68 @@ export const useSettingsStore = defineStore('settings', () => {
     )
   }
 
-  const convertWeightFn = (value, fromUnit, toUnit) => {
-    return convertWeight(value, fromUnit, toUnit)
+  /**
+   * Convert weight value from one unit to another.
+   * Uses API service with caching.
+   * 
+   * @param {number} value - The value to convert
+   * @param {string} fromUnit - Source unit
+   * @param {string} toUnit - Target unit
+   * @returns {Promise<number>} Converted value
+   */
+  const convertWeightFn = async (value, fromUnit, toUnit) => {
+    try {
+      return await convertWeight(value, fromUnit, toUnit)
+    } catch (error) {
+      console.error('Weight conversion failed in settings store:', error)
+      // Return original value as fallback
+      return value
+    }
   }
 
-  const getDisplayUnitFn = (unit) => {
-    return getDisplayUnit(unit, measurementSystem.value)
+  /**
+   * Get appropriate display unit based on measurement system.
+   * Uses API to avoid duplication with backend logic.
+   * 
+   * @param {string} unit - The unit to get display unit for
+   * @returns {Promise<string>} Display unit
+   */
+  const getDisplayUnitFn = async (unit) => {
+    try {
+      return await getDisplayUnit(unit, measurementSystem.value)
+    } catch (error) {
+      console.error('Failed to get display unit in settings store:', error)
+      // Return original unit as fallback
+      return unit
+    }
   }
 
-  const formatWeightFn = (value, originalUnit, decimals = 2) => {
+  /**
+   * Format weight value with unit conversion based on measurement system.
+   * Uses API service for conversions.
+   * 
+   * @param {number} value - The value to format
+   * @param {string} originalUnit - Original unit
+   * @param {number} decimals - Number of decimal places (default: 2)
+   * @returns {Promise<string>} Formatted string with value and unit
+   */
+  const formatWeightFn = async (value, originalUnit, decimals = 2) => {
     if (!value && value !== 0) {
       return ''
     }
     
-    const displayUnit = getDisplayUnitFn(originalUnit)
-    const isImperial = measurementSystem.value === MEASUREMENT_SYSTEMS.IMPERIAL
+    const displayUnit = await getDisplayUnitFn(originalUnit)
     
     // If unit changed, convert the value
     let displayValue = value
-    if (displayUnit !== originalUnit && isWeightUnit(originalUnit)) {
-      displayValue = convertWeightFn(value, originalUnit, displayUnit)
+    const isWeight = await isWeightUnit(originalUnit)
+    if (displayUnit !== originalUnit && isWeight) {
+      try {
+        displayValue = await convertWeightFn(value, originalUnit, displayUnit)
+      } catch (error) {
+        console.error('Weight conversion failed in formatWeightFn:', error)
+        // Use original value as fallback
+      }
     }
     
     // Format the number using the settings store's number formatting
