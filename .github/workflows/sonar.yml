@@ -95,7 +95,6 @@ jobs:
             -Dsonar.java.test.binaries=target/test-classes
             -Dsonar.javascript.lcov.reportPaths=
             -Dsonar.exclusions=**/web/dist/**,**/web/node_modules/**,**/web/public/**
-            -Dsonar.inclusions=**/*.java,**/web/src/**/*.js,**/web/src/**/*.vue
+            -Dsonar.inclusions=**/*.java,**/web/src/**/*.js,**/web/src/**/*.vue,**/*.sql,**/*.yml,**/*.yaml,**/*.json,**/*.xml,**/*.css,**/*.html
             -Dsonar.test.exclusions=**/test/**
             -Dsonar.sourceEncoding=UTF-8
-            -Dsonar.language=java,js
