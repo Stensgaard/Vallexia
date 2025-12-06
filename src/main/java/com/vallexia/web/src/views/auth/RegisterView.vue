@@ -262,7 +262,7 @@ const handleSubmit = async () => {
   try {
     await authStore.register(form);
     router.push("/dashboard");
-  } catch (error) {
+  } catch (_error) {
     // Error is handled by the store and displayed in the template
   }
 };
@@ -276,7 +276,10 @@ onMounted(async () => {
     await ensureLocaleConfigLoaded();
     countryOptions.value = getCountries();
   } catch (error) {
-    console.error("Failed to load locale config:", error);
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
+      console.error("Failed to load locale config:", error);
+    }
   }
 });
 </script>

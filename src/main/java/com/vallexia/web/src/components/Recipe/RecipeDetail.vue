@@ -341,7 +341,7 @@ import { useI18n } from "vue-i18n";
 import { useSettingsStore } from "@/stores/settings";
 import { useFormattedValue } from "@/composables/useFormattedValue";
 
-const { t } = useI18n();
+useI18n();
 const settingsStore = useSettingsStore();
 
 const formatNumber = (number, decimals = 0) => {
@@ -390,7 +390,7 @@ const loadSavedState = () => {
       const parsed = JSON.parse(saved);
       isCookingMode.value = parsed.isCookingMode || false;
       checkedSteps.value = parsed.checkedSteps || {};
-    } catch (e) {
+    } catch (_e) {
       // Failed to parse saved cooking state, use defaults
     }
   }

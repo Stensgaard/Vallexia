@@ -83,7 +83,10 @@ const conversionCache = new ConversionCache(DEFAULT_CACHE_SIZE);
  * @throws {Error} Always throws an error with user-friendly message
  */
 const handleConversionError = (error, operation = "conversion") => {
-  console.error(`Unit ${operation} API error:`, error);
+  if (import.meta.env.DEV) {
+    // eslint-disable-next-line no-console
+    console.error(`Unit ${operation} API error:`, error);
+  }
 
   if (error.response) {
     // API returned an error response
@@ -95,22 +98,34 @@ const handleConversionError = (error, operation = "conversion") => {
 
     if (status === 400) {
       // Bad request - invalid units or value
-      console.warn(`Invalid ${operation} request:`, message);
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.warn(`Invalid ${operation} request:`, message);
+      }
       throw new Error(`Invalid ${operation}: ${message}`);
     } else if (status === 500) {
       // Server error
-      console.error(`Server error during ${operation}:`, message);
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.error(`Server error during ${operation}:`, message);
+      }
       throw new Error(`Server error during ${operation}. Please try again.`);
     }
   } else if (error.request) {
     // Request was made but no response received
-    console.error(`No response from ${operation} API:`, error.message);
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
+      console.error(`No response from ${operation} API:`, error.message);
+    }
     throw new Error(
       `Unable to reach ${operation} service. Please check your connection.`,
     );
   } else {
     // Error setting up the request
-    console.error(`Error setting up ${operation} request:`, error.message);
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
+      console.error(`Error setting up ${operation} request:`, error.message);
+    }
     throw new Error(`Failed to perform ${operation}: ${error.message}`);
   }
 
@@ -250,7 +265,10 @@ export const unitConversionService = {
       });
       return response.data.displayUnit;
     } catch (error) {
-      console.error("Failed to get display unit:", error);
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.error("Failed to get display unit:", error);
+      }
       // Return original unit as fallback
       return unit;
     }
@@ -295,7 +313,10 @@ export const unitConversionService = {
 
       return unitType;
     } catch (error) {
-      console.error("Failed to check unit type:", error);
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.error("Failed to check unit type:", error);
+      }
       // Return default values on error
       return {
         isWeightUnit: false,

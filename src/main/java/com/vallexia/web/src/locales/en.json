@@ -439,7 +439,11 @@
     "comingSoonDescription": "We're building comprehensive nutritional analysis with detailed macro tracking, micronutrient monitoring, and personalized recommendations.",
     "familyUpgrade": {
       "title": "Planning for multiple people?",
-      "description": "Currently tracking nutrition for your household. Upgrade to <strong>Family</strong> subscription for per-person nutrition goals and individual progress tracking.",
+      "description": {
+        "prefix": "Currently tracking nutrition for your household. Upgrade to ",
+        "family": "Family",
+        "suffix": " subscription for per-person nutrition goals and individual progress tracking."
+      },
       "learnMore": "Learn more about Family subscription"
     },
     "mealTypes": {

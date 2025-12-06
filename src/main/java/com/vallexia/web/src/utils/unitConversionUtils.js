@@ -33,7 +33,10 @@ export async function convertWeight(value, fromUnit, toUnit) {
   try {
     return await unitConversionService.convertWeight(value, fromUnit, toUnit);
   } catch (error) {
-    console.error("Weight conversion failed:", error);
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
+      console.error("Weight conversion failed:", error);
+    }
     // Return original value as fallback
     return value;
   }
@@ -55,7 +58,10 @@ export async function getDisplayUnit(unit, measurementSystem) {
   try {
     return await unitConversionService.getDisplayUnit(unit, measurementSystem);
   } catch (error) {
-    console.error("Failed to get display unit:", error);
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
+      console.error("Failed to get display unit:", error);
+    }
     // Return original unit as fallback
     return unit;
   }
@@ -90,7 +96,10 @@ export async function formatWeight(
       try {
         displayValue = await convertWeight(value, originalUnit, displayUnit);
       } catch (error) {
-        console.error("Weight conversion failed in formatWeight:", error);
+        if (import.meta.env.DEV) {
+          // eslint-disable-next-line no-console
+          console.error("Weight conversion failed in formatWeight:", error);
+        }
         // Use original value as fallback
       }
     }
@@ -118,7 +127,10 @@ export async function isWeightUnit(unit) {
   try {
     return await unitConversionService.isWeightUnit(unit);
   } catch (error) {
-    console.error("Failed to check if weight unit:", error);
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
+      console.error("Failed to check if weight unit:", error);
+    }
     return false;
   }
 }
@@ -138,7 +150,10 @@ export async function isVolumeUnit(unit) {
   try {
     return await unitConversionService.isVolumeUnit(unit);
   } catch (error) {
-    console.error("Failed to check if volume unit:", error);
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
+      console.error("Failed to check if volume unit:", error);
+    }
     return false;
   }
 }

@@ -107,7 +107,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["dismiss"]);
+defineEmits(["dismiss"]);
 
 // Extract type classes to avoid duplication
 const TYPE_CLASSES = {

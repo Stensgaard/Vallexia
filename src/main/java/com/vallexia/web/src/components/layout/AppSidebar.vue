@@ -152,7 +152,7 @@ const handleLogout = async () => {
   try {
     await authStore.logout();
     router.push("/");
-  } catch (error) {
+  } catch (_error) {
     // Logout errors are non-critical, silently fail
   }
 };

@@ -45,7 +45,7 @@
 </template>
 
 <script setup>
-import { onMounted, watch } from "vue";
+import { onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useRecipeStore } from "@/stores/recipe";
 import RecipeList from "@/components/Recipe/RecipeList.vue";

@@ -12,11 +12,10 @@ import {
 import {
   convertWeight,
   getDisplayUnit,
-  formatWeight as formatWeightUtil,
   isWeightUnit,
 } from "@/utils/unitConversionUtils";
 import { getErrorMessage } from "@/utils/errorUtils";
-import { validateEnumValue, validateValue } from "@/utils/validationUtils";
+import { validateValue } from "@/utils/validationUtils";
 import {
   getMeasurementSystems,
   getDefaultMeasurementSystemCode,
@@ -118,7 +117,10 @@ export const useSettingsStore = defineStore("settings", () => {
     try {
       return await convertWeight(value, fromUnit, toUnit);
     } catch (error) {
-      console.error("Weight conversion failed in settings store:", error);
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.error("Weight conversion failed in settings store:", error);
+      }
       // Return original value as fallback
       return value;
     }
@@ -135,7 +137,10 @@ export const useSettingsStore = defineStore("settings", () => {
     try {
       return await getDisplayUnit(unit, measurementSystem.value);
     } catch (error) {
-      console.error("Failed to get display unit in settings store:", error);
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.error("Failed to get display unit in settings store:", error);
+      }
       // Return original unit as fallback
       return unit;
     }
@@ -164,7 +169,10 @@ export const useSettingsStore = defineStore("settings", () => {
       try {
         displayValue = await convertWeightFn(value, originalUnit, displayUnit);
       } catch (error) {
-        console.error("Weight conversion failed in formatWeightFn:", error);
+        if (import.meta.env.DEV) {
+          // eslint-disable-next-line no-console
+          console.error("Weight conversion failed in formatWeightFn:", error);
+        }
         // Use original value as fallback
       }
     }

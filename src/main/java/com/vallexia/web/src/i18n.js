@@ -78,6 +78,7 @@ const loadSupportedLanguages = async () => {
   } catch (error) {
     // Log warning in development mode, keep fallback languages if backend fetch fails
     if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
       console.warn("Failed to load supported languages from backend:", error);
     }
   }

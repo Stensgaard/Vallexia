@@ -43,8 +43,7 @@
         :placeholder="placeholder || $t('common.tagInputPlaceholder')"
         :disabled="disabled"
         class="flex-1 min-w-0 border-0 focus:ring-0 focus:outline-none text-sm"
-        @keydown.enter.prevent="addTag"
-        @keydown.comma.prevent="addTag"
+        @keydown="handleKeydown"
         @blur="addTag"
       />
     </div>
@@ -111,6 +110,13 @@ watch(
   },
   { deep: true },
 );
+
+const handleKeydown = (event) => {
+  if (event.key === "Enter" || event.key === ",") {
+    event.preventDefault();
+    addTag();
+  }
+};
 
 const addTag = () => {
   const tag = inputValue.value.trim().toLowerCase();

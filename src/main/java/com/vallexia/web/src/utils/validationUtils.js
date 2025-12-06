@@ -13,7 +13,7 @@
  * @param {string} fieldName - Name of the field for logging (optional)
  * @returns {string} Valid value or fallback
  */
-export function validateValue(value, constants, fallback, fieldName = "") {
+export function validateValue(value, constants, fallback, _fieldName = "") {
   if (!value) {
     return fallback;
   }
@@ -56,7 +56,7 @@ export function validateValue(value, constants, fallback, fieldName = "") {
  * @param {string} fieldName - Name of the field for logging (optional)
  * @returns {Array} Filtered array with only valid values
  */
-export function filterValidValues(values, constants, fieldName = "") {
+export function filterValidValues(values, constants, _fieldName = "") {
   if (!Array.isArray(values)) {
     return [];
   }
@@ -112,7 +112,7 @@ export function validateEnumValue(
   value,
   constantsObject,
   fallback,
-  fieldName = "",
+  _fieldName = "",
 ) {
   if (!value) {
     return fallback;

@@ -72,9 +72,9 @@
 import { useI18n } from "vue-i18n";
 import RecipeCard from "./RecipeCard.vue";
 
-const { t } = useI18n();
+useI18n();
 
-const props = defineProps({
+defineProps({
   recipes: {
     type: Array,
     default: () => [],

@@ -439,7 +439,7 @@ import { RouterLink } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { SUPPORTED_LANGUAGES } from "@/i18n";
 
-const { t, locale } = useI18n();
+const { locale } = useI18n();
 
 const currentLocale = computed({
   get: () => locale.value,

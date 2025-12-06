@@ -38,10 +38,13 @@
         <h3 class="text-sm font-semibold text-gray-900 mb-1">
           {{ $t("nutrition.familyUpgrade.title") }}
         </h3>
-        <p
-          class="text-sm text-gray-700 mb-3"
-          v-html="$t('nutrition.familyUpgrade.description')"
-        ></p>
+        <p class="text-sm text-gray-700 mb-3">
+          {{ $t("nutrition.familyUpgrade.description.prefix") }}
+          <strong>{{
+            $t("nutrition.familyUpgrade.description.family")
+          }}</strong>
+          {{ $t("nutrition.familyUpgrade.description.suffix") }}
+        </p>
         <router-link
           to="/subscription"
           class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700"
@@ -256,7 +259,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useAuthStore } from "@/stores/auth";
 import { useSettingsStore } from "@/stores/settings";

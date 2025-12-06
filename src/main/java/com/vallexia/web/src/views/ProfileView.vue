@@ -515,7 +515,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed, onMounted, watch } from "vue";
+import { reactive, ref, computed, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { userService } from "@/services/userService";
 import FormInput from "@/components/common/FormInput.vue";
@@ -804,12 +804,6 @@ const tabClasses = (tabId) => {
     "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300";
 
   return `${baseClasses} ${activeTab.value === tabId ? activeClasses : inactiveClasses}`;
-};
-
-const getGoalTypeLabel = (value) => {
-  const key = `constants.goalTypes.${value}`;
-  const option = goalTypeOptions.value.find((item) => item.code === value);
-  return te(key) ? t(key) : option?.name || value;
 };
 
 const formatDate = (dateString) => {

@@ -127,7 +127,7 @@
 import { useI18n } from "vue-i18n";
 import { useSettingsStore } from "@/stores/settings";
 
-const { t } = useI18n();
+useI18n();
 const settingsStore = useSettingsStore();
 
 const formatNumber = (number, decimals = 0) => {

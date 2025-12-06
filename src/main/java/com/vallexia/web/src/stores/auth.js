@@ -106,7 +106,7 @@ export const useAuthStore = defineStore("auth", () => {
       if (isAuthenticated.value) {
         await authService.logout();
       }
-    } catch (err) {
+    } catch (_err) {
       // Logout errors are non-critical, silently fail
     } finally {
       // Clear local state regardless of API call success
@@ -178,7 +178,7 @@ export const useAuthStore = defineStore("auth", () => {
         ),
         householdSize: profile.householdSize || 1,
       };
-    } catch (err) {
+    } catch (_err) {
       // Token is invalid (401) or user doesn't exist (404)
       // Clear auth data - router guard will handle navigation
       clearAuthData();

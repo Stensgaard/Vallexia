@@ -83,7 +83,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["update:modelValue", "blur", "focus"]);
+defineEmits(["update:modelValue", "blur", "focus"]);
 
 const inputClasses = computed(() => {
   const baseClasses = "form-input";

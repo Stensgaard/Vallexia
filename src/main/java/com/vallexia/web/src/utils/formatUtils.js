@@ -23,10 +23,6 @@ export function formatDate(date, format, locale = "en-US") {
   const dateObj = date instanceof Date ? date : new Date(date);
   if (isNaN(dateObj.getTime())) return "";
 
-  const year = dateObj.getFullYear();
-  const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-  const day = String(dateObj.getDate()).padStart(2, "0");
-
   // Handle both format strings (from backend) and enum-like keys (from frontend)
   const normalizedFormat = format || "";
 

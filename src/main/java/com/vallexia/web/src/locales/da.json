@@ -436,7 +436,11 @@
     "comingSoonDescription": "Vi bygger omfattende ernæringsanalyse med detaljeret makrosporing, mikronæringsstoffovervågning og personlige anbefalinger.",
     "familyUpgrade": {
       "title": "Planlægger for flere personer?",
-      "description": "Sporer i øjeblikket ernæring for din husstand. Opgrader til <strong>Familie</strong> abonnement for pr. person ernæringsmål og individuel fremskridtssporing.",
+      "description": {
+        "prefix": "Sporer i øjeblikket ernæring for din husstand. Opgrader til ",
+        "family": "Familie",
+        "suffix": " abonnement for pr. person ernæringsmål og individuel fremskridtssporing."
+      },
       "learnMore": "Læs mere om Familie abonnement"
     },
     "mealTypes": {

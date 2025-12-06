@@ -71,6 +71,7 @@ const bootstrap = async () => {
     await loadLocaleDependencies();
   } catch (error) {
     if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
       console.error("Failed to load locale configuration", error);
     }
     showConfigErrorScreen(
@@ -108,6 +109,7 @@ const bootstrap = async () => {
     } catch (error) {
       // Log warning for debugging while still allowing app to continue
       if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
         console.warn("Failed to load user settings on initialization:", error);
       }
       // Apply default language as fallback
@@ -155,6 +157,7 @@ const bootstrap = async () => {
   } catch (error) {
     // Log error for debugging but don't block app mounting
     if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
       console.error("Auth initialization error:", error);
     }
   } finally {

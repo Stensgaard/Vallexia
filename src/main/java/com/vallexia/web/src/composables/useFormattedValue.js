@@ -101,7 +101,10 @@ export function useFormattedValue() {
           `${formatNumber(quantity, decimals)} ${unit || ""}`;
       }
     } catch (error) {
-      console.error("Failed to format ingredient quantity:", error);
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.error("Failed to format ingredient quantity:", error);
+      }
       // Keep placeholder on error
     }
   };
@@ -152,7 +155,10 @@ export function useFormattedValue() {
       // Update reactive ref - Vue will detect this change
       formattedCache.value[cacheKey] = formatted;
     } catch (error) {
-      console.error("Failed to format nutritional value:", error);
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.error("Failed to format nutritional value:", error);
+      }
       // Keep placeholder on error
     }
   };

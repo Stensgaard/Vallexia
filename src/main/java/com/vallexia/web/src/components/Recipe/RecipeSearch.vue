@@ -178,7 +178,7 @@ import {
   getDifficultyLevels,
 } from "@/utils/localeConfig";
 
-const { t } = useI18n();
+useI18n();
 const mealCategories = computed(() => getMealCategories());
 const cuisineOptions = computed(() => getCuisineTypes());
 const difficultyOptions = computed(() => getDifficultyLevels());

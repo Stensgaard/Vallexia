@@ -70,7 +70,6 @@ import { ref, reactive, onMounted, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 import { useRecipeStore } from "@/stores/recipe";
-import { useAuthStore } from "@/stores/auth";
 import RecipeDetail from "@/components/Recipe/RecipeDetail.vue";
 import Toast from "@/components/common/Toast.vue";
 import { getErrorMessage } from "@/utils/errorUtils";

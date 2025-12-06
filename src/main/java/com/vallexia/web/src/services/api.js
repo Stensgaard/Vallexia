@@ -36,7 +36,7 @@ const getAuthStore = () => {
       return null;
     }
     return useAuthStore(activePinia);
-  } catch (error) {
+  } catch (_error) {
     // Pinia not yet initialized
     return null;
   }

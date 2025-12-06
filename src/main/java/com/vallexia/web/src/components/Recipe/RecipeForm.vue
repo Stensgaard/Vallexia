@@ -355,7 +355,7 @@ import {
 } from "@/utils/localeConfig";
 import TagInput from "@/components/common/TagInput.vue";
 
-const { t } = useI18n();
+useI18n();
 const settingsStore = useSettingsStore();
 
 const mealCategories = computed(() => getMealCategories());
