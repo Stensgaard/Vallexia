@@ -164,32 +164,22 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { useSettingsStore } from '@/stores/settings'
 import { shouldShowFamilyUpgrade } from '@/utils/subscriptionUtils'
+import { useFormattedValue } from '@/composables/useFormattedValue'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
 const settingsStore = useSettingsStore()
 
+// Use composable for formatted values with proper Vue reactivity
+const { formatNutritionalValue } = useFormattedValue()
+
 const formatNumber = (number, decimals = 0) => {
   return settingsStore.formatNumberFn(number, decimals)
-}
-
-const formatNutritionalValue = (value) => {
-  if (!value && value !== 0) {
-    return ''
-  }
-  
-  // Nutritional values are stored in grams, convert to ounces if imperial
-  const unit = settingsStore.measurementSystem === 'IMPERIAL' ? 'oz' : 'g'
-  const displayValue = unit === 'oz' 
-    ? settingsStore.convertWeightFn(value, 'g', 'oz')
-    : value
-  
-  return `${formatNumber(displayValue, 1)}${unit}`
 }
 
 // Check if user has multi-person household and is not on Family subscription

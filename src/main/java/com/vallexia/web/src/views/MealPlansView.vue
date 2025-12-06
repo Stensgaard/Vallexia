@@ -108,7 +108,6 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useSettingsStore } from '@/stores/settings'
-import { FIRST_DAY_OF_WEEK } from '@/utils/constants'
 
 const settingsStore = useSettingsStore()
 
@@ -118,7 +117,7 @@ const currentWeekStart = ref(new Date())
 const getWeekStart = (date) => {
   const d = new Date(date)
   const day = d.getDay()
-  const firstDay = settingsStore.firstDayOfWeek === FIRST_DAY_OF_WEEK.SUNDAY ? 0 : 1
+  const firstDay = settingsStore.firstDayOfWeek === 'SUNDAY' ? 0 : 1
   
   if (firstDay === 1) {
     // Monday is first day
