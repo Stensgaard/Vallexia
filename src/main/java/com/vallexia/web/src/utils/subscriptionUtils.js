@@ -7,15 +7,26 @@
  * @module subscriptionUtils
  */
 
-import { SUBSCRIPTION_STATUS } from '@/utils/constants'
+import { getSubscriptionStatuses, createEnumFromList } from '@/utils/localeConfig'
+
+const subscriptionStatuses = getSubscriptionStatuses()
+const subscriptionEnum = createEnumFromList(subscriptionStatuses)
+
+const SUBSCRIPTION_CODES = {
+  FREE: subscriptionEnum.FREE || 'FREE',
+  PREMIUM: subscriptionEnum.PREMIUM || 'PREMIUM',
+  FAMILY: subscriptionEnum.FAMILY || 'FAMILY',
+  CANCELLED: subscriptionEnum.CANCELLED || 'CANCELLED',
+  EXPIRED: subscriptionEnum.EXPIRED || 'EXPIRED'
+}
 
 /**
  * Subscription tiers in order of access level
  */
 export const SUBSCRIPTION_TIERS = {
-  [SUBSCRIPTION_STATUS.FREE]: 0,
-  [SUBSCRIPTION_STATUS.PREMIUM]: 1,
-  [SUBSCRIPTION_STATUS.FAMILY]: 2
+  [SUBSCRIPTION_CODES.FREE]: 0,
+  [SUBSCRIPTION_CODES.PREMIUM]: 1,
+  [SUBSCRIPTION_CODES.FAMILY]: 2
 }
 
 /**
@@ -27,7 +38,7 @@ export const SUBSCRIPTION_TIERS = {
  */
 export function hasSubscriptionAccess(userSubscriptionStatus, requiredTier) {
   if (!userSubscriptionStatus) {
-    return requiredTier === SUBSCRIPTION_STATUS.FREE
+    return requiredTier === SUBSCRIPTION_CODES.FREE
   }
 
   const userTier = SUBSCRIPTION_TIERS[userSubscriptionStatus] || 0
@@ -43,7 +54,7 @@ export function hasSubscriptionAccess(userSubscriptionStatus, requiredTier) {
  * @returns {boolean} True if user has FAMILY subscription
  */
 export function canAccessFamilyFeatures(subscriptionStatus) {
-  return hasSubscriptionAccess(subscriptionStatus, SUBSCRIPTION_STATUS.FAMILY)
+  return hasSubscriptionAccess(subscriptionStatus, SUBSCRIPTION_CODES.FAMILY)
 }
 
 /**
@@ -53,7 +64,7 @@ export function canAccessFamilyFeatures(subscriptionStatus) {
  * @returns {boolean} True if user has PREMIUM or FAMILY subscription
  */
 export function canAccessPremiumFeatures(subscriptionStatus) {
-  return hasSubscriptionAccess(subscriptionStatus, SUBSCRIPTION_STATUS.PREMIUM)
+  return hasSubscriptionAccess(subscriptionStatus, SUBSCRIPTION_CODES.PREMIUM)
 }
 
 /**
@@ -70,10 +81,10 @@ export function shouldShowFamilyUpgrade(user) {
   }
 
   // Show banner to FREE and PREMIUM users (promote FAMILY tier)
-  return (user.subscriptionStatus === SUBSCRIPTION_STATUS.FREE || 
-          user.subscriptionStatus === SUBSCRIPTION_STATUS.PREMIUM) &&
-         user.subscriptionStatus !== SUBSCRIPTION_STATUS.CANCELLED &&
-         user.subscriptionStatus !== SUBSCRIPTION_STATUS.EXPIRED
+  return (user.subscriptionStatus === SUBSCRIPTION_CODES.FREE || 
+          user.subscriptionStatus === SUBSCRIPTION_CODES.PREMIUM) &&
+         user.subscriptionStatus !== SUBSCRIPTION_CODES.CANCELLED &&
+         user.subscriptionStatus !== SUBSCRIPTION_CODES.EXPIRED
 }
 
 /**
@@ -83,13 +94,14 @@ export function shouldShowFamilyUpgrade(user) {
  * @returns {string} Display name for the subscription tier
  */
 export function getSubscriptionDisplayName(subscriptionStatus) {
-  const displayNames = {
-    FREE: 'Free',
-    PREMIUM: 'Premium',
-    FAMILY: 'Family',
-    CANCELLED: 'Cancelled',
-    EXPIRED: 'Expired'
+  const displayNames = subscriptionStatuses.reduce((acc, item) => {
+    acc[item.code] = item.name
+    return acc
+  }, {})
+
+  if (!subscriptionStatus) {
+    return displayNames[SUBSCRIPTION_CODES.FREE] || 'Free'
   }
 
-  return displayNames[subscriptionStatus] || 'Free'
+  return displayNames[subscriptionStatus] || subscriptionStatus
 }

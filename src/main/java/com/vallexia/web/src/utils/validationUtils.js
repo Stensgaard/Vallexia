@@ -1,10 +1,6 @@
 /**
  * Validation utility functions for validating values against constants
  * and providing safe fallbacks.
- * 
- * @author Vallexia Team
- * @version 1.0
- * @since 2024-01-01
  */
 
 /**

@@ -1,10 +1,12 @@
-/**
- * Formatting utilities for dates, times, and numbers based on user settings.
- * 
- * @author Vallexia Team
- * @version 1.0
- * @since 2024-01-01
- */
+import { getDefaultLanguage } from '@/i18n'
+import {
+  getDefaultCountry,
+  getDecimalSeparatorForCountry,
+  getThousandsSeparatorForCountry,
+  getCurrencyForCountry as getCurrencyFromConfig,
+  getTokensForDateCode,
+  getTokensForDateFormat
+} from '@/utils/localeConfig'
 
 /**
  * Format a date according to the specified format and locale.
@@ -28,18 +30,12 @@ export function formatDate(date, format, locale = 'en-US') {
   // Handle both format strings (from backend) and enum-like keys (from frontend)
   const normalizedFormat = format || ''
   
-  if (normalizedFormat === 'MM/DD/YYYY' || normalizedFormat === 'MM_DD_YYYY') {
-    return `${month}/${day}/${year}`
-  } else if (normalizedFormat === 'DD/MM/YYYY' || normalizedFormat === 'DD_MM_YYYY') {
-    return `${day}/${month}/${year}`
-  } else if (normalizedFormat === 'YYYY-MM-DD' || normalizedFormat === 'YYYY_MM_DD') {
-    return `${year}-${month}-${day}`
-  } else if (normalizedFormat === 'DD.MM.YYYY' || normalizedFormat === 'DD_MM_YYYY_DOT') {
-    return `${day}.${month}.${year}`
-  } else {
-    // Fallback to locale-based formatting
-    return dateObj.toLocaleDateString(locale)
+  const tokens = getTokensForDateCode(normalizedFormat) || getTokensForDateFormat(normalizedFormat)
+  if (tokens?.length) {
+    return formatDateWithTokens(dateObj, tokens)
   }
+
+  return dateObj.toLocaleDateString(locale)
 }
 
 /**
@@ -82,12 +78,16 @@ export function formatNumber(number, decimalSep = '.', thousandsSep = ',', decim
  * @returns {string} Locale string (e.g., 'en-US', 'en-GB')
  */
 export function getLocaleFromSettings(settings) {
-  if (!settings) return 'en-US'
+  if (!settings) {
+    const language = getDefaultLanguage()
+    const country = getDefaultCountry()
+    return country ? `${language}-${country}` : language
+  }
   
-  const language = settings.language || 'en'
-  const country = settings.country || 'US'
+  const language = settings.language || getDefaultLanguage()
+  const country = settings.country || getDefaultCountry()
   
-  return `${language}-${country}`
+  return country ? `${language}-${country}` : language
 }
 
 /**
@@ -98,16 +98,7 @@ export function getLocaleFromSettings(settings) {
  * @returns {string} Decimal separator ('.' or ',')
  */
 export function getDecimalSeparator(country) {
-  if (!country) return '.'
-  
-  // Countries that use comma as decimal separator
-  const commaCountries = [
-    'DE', 'FR', 'IT', 'ES', 'PT', 'NL', 'BE', 'AT', 'CH', 'SE', 'NO', 'DK', 'FI',
-    'PL', 'CZ', 'SK', 'HU', 'RO', 'BG', 'HR', 'SI', 'GR', 'RU', 'BR', 'AR', 'CL',
-    'CO', 'PE', 'VE', 'EC', 'UY', 'PY', 'BO', 'ZA'
-  ]
-  
-  return commaCountries.includes(country.toUpperCase()) ? ',' : '.'
+  return getDecimalSeparatorForCountry(country) || '.'
 }
 
 /**
@@ -118,19 +109,7 @@ export function getDecimalSeparator(country) {
  * @returns {string} Thousands separator (',' or '.' or ' ')
  */
 export function getThousandsSeparator(country) {
-  if (!country) return ','
-  
-  const decimalSep = getDecimalSeparator(country)
-  
-  // If decimal is comma, thousands is usually period or space
-  if (decimalSep === ',') {
-    // Some countries use space, others use period
-    const spaceCountries = ['FR', 'SE', 'NO', 'FI', 'DK']
-    return spaceCountries.includes(country.toUpperCase()) ? ' ' : '.'
-  }
-  
-  // If decimal is period, thousands is usually comma
-  return ','
+  return getThousandsSeparatorForCountry(country) || ','
 }
 
 /**
@@ -140,63 +119,27 @@ export function getThousandsSeparator(country) {
  * @returns {string|null} Currency code (e.g., 'USD', 'GBP', 'EUR') or null
  */
 export function getCurrencyFromCountry(country) {
-  if (!country) return null
-  
-  // Map of country codes to currency codes
-  const countryToCurrency = {
-    'US': 'USD',
-    'GB': 'GBP',
-    'CA': 'CAD',
-    'AU': 'AUD',
-    'NZ': 'NZD',
-    'JP': 'JPY',
-    'CN': 'CNY',
-    'IN': 'INR',
-    'BR': 'BRL',
-    'MX': 'MXN',
-    'AR': 'ARS',
-    'CL': 'CLP',
-    'CO': 'COP',
-    'PE': 'PEN',
-    'VE': 'VES',
-    'EC': 'USD',
-    'UY': 'UYU',
-    'PY': 'PYG',
-    'BO': 'BOB',
-    'ZA': 'ZAR',
-    'KR': 'KRW',
-    'SG': 'SGD',
-    'MY': 'MYR',
-    'TH': 'THB',
-    'ID': 'IDR',
-    'PH': 'PHP',
-    'VN': 'VND',
-    'CH': 'CHF',
-    'NO': 'NOK',
-    'SE': 'SEK',
-    'DK': 'DKK',
-    'PL': 'PLN',
-    'CZ': 'CZK',
-    'HU': 'HUF',
-    'RO': 'RON',
-    'BG': 'BGN',
-    'HR': 'HRK',
-    'TR': 'TRY',
-    'RU': 'RUB',
-    'IL': 'ILS',
-    'AE': 'AED',
-    'SA': 'SAR'
-  }
-  
-  // Check if country is in Eurozone
-  const eurozoneCountries = [
-    'AT', 'BE', 'CY', 'EE', 'FI', 'FR', 'DE', 'GR', 'IE', 'IT', 'LV', 'LT',
-    'LU', 'MT', 'NL', 'PT', 'SK', 'SI', 'ES'
-  ]
-  
-  if (eurozoneCountries.includes(country.toUpperCase())) {
-    return 'EUR'
-  }
-  
-  return countryToCurrency[country.toUpperCase()] || null
+  return getCurrencyFromConfig(country)
+}
+
+const formatDateWithTokens = (dateObj, tokens) => {
+  const year = String(dateObj.getFullYear())
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0')
+  const day = String(dateObj.getDate()).padStart(2, '0')
+
+  return tokens.map((token) => {
+    const type = token?.type?.toUpperCase()
+    switch (type) {
+      case 'DAY':
+        return day
+      case 'MONTH':
+        return month
+      case 'YEAR':
+        return year
+      case 'LITERAL':
+        return token?.value || ''
+      default:
+        return ''
+    }
+  }).join('')
 }
