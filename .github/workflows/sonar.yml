@@ -50,11 +50,21 @@ jobs:
       
       - name: Cache OWASP Dependency Check NVD database
         uses: actions/cache@v4
+        id: cache-dependency-check
         with:
           path: .dependency-check-data
-          key: dependency-check-nvd-${{ runner.os }}-${{ hashFiles('pom.xml') }}
+          key: dependency-check-nvd-${{ runner.os }}
           restore-keys: |
             dependency-check-nvd-${{ runner.os }}-
+      
+      - name: Check cache status
+        run: |
+          if [ -d ".dependency-check-data" ] && [ "$(ls -A .dependency-check-data 2>/dev/null)" ]; then
+            echo "✅ Cache restored - NVD database found"
+            du -sh .dependency-check-data
+          else
+            echo "ℹ️  Cache miss - will download NVD database"
+          fi
       
       - name: Run tests with coverage
         run: mvn clean verify
