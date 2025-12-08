@@ -21,7 +21,7 @@ export function formatDate(date, format, locale = "en-US") {
   if (!date) return "";
 
   const dateObj = date instanceof Date ? date : new Date(date);
-  if (isNaN(dateObj.getTime())) return "";
+  if (Number.isNaN(dateObj.getTime())) return "";
 
   // Handle both format strings (from backend) and enum-like keys (from frontend)
   const normalizedFormat = format || "";
@@ -51,7 +51,7 @@ export function formatNumber(
   thousandsSep = ",",
   decimals = 2,
 ) {
-  if (number === null || number === undefined || isNaN(number)) return "";
+  if (number === null || number === undefined || Number.isNaN(number)) return "";
 
   // Convert to fixed decimal places
   const fixed = number.toFixed(decimals);
@@ -62,7 +62,7 @@ export function formatNumber(
   const decimalPart = parts[1];
 
   // Add thousands separator
-  const formattedInteger = integerPart.replace(
+  const formattedInteger = integerPart.replaceAll(
     /\B(?=(\d{3})+(?!\d))/g,
     thousandsSep,
   );

@@ -8,10 +8,11 @@
 
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
+          <label for="recipe-name" class="block text-sm font-medium text-gray-700 mb-1">
             {{ $t("recipes.form.name") }} <span class="text-red-500">*</span>
           </label>
           <input
+            id="recipe-name"
             v-model="formData.name"
             type="text"
             required
@@ -20,10 +21,11 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">{{
+          <label for="recipe-description" class="block text-sm font-medium text-gray-700 mb-1">{{
             $t("recipes.form.description")
           }}</label>
           <textarea
+            id="recipe-description"
             v-model="formData.description"
             rows="3"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -32,11 +34,12 @@
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1"
+            <label for="recipe-category" class="block text-sm font-medium text-gray-700 mb-1"
               >{{ $t("recipes.form.category") }}
               <span class="text-red-500">*</span></label
             >
             <select
+              id="recipe-category"
               v-model="formData.category"
               required
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -55,10 +58,11 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">{{
+            <label for="recipe-cuisine-type" class="block text-sm font-medium text-gray-700 mb-1">{{
               $t("recipes.form.cuisineType")
             }}</label>
             <select
+              id="recipe-cuisine-type"
               v-model="formData.cuisineType"
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
@@ -89,10 +93,11 @@
 
       <div class="grid grid-cols-3 gap-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">{{
+          <label for="recipe-prep-time" class="block text-sm font-medium text-gray-700 mb-1">{{
             $t("recipes.form.prepTime")
           }}</label>
           <input
+            id="recipe-prep-time"
             v-model.number="formData.prepTimeMinutes"
             type="number"
             min="0"
@@ -101,10 +106,11 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">{{
+          <label for="recipe-cook-time" class="block text-sm font-medium text-gray-700 mb-1">{{
             $t("recipes.form.cookTime")
           }}</label>
           <input
+            id="recipe-cook-time"
             v-model.number="formData.cookTimeMinutes"
             type="number"
             min="0"
@@ -113,11 +119,12 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
+          <label for="recipe-servings" class="block text-sm font-medium text-gray-700 mb-1">
             {{ $t("recipes.form.servings") }}
             <span class="text-red-500">*</span>
           </label>
           <input
+            id="recipe-servings"
             v-model.number="formData.servings"
             type="number"
             min="1"
@@ -128,10 +135,11 @@
       </div>
 
       <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">{{
+        <label for="recipe-difficulty-level" class="block text-sm font-medium text-gray-700 mb-1">{{
           $t("recipes.form.difficultyLevel")
         }}</label>
         <select
+          id="recipe-difficulty-level"
           v-model="formData.difficultyLevel"
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
@@ -233,10 +241,11 @@
       </h3>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">{{
+          <label for="recipe-calories" class="block text-sm font-medium text-gray-700 mb-1">{{
             $t("recipes.form.calories")
           }}</label>
           <input
+            id="recipe-calories"
             v-model.number="formData.nutritionalInfo.calories"
             type="number"
             step="0.1"
@@ -245,10 +254,11 @@
           />
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1"
+          <label for="recipe-protein" class="block text-sm font-medium text-gray-700 mb-1"
             >{{ $t("recipes.form.protein") }} ({{ nutritionalUnit }})</label
           >
           <input
+            id="recipe-protein"
             v-model.number="formData.nutritionalInfo.protein"
             type="number"
             step="0.1"
@@ -257,10 +267,11 @@
           />
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1"
+          <label for="recipe-carbs" class="block text-sm font-medium text-gray-700 mb-1"
             >{{ $t("recipes.form.carbs") }} ({{ nutritionalUnit }})</label
           >
           <input
+            id="recipe-carbs"
             v-model.number="formData.nutritionalInfo.carbs"
             type="number"
             step="0.1"
@@ -269,10 +280,11 @@
           />
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1"
+          <label for="recipe-fats" class="block text-sm font-medium text-gray-700 mb-1"
             >{{ $t("recipes.form.fats") }} ({{ nutritionalUnit }})</label
           >
           <input
+            id="recipe-fats"
             v-model.number="formData.nutritionalInfo.fats"
             type="number"
             step="0.1"
@@ -285,10 +297,11 @@
 
     <!-- Image URL -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <label class="block text-sm font-medium text-gray-700 mb-1">{{
+      <label for="recipe-image-url" class="block text-sm font-medium text-gray-700 mb-1">{{
         $t("recipes.form.imageUrl")
       }}</label>
       <input
+        id="recipe-image-url"
         v-model="formData.imageUrl"
         type="url"
         :placeholder="$t('recipes.form.imageUrlPlaceholder')"
@@ -391,7 +404,7 @@ const formData = ref({
   category: props.recipe?.category || "",
   cuisineType: props.recipe?.cuisineType || "",
   imageUrl: props.recipe?.imageUrl || "",
-  isPublic: props.recipe?.isPublic !== undefined ? props.recipe.isPublic : true,
+  isPublic: props.recipe?.isPublic ?? true,
   tags: props.recipe?.tags ? Array.from(props.recipe.tags) : [],
   ingredients:
     props.recipe?.ingredients?.length > 0
@@ -426,7 +439,7 @@ watch(
         category: newRecipe.category || "",
         cuisineType: newRecipe.cuisineType || "",
         imageUrl: newRecipe.imageUrl || "",
-        isPublic: newRecipe.isPublic !== undefined ? newRecipe.isPublic : true,
+        isPublic: newRecipe.isPublic ?? true,
         tags: newRecipe.tags ? Array.from(newRecipe.tags) : [],
         ingredients:
           newRecipe.ingredients?.length > 0

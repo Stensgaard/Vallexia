@@ -30,23 +30,23 @@ public class InputSanitizer {
   
   // Patterns for detecting sensitive information in error messages
   private static final Pattern SQL_ERROR_PATTERN = Pattern.compile(
-      "(?i)(sql|query|database|table|column|constraint|duplicate key|foreign key|syntax error)", 
+      "(sql|query|database|table|column|constraint|duplicate key|foreign key|syntax error)", 
       Pattern.CASE_INSENSITIVE);
   
   private static final Pattern FILE_PATH_PATTERN = Pattern.compile(
-      "(?i)([a-zA-Z]:\\\\|/[a-zA-Z_\\-./]+/|C:\\\\|\\\\\\\\)", 
+      "([a-zA-Z]:\\\\|/[a-zA-Z_./-]+/|\\\\\\\\)", 
       Pattern.CASE_INSENSITIVE);
   
   private static final Pattern STACK_TRACE_PATTERN = Pattern.compile(
-      "(?i)(\\s+at\\s+[a-zA-Z0-9_.]+\\(|Exception|Error:|Caused by:)", 
+      "(\\s+at\\s+[a-zA-Z0-9_.]+\\(|Exception|Error:|Caused by:)", 
       Pattern.CASE_INSENSITIVE);
   
   private static final Pattern CLASS_NAME_PATTERN = Pattern.compile(
-      "(?i)(com\\.|org\\.|java\\.|javax\\.)[a-zA-Z0-9_.]+",
+      "(com\\.|org\\.|java\\.|javax\\.)[a-zA-Z0-9_.]+",
       Pattern.CASE_INSENSITIVE);
   
   private static final Pattern IP_PATTERN = Pattern.compile(
-      "(?i)\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b",
+      "\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b",
       Pattern.CASE_INSENSITIVE);
   
   /**
