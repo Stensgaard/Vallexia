@@ -106,29 +106,24 @@ public class RecipeNutritionService {
         NutritionTotals totals = new NutritionTotals();
         
         for (RecipeIngredient recipeIngredient : ingredients) {
-            if (!isValidIngredient(recipeIngredient)) {
-                continue;
+            if (isValidIngredient(recipeIngredient)) {
+                Long ingredientId = recipeIngredient.getIngredient().getId();
+                Optional<IngredientNutrition> nutritionOpt = ingredientNutritionRepository.findByIngredientId(ingredientId);
+
+                if (nutritionOpt.isPresent()) {
+                    IngredientNutrition nutrition = nutritionOpt.get();
+                    BigDecimal quantity = recipeIngredient.getQuantity();
+                    String unit = recipeIngredient.getUnit() != null ? recipeIngredient.getUnit().toLowerCase() : "g";
+
+                    BigDecimal quantityInGrams = convertToGramsSafely(quantity, unit, nutrition, ingredientId);
+                    if (quantityInGrams != null) {
+                        BigDecimal multiplier = quantityInGrams.divide(BigDecimal.valueOf(100), DECIMAL_SCALE, ROUNDING_MODE);
+                        addNutritionToTotals(totals, nutrition, multiplier);
+                    }
+                } else {
+                    log.debug("No nutrition data found for ingredient ID: {}", ingredientId);
+                }
             }
-            
-            Long ingredientId = recipeIngredient.getIngredient().getId();
-            Optional<IngredientNutrition> nutritionOpt = ingredientNutritionRepository.findByIngredientId(ingredientId);
-            
-            if (nutritionOpt.isEmpty()) {
-                log.debug("No nutrition data found for ingredient ID: {}", ingredientId);
-                continue;
-            }
-            
-            IngredientNutrition nutrition = nutritionOpt.get();
-            BigDecimal quantity = recipeIngredient.getQuantity();
-            String unit = recipeIngredient.getUnit() != null ? recipeIngredient.getUnit().toLowerCase() : "g";
-            
-            BigDecimal quantityInGrams = convertToGramsSafely(quantity, unit, nutrition, ingredientId);
-            if (quantityInGrams == null) {
-                continue;
-            }
-            
-            BigDecimal multiplier = quantityInGrams.divide(BigDecimal.valueOf(100), DECIMAL_SCALE, ROUNDING_MODE);
-            addNutritionToTotals(totals, nutrition, multiplier);
         }
         
         return totals;

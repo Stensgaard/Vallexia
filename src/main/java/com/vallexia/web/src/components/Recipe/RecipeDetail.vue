@@ -386,13 +386,9 @@ const loadSavedState = () => {
   const saved = localStorage.getItem(storageKey);
 
   if (saved) {
-    try {
-      const parsed = JSON.parse(saved);
-      isCookingMode.value = parsed.isCookingMode || false;
-      checkedSteps.value = parsed.checkedSteps || {};
-    } catch (_e) {
-      // Failed to parse saved cooking state, use defaults
-    }
+    const parsed = JSON.parse(saved);
+    isCookingMode.value = parsed.isCookingMode || false;
+    checkedSteps.value = parsed.checkedSteps || {};
   }
 };
 

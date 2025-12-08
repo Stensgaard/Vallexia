@@ -34,7 +34,7 @@ public class InputSanitizer {
       Pattern.CASE_INSENSITIVE);
   
   private static final Pattern FILE_PATH_PATTERN = Pattern.compile(
-      "([a-zA-Z]:\\\\|/[a-zA-Z_./-]+/|\\\\\\\\)", 
+      "([a-z]:\\\\|/[a-z_.-]+/|\\\\\\\\)", 
       Pattern.CASE_INSENSITIVE);
   
   private static final Pattern STACK_TRACE_PATTERN = Pattern.compile(

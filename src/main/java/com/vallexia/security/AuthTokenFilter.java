@@ -60,10 +60,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                                   FilterChain filterChain) throws ServletException, IOException {
         try {
             String jwt = parseJwt(request);
-            if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
-                if (!processTokenAuthentication(jwt, request, response)) {
-                    return;
-                }
+            if (jwt != null && jwtUtils.validateJwtToken(jwt) &&
+                !processTokenAuthentication(jwt, request, response)) {
+                return;
             }
         } catch (JwtException e) {
             log.error("JWT validation failed: {}", e.getMessage());

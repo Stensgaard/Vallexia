@@ -1,6 +1,5 @@
-import { createApp } from "vue";
+import { createApp, watch } from "vue";
 import { createPinia } from "pinia";
-import { watch } from "vue";
 import App from "./App.vue";
 import router from "./router";
 import { useAuthStore } from "./stores/auth";

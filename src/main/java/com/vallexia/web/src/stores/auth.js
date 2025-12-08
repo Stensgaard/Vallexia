@@ -101,17 +101,12 @@ export const useAuthStore = defineStore("auth", () => {
   };
 
   const logout = async () => {
-    try {
-      // Call logout endpoint if authenticated
-      if (isAuthenticated.value) {
-        await authService.logout();
-      }
-    } catch (_err) {
-      // Logout errors are non-critical, silently fail
-    } finally {
-      // Clear local state regardless of API call success
-      clearAuthData();
+    // Call logout endpoint if authenticated
+    if (isAuthenticated.value) {
+      await authService.logout();
     }
+    // Clear local state regardless of API call success
+    clearAuthData();
   };
 
   const refreshAccessToken = async () => {
@@ -178,10 +173,11 @@ export const useAuthStore = defineStore("auth", () => {
         ),
         householdSize: profile.householdSize || 1,
       };
-    } catch (_err) {
+    } catch (error_) {
       // Token is invalid (401) or user doesn't exist (404)
       // Clear auth data - router guard will handle navigation
       clearAuthData();
+      throw error_;
     }
   };
 

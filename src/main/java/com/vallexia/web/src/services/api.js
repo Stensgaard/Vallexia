@@ -30,16 +30,11 @@ const processQueue = (error, token = null) => {
 };
 
 const getAuthStore = () => {
-  try {
-    const activePinia = getActivePinia();
-    if (!activePinia) {
-      return null;
-    }
-    return useAuthStore(activePinia);
-  } catch (_error) {
-    // Pinia not yet initialized
+  const activePinia = getActivePinia();
+  if (!activePinia) {
     return null;
   }
+  return useAuthStore(activePinia);
 };
 
 // Request interceptor to add auth token
@@ -52,7 +47,7 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
-    return Promise.reject(error);
+    throw error;
   },
 );
 
@@ -78,7 +73,7 @@ api.interceptors.response.use(
         // Router guard will handle navigation
         const authStore = getAuthStore();
         authStore?.clearAuthData();
-        return Promise.reject(error);
+        throw error;
       }
 
       // If refresh is already in progress, queue this request
@@ -92,7 +87,7 @@ api.interceptors.response.use(
             return api(originalRequest);
           })
           .catch((err) => {
-            return Promise.reject(err);
+            throw err;
           });
       }
 
@@ -123,11 +118,11 @@ api.interceptors.response.use(
 
         const authStore = getAuthStore();
         authStore?.clearAuthData();
-        return Promise.reject(refreshError);
+        throw refreshError;
       }
     }
 
-    return Promise.reject(error);
+    throw error;
   },
 );
 

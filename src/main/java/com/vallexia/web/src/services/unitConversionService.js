@@ -102,14 +102,18 @@ const handleConversionError = (error, operation = "conversion") => {
         // eslint-disable-next-line no-console
         console.warn(`Invalid ${operation} request:`, message);
       }
-      throw new Error(`Invalid ${operation}: ${message}`);
-    } else if (status === 500) {
+      return new Error(`Invalid ${operation}: ${message}`);
+    }
+
+    if (status === 500) {
       // Server error
       if (import.meta.env.DEV) {
         // eslint-disable-next-line no-console
         console.error(`Server error during ${operation}:`, message);
       }
-      throw new Error(`Server error during ${operation}. Please try again.`);
+      return new Error(
+        `Server error during ${operation}. Please try again.`,
+      );
     }
   } else if (error.request) {
     // Request was made but no response received
@@ -117,7 +121,7 @@ const handleConversionError = (error, operation = "conversion") => {
       // eslint-disable-next-line no-console
       console.error(`No response from ${operation} API:`, error.message);
     }
-    throw new Error(
+    return new Error(
       `Unable to reach ${operation} service. Please check your connection.`,
     );
   } else {
@@ -126,11 +130,11 @@ const handleConversionError = (error, operation = "conversion") => {
       // eslint-disable-next-line no-console
       console.error(`Error setting up ${operation} request:`, error.message);
     }
-    throw new Error(`Failed to perform ${operation}: ${error.message}`);
+    return new Error(`Failed to perform ${operation}: ${error.message}`);
   }
 
-  // Re-throw original error if not handled above
-  throw error;
+  // If no specific handling matched, bubble up original error
+  return error;
 };
 
 /**

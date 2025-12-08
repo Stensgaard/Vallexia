@@ -18,7 +18,7 @@ const messages = {};
 const availableLocaleCodes = [];
 Object.keys(localeModules).forEach((path) => {
   // Extract locale code from path (e.g., './locales/en.json' -> 'en')
-  const localeMatch = path.match(/\.\/locales\/(.+)\.json$/);
+  const localeMatch = /\.\/locales\/(.+)\.json$/.exec(path);
   if (localeMatch) {
     const localeCode = localeMatch[1];
     messages[localeCode] = localeModules[path].default || localeModules[path];

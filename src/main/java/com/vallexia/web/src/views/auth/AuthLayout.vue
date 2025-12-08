@@ -103,7 +103,7 @@ const headerTitleTranslated = computed(() => {
   if (title.includes("Title") || title.includes("Subtitle")) {
     const translated = t(`auth.meta.${title}`);
     // If translation exists (not the same as the key), return it
-    return translated !== `auth.meta.${title}` ? translated : title;
+    return translated === `auth.meta.${title}` ? title : translated;
   }
   // Otherwise return as-is (for custom titles passed as props)
   return title;
@@ -116,7 +116,7 @@ const headerSubtitleTranslated = computed(() => {
   if (subtitle.includes("Title") || subtitle.includes("Subtitle")) {
     const translated = t(`auth.meta.${subtitle}`);
     // If translation exists (not the same as the key), return it
-    return translated !== `auth.meta.${subtitle}` ? translated : subtitle;
+    return translated === `auth.meta.${subtitle}` ? subtitle : translated;
   }
   // Otherwise return as-is (for custom subtitles passed as props)
   return subtitle;

@@ -11,8 +11,7 @@
 
 <script setup>
 import { computed } from "vue";
-import { useRoute } from "vue-router";
-import { RouterView } from "vue-router";
+import { RouterView, useRoute } from "vue-router";
 import MainLayout from "@/components/layout/MainLayout.vue";
 
 const route = useRoute();

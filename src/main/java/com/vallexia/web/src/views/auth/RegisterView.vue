@@ -208,18 +208,19 @@ const validateForm = () => {
   }
 
   // Country validation
-  if (!form.country.trim()) {
-    errors.country = t("auth.validation.countryRequired");
-    isValid = false;
-  } else {
+  const countryValue = form.country.trim();
+  if (countryValue) {
     // Validate country is in available options
     const validCountry = countryOptions.value.some(
-      (country) => country.code === form.country,
+      (country) => country.code === countryValue,
     );
     if (!validCountry) {
       errors.country = t("auth.validation.countryInvalid");
       isValid = false;
     }
+  } else {
+    errors.country = t("auth.validation.countryRequired");
+    isValid = false;
   }
 
   // Password validation
@@ -262,8 +263,9 @@ const handleSubmit = async () => {
   try {
     await authStore.register(form);
     router.push("/dashboard");
-  } catch (_error) {
-    // Error is handled by the store and displayed in the template
+  } catch (error_) {
+    // Error is handled by the store and displayed in the template; rethrow for upstream handlers
+    throw error_;
   }
 };
 

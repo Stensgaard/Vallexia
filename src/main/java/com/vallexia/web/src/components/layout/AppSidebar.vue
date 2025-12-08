@@ -149,12 +149,8 @@ const authStore = useAuthStore();
 const { t } = useI18n();
 
 const handleLogout = async () => {
-  try {
-    await authStore.logout();
-    router.push("/");
-  } catch (_error) {
-    // Logout errors are non-critical, silently fail
-  }
+  await authStore.logout();
+  router.push("/");
 };
 
 // Define icon components using Vue's h() function

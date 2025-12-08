@@ -120,8 +120,9 @@ const handleSubmit = async () => {
   try {
     await authStore.login(form);
     router.push("/dashboard");
-  } catch (_error) {
-    // Error is handled by the store and displayed in the template
+  } catch (error_) {
+    // Error is handled by the store and displayed in the template; rethrow for upstream handlers
+    throw error_;
   }
 };
 

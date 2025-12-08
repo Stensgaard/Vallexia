@@ -1,12 +1,10 @@
 import api from "./api";
 
 class LocaleService {
-  constructor() {
-    this.cachedLocales = null;
-    this.fetchPromise = null;
-    this.cachedConfig = null;
-    this.configPromise = null;
-  }
+  cachedLocales = null;
+  fetchPromise = null;
+  cachedConfig = null;
+  configPromise = null;
 
   async getSupportedLocales(forceRefresh = false) {
     if (this.cachedLocales && !forceRefresh) {

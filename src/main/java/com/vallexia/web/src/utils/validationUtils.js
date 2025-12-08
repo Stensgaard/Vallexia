@@ -18,31 +18,15 @@ export function validateValue(value, constants, fallback, _fieldName = "") {
     return fallback;
   }
 
-  // Check if constants is an object (like DIETARY_RESTRICTIONS)
-  if (typeof constants === "object" && !Array.isArray(constants)) {
-    const validValues = Object.values(constants);
-    if (validValues.includes(value)) {
-      return value;
-    }
+  if (isObjectConstants(constants)) {
+    return objectContainsValue(constants, value) ? value : fallback;
   }
-  // Check if constants is an array of objects (like SUPPORTED_LANGUAGES, COUNTRIES)
-  else if (Array.isArray(constants)) {
-    // Check if it's an array of objects with 'code' or 'value' property
-    if (constants.length > 0 && typeof constants[0] === "object") {
-      const hasCode = constants[0].hasOwnProperty("code");
-      const hasValue = constants[0].hasOwnProperty("value");
 
-      if (hasCode && constants.some((item) => item.code === value)) {
-        return value;
-      }
-      if (hasValue && constants.some((item) => item.value === value)) {
-        return value;
-      }
+  if (Array.isArray(constants)) {
+    if (isArrayOfObjects(constants)) {
+      return arrayObjectsContainValue(constants, value) ? value : fallback;
     }
-    // Check if it's an array of strings
-    else if (constants.includes(value)) {
-      return value;
-    }
+    return constants.includes(value) ? value : fallback;
   }
 
   return fallback;
@@ -61,42 +45,20 @@ export function filterValidValues(values, constants, _fieldName = "") {
     return [];
   }
 
-  const validValues = [];
-
-  // Check if constants is an object (like DIETARY_RESTRICTIONS)
-  if (typeof constants === "object" && !Array.isArray(constants)) {
-    const constantValues = Object.values(constants);
-    values.forEach((value) => {
-      if (constantValues.includes(value)) {
-        validValues.push(value);
-      }
-    });
-  }
-  // Check if constants is an array of objects (like SUPPORTED_LANGUAGES, COUNTRIES)
-  else if (Array.isArray(constants) && constants.length > 0) {
-    if (typeof constants[0] === "object") {
-      const hasCode = constants[0].hasOwnProperty("code");
-      const hasValue = constants[0].hasOwnProperty("value");
-
-      values.forEach((value) => {
-        if (hasCode && constants.some((item) => item.code === value)) {
-          validValues.push(value);
-        } else if (hasValue && constants.some((item) => item.value === value)) {
-          validValues.push(value);
-        }
-      });
-    }
-    // Check if it's an array of strings
-    else {
-      values.forEach((value) => {
-        if (constants.includes(value)) {
-          validValues.push(value);
-        }
-      });
-    }
+  if (isObjectConstants(constants)) {
+    const allowed = new Set(Object.values(constants));
+    return values.filter((value) => allowed.has(value));
   }
 
-  return validValues;
+  if (Array.isArray(constants) && constants.length > 0) {
+    if (isArrayOfObjects(constants)) {
+      const matcher = createObjectArrayMatcher(constants);
+      return values.filter(matcher);
+    }
+    return values.filter((value) => constants.includes(value));
+  }
+
+  return [];
 }
 
 /**
@@ -124,4 +86,29 @@ export function validateEnumValue(
   }
 
   return fallback;
+}
+
+function isObjectConstants(constants) {
+  return typeof constants === "object" && !Array.isArray(constants);
+}
+
+function objectContainsValue(constants, value) {
+  return Object.values(constants).includes(value);
+}
+
+function isArrayOfObjects(constants) {
+  return Array.isArray(constants) && constants.length > 0 && typeof constants[0] === "object";
+}
+
+function createObjectArrayMatcher(constants) {
+  const hasCode = Object.prototype.hasOwnProperty.call(constants[0], "code");
+  const hasValue = Object.prototype.hasOwnProperty.call(constants[0], "value");
+
+  return (value) =>
+    (hasCode && constants.some((item) => item.code === value)) ||
+    (hasValue && constants.some((item) => item.value === value));
+}
+
+function arrayObjectsContainValue(constants, value) {
+  return createObjectArrayMatcher(constants)(value);
 }
