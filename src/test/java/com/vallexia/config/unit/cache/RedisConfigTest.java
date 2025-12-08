@@ -5,7 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,13 +36,13 @@ class RedisConfigTest {
     assertThat(template.getConnectionFactory()).isEqualTo(connectionFactory);
     assertThat(template.getKeySerializer()).isInstanceOf(StringRedisSerializer.class);
     assertThat(template.getHashKeySerializer()).isInstanceOf(StringRedisSerializer.class);
-    assertThat(template.getValueSerializer()).isInstanceOf(GenericJackson2JsonRedisSerializer.class);
-    assertThat(template.getHashValueSerializer()).isInstanceOf(GenericJackson2JsonRedisSerializer.class);
+    assertThat(template.getValueSerializer()).isInstanceOf(StringRedisSerializer.class);
+    assertThat(template.getHashValueSerializer()).isInstanceOf(StringRedisSerializer.class);
   }
   
   @Test
-  @DisplayName("Should configure RedisTemplate with string keys and JSON values")
-  void shouldConfigureRedisTemplateWithStringKeysAndJsonValues() {
+  @DisplayName("Should configure RedisTemplate with string keys and string values")
+  void shouldConfigureRedisTemplateWithStringKeysAndStringValues() {
     // Given
     RedisConfig config = new RedisConfig();
     RedisConnectionFactory connectionFactory = mock(RedisConnectionFactory.class);
@@ -53,6 +52,6 @@ class RedisConfigTest {
     
     // Then
     assertThat(template.getKeySerializer()).isInstanceOf(StringRedisSerializer.class);
-    assertThat(template.getValueSerializer()).isInstanceOf(GenericJackson2JsonRedisSerializer.class);
+    assertThat(template.getValueSerializer()).isInstanceOf(StringRedisSerializer.class);
   }
 }
