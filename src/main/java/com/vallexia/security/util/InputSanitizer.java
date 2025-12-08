@@ -24,6 +24,11 @@ public class InputSanitizer {
   private static final int MAX_REQUEST_URI_LENGTH = 500;
   private static final int MAX_IP_ADDRESS_LENGTH = 50;
   private static final int MAX_ERROR_MESSAGE_LENGTH = 500;
+  /**
+   * Upper bound for any user-controlled string before applying regex operations
+   * to avoid excessive backtracking / regex DoS on very large inputs.
+   */
+  private static final int MAX_REGEX_INPUT_LENGTH = 5_000;
   
   @Value("${spring.profiles.active:dev}")
   private String activeProfile;
@@ -62,8 +67,10 @@ public class InputSanitizer {
       return null;
     }
     
+    String boundedInput = trimForRegex(input);
+
     // Remove control characters except newline and tab
-    String sanitized = input.replaceAll("[\\p{Cntrl}&&[^\n\t]]", "");
+    String sanitized = boundedInput.replaceAll("[\\p{Cntrl}&&[^\n\t]]", "");
     
     // Remove null bytes
     sanitized = sanitized.replace("\0", "");
@@ -139,24 +146,25 @@ public class InputSanitizer {
     if (errorMessage == null) {
       return "An error occurred while processing your request";
     }
+    String safeErrorMessage = trimForRegex(errorMessage);
     
     // In development mode, allow more detailed errors but still sanitize
     boolean isDevelopment = "dev".equalsIgnoreCase(activeProfile);
     
     // First, check if message contains sensitive patterns
-    if (containsSensitiveInformation(errorMessage)) {
+    if (containsSensitiveInformation(safeErrorMessage)) {
       if (isDevelopment) {
         // In dev, sanitize but keep some information
-        String sanitized = removeSensitivePatterns(errorMessage);
+        String sanitized = removeSensitivePatterns(safeErrorMessage);
         return sanitize(sanitized, MAX_ERROR_MESSAGE_LENGTH);
       } else {
         // In production, use generic message
-        return getGenericErrorMessage(errorMessage);
+        return getGenericErrorMessage(safeErrorMessage);
       }
     }
     
     // No sensitive data detected, sanitize and return
-    return sanitize(errorMessage, MAX_ERROR_MESSAGE_LENGTH);
+    return sanitize(safeErrorMessage, MAX_ERROR_MESSAGE_LENGTH);
   }
   
   /**
@@ -169,12 +177,13 @@ public class InputSanitizer {
     if (message == null) {
       return false;
     }
+    String safeMessage = trimForRegex(message);
     
-    return SQL_ERROR_PATTERN.matcher(message).find() ||
-           FILE_PATH_PATTERN.matcher(message).find() ||
-           STACK_TRACE_PATTERN.matcher(message).find() ||
-           CLASS_NAME_PATTERN.matcher(message).find() ||
-           IP_PATTERN.matcher(message).find();
+    return SQL_ERROR_PATTERN.matcher(safeMessage).find() ||
+           FILE_PATH_PATTERN.matcher(safeMessage).find() ||
+           STACK_TRACE_PATTERN.matcher(safeMessage).find() ||
+           CLASS_NAME_PATTERN.matcher(safeMessage).find() ||
+           IP_PATTERN.matcher(safeMessage).find();
   }
   
   /**
@@ -184,7 +193,7 @@ public class InputSanitizer {
    * @return cleaned message
    */
   private String removeSensitivePatterns(String message) {
-    String cleaned = message;
+    String cleaned = trimForRegex(message);
     
     // Replace file paths with generic indicator
     cleaned = FILE_PATH_PATTERN.matcher(cleaned).replaceAll("[PATH]");
@@ -208,15 +217,24 @@ public class InputSanitizer {
    * @return generic error message
    */
   private String getGenericErrorMessage(String originalMessage) {
-    if (SQL_ERROR_PATTERN.matcher(originalMessage).find()) {
+    String safeMessage = trimForRegex(originalMessage);
+
+    if (SQL_ERROR_PATTERN.matcher(safeMessage).find()) {
       return "A database error occurred. Please contact support if the problem persists";
     }
     
-    if (FILE_PATH_PATTERN.matcher(originalMessage).find() ||
-        STACK_TRACE_PATTERN.matcher(originalMessage).find()) {
+    if (FILE_PATH_PATTERN.matcher(safeMessage).find() ||
+        STACK_TRACE_PATTERN.matcher(safeMessage).find()) {
       return "A system error occurred. Please contact support if the problem persists";
     }
     
     return "An error occurred while processing your request";
+  }
+
+  private String trimForRegex(String input) {
+    if (input == null || input.length() <= MAX_REGEX_INPUT_LENGTH) {
+      return input;
+    }
+    return input.substring(0, MAX_REGEX_INPUT_LENGTH);
   }
 }
