@@ -12,7 +12,6 @@ import java.util.Optional;
 
 /**
  * Utility class for converting between measurement units (metric and imperial).
- * Uses enums as the single source of truth for unit definitions and conversion factors.
  * 
  * @author Henrik Stensgaard
  * @version 2.0
@@ -20,6 +19,10 @@ import java.util.Optional;
  */
 @Slf4j
 public class UnitConversionUtil {
+    
+    private UnitConversionUtil() {
+        // Utility class - prevent instantiation
+    }
     
     private static final int DECIMAL_SCALE = 4;
     private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_UP;
@@ -72,7 +75,6 @@ public class UnitConversionUtil {
     
     /**
      * Convert any unit to grams (metric base unit).
-     * Uses SupportedWeightUnit enum as the single source of truth.
      * 
      * @param value the value to convert
      * @param unit the source unit
@@ -96,7 +98,6 @@ public class UnitConversionUtil {
     
     /**
      * Convert grams to target unit.
-     * Uses SupportedWeightUnit enum as the single source of truth.
      * 
      * @param valueInGrams value in grams
      * @param toUnit target unit
@@ -154,7 +155,6 @@ public class UnitConversionUtil {
     
     /**
      * Convert any unit to milliliters (base volume unit).
-     * Uses SupportedVolumeUnit enum as the single source of truth.
      * 
      * @param value the value to convert
      * @param unit the source unit
@@ -178,7 +178,6 @@ public class UnitConversionUtil {
     
     /**
      * Convert milliliters to target unit.
-     * Uses SupportedVolumeUnit enum as the single source of truth.
      * 
      * @param valueInMilliliters value in milliliters
      * @param toUnit target unit
@@ -248,7 +247,6 @@ public class UnitConversionUtil {
     
     /**
      * Check if a unit is a weight unit.
-     * Uses SupportedWeightUnit enum as the single source of truth.
      * 
      * @param unit the unit to check
      * @return true if weight unit, false otherwise
@@ -263,7 +261,6 @@ public class UnitConversionUtil {
     
     /**
      * Check if a unit is a volume unit.
-     * Uses SupportedVolumeUnit enum as the single source of truth.
      * 
      * @param unit the unit to check
      * @return true if volume unit, false otherwise
@@ -278,7 +275,6 @@ public class UnitConversionUtil {
     
     /**
      * Check if a unit is a count unit.
-     * Uses SupportedCountUnit enum as the single source of truth.
      * 
      * @param unit the unit to check
      * @return true if count unit, false otherwise

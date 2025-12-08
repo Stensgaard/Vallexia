@@ -311,61 +311,23 @@ public class MacroCalculator {
     log.debug("Calculating macros for goal type: {}, daily calories: {}", goalType, dailyCalories);
     
     try {
-      // Define macro percentage ratios for each goal type
-      BigDecimal proteinPercentage;
-      BigDecimal carbsPercentage;
-      BigDecimal fatsPercentage;
-      
-      switch (goalType) {
-        case WEIGHT_LOSS:
-          proteinPercentage = BigDecimal.valueOf(40);
-          carbsPercentage = BigDecimal.valueOf(30);
-          fatsPercentage = BigDecimal.valueOf(30);
-          break;
-        case WEIGHT_GAIN:
-          proteinPercentage = BigDecimal.valueOf(25);
-          carbsPercentage = BigDecimal.valueOf(45);
-          fatsPercentage = BigDecimal.valueOf(30);
-          break;
-        case MUSCLE_GAIN:
-          proteinPercentage = BigDecimal.valueOf(35);
-          carbsPercentage = BigDecimal.valueOf(40);
-          fatsPercentage = BigDecimal.valueOf(25);
-          break;
-        case MAINTENANCE:
-          proteinPercentage = BigDecimal.valueOf(30);
-          carbsPercentage = BigDecimal.valueOf(40);
-          fatsPercentage = BigDecimal.valueOf(30);
-          break;
-        case ATHLETIC_PERFORMANCE:
-          proteinPercentage = BigDecimal.valueOf(25);
-          carbsPercentage = BigDecimal.valueOf(50);
-          fatsPercentage = BigDecimal.valueOf(25);
-          break;
-        case GENERAL_HEALTH:
-          proteinPercentage = BigDecimal.valueOf(30);
-          carbsPercentage = BigDecimal.valueOf(40);
-          fatsPercentage = BigDecimal.valueOf(30);
-          break;
-        default:
-          throw new InvalidNutritionalDataException("Unknown goal type: " + goalType);
-      }
+      MacroPercentages percentages = getMacroPercentages(goalType);
       
       // Calculate grams: (calories × percentage / 100) / calories_per_gram
       BigDecimal proteinCalories = dailyCalories
-          .multiply(proteinPercentage)
+          .multiply(percentages.protein())
           .divide(BigDecimal.valueOf(100), DECIMAL_SCALE, ROUNDING_MODE);
       BigDecimal proteinGrams = proteinCalories
           .divide(PROTEIN_CALORIES_PER_GRAM, DECIMAL_SCALE, ROUNDING_MODE);
       
       BigDecimal carbsCalories = dailyCalories
-          .multiply(carbsPercentage)
+          .multiply(percentages.carbs())
           .divide(BigDecimal.valueOf(100), DECIMAL_SCALE, ROUNDING_MODE);
       BigDecimal carbsGrams = carbsCalories
           .divide(CARB_CALORIES_PER_GRAM, DECIMAL_SCALE, ROUNDING_MODE);
       
       BigDecimal fatsCalories = dailyCalories
-          .multiply(fatsPercentage)
+          .multiply(percentages.fats())
           .divide(BigDecimal.valueOf(100), DECIMAL_SCALE, ROUNDING_MODE);
       BigDecimal fatsGrams = fatsCalories
           .divide(FAT_CALORIES_PER_GRAM, DECIMAL_SCALE, ROUNDING_MODE);
@@ -380,4 +342,24 @@ public class MacroCalculator {
           "Failed to calculate macros from goal type: " + e.getMessage(), e);
     }
   }
+  
+  private MacroPercentages getMacroPercentages(GoalType goalType) {
+    switch (goalType) {
+      case WEIGHT_LOSS:
+        return new MacroPercentages(BigDecimal.valueOf(40), BigDecimal.valueOf(30), BigDecimal.valueOf(30));
+      case WEIGHT_GAIN:
+        return new MacroPercentages(BigDecimal.valueOf(25), BigDecimal.valueOf(45), BigDecimal.valueOf(30));
+      case MUSCLE_GAIN:
+        return new MacroPercentages(BigDecimal.valueOf(35), BigDecimal.valueOf(40), BigDecimal.valueOf(25));
+      case MAINTENANCE:
+      case GENERAL_HEALTH:
+        return new MacroPercentages(BigDecimal.valueOf(30), BigDecimal.valueOf(40), BigDecimal.valueOf(30));
+      case ATHLETIC_PERFORMANCE:
+        return new MacroPercentages(BigDecimal.valueOf(25), BigDecimal.valueOf(50), BigDecimal.valueOf(25));
+      default:
+        throw new InvalidNutritionalDataException("Unknown goal type: " + goalType);
+    }
+  }
+  
+  private record MacroPercentages(BigDecimal protein, BigDecimal carbs, BigDecimal fats) { }
 }

@@ -78,136 +78,279 @@ public class RecipeNutritionService {
         log.debug("Calculating nutrition for {} ingredients", ingredients.size());
         
         try {
-            BigDecimal totalCalories = BigDecimal.ZERO;
-            BigDecimal totalProtein = BigDecimal.ZERO;
-            BigDecimal totalCarbs = BigDecimal.ZERO;
-            BigDecimal totalFats = BigDecimal.ZERO;
-            BigDecimal totalFiber = BigDecimal.ZERO;
-            BigDecimal totalSodium = BigDecimal.ZERO;
-            BigDecimal totalSugar = BigDecimal.ZERO;
+            NutritionTotals totals = aggregateIngredientNutrition(ingredients);
             
-            for (RecipeIngredient recipeIngredient : ingredients) {
-                if (recipeIngredient.getIngredient() == null || recipeIngredient.getQuantity() == null) {
-                    // Build informative log message with available data
-                    String ingredientInfo = recipeIngredient.getId() != null 
-                        ? "RecipeIngredient ID: " + recipeIngredient.getId()
-                        : "RecipeIngredient (unsaved)";
-                    String missingField = recipeIngredient.getIngredient() == null 
-                        ? "ingredient" 
-                        : "quantity";
-                    StringBuilder details = new StringBuilder();
-                    if (recipeIngredient.getUnit() != null) {
-                        details.append(", unit: ").append(recipeIngredient.getUnit());
-                    }
-                    if (recipeIngredient.getDisplayOrder() != null) {
-                        details.append(", display order: ").append(recipeIngredient.getDisplayOrder());
-                    }
-                    
-                    log.debug("Skipping {} - missing {} field{}", 
-                        ingredientInfo, missingField, details.toString());
-                    continue;
-                }
-                
-                Long ingredientId = recipeIngredient.getIngredient().getId();
-                Optional<IngredientNutrition> nutritionOpt = ingredientNutritionRepository.findByIngredientId(ingredientId);
-                
-                if (nutritionOpt.isEmpty()) {
-                    log.debug("No nutrition data found for ingredient ID: {}", ingredientId);
-                    continue;
-                }
-                
-                IngredientNutrition nutrition = nutritionOpt.get();
-                BigDecimal quantity = recipeIngredient.getQuantity();
-                String unit = recipeIngredient.getUnit() != null ? recipeIngredient.getUnit().toLowerCase() : "g";
-                
-                // Convert quantity to grams for calculation
-                // Wrap in try-catch to handle invalid units gracefully - skip ingredient instead of failing entire calculation
-                BigDecimal quantityInGrams;
-                try {
-                    quantityInGrams = convertToGrams(quantity, unit, nutrition);
-                } catch (IllegalArgumentException e) {
-                    log.warn("Skipping ingredient ID {} due to invalid unit '{}': {}", 
-                        ingredientId, unit, e.getMessage());
-                    continue;
-                }
-                
-                // Calculate nutrition for this ingredient quantity (nutrition is per 100g)
-                BigDecimal multiplier = quantityInGrams.divide(BigDecimal.valueOf(100), DECIMAL_SCALE, ROUNDING_MODE);
-                
-                if (nutrition.getCaloriesPer100g() != null) {
-                    totalCalories = totalCalories.add(nutrition.getCaloriesPer100g().multiply(multiplier));
-                }
-                if (nutrition.getProteinPer100g() != null) {
-                    totalProtein = totalProtein.add(nutrition.getProteinPer100g().multiply(multiplier));
-                }
-                if (nutrition.getCarbsPer100g() != null) {
-                    totalCarbs = totalCarbs.add(nutrition.getCarbsPer100g().multiply(multiplier));
-                }
-                if (nutrition.getFatsPer100g() != null) {
-                    totalFats = totalFats.add(nutrition.getFatsPer100g().multiply(multiplier));
-                }
-                if (nutrition.getFiberPer100g() != null) {
-                    totalFiber = totalFiber.add(nutrition.getFiberPer100g().multiply(multiplier));
-                }
-                if (nutrition.getSodiumPer100g() != null) {
-                    totalSodium = totalSodium.add(nutrition.getSodiumPer100g().multiply(multiplier));
-                }
-                if (nutrition.getSugarPer100g() != null) {
-                    totalSugar = totalSugar.add(nutrition.getSugarPer100g().multiply(multiplier));
-                }
-            }
+            validateNutritionDataAvailable(totals.getTotalCalories());
             
-            // Validate that we have nutrition data - calories must be > 0
-            if (totalCalories.compareTo(BigDecimal.ZERO) <= 0) {
-                throw new RecipeValidationException(
-                    "Cannot calculate nutrition: no nutrition data available for recipe ingredients. " +
-                    "Please ensure all ingredients have nutrition data in the database."
-                );
-            }
+            NutritionalInfo nutritionalInfo = createNutritionalInfo(totals);
             
-            NutritionalInfo nutritionalInfo = new NutritionalInfo();
-            nutritionalInfo.setCalories(totalCalories.setScale(DECIMAL_SCALE, ROUNDING_MODE));
-            nutritionalInfo.setProtein(totalProtein.setScale(DECIMAL_SCALE, ROUNDING_MODE));
-            nutritionalInfo.setCarbs(totalCarbs.setScale(DECIMAL_SCALE, ROUNDING_MODE));
-            nutritionalInfo.setFats(totalFats.setScale(DECIMAL_SCALE, ROUNDING_MODE));
-            nutritionalInfo.setFiber(totalFiber.setScale(DECIMAL_SCALE, ROUNDING_MODE));
-            nutritionalInfo.setSodium(totalSodium.setScale(DECIMAL_SCALE, ROUNDING_MODE));
-            nutritionalInfo.setSugar(totalSugar.setScale(DECIMAL_SCALE, ROUNDING_MODE));
-            nutritionalInfo.setPerServing(false); // Total values
-            
-            // Validate calculated calories against macro-based calculation (sanity check)
-            // This helps catch data inconsistencies between ingredient nutrition data
-            if (totalProtein != null && totalCarbs != null && totalFats != null 
-                && totalCalories.compareTo(BigDecimal.ZERO) > 0) {
-                try {
-                    BigDecimal calculatedCaloriesFromMacros = macroCalculator.calculateCaloriesFromMacros(
-                        totalProtein, totalCarbs, totalFats);
-                    
-                    BigDecimal difference = totalCalories.subtract(calculatedCaloriesFromMacros).abs();
-                    BigDecimal percentDifference = difference
-                        .divide(totalCalories, DECIMAL_SCALE, ROUNDING_MODE)
-                        .multiply(BigDecimal.valueOf(100));
-                    
-                    // Warn if difference is significant (>5%)
-                    if (percentDifference.compareTo(BigDecimal.valueOf(5)) > 0) {
-                        log.warn("Nutrition data inconsistency detected: Calculated calories ({}) differ from " +
-                                "macro-based calculation ({}) by {}%", 
-                                totalCalories, calculatedCaloriesFromMacros, percentDifference);
-                    } else {
-                        log.debug("Nutrition validation passed: Calories match macro calculation within acceptable range");
-                    }
-                } catch (Exception e) {
-                    log.warn("Unable to validate nutrition calculation: {}", e.getMessage());
-                }
-            }
+            validateCaloriesAgainstMacros(totals);
             
             log.debug("Nutrition calculation completed: {} calories, {}g protein, {}g carbs, {}g fats",
-                    totalCalories, totalProtein, totalCarbs, totalFats);
+                    totals.getTotalCalories(), totals.getTotalProtein(), totals.getTotalCarbs(), totals.getTotalFats());
             return nutritionalInfo;
         } catch (ArithmeticException e) {
             throw new NutritionalCalculationException(
                 "Failed to calculate recipe nutrition due to arithmetic error", e
             );
+        }
+    }
+    
+    /**
+     * Aggregates nutrition data from all recipe ingredients.
+     * 
+     * @param ingredients list of recipe ingredients
+     * @return NutritionTotals containing aggregated values
+     */
+    private NutritionTotals aggregateIngredientNutrition(List<RecipeIngredient> ingredients) {
+        NutritionTotals totals = new NutritionTotals();
+        
+        for (RecipeIngredient recipeIngredient : ingredients) {
+            if (!isValidIngredient(recipeIngredient)) {
+                continue;
+            }
+            
+            Long ingredientId = recipeIngredient.getIngredient().getId();
+            Optional<IngredientNutrition> nutritionOpt = ingredientNutritionRepository.findByIngredientId(ingredientId);
+            
+            if (nutritionOpt.isEmpty()) {
+                log.debug("No nutrition data found for ingredient ID: {}", ingredientId);
+                continue;
+            }
+            
+            IngredientNutrition nutrition = nutritionOpt.get();
+            BigDecimal quantity = recipeIngredient.getQuantity();
+            String unit = recipeIngredient.getUnit() != null ? recipeIngredient.getUnit().toLowerCase() : "g";
+            
+            BigDecimal quantityInGrams = convertToGramsSafely(quantity, unit, nutrition, ingredientId);
+            if (quantityInGrams == null) {
+                continue;
+            }
+            
+            BigDecimal multiplier = quantityInGrams.divide(BigDecimal.valueOf(100), DECIMAL_SCALE, ROUNDING_MODE);
+            addNutritionToTotals(totals, nutrition, multiplier);
+        }
+        
+        return totals;
+    }
+    
+    /**
+     * Checks if recipe ingredient has required fields.
+     * 
+     * @param recipeIngredient the ingredient to validate
+     * @return true if valid, false otherwise
+     */
+    private boolean isValidIngredient(RecipeIngredient recipeIngredient) {
+        if (recipeIngredient.getIngredient() != null && recipeIngredient.getQuantity() != null) {
+            return true;
+        }
+        
+        String ingredientInfo = recipeIngredient.getId() != null 
+            ? "RecipeIngredient ID: " + recipeIngredient.getId()
+            : "RecipeIngredient (unsaved)";
+        String missingField = recipeIngredient.getIngredient() == null ? "ingredient" : "quantity";
+        StringBuilder details = new StringBuilder();
+        if (recipeIngredient.getUnit() != null) {
+            details.append(", unit: ").append(recipeIngredient.getUnit());
+        }
+        if (recipeIngredient.getDisplayOrder() != null) {
+            details.append(", display order: ").append(recipeIngredient.getDisplayOrder());
+        }
+        
+        log.debug("Skipping {} - missing {} field{}", ingredientInfo, missingField, details.toString());
+        return false;
+    }
+    
+    /**
+     * Converts quantity to grams, handling errors gracefully.
+     * 
+     * @param quantity the quantity to convert
+     * @param unit the unit string
+     * @param nutrition the ingredient nutrition data
+     * @param ingredientId the ingredient ID for logging
+     * @return quantity in grams, or null if conversion fails
+     */
+    private BigDecimal convertToGramsSafely(BigDecimal quantity, String unit, 
+                                           IngredientNutrition nutrition, Long ingredientId) {
+        try {
+            return convertToGrams(quantity, unit, nutrition);
+        } catch (IllegalArgumentException e) {
+            log.warn("Skipping ingredient ID {} due to invalid unit '{}': {}", 
+                ingredientId, unit, e.getMessage());
+            return null;
+        }
+    }
+    
+    /**
+     * Adds nutrition values from ingredient to totals.
+     * 
+     * @param totals the totals to update
+     * @param nutrition the ingredient nutrition data
+     * @param multiplier the multiplier based on quantity
+     */
+    private void addNutritionToTotals(NutritionTotals totals, IngredientNutrition nutrition, BigDecimal multiplier) {
+        if (nutrition.getCaloriesPer100g() != null) {
+            totals.addCalories(nutrition.getCaloriesPer100g().multiply(multiplier));
+        }
+        if (nutrition.getProteinPer100g() != null) {
+            totals.addProtein(nutrition.getProteinPer100g().multiply(multiplier));
+        }
+        if (nutrition.getCarbsPer100g() != null) {
+            totals.addCarbs(nutrition.getCarbsPer100g().multiply(multiplier));
+        }
+        if (nutrition.getFatsPer100g() != null) {
+            totals.addFats(nutrition.getFatsPer100g().multiply(multiplier));
+        }
+        if (nutrition.getFiberPer100g() != null) {
+            totals.addFiber(nutrition.getFiberPer100g().multiply(multiplier));
+        }
+        if (nutrition.getSodiumPer100g() != null) {
+            totals.addSodium(nutrition.getSodiumPer100g().multiply(multiplier));
+        }
+        if (nutrition.getSugarPer100g() != null) {
+            totals.addSugar(nutrition.getSugarPer100g().multiply(multiplier));
+        }
+    }
+    
+    /**
+     * Validates that nutrition data is available.
+     * 
+     * @param totalCalories the total calories calculated
+     * @throws RecipeValidationException if no nutrition data available
+     */
+    private void validateNutritionDataAvailable(BigDecimal totalCalories) {
+        if (totalCalories.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RecipeValidationException(
+                "Cannot calculate nutrition: no nutrition data available for recipe ingredients. " +
+                "Please ensure all ingredients have nutrition data in the database."
+            );
+        }
+    }
+    
+    /**
+     * Creates NutritionalInfo from totals.
+     * 
+     * @param totals the nutrition totals
+     * @return NutritionalInfo object
+     */
+    private NutritionalInfo createNutritionalInfo(NutritionTotals totals) {
+        NutritionalInfo nutritionalInfo = new NutritionalInfo();
+        nutritionalInfo.setCalories(totals.getTotalCalories().setScale(DECIMAL_SCALE, ROUNDING_MODE));
+        nutritionalInfo.setProtein(totals.getTotalProtein().setScale(DECIMAL_SCALE, ROUNDING_MODE));
+        nutritionalInfo.setCarbs(totals.getTotalCarbs().setScale(DECIMAL_SCALE, ROUNDING_MODE));
+        nutritionalInfo.setFats(totals.getTotalFats().setScale(DECIMAL_SCALE, ROUNDING_MODE));
+        nutritionalInfo.setFiber(totals.getTotalFiber().setScale(DECIMAL_SCALE, ROUNDING_MODE));
+        nutritionalInfo.setSodium(totals.getTotalSodium().setScale(DECIMAL_SCALE, ROUNDING_MODE));
+        nutritionalInfo.setSugar(totals.getTotalSugar().setScale(DECIMAL_SCALE, ROUNDING_MODE));
+        nutritionalInfo.setPerServing(false);
+        return nutritionalInfo;
+    }
+    
+    /**
+     * Validates calculated calories against macro-based calculation.
+     * 
+     * @param totals the nutrition totals
+     */
+    private void validateCaloriesAgainstMacros(NutritionTotals totals) {
+        if (totals.getTotalProtein() != null && totals.getTotalCarbs() != null && totals.getTotalFats() != null 
+            && totals.getTotalCalories().compareTo(BigDecimal.ZERO) > 0) {
+            performMacroValidation(totals);
+        }
+    }
+    
+    /**
+     * Performs the actual macro validation calculation.
+     * 
+     * @param totals the nutrition totals
+     */
+    private void performMacroValidation(NutritionTotals totals) {
+        try {
+            BigDecimal calculatedCaloriesFromMacros = macroCalculator.calculateCaloriesFromMacros(
+                totals.getTotalProtein(), totals.getTotalCarbs(), totals.getTotalFats());
+            
+            BigDecimal difference = totals.getTotalCalories().subtract(calculatedCaloriesFromMacros).abs();
+            BigDecimal percentDifference = difference
+                .divide(totals.getTotalCalories(), DECIMAL_SCALE, ROUNDING_MODE)
+                .multiply(BigDecimal.valueOf(100));
+            
+            if (percentDifference.compareTo(BigDecimal.valueOf(5)) > 0) {
+                log.warn("Nutrition data inconsistency detected: Calculated calories ({}) differ from " +
+                        "macro-based calculation ({}) by {}%", 
+                        totals.getTotalCalories(), calculatedCaloriesFromMacros, percentDifference);
+            } else {
+                log.debug("Nutrition validation passed: Calories match macro calculation within acceptable range");
+            }
+        } catch (Exception e) {
+            log.warn("Unable to validate nutrition calculation: {}", e.getMessage());
+        }
+    }
+    
+    /**
+     * Helper class to accumulate nutrition totals.
+     */
+    private static class NutritionTotals {
+        private BigDecimal totalCalories = BigDecimal.ZERO;
+        private BigDecimal totalProtein = BigDecimal.ZERO;
+        private BigDecimal totalCarbs = BigDecimal.ZERO;
+        private BigDecimal totalFats = BigDecimal.ZERO;
+        private BigDecimal totalFiber = BigDecimal.ZERO;
+        private BigDecimal totalSodium = BigDecimal.ZERO;
+        private BigDecimal totalSugar = BigDecimal.ZERO;
+        
+        void addCalories(BigDecimal value) {
+            totalCalories = totalCalories.add(value);
+        }
+        
+        void addProtein(BigDecimal value) {
+            totalProtein = totalProtein.add(value);
+        }
+        
+        void addCarbs(BigDecimal value) {
+            totalCarbs = totalCarbs.add(value);
+        }
+        
+        void addFats(BigDecimal value) {
+            totalFats = totalFats.add(value);
+        }
+        
+        void addFiber(BigDecimal value) {
+            totalFiber = totalFiber.add(value);
+        }
+        
+        void addSodium(BigDecimal value) {
+            totalSodium = totalSodium.add(value);
+        }
+        
+        void addSugar(BigDecimal value) {
+            totalSugar = totalSugar.add(value);
+        }
+        
+        BigDecimal getTotalCalories() {
+            return totalCalories;
+        }
+        
+        BigDecimal getTotalProtein() {
+            return totalProtein;
+        }
+        
+        BigDecimal getTotalCarbs() {
+            return totalCarbs;
+        }
+        
+        BigDecimal getTotalFats() {
+            return totalFats;
+        }
+        
+        BigDecimal getTotalFiber() {
+            return totalFiber;
+        }
+        
+        BigDecimal getTotalSodium() {
+            return totalSodium;
+        }
+        
+        BigDecimal getTotalSugar() {
+            return totalSugar;
         }
     }
     
@@ -251,9 +394,8 @@ public class RecipeNutritionService {
         // TODO: Consider implementing ingredient-specific density factors for more accurate conversions.
         if (UnitConversionUtil.isVolumeUnit(unit)) {
             try {
-                BigDecimal milliliters = UnitConversionUtil.convertToMilliliters(quantity, unit);
                 // Approximate 1ml = 1g (water density approximation)
-                return milliliters;
+                return UnitConversionUtil.convertToMilliliters(quantity, unit);
             } catch (IllegalArgumentException e) {
                 // Invalid volume unit - log warning and assume grams
                 log.warn("Invalid volume unit '{}' for ingredient nutrition calculation, assuming grams. Error: {}", 

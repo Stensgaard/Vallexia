@@ -39,6 +39,8 @@ import java.util.Map;
 @Transactional
 public class RecipeService {
     
+    private static final String RECIPE_NOT_FOUND_MSG = "Recipe not found with id: %d";
+    
     private final RecipeRepository recipeRepository;
     private final IngredientRepository ingredientRepository;
     private final RecipeIngredientRepository recipeIngredientRepository;
@@ -168,10 +170,10 @@ public class RecipeService {
         log.debug("Getting recipe ID {} for user ID {}", id, userId);
         
         Recipe recipe = recipeRepository.findById(id)
-                .orElseThrow(() -> new RecipeNotFoundException("Recipe not found with id: " + id));
+                .orElseThrow(() -> new RecipeNotFoundException(String.format(RECIPE_NOT_FOUND_MSG, id)));
         
         // Check if user can access (must be public or creator)
-        if (!recipe.getIsPublic() && (userId == null || !recipe.getCreator().getId().equals(userId))) {
+        if (!Boolean.TRUE.equals(recipe.getIsPublic()) && (userId == null || !recipe.getCreator().getId().equals(userId))) {
             throw new AccessDeniedException("You do not have permission to access this recipe");
         }
         
@@ -190,34 +192,87 @@ public class RecipeService {
     public RecipeDto updateRecipe(Long id, UpdateRecipeDto dto, Long userId) {
         log.info("Updating recipe ID {} by user ID {}", id, userId);
         
-        Recipe recipe = recipeRepository.findById(id)
-                .orElseThrow(() -> new RecipeNotFoundException("Recipe not found with id: " + id));
+        Recipe recipe = findRecipeById(id);
+        validateAdminAccess();
         
-        // Only admins can update recipes (enforced at controller level)
+        updateBasicRecipeFields(dto, recipe);
+        updateRecipeIngredients(dto, recipe, id);
+        updateRecipeTags(dto, recipe);
+        validateDietaryRestrictions(dto);
+        updateNutritionalInfo(dto, recipe);
+        
+        recipe = recipeRepository.save(recipe);
+        updateTranslations(recipe, dto.getTranslations());
+        
+        auditService.logEvent(
+            EventType.RECIPE_UPDATED,
+            userId,
+            String.format("Recipe ID %d updated by user ID %d", id, userId)
+        );
+        
+        log.info("Recipe ID {} updated successfully", id);
+        return enrichAndMapRecipe(recipe, userId);
+    }
+    
+    /**
+     * Finds recipe by ID or throws exception.
+     * 
+     * @param id recipe ID
+     * @return Recipe entity
+     * @throws RecipeNotFoundException if recipe not found
+     */
+    private Recipe findRecipeById(Long id) {
+        return recipeRepository.findById(id)
+                .orElseThrow(() -> new RecipeNotFoundException(String.format(RECIPE_NOT_FOUND_MSG, id)));
+    }
+    
+    /**
+     * Validates that current user has admin access.
+     * 
+     * @throws AccessDeniedException if user is not admin
+     */
+    private void validateAdminAccess() {
         boolean isAdmin = authenticationHelper.hasRole("ROLE_ADMIN");
         if (!isAdmin) {
             throw new AccessDeniedException("You do not have permission to update this recipe");
         }
-        
-        // Update basic fields
+    }
+    
+    /**
+     * Updates basic recipe fields from DTO.
+     * 
+     * @param dto update DTO
+     * @param recipe recipe entity
+     */
+    private void updateBasicRecipeFields(UpdateRecipeDto dto, Recipe recipe) {
         recipeMapper.updateRecipeFromDto(dto, recipe);
-        
-        // Recalculate total time if needed
         if (dto.getPrepTimeMinutes() != null || dto.getCookTimeMinutes() != null) {
             recipe.calculateTotalTime();
         }
-        
-        // Update ingredients if provided
+    }
+    
+    /**
+     * Updates recipe ingredients.
+     * 
+     * @param dto update DTO
+     * @param recipe recipe entity
+     * @param recipeId recipe ID
+     */
+    private void updateRecipeIngredients(UpdateRecipeDto dto, Recipe recipe, Long recipeId) {
         if (dto.getIngredients() != null) {
-            // Delete existing ingredients
-            recipeIngredientRepository.deleteByRecipeId(id);
-            
-            // Add new ingredients
+            recipeIngredientRepository.deleteByRecipeId(recipeId);
             List<RecipeIngredient> recipeIngredients = processIngredients(dto.getIngredients(), recipe);
             recipe.setIngredients(recipeIngredients);
         }
-        
-        // Update tags if provided
+    }
+    
+    /**
+     * Updates recipe tags.
+     * 
+     * @param dto update DTO
+     * @param recipe recipe entity
+     */
+    private void updateRecipeTags(UpdateRecipeDto dto, Recipe recipe) {
         if (dto.getTags() != null) {
             if (dto.getTags().isEmpty()) {
                 throw new RecipeValidationException("At least one tag is required");
@@ -227,57 +282,77 @@ public class RecipeService {
                 recipe.addTag(tag);
             }
         }
-        
-        // Update dietary restrictions if provided
-        if (dto.getDietaryRestrictions() != null) {
-            if (dto.getDietaryRestrictions().isEmpty()) {
-                throw new RecipeValidationException("At least one dietary restriction is required");
-            }
-            // MapStruct automatically updates dietaryRestrictions from DTO to entity
+    }
+    
+    /**
+     * Validates dietary restrictions.
+     * 
+     * @param dto update DTO
+     */
+    private void validateDietaryRestrictions(UpdateRecipeDto dto) {
+        if (dto.getDietaryRestrictions() != null && dto.getDietaryRestrictions().isEmpty()) {
+            throw new RecipeValidationException("At least one dietary restriction is required");
         }
-        
-        // Update nutritional info if provided
+    }
+    
+    /**
+     * Updates nutritional info for recipe.
+     * 
+     * @param dto update DTO
+     * @param recipe recipe entity
+     */
+    private void updateNutritionalInfo(UpdateRecipeDto dto, Recipe recipe) {
         if (dto.getNutritionalInfo() != null) {
-            NutritionalInfo existingInfo = recipe.getNutritionalInfo();
-            if (existingInfo != null) {
-                // Update existing
-                NutritionalInfo updatedInfo = recipeMapper.toNutritionalInfo(dto.getNutritionalInfo());
-                existingInfo.setCalories(updatedInfo.getCalories());
-                existingInfo.setProtein(updatedInfo.getProtein());
-                existingInfo.setCarbs(updatedInfo.getCarbs());
-                existingInfo.setFats(updatedInfo.getFats());
-                existingInfo.setFiber(updatedInfo.getFiber());
-                existingInfo.setSodium(updatedInfo.getSodium());
-                existingInfo.setSugar(updatedInfo.getSugar());
-                existingInfo.setPerServing(updatedInfo.getPerServing());
-                nutritionalInfoRepository.save(existingInfo);
-            } else {
-                // Create new
-                NutritionalInfo nutritionalInfo = recipeMapper.toNutritionalInfo(dto.getNutritionalInfo());
-                nutritionalInfo.setRecipe(recipe);
-                nutritionalInfoRepository.save(nutritionalInfo);
-            }
+            updateExistingOrCreateNutritionalInfo(dto, recipe);
         } else if (recipe.getIngredients() != null && !recipe.getIngredients().isEmpty()) {
-            // Recalculate nutrition if ingredients changed
             recipeNutritionService.updateRecipeNutrition(recipe);
         }
-        
-        recipe = recipeRepository.save(recipe);
-        
-        // Handle translations if provided
-        updateTranslations(recipe, dto.getTranslations());
-        
-        // Audit log
-        auditService.logEvent(
-            EventType.RECIPE_UPDATED,
-            userId,
-            String.format("Recipe ID %d updated by user ID %d", id, userId)
-        );
-        
-        log.info("Recipe ID {} updated successfully", id);
-        
-        // Return enriched DTO with translations and favorite status
-        return enrichAndMapRecipe(recipe, userId);
+    }
+    
+    /**
+     * Updates existing nutritional info or creates new one.
+     * 
+     * @param dto update DTO
+     * @param recipe recipe entity
+     */
+    private void updateExistingOrCreateNutritionalInfo(UpdateRecipeDto dto, Recipe recipe) {
+        NutritionalInfo existingInfo = recipe.getNutritionalInfo();
+        if (existingInfo != null) {
+            updateNutritionalInfoFields(dto, existingInfo);
+            nutritionalInfoRepository.save(existingInfo);
+        } else {
+            createNewNutritionalInfo(dto, recipe);
+        }
+    }
+    
+    /**
+     * Updates fields of existing nutritional info.
+     * 
+     * @param dto update DTO
+     * @param existingInfo existing nutritional info
+     */
+    private void updateNutritionalInfoFields(UpdateRecipeDto dto, NutritionalInfo existingInfo) {
+        NutritionalInfo updatedInfo = recipeMapper.toNutritionalInfo(dto.getNutritionalInfo());
+        existingInfo.setCalories(updatedInfo.getCalories());
+        existingInfo.setProtein(updatedInfo.getProtein());
+        existingInfo.setCarbs(updatedInfo.getCarbs());
+        existingInfo.setFats(updatedInfo.getFats());
+        existingInfo.setFiber(updatedInfo.getFiber());
+        existingInfo.setSodium(updatedInfo.getSodium());
+        existingInfo.setSugar(updatedInfo.getSugar());
+        existingInfo.setPerServing(updatedInfo.getPerServing());
+    }
+    
+    /**
+     * Creates new nutritional info for recipe.
+     * 
+     * @param dto update DTO
+     * @param recipe recipe entity
+     */
+    private void createNewNutritionalInfo(UpdateRecipeDto dto, Recipe recipe) {
+        NutritionalInfo nutritionalInfo = recipeMapper.toNutritionalInfo(dto.getNutritionalInfo());
+        nutritionalInfo.setRecipe(recipe);
+        nutritionalInfoRepository.save(nutritionalInfo);
     }
     
     /**
@@ -290,7 +365,7 @@ public class RecipeService {
         log.info("Deleting recipe ID {} by user ID {}", id, userId);
         
         Recipe recipe = recipeRepository.findById(id)
-                .orElseThrow(() -> new RecipeNotFoundException("Recipe not found with id: " + id));
+                .orElseThrow(() -> new RecipeNotFoundException(String.format(RECIPE_NOT_FOUND_MSG, id)));
         
         // Only admins can delete recipes (enforced at controller level)
         boolean isAdmin = authenticationHelper.hasRole("ROLE_ADMIN");

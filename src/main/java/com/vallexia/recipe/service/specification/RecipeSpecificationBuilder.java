@@ -38,95 +38,81 @@ public final class RecipeSpecificationBuilder {
      */
     public static Specification<Recipe> buildSpecification(
             RecipeSearchCriteria criteria, List<SupportedAllergy> userAllergies, Set<SupportedCuisineType> preferredCuisines) {
-        Specification<Recipe> spec = (root, query, cb) -> cb.conjunction();
+        Specification<Recipe> spec = Specification.where(alwaysTrue());
         
         // Text search on name and description
-        if (criteria.getQuery() != null && !criteria.getQuery().trim().isEmpty()) {
-            spec = spec.and(textSearch(criteria.getQuery().trim()));
+        String query = criteria.getQuery();
+        if (query != null && !query.trim().isEmpty()) {
+            spec = spec.and(textSearch(query.trim()));
         }
-        
-        // Category filter
-        if (criteria.getCategory() != null) {
-            spec = spec.and((root, query, cb) -> cb.equal(root.get("category"), criteria.getCategory()));
-        }
+        spec = andIf(criteria.getCategory() != null, spec, equalsSpec("category", criteria.getCategory()));
+        spec = andIf(criteria.getDifficultyLevel() != null, spec, equalsSpec("difficultyLevel", criteria.getDifficultyLevel()));
         
         // Cuisine type filter - mutually exclusive: either explicit filter OR preferred cuisines
         if (criteria.getCuisineType() != null) {
-            // Explicit cuisine filter takes precedence - ignore preferred cuisines
-            spec = spec.and((root, query, cb) -> cb.equal(root.get("cuisineType"), criteria.getCuisineType()));
+            spec = spec.and(equalsSpec("cuisineType", criteria.getCuisineType()));
         } else if (preferredCuisines != null && !preferredCuisines.isEmpty()) {
-            // Use preferred cuisines when no explicit filter is provided
             spec = spec.and(preferredCuisinesFilter(preferredCuisines));
         }
         
-        // Difficulty level filter
-        if (criteria.getDifficultyLevel() != null) {
-            spec = spec.and((root, query, cb) -> cb.equal(root.get("difficultyLevel"), criteria.getDifficultyLevel()));
-        }
+        spec = andIf(criteria.getMinPrepTime() != null, spec,
+                greaterThanOrEqualSpec("prepTimeMinutes", criteria.getMinPrepTime()));
+        spec = andIf(criteria.getMaxPrepTime() != null, spec,
+                lessThanOrEqualSpec("prepTimeMinutes", criteria.getMaxPrepTime()));
         
-        // Prep time filters
-        if (criteria.getMinPrepTime() != null) {
-            spec = spec.and((root, query, cb) -> 
-                    cb.greaterThanOrEqualTo(root.get("prepTimeMinutes"), criteria.getMinPrepTime()));
-        }
-        if (criteria.getMaxPrepTime() != null) {
-            spec = spec.and((root, query, cb) -> 
-                    cb.lessThanOrEqualTo(root.get("prepTimeMinutes"), criteria.getMaxPrepTime()));
-        }
+        spec = andIf(criteria.getMinCookTime() != null, spec,
+                greaterThanOrEqualSpec("cookTimeMinutes", criteria.getMinCookTime()));
+        spec = andIf(criteria.getMaxCookTime() != null, spec,
+                lessThanOrEqualSpec("cookTimeMinutes", criteria.getMaxCookTime()));
         
-        // Cook time filters
-        if (criteria.getMinCookTime() != null) {
-            spec = spec.and((root, query, cb) -> 
-                    cb.greaterThanOrEqualTo(root.get("cookTimeMinutes"), criteria.getMinCookTime()));
-        }
-        if (criteria.getMaxCookTime() != null) {
-            spec = spec.and((root, query, cb) -> 
-                    cb.lessThanOrEqualTo(root.get("cookTimeMinutes"), criteria.getMaxCookTime()));
-        }
+        spec = andIf(criteria.getMinTotalTime() != null, spec,
+                greaterThanOrEqualSpec("totalTimeMinutes", criteria.getMinTotalTime()));
+        spec = andIf(criteria.getMaxTotalTime() != null, spec,
+                lessThanOrEqualSpec("totalTimeMinutes", criteria.getMaxTotalTime()));
         
-        // Total time filters
-        if (criteria.getMinTotalTime() != null) {
-            spec = spec.and((root, query, cb) -> 
-                    cb.greaterThanOrEqualTo(root.get("totalTimeMinutes"), criteria.getMinTotalTime()));
-        }
-        if (criteria.getMaxTotalTime() != null) {
-            spec = spec.and((root, query, cb) -> 
-                    cb.lessThanOrEqualTo(root.get("totalTimeMinutes"), criteria.getMaxTotalTime()));
-        }
+        spec = andIf(criteria.getMinServings() != null, spec,
+                greaterThanOrEqualSpec("servings", criteria.getMinServings()));
+        spec = andIf(criteria.getMaxServings() != null, spec,
+                lessThanOrEqualSpec("servings", criteria.getMaxServings()));
         
-        // Servings filters
-        if (criteria.getMinServings() != null) {
-            spec = spec.and((root, query, cb) -> 
-                    cb.greaterThanOrEqualTo(root.get("servings"), criteria.getMinServings()));
-        }
-        if (criteria.getMaxServings() != null) {
-            spec = spec.and((root, query, cb) -> 
-                    cb.lessThanOrEqualTo(root.get("servings"), criteria.getMaxServings()));
-        }
-        
-        // Calories filter (from nutritional info)
         if (criteria.getMinCalories() != null || criteria.getMaxCalories() != null) {
             spec = spec.and(caloriesFilter(criteria.getMinCalories(), criteria.getMaxCalories()));
         }
         
-        // Dietary restrictions filter
-        if (criteria.getDietaryRestrictions() != null && !criteria.getDietaryRestrictions().isEmpty()) {
-            spec = spec.and(DietaryRestrictionFilter.filter(
-                    criteria.getDietaryRestrictions(), criteria.getRestrictionMatchMode()));
-        }
+        spec = andIf(criteria.getDietaryRestrictions() != null && !criteria.getDietaryRestrictions().isEmpty(),
+                spec,
+                DietaryRestrictionFilter.filter(criteria.getDietaryRestrictions(), criteria.getRestrictionMatchMode()));
         
-        // Allergen filter (auto-hide recipes containing user's allergies)
-        if (criteria.getExcludeAllergens() != null && criteria.getExcludeAllergens() 
-                && userAllergies != null && !userAllergies.isEmpty()) {
-            spec = spec.and(allergenFilter(userAllergies));
-        }
+        boolean excludeAllergens = Boolean.TRUE.equals(criteria.getExcludeAllergens());
+        spec = andIf(excludeAllergens && userAllergies != null && !userAllergies.isEmpty(),
+                spec,
+                allergenFilter(userAllergies));
         
         // Only show public recipes in search results
-        // Note: Recipe creation/editing/deletion is restricted to admins only.
-        // Regular users can only read and favorite recipes.
-        spec = spec.and((root, query, cb) -> cb.equal(root.get("isPublic"), true));
+        spec = spec.and(equalsSpec("isPublic", true));
         
         return spec;
+    }
+
+    private static Specification<Recipe> alwaysTrue() {
+        return (root, query, cb) -> cb.conjunction();
+    }
+
+    private static Specification<Recipe> equalsSpec(String field, Object value) {
+        return (root, query, cb) -> cb.equal(root.get(field), value);
+    }
+
+    private static <T extends Comparable<? super T>> Specification<Recipe> greaterThanOrEqualSpec(String field, T value) {
+        return (root, query, cb) -> cb.greaterThanOrEqualTo(root.get(field), value);
+    }
+
+    private static <T extends Comparable<? super T>> Specification<Recipe> lessThanOrEqualSpec(String field, T value) {
+        return (root, query, cb) -> cb.lessThanOrEqualTo(root.get(field), value);
+    }
+
+    private static Specification<Recipe> andIf(boolean condition, Specification<Recipe> spec,
+                                               Specification<Recipe> addition) {
+        return condition ? spec.and(addition) : spec;
     }
     
     /**
@@ -208,9 +194,6 @@ public final class RecipeSpecificationBuilder {
      * @return Specification that filters recipes by preferred cuisines
      */
     private static Specification<Recipe> preferredCuisinesFilter(Set<SupportedCuisineType> preferredCuisines) {
-        return (root, query, cb) -> {
-            // Recipe matches if it has ANY of the preferred cuisines
-            return root.get("cuisineType").in(preferredCuisines);
-        };
+        return (root, query, cb) -> root.get("cuisineType").in(preferredCuisines);
     }
 }

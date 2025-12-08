@@ -37,6 +37,8 @@ public class NutritionalGoalsService {
     private static final BigDecimal DEFAULT_DAILY_FIBER = BigDecimal.valueOf(25);
     private static final BigDecimal DEFAULT_DAILY_SODIUM = BigDecimal.valueOf(2300);
     private static final BigDecimal DEFAULT_DAILY_SUGAR = BigDecimal.valueOf(50);
+    private static final String USER_NOT_FOUND_MSG =
+        "User not found with id: %d. This may be due to account deletion or invalid user ID.";
     
     // Macro percentage validation thresholds
     private static final BigDecimal MACRO_PERCENTAGE_MIN = BigDecimal.valueOf(95);
@@ -80,7 +82,7 @@ public class NutritionalGoalsService {
     public NutritionalGoalsDto getNutritionalGoals(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(
-                    String.format("User not found with id: %d. This may be due to account deletion or invalid user ID.", userId)
+                    String.format(USER_NOT_FOUND_MSG, userId)
                 ));
         
         NutritionalGoals goals = nutritionalGoalsRepository.findByUser(user)
@@ -114,7 +116,7 @@ public class NutritionalGoalsService {
         
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(
-                    String.format("User not found with id: %d. This may be due to account deletion or invalid user ID.", userId)
+                    String.format(USER_NOT_FOUND_MSG, userId)
                 ));
         
         NutritionalGoals goals = nutritionalGoalsRepository.findByUser(user)
@@ -211,7 +213,7 @@ public class NutritionalGoalsService {
         
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(
-                    String.format("User not found with id: %d. This may be due to account deletion or invalid user ID.", userId)
+                    String.format(USER_NOT_FOUND_MSG, userId)
                 ));
         
         nutritionalGoalsRepository.findByUser(user).ifPresent(goals -> {

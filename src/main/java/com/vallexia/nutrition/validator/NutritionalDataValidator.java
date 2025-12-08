@@ -26,6 +26,10 @@ import java.math.BigDecimal;
  */
 public class NutritionalDataValidator {
   
+  private NutritionalDataValidator() {
+    // Utility class - prevent instantiation
+  }
+  
   // Acceptable ranges for nutritional values
   private static final BigDecimal MIN_CALORIES = BigDecimal.valueOf(500);
   private static final BigDecimal MAX_CALORIES = BigDecimal.valueOf(10000);

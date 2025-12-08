@@ -280,26 +280,26 @@ public class LocaleConfigController {
     }
 
     private LocaleConfigDto buildLocaleConfigSnapshot() {
-        LocaleConfigInput input = new LocaleConfigInput(
-                buildLocales(),
-                buildCountries(),
-                buildCurrencies(),
-                buildTimezones(),
-                buildFormattingRules(),
-                buildDateFormats(),
-                buildMeasurementSystems(),
-                buildWeightUnits(),
-                buildVolumeUnits(),
-                buildCountUnits(),
-                buildFirstDayOfWeek(),
-                buildMealCategories(),
-                buildDietaryRestrictions(),
-                buildAllergies(),
-                buildCuisineTypes(),
-                buildDifficultyLevels(),
-                buildGoalTypes(),
-                buildSubscriptionStatuses()
-        );
+        LocaleConfigInput input = LocaleConfigInput.builder()
+                .locales(buildLocales())
+                .countries(buildCountries())
+                .currencies(buildCurrencies())
+                .timezones(buildTimezones())
+                .formattingRules(buildFormattingRules())
+                .dateFormats(buildDateFormats())
+                .measurementSystems(buildMeasurementSystems())
+                .weightUnits(buildWeightUnits())
+                .volumeUnits(buildVolumeUnits())
+                .countUnits(buildCountUnits())
+                .firstDayOfWeek(buildFirstDayOfWeek())
+                .mealCategories(buildMealCategories())
+                .dietaryRestrictions(buildDietaryRestrictions())
+                .allergies(buildAllergies())
+                .cuisineTypes(buildCuisineTypes())
+                .difficultyLevels(buildDifficultyLevels())
+                .goalTypes(buildGoalTypes())
+                .subscriptionStatuses(buildSubscriptionStatuses())
+                .build();
         return LocaleConfigBuilder.buildConfig(input);
     }
 

@@ -61,52 +61,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         try {
             String jwt = parseJwt(request);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
-                // Check if token is blacklisted
-                if (tokenBlacklistService.isTokenBlacklisted(jwt)) {
-                    log.warn("Blacklisted token attempted to be used");
-                    sendErrorResponse(response, request, ErrorCode.INVALID_TOKEN);
+                if (!processTokenAuthentication(jwt, request, response)) {
                     return;
                 }
-                
-                // Extract user information from token claims
-                String username;
-                try {
-                    username = jwtUtils.getUsernameFromJwtToken(jwt);
-                } catch (IllegalArgumentException e) {
-                    log.error("Invalid token: failed to extract username - {}", e.getMessage());
-                    sendErrorResponse(response, request, ErrorCode.INVALID_TOKEN);
-                    return;
-                }
-                
-                // Validate username is present and not empty
-                if (username == null || username.trim().isEmpty()) {
-                    log.error("Invalid token: missing or empty username claim");
-                    sendErrorResponse(response, request, ErrorCode.INVALID_TOKEN);
-                    return;
-                }
-                
-                Long userId;
-                List<String> roles;
-                try {
-                    userId = jwtUtils.getUserIdFromJwtToken(jwt);
-                    roles = jwtUtils.getRolesFromJwtToken(jwt);
-                } catch (IllegalArgumentException | IllegalStateException e) {
-                    log.error("Invalid token for user {}: failed to extract claims - {}", 
-                        username != null ? username : "unknown", e.getMessage());
-                    sendErrorResponse(response, request, ErrorCode.INVALID_TOKEN);
-                    return;
-                }
-                
-                // Create UserPrincipal from token claims using factory method (no database lookup)
-                UserPrincipal userPrincipal = UserPrincipal.createFromJwtClaims(userId, username, roles);
-                
-                UsernamePasswordAuthenticationToken authentication = 
-                    new UsernamePasswordAuthenticationToken(userPrincipal, null, userPrincipal.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                
-                log.debug("User {} authenticated via token claims", username);
             }
         } catch (JwtException e) {
             log.error("JWT validation failed: {}", e.getMessage());
@@ -123,6 +80,126 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         }
         
         filterChain.doFilter(request, response);
+    }
+    
+    /**
+     * Process token authentication and set security context.
+     * 
+     * @param jwt JWT token
+     * @param request HTTP request
+     * @param response HTTP response
+     * @return true if authentication succeeded, false if error response was sent
+     * @throws IOException if error response writing fails
+     */
+    private boolean processTokenAuthentication(String jwt, HttpServletRequest request, 
+                                              HttpServletResponse response) throws IOException {
+        if (tokenBlacklistService.isTokenBlacklisted(jwt)) {
+            log.warn("Blacklisted token attempted to be used");
+            sendErrorResponse(response, request, ErrorCode.INVALID_TOKEN);
+            return false;
+        }
+        
+        String username = extractUsername(jwt, request, response);
+        if (username == null) {
+            return false;
+        }
+        
+        UserClaims userClaims = extractUserClaims(jwt, username, request, response);
+        if (userClaims == null) {
+            return false;
+        }
+        
+        setAuthentication(userClaims, request);
+        log.debug("User {} authenticated via token claims", username);
+        return true;
+    }
+    
+    /**
+     * Extract username from JWT token.
+     * 
+     * @param jwt JWT token
+     * @param request HTTP request
+     * @param response HTTP response
+     * @return username or null if extraction failed (error response sent)
+     * @throws IOException if error response writing fails
+     */
+    private String extractUsername(String jwt, HttpServletRequest request, 
+                                  HttpServletResponse response) throws IOException {
+        String username;
+        try {
+            username = jwtUtils.getUsernameFromJwtToken(jwt);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid token: failed to extract username - {}", e.getMessage());
+            sendErrorResponse(response, request, ErrorCode.INVALID_TOKEN);
+            return null;
+        }
+        
+        if (username == null || username.trim().isEmpty()) {
+            log.error("Invalid token: missing or empty username claim");
+            sendErrorResponse(response, request, ErrorCode.INVALID_TOKEN);
+            return null;
+        }
+        
+        return username;
+    }
+    
+    /**
+     * Extract user ID and roles from JWT token.
+     * 
+     * @param jwt JWT token
+     * @param username username for logging
+     * @param request HTTP request
+     * @param response HTTP response
+     * @return UserClaims or null if extraction failed (error response sent)
+     * @throws IOException if error response writing fails
+     */
+    private UserClaims extractUserClaims(String jwt, String username, HttpServletRequest request,
+                                        HttpServletResponse response) throws IOException {
+        Long userId;
+        List<String> roles;
+        try {
+            userId = jwtUtils.getUserIdFromJwtToken(jwt);
+            roles = jwtUtils.getRolesFromJwtToken(jwt);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            log.error("Invalid token for user {}: failed to extract claims - {}", 
+                username != null ? username : "unknown", e.getMessage());
+            sendErrorResponse(response, request, ErrorCode.INVALID_TOKEN);
+            return null;
+        }
+        
+        return new UserClaims(userId, username, roles);
+    }
+    
+    /**
+     * Set authentication in security context.
+     * 
+     * @param userClaims user claims from token
+     * @param request HTTP request
+     */
+    private void setAuthentication(UserClaims userClaims, HttpServletRequest request) {
+        UserPrincipal userPrincipal = UserPrincipal.createFromJwtClaims(
+            userClaims.userId, userClaims.username, userClaims.roles);
+        
+        UsernamePasswordAuthenticationToken authentication = 
+            new UsernamePasswordAuthenticationToken(userPrincipal, null, userPrincipal.getAuthorities());
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+    
+    /**
+     * Helper class to hold user claims extracted from JWT token.
+     */
+    private static class UserClaims {
+        final Long userId;
+        final String username;
+        final List<String> roles;
+        
+        UserClaims(Long userId, String username, List<String> roles) {
+            this.userId = userId;
+            this.username = username;
+            this.roles = roles;
+        }
     }
     
     /**

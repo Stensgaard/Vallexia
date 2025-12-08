@@ -87,11 +87,26 @@ class LocaleConfigBuilderTest {
         DomainEnumMapper.toSubscriptionStatusDto(SubscriptionStatus.PREMIUM));
 
     // When
-    LocaleConfigInput input = new LocaleConfigInput(
-        locales, countries, currencies, timezones, formattingRules,
-        dateFormats, measurementSystems, weightUnits, volumeUnits, countUnits,
-        firstDayOfWeek, mealCategories, dietaryRestrictions, allergies,
-        cuisineTypes, difficultyLevels, goalTypes, subscriptionStatuses);
+    LocaleConfigInput input = LocaleConfigInput.builder()
+        .locales(locales)
+        .countries(countries)
+        .currencies(currencies)
+        .timezones(timezones)
+        .formattingRules(formattingRules)
+        .dateFormats(dateFormats)
+        .measurementSystems(measurementSystems)
+        .weightUnits(weightUnits)
+        .volumeUnits(volumeUnits)
+        .countUnits(countUnits)
+        .firstDayOfWeek(firstDayOfWeek)
+        .mealCategories(mealCategories)
+        .dietaryRestrictions(dietaryRestrictions)
+        .allergies(allergies)
+        .cuisineTypes(cuisineTypes)
+        .difficultyLevels(difficultyLevels)
+        .goalTypes(goalTypes)
+        .subscriptionStatuses(subscriptionStatuses)
+        .build();
     LocaleConfigDto config = LocaleConfigBuilder.buildConfig(input);
 
     // Then
@@ -140,11 +155,26 @@ class LocaleConfigBuilderTest {
     List<SubscriptionStatusDto> emptySubscriptionStatuses = Collections.emptyList();
 
     // When
-    LocaleConfigInput input = new LocaleConfigInput(
-        emptyLocales, emptyCountries, emptyCurrencies, emptyTimezones, emptyFormattingRules,
-        emptyDateFormats, emptyMeasurementSystems, emptyWeightUnits, emptyVolumeUnits, emptyCountUnits,
-        emptyFirstDayOfWeek, emptyMealCategories, emptyDietaryRestrictions, emptyAllergies,
-        emptyCuisineTypes, emptyDifficultyLevels, emptyGoalTypes, emptySubscriptionStatuses);
+    LocaleConfigInput input = LocaleConfigInput.builder()
+        .locales(emptyLocales)
+        .countries(emptyCountries)
+        .currencies(emptyCurrencies)
+        .timezones(emptyTimezones)
+        .formattingRules(emptyFormattingRules)
+        .dateFormats(emptyDateFormats)
+        .measurementSystems(emptyMeasurementSystems)
+        .weightUnits(emptyWeightUnits)
+        .volumeUnits(emptyVolumeUnits)
+        .countUnits(emptyCountUnits)
+        .firstDayOfWeek(emptyFirstDayOfWeek)
+        .mealCategories(emptyMealCategories)
+        .dietaryRestrictions(emptyDietaryRestrictions)
+        .allergies(emptyAllergies)
+        .cuisineTypes(emptyCuisineTypes)
+        .difficultyLevels(emptyDifficultyLevels)
+        .goalTypes(emptyGoalTypes)
+        .subscriptionStatuses(emptySubscriptionStatuses)
+        .build();
     LocaleConfigDto config = LocaleConfigBuilder.buildConfig(input);
 
     // Then
@@ -183,21 +213,51 @@ class LocaleConfigBuilderTest {
         .hasMessageContaining("input must not be null");
 
     // When/Then - Test first parameter in input
-    LocaleConfigInput inputWithNullLocales = new LocaleConfigInput(
-        null, emptyCountries, emptyCurrencies, emptyTimezones, emptyFormattingRules,
-        emptyDateFormats, emptyMeasurementSystems, emptyWeightUnits, emptyVolumeUnits, emptyCountUnits,
-        emptyFirstDayOfWeek, emptyMealCategories, emptyDietaryRestrictions, emptyAllergies,
-        emptyCuisineTypes, emptyDifficultyLevels, emptyGoalTypes, emptySubscriptionStatuses);
+    LocaleConfigInput inputWithNullLocales = LocaleConfigInput.builder()
+        .locales(null)
+        .countries(emptyCountries)
+        .currencies(emptyCurrencies)
+        .timezones(emptyTimezones)
+        .formattingRules(emptyFormattingRules)
+        .dateFormats(emptyDateFormats)
+        .measurementSystems(emptyMeasurementSystems)
+        .weightUnits(emptyWeightUnits)
+        .volumeUnits(emptyVolumeUnits)
+        .countUnits(emptyCountUnits)
+        .firstDayOfWeek(emptyFirstDayOfWeek)
+        .mealCategories(emptyMealCategories)
+        .dietaryRestrictions(emptyDietaryRestrictions)
+        .allergies(emptyAllergies)
+        .cuisineTypes(emptyCuisineTypes)
+        .difficultyLevels(emptyDifficultyLevels)
+        .goalTypes(emptyGoalTypes)
+        .subscriptionStatuses(emptySubscriptionStatuses)
+        .build();
     assertThatThrownBy(() -> LocaleConfigBuilder.buildConfig(inputWithNullLocales))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("locales must not be null");
 
     // When/Then - Test last parameter in input
-    LocaleConfigInput inputWithNullSubscriptionStatuses = new LocaleConfigInput(
-        emptyLocales, emptyCountries, emptyCurrencies, emptyTimezones, emptyFormattingRules,
-        emptyDateFormats, emptyMeasurementSystems, emptyWeightUnits, emptyVolumeUnits, emptyCountUnits,
-        emptyFirstDayOfWeek, emptyMealCategories, emptyDietaryRestrictions, emptyAllergies,
-        emptyCuisineTypes, emptyDifficultyLevels, emptyGoalTypes, null);
+    LocaleConfigInput inputWithNullSubscriptionStatuses = LocaleConfigInput.builder()
+        .locales(emptyLocales)
+        .countries(emptyCountries)
+        .currencies(emptyCurrencies)
+        .timezones(emptyTimezones)
+        .formattingRules(emptyFormattingRules)
+        .dateFormats(emptyDateFormats)
+        .measurementSystems(emptyMeasurementSystems)
+        .weightUnits(emptyWeightUnits)
+        .volumeUnits(emptyVolumeUnits)
+        .countUnits(emptyCountUnits)
+        .firstDayOfWeek(emptyFirstDayOfWeek)
+        .mealCategories(emptyMealCategories)
+        .dietaryRestrictions(emptyDietaryRestrictions)
+        .allergies(emptyAllergies)
+        .cuisineTypes(emptyCuisineTypes)
+        .difficultyLevels(emptyDifficultyLevels)
+        .goalTypes(emptyGoalTypes)
+        .subscriptionStatuses(null)
+        .build();
     assertThatThrownBy(() -> LocaleConfigBuilder.buildConfig(inputWithNullSubscriptionStatuses))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("subscriptionStatuses must not be null");

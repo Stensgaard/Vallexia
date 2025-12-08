@@ -28,6 +28,10 @@ import java.util.List;
  */
 public class DietaryRestrictionFilter {
     
+    private DietaryRestrictionFilter() {
+        // Utility class - prevent instantiation
+    }
+    
     /**
      * Create a specification for filtering recipes by dietary restrictions.
      * 
@@ -53,7 +57,7 @@ public class DietaryRestrictionFilter {
             } else {
                 // AND mode: Uses subqueries which are required for correctness
                 // Each restriction must be satisfied independently
-                return filterAND(root, query, cb, restrictions, allIncompatibleAllergens);
+                return filterAND(root, query, cb, restrictions);
             }
         };
     }
@@ -114,12 +118,11 @@ public class DietaryRestrictionFilter {
      * @param query criteria query
      * @param cb criteria builder
      * @param restrictions list of dietary restrictions
-     * @param allIncompatibleAllergens pre-computed incompatible allergens (not used in AND mode, but kept for consistency)
      * @return predicate for AND mode filtering
      */
     private static Predicate filterAND(
             Root<Recipe> root, CriteriaQuery<?> query, CriteriaBuilder cb,
-            List<SupportedDietaryRestriction> restrictions, List<SupportedAllergy> allIncompatibleAllergens) {
+            List<SupportedDietaryRestriction> restrictions) {
         
         List<Predicate> andPredicates = new ArrayList<>();
         

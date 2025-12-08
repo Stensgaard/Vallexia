@@ -38,11 +38,11 @@ public class InputSanitizer {
       Pattern.CASE_INSENSITIVE);
   
   private static final Pattern STACK_TRACE_PATTERN = Pattern.compile(
-      "(\\s+at\\s+[a-zA-Z0-9_.]+\\(|Exception|Error:|Caused by:)", 
+      "(\\s+at\\s+[\\w.]+\\(|Exception|Error:|Caused by:)", 
       Pattern.CASE_INSENSITIVE);
   
   private static final Pattern CLASS_NAME_PATTERN = Pattern.compile(
-      "(com\\.|org\\.|java\\.|javax\\.)[a-zA-Z0-9_.]+",
+      "(com\\.|org\\.|java\\.|javax\\.)[\\w.]+",
       Pattern.CASE_INSENSITIVE);
   
   private static final Pattern IP_PATTERN = Pattern.compile(
