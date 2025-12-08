@@ -99,7 +99,7 @@ api.interceptors.response.use(
         if (!authStore) {
           isRefreshing = false;
           processQueue(error, null);
-          return Promise.reject(error);
+          throw error;
         }
         const newToken = await authStore.refreshAccessToken();
 

@@ -97,12 +97,16 @@ function objectContainsValue(constants, value) {
 }
 
 function isArrayOfObjects(constants) {
-  return Array.isArray(constants) && constants.length > 0 && typeof constants[0] === "object";
+  return (
+    Array.isArray(constants) &&
+    constants.length > 0 &&
+    typeof constants[0] === "object"
+  );
 }
 
 function createObjectArrayMatcher(constants) {
-  const hasCode = Object.prototype.hasOwnProperty.call(constants[0], "code");
-  const hasValue = Object.prototype.hasOwnProperty.call(constants[0], "value");
+  const hasCode = Object.hasOwn(constants[0], "code");
+  const hasValue = Object.hasOwn(constants[0], "value");
 
   return (value) =>
     (hasCode && constants.some((item) => item.code === value)) ||

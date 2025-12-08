@@ -83,58 +83,73 @@ const conversionCache = new ConversionCache(DEFAULT_CACHE_SIZE);
  * @throws {Error} Always throws an error with user-friendly message
  */
 const handleConversionError = (error, operation = "conversion") => {
-  if (import.meta.env.DEV) {
-    // eslint-disable-next-line no-console
-    console.error(`Unit ${operation} API error:`, error);
-  }
+  logDevError(operation, error);
 
   if (error.response) {
-    // API returned an error response
-    const status = error.response.status;
-    const message =
-      error.response.data?.message ||
-      error.response.data?.error ||
-      `${operation} failed`;
-
-    if (status === 400) {
-      // Bad request - invalid units or value
-      if (import.meta.env.DEV) {
-        // eslint-disable-next-line no-console
-        console.warn(`Invalid ${operation} request:`, message);
-      }
-      return new Error(`Invalid ${operation}: ${message}`);
-    }
-
-    if (status === 500) {
-      // Server error
-      if (import.meta.env.DEV) {
-        // eslint-disable-next-line no-console
-        console.error(`Server error during ${operation}:`, message);
-      }
-      return new Error(
-        `Server error during ${operation}. Please try again.`,
-      );
-    }
-  } else if (error.request) {
-    // Request was made but no response received
-    if (import.meta.env.DEV) {
-      // eslint-disable-next-line no-console
-      console.error(`No response from ${operation} API:`, error.message);
-    }
-    return new Error(
-      `Unable to reach ${operation} service. Please check your connection.`,
-    );
-  } else {
-    // Error setting up the request
-    if (import.meta.env.DEV) {
-      // eslint-disable-next-line no-console
-      console.error(`Error setting up ${operation} request:`, error.message);
-    }
-    return new Error(`Failed to perform ${operation}: ${error.message}`);
+    return buildResponseError(error, operation);
   }
 
-  // If no specific handling matched, bubble up original error
-  return error;
+  if (error.request) {
+    return buildRequestError(error, operation);
+  }
+
+  return buildSetupError(error, operation);
+};
+
+const logDevError = (operation, error) => {
+  if (!import.meta.env.DEV) return;
+  // eslint-disable-next-line no-console
+  console.error(`Unit ${operation} API error:`, error);
+};
+
+const buildResponseError = (error, operation) => {
+  const status = error.response.status;
+  const message =
+    error.response.data?.message ||
+    error.response.data?.error ||
+    `${operation} failed`;
+
+  if (status === 400) {
+    logDevWarning(operation, message);
+    return new Error(`Invalid ${operation}: ${message}`);
+  }
+
+  if (status === 500) {
+    logDevServerError(operation, message);
+    return new Error(`Server error during ${operation}. Please try again.`);
+  }
+
+  return new Error(message);
+};
+
+const buildRequestError = (error, operation) => {
+  if (import.meta.env.DEV) {
+    // eslint-disable-next-line no-console
+    console.error(`No response from ${operation} API:`, error.message);
+  }
+  return new Error(
+    `Unable to reach ${operation} service. Please check your connection.`,
+  );
+};
+
+const buildSetupError = (error, operation) => {
+  if (import.meta.env.DEV) {
+    // eslint-disable-next-line no-console
+    console.error(`Error setting up ${operation} request:`, error.message);
+  }
+  return new Error(`Failed to perform ${operation}: ${error.message}`);
+};
+
+const logDevWarning = (operation, message) => {
+  if (!import.meta.env.DEV) return;
+  // eslint-disable-next-line no-console
+  console.warn(`Invalid ${operation} request:`, message);
+};
+
+const logDevServerError = (operation, message) => {
+  if (!import.meta.env.DEV) return;
+  // eslint-disable-next-line no-console
+  console.error(`Server error during ${operation}:`, message);
 };
 
 /**
@@ -182,7 +197,7 @@ export const unitConversionService = {
 
       return convertedValue;
     } catch (error) {
-      handleConversionError(error, "weight conversion");
+      throw handleConversionError(error, "weight conversion");
     }
   },
 
@@ -226,7 +241,7 @@ export const unitConversionService = {
 
       return convertedValue;
     } catch (error) {
-      handleConversionError(error, "volume conversion");
+      throw handleConversionError(error, "volume conversion");
     }
   },
 

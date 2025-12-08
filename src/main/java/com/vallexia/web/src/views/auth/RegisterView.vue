@@ -260,13 +260,8 @@ const handleSubmit = async () => {
     return;
   }
 
-  try {
-    await authStore.register(form);
-    router.push("/dashboard");
-  } catch (error_) {
-    // Error is handled by the store and displayed in the template; rethrow for upstream handlers
-    throw error_;
-  }
+  await authStore.register(form);
+  router.push("/dashboard");
 };
 
 onMounted(async () => {
