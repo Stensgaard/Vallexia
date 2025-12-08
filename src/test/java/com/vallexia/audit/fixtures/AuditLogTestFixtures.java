@@ -41,16 +41,19 @@ public class AuditLogTestFixtures {
    * Creates a sample audit log with specified user and event type.
    */
   public static AuditLog createAuditLog(Long userId, String username, EventType eventType) {
-    AuditLog log = new AuditLog(
-        eventType,
-        "Test event: " + eventType,
-        userId,
-        username,
+    AuditLog.UserContext userContext = new AuditLog.UserContext(userId, username);
+    AuditLog.HttpRequestContext httpContext = new AuditLog.HttpRequestContext(
         TEST_IP_ADDRESS,
         TEST_USER_AGENT,
         TEST_REQUEST_METHOD,
         TEST_REQUEST_URI,
-        200,
+        200
+    );
+    AuditLog log = new AuditLog(
+        eventType,
+        "Test event: " + eventType,
+        userContext,
+        httpContext,
         true
     );
     setIdAndTimestamp(log, 1L, LocalDateTime.now());
@@ -61,16 +64,19 @@ public class AuditLogTestFixtures {
    * Creates an audit log for failed login attempt.
    */
   public static AuditLog createFailedLoginLog(String username) {
-    AuditLog log = new AuditLog(
-        EventType.LOGIN_FAILURE,
-        "Failed login attempt",
-        null,
-        username,
+    AuditLog.UserContext userContext = new AuditLog.UserContext(null, username);
+    AuditLog.HttpRequestContext httpContext = new AuditLog.HttpRequestContext(
         TEST_IP_ADDRESS,
         TEST_USER_AGENT,
         "POST",
         "/api/v1/auth/login",
-        401,
+        401
+    );
+    AuditLog log = new AuditLog(
+        EventType.LOGIN_FAILURE,
+        "Failed login attempt",
+        userContext,
+        httpContext,
         false
     );
     setIdAndTimestamp(log, 2L, LocalDateTime.now());
@@ -81,16 +87,19 @@ public class AuditLogTestFixtures {
    * Creates an audit log for security violation.
    */
   public static AuditLog createSecurityViolationLog(String username) {
-    AuditLog log = new AuditLog(
-        EventType.SECURITY_VIOLATION,
-        "Suspicious activity detected",
-        null,
-        username,
+    AuditLog.UserContext userContext = new AuditLog.UserContext(null, username);
+    AuditLog.HttpRequestContext httpContext = new AuditLog.HttpRequestContext(
         TEST_IP_ADDRESS,
         TEST_USER_AGENT,
         "POST",
         "/api/v1/admin/users",
-        403,
+        403
+    );
+    AuditLog log = new AuditLog(
+        EventType.SECURITY_VIOLATION,
+        "Suspicious activity detected",
+        userContext,
+        httpContext,
         false
     );
     setIdAndTimestamp(log, 3L, LocalDateTime.now());
@@ -189,16 +198,19 @@ public class AuditLogTestFixtures {
    * Creates an audit log with details field (for testing security exclusion).
    */
   public static AuditLog createAuditLogWithDetails(String details) {
+    AuditLog.UserContext userContext = new AuditLog.UserContext(1L, TEST_USERNAME);
+    AuditLog.HttpRequestContext httpContext = new AuditLog.HttpRequestContext(
+        null,
+        null,
+        null,
+        null,
+        null
+    );
     AuditLog log = new AuditLog(
         EventType.LOGIN_SUCCESS,
         "Login successful",
-        1L,
-        TEST_USERNAME,
-        null,
-        null,
-        null,
-        null,
-        null,
+        userContext,
+        httpContext,
         details,
         true
     );
@@ -236,16 +248,19 @@ public class AuditLogTestFixtures {
       Integer responseStatus,
       Boolean success,
       LocalDateTime timestamp) {
-    AuditLog log = new AuditLog(
-        eventType,
-        description,
-        userId,
-        username,
+    AuditLog.UserContext userContext = new AuditLog.UserContext(userId, username);
+    AuditLog.HttpRequestContext httpContext = new AuditLog.HttpRequestContext(
         ipAddress,
         userAgent,
         requestMethod,
         requestUri,
-        responseStatus,
+        responseStatus
+    );
+    AuditLog log = new AuditLog(
+        eventType,
+        description,
+        userContext,
+        httpContext,
         success
     );
     setIdAndTimestamp(log, id, timestamp);

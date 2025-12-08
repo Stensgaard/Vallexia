@@ -159,7 +159,7 @@ public class IpAddressExtractor {
     }
     
     // Remove IPv6 brackets if present for validation
-    String addressToValidate = trimmed.replaceAll("(^\\[|\\]$)", "");
+    String addressToValidate = trimmed.replaceAll("(^\\[)|(\\]$)", "");
     
     try {
       // Use InetAddress.getByName() to validate the IP address format and range
@@ -187,12 +187,7 @@ public class IpAddressExtractor {
       
       // Additional validation: ensure the byte array length matches expected IP version
       byte[] addressBytes = addr.getAddress();
-      if ((isIPv4 && addressBytes.length != 4) || (isIPv6 && addressBytes.length != 16)) {
-        return false;
-      }
-      
-      // Successfully validated as IP address
-      return true;
+      return (isIPv4 && addressBytes.length == 4) || (isIPv6 && addressBytes.length == 16);
              
     } catch (UnknownHostException e) {
       // getByName() couldn't parse it as an IP address

@@ -1,6 +1,7 @@
 package com.vallexia.audit.repository;
 
 import com.vallexia.audit.entity.AuditLog;
+import com.vallexia.audit.util.AuditLogQueries;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,15 +22,6 @@ import java.util.List;
  */
 @Repository
 public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
-    
-    /**
-     * Query constants to avoid duplication.
-     * These are used in @Query annotations below.
-     */
-    interface Queries {
-        String FAILED_LOGIN = "SELECT a FROM AuditLog a WHERE a.eventType = com.vallexia.audit.entity.enums.EventType.LOGIN_FAILURE AND a.username = :username ORDER BY a.timestamp DESC";
-        String SECURITY_VIOLATION = "SELECT a FROM AuditLog a WHERE a.eventType = com.vallexia.audit.entity.enums.EventType.SECURITY_VIOLATION ORDER BY a.timestamp DESC";
-    }
     
     /**
      * Find audit logs by user ID.
@@ -55,25 +47,25 @@ public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
     /**
      * Find failed login attempts for a user.
      */
-    @Query(Queries.FAILED_LOGIN)
+    @Query(AuditLogQueries.FAILED_LOGIN)
     List<AuditLog> findFailedLoginAttempts(@Param("username") String username);
     
     /**
      * Find failed login attempts for a user with pagination.
      */
-    @Query(Queries.FAILED_LOGIN)
+    @Query(AuditLogQueries.FAILED_LOGIN)
     Page<AuditLog> findFailedLoginAttempts(@Param("username") String username, Pageable pageable);
     
     /**
      * Find security violations.
      */
-    @Query(Queries.SECURITY_VIOLATION)
+    @Query(AuditLogQueries.SECURITY_VIOLATION)
     List<AuditLog> findSecurityViolations();
     
     /**
      * Find security violations with pagination.
      */
-    @Query(Queries.SECURITY_VIOLATION)
+    @Query(AuditLogQueries.SECURITY_VIOLATION)
     Page<AuditLog> findSecurityViolations(Pageable pageable);
     
     /**

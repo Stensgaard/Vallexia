@@ -94,15 +94,20 @@ public class AuditService {
       String sanitizedUserAgent = inputSanitizer.sanitizeUserAgent(request.getHeader("User-Agent"));
       String sanitizedRequestUri = inputSanitizer.sanitizeRequestUri(request.getRequestURI());
       
-      AuditLog auditLog = new AuditLog(
-          eventType,
-          sanitizedDescription,
-          userId,
-          sanitizedUsername,
+      AuditLog.UserContext userContext = new AuditLog.UserContext(userId, sanitizedUsername);
+      AuditLog.HttpRequestContext httpContext = new AuditLog.HttpRequestContext(
           sanitizedIp,
           sanitizedUserAgent,
           request.getMethod(),
           sanitizedRequestUri,
+          null
+      );
+      
+      AuditLog auditLog = new AuditLog(
+          eventType,
+          sanitizedDescription,
+          userContext,
+          httpContext,
           success
       );
       
@@ -214,16 +219,20 @@ public class AuditService {
       String sanitizedUserAgent = inputSanitizer.sanitizeUserAgent(request.getHeader("User-Agent"));
       String sanitizedRequestUri = inputSanitizer.sanitizeRequestUri(request.getRequestURI());
       
-      AuditLog auditLog = new AuditLog(
-          EventType.API_ACCESS,
-          sanitizedDescription,
-          userId,
-          sanitizedUsername,
+      AuditLog.UserContext userContext = new AuditLog.UserContext(userId, sanitizedUsername);
+      AuditLog.HttpRequestContext httpContext = new AuditLog.HttpRequestContext(
           sanitizedIp,
           sanitizedUserAgent,
           request.getMethod(),
           sanitizedRequestUri,
-          responseStatus,
+          responseStatus
+      );
+      
+      AuditLog auditLog = new AuditLog(
+          EventType.API_ACCESS,
+          sanitizedDescription,
+          userContext,
+          httpContext,
           responseStatus != null && responseStatus < 400
       );
       

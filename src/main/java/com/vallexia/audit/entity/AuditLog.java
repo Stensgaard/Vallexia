@@ -72,6 +72,69 @@ public class AuditLog {
   private LocalDateTime timestamp;
   
   /**
+   * Parameter object for HTTP request context.
+   * Groups HTTP-related fields to reduce constructor parameter count.
+   */
+  public static class HttpRequestContext {
+    private final String ipAddress;
+    private final String userAgent;
+    private final String requestMethod;
+    private final String requestUri;
+    private final Integer responseStatus;
+    
+    public HttpRequestContext(String ipAddress, String userAgent, String requestMethod, 
+                             String requestUri, Integer responseStatus) {
+      this.ipAddress = ipAddress;
+      this.userAgent = userAgent;
+      this.requestMethod = requestMethod;
+      this.requestUri = requestUri;
+      this.responseStatus = responseStatus;
+    }
+    
+    public String getIpAddress() {
+      return ipAddress;
+    }
+    
+    public String getUserAgent() {
+      return userAgent;
+    }
+    
+    public String getRequestMethod() {
+      return requestMethod;
+    }
+    
+    public String getRequestUri() {
+      return requestUri;
+    }
+    
+    public Integer getResponseStatus() {
+      return responseStatus;
+    }
+  }
+  
+  /**
+   * Parameter object for user context.
+   * Groups user-related fields to reduce constructor parameter count.
+   */
+  public static class UserContext {
+    private final Long userId;
+    private final String username;
+    
+    public UserContext(Long userId, String username) {
+      this.userId = userId;
+      this.username = username;
+    }
+    
+    public Long getUserId() {
+      return userId;
+    }
+    
+    public String getUsername() {
+      return username;
+    }
+  }
+  
+  /**
    * No-args constructor required by JPA.
    * Initializes all fields to null. This should only be used by JPA.
    * The database constraints will ensure required fields are not null.
@@ -91,60 +154,26 @@ public class AuditLog {
   }
   
   /**
-   * Constructor for authentication events with HTTP request context.
+   * Constructor for events with HTTP request context.
+   * Handles both authentication events and API access events (with or without response status).
    * 
    * @param eventType the type of event
    * @param description event description
-   * @param userId user ID
-   * @param username username
-   * @param ipAddress client IP address
-   * @param userAgent user agent string
-   * @param requestMethod HTTP request method
-   * @param requestUri HTTP request URI
+   * @param userContext user context containing userId and username
+   * @param httpContext HTTP request context containing IP, user agent, method, URI, and optionally response status
    * @param success whether the operation was successful
    */
-  public AuditLog(EventType eventType, String description, Long userId, String username, 
-                  String ipAddress, String userAgent, String requestMethod, 
-                  String requestUri, Boolean success) {
+  public AuditLog(EventType eventType, String description, UserContext userContext, 
+                  HttpRequestContext httpContext, Boolean success) {
     this.eventType = eventType;
     this.eventDescription = description;
-    this.userId = userId;
-    this.username = username;
-    this.ipAddress = ipAddress;
-    this.userAgent = userAgent;
-    this.requestMethod = requestMethod;
-    this.requestUri = requestUri;
-    this.success = success;
-    this.responseStatus = null;
-    this.details = null;
-  }
-  
-  /**
-   * Constructor for API access events with response status.
-   * 
-   * @param eventType the type of event
-   * @param description event description
-   * @param userId user ID
-   * @param username username
-   * @param ipAddress client IP address
-   * @param userAgent user agent string
-   * @param requestMethod HTTP request method
-   * @param requestUri HTTP request URI
-   * @param responseStatus HTTP response status code
-   * @param success whether the operation was successful
-   */
-  public AuditLog(EventType eventType, String description, Long userId, String username, 
-                  String ipAddress, String userAgent, String requestMethod, 
-                  String requestUri, Integer responseStatus, Boolean success) {
-    this.eventType = eventType;
-    this.eventDescription = description;
-    this.userId = userId;
-    this.username = username;
-    this.ipAddress = ipAddress;
-    this.userAgent = userAgent;
-    this.requestMethod = requestMethod;
-    this.requestUri = requestUri;
-    this.responseStatus = responseStatus;
+    this.userId = userContext != null ? userContext.getUserId() : null;
+    this.username = userContext != null ? userContext.getUsername() : null;
+    this.ipAddress = httpContext != null ? httpContext.getIpAddress() : null;
+    this.userAgent = httpContext != null ? httpContext.getUserAgent() : null;
+    this.requestMethod = httpContext != null ? httpContext.getRequestMethod() : null;
+    this.requestUri = httpContext != null ? httpContext.getRequestUri() : null;
+    this.responseStatus = httpContext != null ? httpContext.getResponseStatus() : null;
     this.success = success;
     this.details = null;
   }
@@ -177,28 +206,22 @@ public class AuditLog {
    * 
    * @param eventType the type of event
    * @param description event description
-   * @param userId user ID
-   * @param username username
-   * @param ipAddress client IP address
-   * @param userAgent user agent string
-   * @param requestMethod HTTP request method
-   * @param requestUri HTTP request URI
-   * @param responseStatus HTTP response status code
+   * @param userContext user context containing userId and username
+   * @param httpContext HTTP request context containing IP, user agent, method, URI, response status
    * @param details additional details (TEXT field)
    * @param success whether the operation was successful
    */
-  public AuditLog(EventType eventType, String description, Long userId, String username, 
-                  String ipAddress, String userAgent, String requestMethod, 
-                  String requestUri, Integer responseStatus, String details, Boolean success) {
+  public AuditLog(EventType eventType, String description, UserContext userContext, 
+                  HttpRequestContext httpContext, String details, Boolean success) {
     this.eventType = eventType;
     this.eventDescription = description;
-    this.userId = userId;
-    this.username = username;
-    this.ipAddress = ipAddress;
-    this.userAgent = userAgent;
-    this.requestMethod = requestMethod;
-    this.requestUri = requestUri;
-    this.responseStatus = responseStatus;
+    this.userId = userContext != null ? userContext.getUserId() : null;
+    this.username = userContext != null ? userContext.getUsername() : null;
+    this.ipAddress = httpContext != null ? httpContext.getIpAddress() : null;
+    this.userAgent = httpContext != null ? httpContext.getUserAgent() : null;
+    this.requestMethod = httpContext != null ? httpContext.getRequestMethod() : null;
+    this.requestUri = httpContext != null ? httpContext.getRequestUri() : null;
+    this.responseStatus = httpContext != null ? httpContext.getResponseStatus() : null;
     this.details = details;
     this.success = success;
   }

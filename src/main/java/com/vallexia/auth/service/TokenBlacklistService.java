@@ -1,5 +1,6 @@
 package com.vallexia.auth.service;
 
+import com.vallexia.auth.exception.CryptographicException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -95,7 +96,7 @@ public class TokenBlacklistService {
             return bytesToHex(hash);
         } catch (NoSuchAlgorithmException e) {
             // SHA-256 is standard, this should never happen
-            throw new RuntimeException("SHA-256 algorithm not available", e);
+            throw new CryptographicException("SHA-256 algorithm not available", e);
         }
     }
     

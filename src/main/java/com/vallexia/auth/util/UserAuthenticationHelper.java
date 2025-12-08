@@ -51,7 +51,7 @@ public class UserAuthenticationHelper {
      * @throws AccountLockedException if account is locked
      */
     public void validateAccountStatus(User user) {
-        if (!user.getEnabled()) {
+        if (!Boolean.TRUE.equals(user.getEnabled())) {
             log.warn("Attempted login for disabled account: {}", user.getUsername());
             throw new AccountDisabledException("Account is disabled");
         }
