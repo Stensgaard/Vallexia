@@ -86,11 +86,9 @@ public class IpAddressExtractor {
           return String.format("%s (via proxy %s, X-Forwarded-For: %s)", 
               forwardedIp, remoteAddr, xForwardedFor);
         }
-      } else if (xRealIp != null && !xRealIp.isEmpty()) {
-        if (isValidIpAddress(xRealIp)) {
-          return String.format("%s (via proxy %s, X-Real-IP: %s)", 
-              xRealIp, remoteAddr, xRealIp);
-        }
+      } else if (xRealIp != null && !xRealIp.isEmpty() && isValidIpAddress(xRealIp)) {
+        return String.format("%s (via proxy %s, X-Real-IP: %s)", 
+            xRealIp, remoteAddr, xRealIp);
       }
     }
     
@@ -161,7 +159,7 @@ public class IpAddressExtractor {
     }
     
     // Remove IPv6 brackets if present for validation
-    String addressToValidate = trimmed.replaceAll("^\\[|\\]$", "");
+    String addressToValidate = trimmed.replaceAll("(^\\[|\\]$)", "");
     
     try {
       // Use InetAddress.getByName() to validate the IP address format and range
@@ -179,7 +177,7 @@ public class IpAddressExtractor {
       // For IPv4, check that getHostAddress() is in IPv4 format
       // For IPv6, check that it's in IPv6 format (contains colons)
       // This ensures we didn't accidentally accept a hostname
-      boolean isIPv4 = hostAddress.matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$");
+      boolean isIPv4 = hostAddress.matches("^(?:\\d{1,3}\\.){3}\\d{1,3}$");
       boolean isIPv6 = hostAddress.contains(":");
       
       if (!isIPv4 && !isIPv6) {
@@ -189,10 +187,7 @@ public class IpAddressExtractor {
       
       // Additional validation: ensure the byte array length matches expected IP version
       byte[] addressBytes = addr.getAddress();
-      if (isIPv4 && addressBytes.length != 4) {
-        return false;
-      }
-      if (isIPv6 && addressBytes.length != 16) {
+      if ((isIPv4 && addressBytes.length != 4) || (isIPv6 && addressBytes.length != 16)) {
         return false;
       }
       

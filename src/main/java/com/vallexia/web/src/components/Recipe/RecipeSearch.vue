@@ -5,10 +5,11 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <!-- Search Query -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">{{
+        <label for="recipe-search-query" class="block text-sm font-medium text-gray-700 mb-1">{{
           $t("recipes.search.search")
         }}</label>
         <input
+          id="recipe-search-query"
           v-model="localCriteria.query"
           type="text"
           :placeholder="$t('recipes.search.searchPlaceholder')"
@@ -19,10 +20,11 @@
 
       <!-- Category -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">{{
+        <label for="recipe-search-category" class="block text-sm font-medium text-gray-700 mb-1">{{
           $t("recipes.search.category")
         }}</label>
         <select
+          id="recipe-search-category"
           v-model="localCriteria.category"
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           @change="updateCriteria"
@@ -41,7 +43,7 @@
       <!-- Cuisine Type -->
       <div>
         <div class="flex items-center gap-1 mb-1">
-          <label class="block text-sm font-medium text-gray-700">{{
+          <label for="recipe-search-cuisine-type" class="block text-sm font-medium text-gray-700">{{
             $t("recipes.search.cuisine")
           }}</label>
           <div class="relative group">
@@ -77,6 +79,7 @@
           </div>
         </div>
         <select
+          id="recipe-search-cuisine-type"
           v-model="localCriteria.cuisineType"
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           @change="updateCriteria"
@@ -97,10 +100,11 @@
 
       <!-- Difficulty Level -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">{{
+        <label for="recipe-search-difficulty" class="block text-sm font-medium text-gray-700 mb-1">{{
           $t("recipes.search.difficulty")
         }}</label>
         <select
+          id="recipe-search-difficulty"
           v-model="localCriteria.difficultyLevel"
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           @change="updateCriteria"
@@ -118,10 +122,11 @@
 
       <!-- Prep Time Range -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">{{
+        <label for="recipe-search-max-prep-time" class="block text-sm font-medium text-gray-700 mb-1">{{
           $t("recipes.search.maxPrepTime")
         }}</label>
         <input
+          id="recipe-search-max-prep-time"
           v-model.number="localCriteria.maxPrepTime"
           type="number"
           :placeholder="$t('recipes.search.maxPrepTimePlaceholder')"
@@ -132,10 +137,11 @@
 
       <!-- Calories Range -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">{{
+        <label for="recipe-search-max-calories" class="block text-sm font-medium text-gray-700 mb-1">{{
           $t("recipes.search.maxCalories")
         }}</label>
         <input
+          id="recipe-search-max-calories"
           v-model.number="localCriteria.maxCalories"
           type="number"
           :placeholder="$t('recipes.search.maxCaloriesPlaceholder')"

@@ -29,7 +29,7 @@ export function getErrorMessage(error) {
         .map(([field, message]) => {
           // Convert camelCase to readable format (e.g., "emailAddress" -> "Email Address")
           const readableField = field
-            .replace(/([A-Z])/g, " $1")
+            .replaceAll(/([A-Z])/g, " $1")
             .replace(/^./, (str) => str.toUpperCase())
             .trim();
 

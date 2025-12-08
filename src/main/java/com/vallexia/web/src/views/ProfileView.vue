@@ -57,10 +57,10 @@
 
           <!-- Meal Types Selection -->
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">
+            <div class="block text-sm font-medium text-gray-700">
               {{ $t("profile.personal.mealTypes") }}
               <span class="text-red-500">*</span>
-            </label>
+            </div>
             <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
               <label
                 v-for="mealType in translatedMealTypes"
@@ -195,10 +195,11 @@
             />
 
             <div class="space-y-1">
-              <label class="block text-sm font-medium text-gray-700">{{
+              <label for="profile-goal-type" class="block text-sm font-medium text-gray-700">{{
                 $t("profile.nutritional.goalType")
               }}</label>
               <select
+                id="profile-goal-type"
                 v-model="nutritionForm.goalType"
                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                 @change="handleGoalTypeChange"
@@ -316,10 +317,11 @@
           <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <!-- Language Selector -->
             <div class="space-y-1">
-              <label class="block text-sm font-medium text-gray-700">{{
+              <label for="profile-language" class="block text-sm font-medium text-gray-700">{{
                 $t("profile.settings.language")
               }}</label>
               <select
+                id="profile-language"
                 v-model="settingsForm.language"
                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
               >
@@ -338,10 +340,11 @@
 
             <!-- Country Selector -->
             <div class="space-y-1">
-              <label class="block text-sm font-medium text-gray-700">{{
+              <label for="profile-country" class="block text-sm font-medium text-gray-700">{{
                 $t("profile.settings.country")
               }}</label>
               <select
+                id="profile-country"
                 v-model="settingsForm.country"
                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
               >
@@ -360,10 +363,11 @@
 
             <!-- Date Format Selector -->
             <div class="space-y-1">
-              <label class="block text-sm font-medium text-gray-700">{{
+              <label for="profile-date-format" class="block text-sm font-medium text-gray-700">{{
                 $t("profile.settings.dateFormat")
               }}</label>
               <select
+                id="profile-date-format"
                 v-model="settingsForm.dateFormat"
                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
               >
@@ -382,10 +386,11 @@
 
             <!-- Timezone Selector -->
             <div class="space-y-1">
-              <label class="block text-sm font-medium text-gray-700">{{
+              <label for="profile-timezone" class="block text-sm font-medium text-gray-700">{{
                 $t("profile.settings.timezone")
               }}</label>
               <select
+                id="profile-timezone"
                 v-model="settingsForm.timezone"
                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
               >
@@ -404,9 +409,9 @@
 
             <!-- First Day of Week Selector -->
             <div class="space-y-1">
-              <label class="block text-sm font-medium text-gray-700">{{
+              <div class="block text-sm font-medium text-gray-700">{{
                 $t("profile.settings.firstDayOfWeekLabel")
-              }}</label>
+              }}</div>
               <div class="flex space-x-4">
                 <label
                   v-for="day in translatedFirstDayOptions"
@@ -432,9 +437,9 @@
 
             <!-- Measurement System Selector -->
             <div class="space-y-1">
-              <label class="block text-sm font-medium text-gray-700">{{
+              <div class="block text-sm font-medium text-gray-700">{{
                 $t("profile.settings.measurementSystem")
-              }}</label>
+              }}</div>
               <div class="flex space-x-4">
                 <label
                   v-for="system in translatedMeasurementSystems"
@@ -462,10 +467,11 @@
 
             <!-- Currency Selector -->
             <div class="space-y-1">
-              <label class="block text-sm font-medium text-gray-700">{{
+              <label for="profile-currency" class="block text-sm font-medium text-gray-700">{{
                 $t("profile.settings.currency")
               }}</label>
               <select
+                id="profile-currency"
                 v-model="settingsForm.currency"
                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
               >
@@ -670,7 +676,7 @@ const normalizedDailyCalories = computed(() => {
     return null;
   }
   const numValue = Number(value);
-  return isNaN(numValue) ? null : numValue;
+  return Number.isNaN(numValue) ? null : numValue;
 });
 
 const nutritionErrors = reactive({

@@ -1,9 +1,9 @@
 <template>
   <div class="space-y-3">
-    <label class="block text-sm font-medium text-gray-700">
+    <div class="block text-sm font-medium text-gray-700">
       {{ label }}
       <span v-if="required" class="text-red-500">*</span>
-    </label>
+    </div>
 
     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
       <label
