@@ -33,40 +33,65 @@ public class ValidDietaryRestrictionValidator implements ConstraintValidator<Val
             return true;
         }
         if (value instanceof String dietaryRestriction) {
-            if (dietaryRestriction.isEmpty()) {
-                return true;
-            }
-
-            String trimmed = dietaryRestriction.trim();
-            if (trimmed.isEmpty()) {
-                return true;
-            }
-
-            return SupportedDietaryRestriction.fromCode(trimmed).isPresent();
+            return isValidString(dietaryRestriction);
         }
         if (value instanceof Collection<?> collection) {
-            // Validate each element in the collection
-            for (Object element : collection) {
-                if (element == null) {
-                    continue; // Allow null elements
-                }
-                if (element instanceof SupportedDietaryRestriction) {
-                    continue; // Valid enum instance
-                }
-                if (element instanceof String restrictionStr) {
-                    if (restrictionStr.isEmpty() || restrictionStr.trim().isEmpty()) {
-                        continue; // Allow empty strings
-                    }
-                    if (!SupportedDietaryRestriction.fromCode(restrictionStr.trim()).isPresent()) {
-                        return false; // Invalid dietary restriction code
-                    }
-                } else {
-                    return false; // Invalid type in collection
-                }
-            }
-            return true;
+            return isValidCollection(collection);
         }
         
         return false;
+    }
+
+    /**
+     * Validates a string dietary restriction value.
+     *
+     * @param dietaryRestriction the string to validate
+     * @return true if valid or empty, false otherwise
+     */
+    private boolean isValidString(String dietaryRestriction) {
+        if (dietaryRestriction.isEmpty()) {
+            return true;
+        }
+
+        String trimmed = dietaryRestriction.trim();
+        if (trimmed.isEmpty()) {
+            return true;
+        }
+
+        return SupportedDietaryRestriction.fromCode(trimmed).isPresent();
+    }
+
+    /**
+     * Validates a collection of dietary restriction values.
+     *
+     * @param collection the collection to validate
+     * @return true if all elements are valid, false otherwise
+     */
+    private boolean isValidCollection(Collection<?> collection) {
+        for (Object element : collection) {
+            if (!isValidElement(element)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Validates a single element from a collection.
+     *
+     * @param element the element to validate
+     * @return true if valid, null, or empty, false otherwise
+     */
+    private boolean isValidElement(Object element) {
+        if (element == null) {
+            return true; // Allow null elements
+        }
+        if (element instanceof SupportedDietaryRestriction) {
+            return true; // Valid enum instance
+        }
+        if (element instanceof String restrictionStr) {
+            return isValidString(restrictionStr);
+        }
+        return false; // Invalid type in collection
     }
 }

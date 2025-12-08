@@ -14,6 +14,7 @@ import com.vallexia.common.enums.SupportedVolumeUnit;
 import com.vallexia.common.enums.SupportedCountUnit;
 import com.vallexia.common.mapper.DomainEnumMapper;
 import com.vallexia.common.mapper.LocaleConfigBuilder;
+import com.vallexia.common.mapper.LocaleConfigInput;
 import com.vallexia.common.mapper.LocaleMapper;
 import com.vallexia.common.mapper.UnitMapper;
 import com.vallexia.recipe.entity.enums.DifficultyLevel;
@@ -86,11 +87,12 @@ class LocaleConfigBuilderTest {
         DomainEnumMapper.toSubscriptionStatusDto(SubscriptionStatus.PREMIUM));
 
     // When
-    LocaleConfigDto config = LocaleConfigBuilder.buildConfig(
+    LocaleConfigInput input = new LocaleConfigInput(
         locales, countries, currencies, timezones, formattingRules,
         dateFormats, measurementSystems, weightUnits, volumeUnits, countUnits,
         firstDayOfWeek, mealCategories, dietaryRestrictions, allergies,
         cuisineTypes, difficultyLevels, goalTypes, subscriptionStatuses);
+    LocaleConfigDto config = LocaleConfigBuilder.buildConfig(input);
 
     // Then
     assertThat(config).isNotNull();
@@ -138,11 +140,12 @@ class LocaleConfigBuilderTest {
     List<SubscriptionStatusDto> emptySubscriptionStatuses = Collections.emptyList();
 
     // When
-    LocaleConfigDto config = LocaleConfigBuilder.buildConfig(
+    LocaleConfigInput input = new LocaleConfigInput(
         emptyLocales, emptyCountries, emptyCurrencies, emptyTimezones, emptyFormattingRules,
         emptyDateFormats, emptyMeasurementSystems, emptyWeightUnits, emptyVolumeUnits, emptyCountUnits,
         emptyFirstDayOfWeek, emptyMealCategories, emptyDietaryRestrictions, emptyAllergies,
         emptyCuisineTypes, emptyDifficultyLevels, emptyGoalTypes, emptySubscriptionStatuses);
+    LocaleConfigDto config = LocaleConfigBuilder.buildConfig(input);
 
     // Then
     assertThat(config).isNotNull();
@@ -174,21 +177,28 @@ class LocaleConfigBuilderTest {
     List<GoalTypeDto> emptyGoalTypes = Collections.emptyList();
     List<SubscriptionStatusDto> emptySubscriptionStatuses = Collections.emptyList();
 
-    // When/Then - Test first parameter
-    assertThatThrownBy(() -> LocaleConfigBuilder.buildConfig(
+    // When/Then - Test null input
+    assertThatThrownBy(() -> LocaleConfigBuilder.buildConfig(null))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("input must not be null");
+
+    // When/Then - Test first parameter in input
+    LocaleConfigInput inputWithNullLocales = new LocaleConfigInput(
         null, emptyCountries, emptyCurrencies, emptyTimezones, emptyFormattingRules,
         emptyDateFormats, emptyMeasurementSystems, emptyWeightUnits, emptyVolumeUnits, emptyCountUnits,
         emptyFirstDayOfWeek, emptyMealCategories, emptyDietaryRestrictions, emptyAllergies,
-        emptyCuisineTypes, emptyDifficultyLevels, emptyGoalTypes, emptySubscriptionStatuses))
+        emptyCuisineTypes, emptyDifficultyLevels, emptyGoalTypes, emptySubscriptionStatuses);
+    assertThatThrownBy(() -> LocaleConfigBuilder.buildConfig(inputWithNullLocales))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("locales must not be null");
 
-    // When/Then - Test last parameter
-    assertThatThrownBy(() -> LocaleConfigBuilder.buildConfig(
+    // When/Then - Test last parameter in input
+    LocaleConfigInput inputWithNullSubscriptionStatuses = new LocaleConfigInput(
         emptyLocales, emptyCountries, emptyCurrencies, emptyTimezones, emptyFormattingRules,
         emptyDateFormats, emptyMeasurementSystems, emptyWeightUnits, emptyVolumeUnits, emptyCountUnits,
         emptyFirstDayOfWeek, emptyMealCategories, emptyDietaryRestrictions, emptyAllergies,
-        emptyCuisineTypes, emptyDifficultyLevels, emptyGoalTypes, null))
+        emptyCuisineTypes, emptyDifficultyLevels, emptyGoalTypes, null);
+    assertThatThrownBy(() -> LocaleConfigBuilder.buildConfig(inputWithNullSubscriptionStatuses))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("subscriptionStatuses must not be null");
   }

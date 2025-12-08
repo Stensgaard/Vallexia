@@ -58,8 +58,8 @@ public enum SupportedDateFormat {
     private final List<DateFormatToken> tokens;
     private static final Map<String, SupportedDateFormat> BY_CODE = Arrays.stream(values())
             .collect(Collectors.toUnmodifiableMap(
-                    format -> format.name().toUpperCase(Locale.ROOT),
-                    format -> format));
+                    dateFormat -> dateFormat.name().toUpperCase(Locale.ROOT),
+                    dateFormat -> dateFormat));
 
     SupportedDateFormat(String format, List<DateFormatToken> tokens) {
         this.format = format;

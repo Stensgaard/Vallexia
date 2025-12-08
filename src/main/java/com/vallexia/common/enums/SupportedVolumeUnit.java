@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import static java.util.Map.entry;
 
 /**
  * Supported volume units with conversion metadata (base unit milliliter).
@@ -39,6 +40,20 @@ public enum SupportedVolumeUnit {
             .collect(Collectors.toUnmodifiableMap(
                     unit -> unit.getDisplay().toLowerCase(Locale.ROOT),
                     unit -> unit));
+    
+    private static final Map<String, SupportedVolumeUnit> BY_VARIATION = Map.ofEntries(
+            entry("cups", CUP),
+            entry("tablespoon", TABLESPOON),
+            entry("tablespoons", TABLESPOON),
+            entry("teaspoon", TEASPOON),
+            entry("teaspoons", TEASPOON),
+            entry("milliliter", MILLILITER),
+            entry("milliliters", MILLILITER),
+            entry("liter", LITER),
+            entry("liters", LITER),
+            entry("fluid ounce", FLUID_OUNCE),
+            entry("fluid ounces", FLUID_OUNCE)
+    );
 
     SupportedVolumeUnit(String display, BigDecimal milliliters) {
         this.display = display;
@@ -73,39 +88,9 @@ public enum SupportedVolumeUnit {
         }
         
         // Handle plurals and common variations
-        for (SupportedVolumeUnit unit : values()) {
-            switch (unit) {
-                case CUP:
-                    if (normalized.equals("cups")) {
-                        return Optional.of(unit);
-                    }
-                    break;
-                case TABLESPOON:
-                    if (normalized.equals("tablespoon") || normalized.equals("tablespoons")) {
-                        return Optional.of(unit);
-                    }
-                    break;
-                case TEASPOON:
-                    if (normalized.equals("teaspoon") || normalized.equals("teaspoons")) {
-                        return Optional.of(unit);
-                    }
-                    break;
-                case MILLILITER:
-                    if (normalized.equals("milliliter") || normalized.equals("milliliters")) {
-                        return Optional.of(unit);
-                    }
-                    break;
-                case LITER:
-                    if (normalized.equals("liter") || normalized.equals("liters")) {
-                        return Optional.of(unit);
-                    }
-                    break;
-                case FLUID_OUNCE:
-                    if (normalized.equals("fluid ounce") || normalized.equals("fluid ounces")) {
-                        return Optional.of(unit);
-                    }
-                    break;
-            }
+        SupportedVolumeUnit variationMatch = BY_VARIATION.get(normalized);
+        if (variationMatch != null) {
+            return Optional.of(variationMatch);
         }
         
         return Optional.empty();

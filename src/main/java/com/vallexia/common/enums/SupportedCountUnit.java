@@ -34,6 +34,16 @@ public enum SupportedCountUnit {
             .collect(Collectors.toUnmodifiableMap(
                     unit -> unit.getDisplay().toLowerCase(Locale.ROOT),
                     unit -> unit));
+    /**
+     * Normalized variation map for plural and abbreviated forms.
+     */
+    private static final Map<String, SupportedCountUnit> BY_VARIATION = Map.of(
+            "pieces", PIECE,
+            "pcs", PIECE,
+            "pc", PIECE,
+            "items", ITEM,
+            "wholes", WHOLE
+    );
 
     SupportedCountUnit(String display) {
         this.display = display;
@@ -65,28 +75,13 @@ public enum SupportedCountUnit {
         if (exactMatch != null) {
             return Optional.of(exactMatch);
         }
-        
-        // Handle plurals and common variations
-        for (SupportedCountUnit unit : values()) {
-            switch (unit) {
-                case PIECE:
-                    if (normalized.equals("pieces") || normalized.equals("pcs") || normalized.equals("pc")) {
-                        return Optional.of(unit);
-                    }
-                    break;
-                case ITEM:
-                    if (normalized.equals("items")) {
-                        return Optional.of(unit);
-                    }
-                    break;
-                case WHOLE:
-                    if (normalized.equals("wholes")) {
-                        return Optional.of(unit);
-                    }
-                    break;
-            }
+
+        // Handle plurals and common variations through a lookup map
+        SupportedCountUnit variationMatch = BY_VARIATION.get(normalized);
+        if (variationMatch != null) {
+            return Optional.of(variationMatch);
         }
-        
+
         return Optional.empty();
     }
 }

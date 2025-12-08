@@ -33,40 +33,65 @@ public class ValidMealCategoryValidator implements ConstraintValidator<ValidMeal
             return true;
         }
         if (value instanceof String mealCategory) {
-            if (mealCategory.isEmpty()) {
-                return true;
-            }
-
-            String trimmed = mealCategory.trim();
-            if (trimmed.isEmpty()) {
-                return true;
-            }
-
-            return SupportedMealCategory.fromCode(trimmed).isPresent();
+            return isValidString(mealCategory);
         }
         if (value instanceof Collection<?> collection) {
-            // Validate each element in the collection
-            for (Object element : collection) {
-                if (element == null) {
-                    continue; // Allow null elements
-                }
-                if (element instanceof SupportedMealCategory) {
-                    continue; // Valid enum instance
-                }
-                if (element instanceof String mealCategoryStr) {
-                    if (mealCategoryStr.isEmpty() || mealCategoryStr.trim().isEmpty()) {
-                        continue; // Allow empty strings
-                    }
-                    if (!SupportedMealCategory.fromCode(mealCategoryStr.trim()).isPresent()) {
-                        return false; // Invalid meal category code
-                    }
-                } else {
-                    return false; // Invalid type in collection
-                }
-            }
-            return true;
+            return isValidCollection(collection);
         }
         
         return false;
+    }
+
+    /**
+     * Validates a string meal category value.
+     * 
+     * @param mealCategory the string to validate
+     * @return true if valid or empty, false otherwise
+     */
+    private boolean isValidString(String mealCategory) {
+        if (mealCategory.isEmpty()) {
+            return true;
+        }
+
+        String trimmed = mealCategory.trim();
+        if (trimmed.isEmpty()) {
+            return true;
+        }
+
+        return SupportedMealCategory.fromCode(trimmed).isPresent();
+    }
+
+    /**
+     * Validates a collection of meal category values.
+     * 
+     * @param collection the collection to validate
+     * @return true if all elements are valid, false otherwise
+     */
+    private boolean isValidCollection(Collection<?> collection) {
+        for (Object element : collection) {
+            if (!isValidElement(element)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Validates a single element from a collection.
+     * 
+     * @param element the element to validate
+     * @return true if valid, null, or empty, false otherwise
+     */
+    private boolean isValidElement(Object element) {
+        if (element == null) {
+            return true; // Allow null elements
+        }
+        if (element instanceof SupportedMealCategory) {
+            return true; // Valid enum instance
+        }
+        if (element instanceof String mealCategoryStr) {
+            return isValidString(mealCategoryStr);
+        }
+        return false; // Invalid type in collection
     }
 }

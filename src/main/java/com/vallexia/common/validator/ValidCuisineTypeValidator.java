@@ -33,40 +33,65 @@ public class ValidCuisineTypeValidator implements ConstraintValidator<ValidCuisi
             return true;
         }
         if (value instanceof String cuisineType) {
-            if (cuisineType.isEmpty()) {
-                return true;
-            }
-
-            String trimmed = cuisineType.trim();
-            if (trimmed.isEmpty()) {
-                return true;
-            }
-
-            return SupportedCuisineType.fromCode(trimmed).isPresent();
+            return isValidString(cuisineType);
         }
         if (value instanceof Collection<?> collection) {
-            // Validate each element in the collection
-            for (Object element : collection) {
-                if (element == null) {
-                    continue; // Allow null elements
-                }
-                if (element instanceof SupportedCuisineType) {
-                    continue; // Valid enum instance
-                }
-                if (element instanceof String cuisineTypeStr) {
-                    if (cuisineTypeStr.isEmpty() || cuisineTypeStr.trim().isEmpty()) {
-                        continue; // Allow empty strings
-                    }
-                    if (!SupportedCuisineType.fromCode(cuisineTypeStr.trim()).isPresent()) {
-                        return false; // Invalid cuisine type code
-                    }
-                } else {
-                    return false; // Invalid type in collection
-                }
-            }
-            return true;
+            return isValidCollection(collection);
         }
         
         return false;
+    }
+
+    /**
+     * Validates a string cuisine type value.
+     *
+     * @param cuisineType the string to validate
+     * @return true if valid or empty, false otherwise
+     */
+    private boolean isValidString(String cuisineType) {
+        if (cuisineType.isEmpty()) {
+            return true;
+        }
+
+        String trimmed = cuisineType.trim();
+        if (trimmed.isEmpty()) {
+            return true;
+        }
+
+        return SupportedCuisineType.fromCode(trimmed).isPresent();
+    }
+
+    /**
+     * Validates a collection of cuisine type values.
+     *
+     * @param collection the collection to validate
+     * @return true if all elements are valid, false otherwise
+     */
+    private boolean isValidCollection(Collection<?> collection) {
+        for (Object element : collection) {
+            if (!isValidElement(element)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Validates a single element from a collection.
+     *
+     * @param element the element to validate
+     * @return true if valid, null, or empty, false otherwise
+     */
+    private boolean isValidElement(Object element) {
+        if (element == null) {
+            return true; // Allow null elements
+        }
+        if (element instanceof SupportedCuisineType) {
+            return true; // Valid enum instance
+        }
+        if (element instanceof String cuisineTypeStr) {
+            return isValidString(cuisineTypeStr);
+        }
+        return false; // Invalid type in collection
     }
 }

@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import static java.util.Map.entry;
 
 /**
  * Supported weight units with conversion metadata (base unit grams).
@@ -38,6 +39,20 @@ public enum SupportedWeightUnit {
             .collect(Collectors.toUnmodifiableMap(
                     unit -> unit.getDisplay().toLowerCase(Locale.ROOT),
                     unit -> unit));
+    
+    private static final Map<String, SupportedWeightUnit> BY_VARIATION = Map.ofEntries(
+            entry("gram", GRAM),
+            entry("grams", GRAM),
+            entry("kilogram", KILOGRAM),
+            entry("kilograms", KILOGRAM),
+            entry("milligram", MILLIGRAM),
+            entry("milligrams", MILLIGRAM),
+            entry("ounce", OUNCE),
+            entry("ounces", OUNCE),
+            entry("pound", POUND),
+            entry("pounds", POUND),
+            entry("lbs", POUND)
+    );
 
     SupportedWeightUnit(String display, BigDecimal grams) {
         this.display = display;
@@ -72,34 +87,9 @@ public enum SupportedWeightUnit {
         }
         
         // Handle plurals and common variations
-        for (SupportedWeightUnit unit : values()) {
-            switch (unit) {
-                case GRAM:
-                    if (normalized.equals("gram") || normalized.equals("grams")) {
-                        return Optional.of(unit);
-                    }
-                    break;
-                case KILOGRAM:
-                    if (normalized.equals("kilogram") || normalized.equals("kilograms")) {
-                        return Optional.of(unit);
-                    }
-                    break;
-                case MILLIGRAM:
-                    if (normalized.equals("milligram") || normalized.equals("milligrams")) {
-                        return Optional.of(unit);
-                    }
-                    break;
-                case OUNCE:
-                    if (normalized.equals("ounce") || normalized.equals("ounces")) {
-                        return Optional.of(unit);
-                    }
-                    break;
-                case POUND:
-                    if (normalized.equals("pound") || normalized.equals("pounds") || normalized.equals("lbs")) {
-                        return Optional.of(unit);
-                    }
-                    break;
-            }
+        SupportedWeightUnit variationMatch = BY_VARIATION.get(normalized);
+        if (variationMatch != null) {
+            return Optional.of(variationMatch);
         }
         
         return Optional.empty();

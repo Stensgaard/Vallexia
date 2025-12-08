@@ -33,40 +33,65 @@ public class ValidAllergyValidator implements ConstraintValidator<ValidAllergy, 
             return true;
         }
         if (value instanceof String allergy) {
-            if (allergy.isEmpty()) {
-                return true;
-            }
-
-            String trimmed = allergy.trim();
-            if (trimmed.isEmpty()) {
-                return true;
-            }
-
-            return SupportedAllergy.fromCode(trimmed).isPresent();
+            return isValidString(allergy);
         }
         if (value instanceof Collection<?> collection) {
-            // Validate each element in the collection
-            for (Object element : collection) {
-                if (element == null) {
-                    continue; // Allow null elements
-                }
-                if (element instanceof SupportedAllergy) {
-                    continue; // Valid enum instance
-                }
-                if (element instanceof String allergyStr) {
-                    if (allergyStr.isEmpty() || allergyStr.trim().isEmpty()) {
-                        continue; // Allow empty strings
-                    }
-                    if (!SupportedAllergy.fromCode(allergyStr.trim()).isPresent()) {
-                        return false; // Invalid allergy code
-                    }
-                } else {
-                    return false; // Invalid type in collection
-                }
-            }
-            return true;
+            return isValidCollection(collection);
         }
         
         return false;
+    }
+
+    /**
+     * Validates a string allergy value.
+     * 
+     * @param allergy the string to validate
+     * @return true if valid or empty, false otherwise
+     */
+    private boolean isValidString(String allergy) {
+        if (allergy.isEmpty()) {
+            return true;
+        }
+
+        String trimmed = allergy.trim();
+        if (trimmed.isEmpty()) {
+            return true;
+        }
+
+        return SupportedAllergy.fromCode(trimmed).isPresent();
+    }
+
+    /**
+     * Validates a collection of allergy values.
+     * 
+     * @param collection the collection to validate
+     * @return true if all elements are valid, false otherwise
+     */
+    private boolean isValidCollection(Collection<?> collection) {
+        for (Object element : collection) {
+            if (!isValidElement(element)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Validates a single element from a collection.
+     * 
+     * @param element the element to validate
+     * @return true if valid, null, or empty, false otherwise
+     */
+    private boolean isValidElement(Object element) {
+        if (element == null) {
+            return true; // Allow null elements
+        }
+        if (element instanceof SupportedAllergy) {
+            return true; // Valid enum instance
+        }
+        if (element instanceof String allergyStr) {
+            return isValidString(allergyStr);
+        }
+        return false; // Invalid type in collection
     }
 }

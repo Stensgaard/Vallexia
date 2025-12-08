@@ -20,6 +20,7 @@ import com.vallexia.nutrition.enums.GoalType;
 import com.vallexia.user.entity.enums.SubscriptionStatus;
 import com.vallexia.common.mapper.DomainEnumMapper;
 import com.vallexia.common.mapper.LocaleConfigBuilder;
+import com.vallexia.common.mapper.LocaleConfigInput;
 import com.vallexia.common.mapper.LocaleMapper;
 import com.vallexia.common.mapper.UnitMapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -279,7 +280,7 @@ public class LocaleConfigController {
     }
 
     private LocaleConfigDto buildLocaleConfigSnapshot() {
-        return LocaleConfigBuilder.buildConfig(
+        LocaleConfigInput input = new LocaleConfigInput(
                 buildLocales(),
                 buildCountries(),
                 buildCurrencies(),
@@ -299,6 +300,7 @@ public class LocaleConfigController {
                 buildGoalTypes(),
                 buildSubscriptionStatuses()
         );
+        return LocaleConfigBuilder.buildConfig(input);
     }
 
     private List<LocaleDto> buildLocales() {
