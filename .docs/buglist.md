@@ -1,9 +1,19 @@
-invalid email or password shows "An unexpected error occurred. Please try again."
+Overview over bugs that needs to be fixed:
+- invalid email or password shows "An unexpected error occurred. Please try again."
 
-need to remove from both backend and frontend and their respected bruno api test file:
- - all recpies is now only coming from spoonacular so no longer can edit, remove, create so only get
- - need to remove isPublic and isFavourite
- - no need to calculate neutration from the recpies anymore as that will come from their endpoint
- - clean up dtos remove anything that is no longer needed (eg. recpiesDTO and its helper methods)
- - refactor old dtos or make a new one to get the serach result from the api to show to the user
- - remove difficulty feature
+Need to remove from both backend and frontend and their respected bruno api test file:
+ - remove all create recipe feature
+ - remove all edit recipe feature
+ - remove all delete recipe feature
+ - remove all isPublic/isPrivate feature
+ - remove all neutration recipe calculation
+ - remove all difficulty feature
+ - remove old search feature? 
+    (src/main/java/com/vallexia/recipe/util/AllergenCompatibilityUtil.java)
+    src/main/java/com/vallexia/recipe/service/specification/RecipeSortHelper.java
+    src/main/java/com/vallexia/recipe/service/specification/DietaryRestrictionFilter.java
+    src/main/java/com/vallexia/recipe/service/specification/RecipeSpecificationBuilder.java
+ - remove all recipe seeding data
+
+ - rework recipe service/controller/dto/enitiy to fit spoonacular API
+ - rework isFavourite
