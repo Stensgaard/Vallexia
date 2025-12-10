@@ -1,3 +1,58 @@
 spring:
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
+  datasource:
+    username: vallexia_user
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  data:
+    redis:
+      port: 6379
+      password: ${REDIS_PASSWORD}
+      timeout: 2000ms
+      repositories:
+        enabled: false
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    validate-on-migrate: true
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+    access-token-expiration: 900000
+    refresh-token-expiration: 86400000
+  security:
+    trusted-proxies: ${TRUSTED_PROXIES}
+  audit:
+    retention-days: ${AUDIT_RETENTION_DAYS:90}
+  cors:
+    allowed-methods: 
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+    allowed-headers:
+      - Authorization
+      - Content-Type
+      - Accept
+      - X-Requested-With
+    allow-credentials: true
+logging:
+  level:
+    '[com.vallexia]': INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    max-size: 10mb
+    max-history: 30

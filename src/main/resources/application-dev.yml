@@ -5,57 +5,25 @@ spring:
       on-profile: dev
   datasource:
     url: jdbc:postgresql://${DB_HOST:localhost}:5432/vallexia_dev
-    username: vallexia_user
-    password: ${DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
-  
   data:
     redis:
       host: ${REDIS_HOST:localhost}
-      port: 6379
-      password: ${REDIS_PASSWORD:}
-      timeout: 2000ms
-      repositories:
-        enabled: false  # Disable Redis repositories - using Redis only for caching/templates
-      lettuce:
-        pool:
-          max-active: 8
-          max-idle: 8
-          min-idle: 0
-  
-  # Flyway Database Migration
   flyway:
-    enabled: true
-    baseline-on-migrate: true
     locations: 
       - classpath:db/migration
-      - classpath:db/migration-dev  # Dev-only migrations (e.g., V5 admin user)
-    validate-on-migrate: true
+      - classpath:db/migration-dev
     clean-disabled: false
-  
   jpa:
-    hibernate:
-      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
         format-sql: true
-    open-in-view: false
-
 app:
-  jwt:
-    secret: ${JWT_SECRET}
-    access-token-expiration: 900000
-    refresh-token-expiration: 86400000
   auth:
     lockout:
       max-failed-attempts: 5
       duration-minutes: 15
-  security:
-    # Comma-separated list of trusted proxy IP addresses for extracting real client IP
-    trusted-proxies: ${TRUSTED_PROXIES:}
   audit:
-    retention-days: ${AUDIT_RETENTION_DAYS:90}
     fallback-log-path: ${AUDIT_FALLBACK_LOG_PATH:deployment/logs/audit-fallback.log}
   cors:
     allowed-origins: 
@@ -63,31 +31,12 @@ app:
       - "http://localhost:3000"
       - "http://127.0.0.1:5173"
       - "http://127.0.0.1:3000"
-    allowed-methods: 
-      - GET
-      - POST
-      - PUT
-      - DELETE
-      - OPTIONS
-    allowed-headers:
-      - Authorization
-      - Content-Type
-      - Accept
-      - X-Requested-With
-    allow-credentials: true
   rate-limiting:
-    enabled: false  # Disable rate limiting for dev testing
-
+    enabled: false
 logging:
   level:
-    '[com.vallexia]': INFO
-    '[org.springframework.security]': WARN
+    '[org.springframework.security]': DEBUG
     '[org.hibernate.SQL]': DEBUG
     '[org.hibernate.type.descriptor.sql.BasicBinder]': DEBUG
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
   file:
     name: ${LOG_FILE_PATH:deployment/logs/vallexia.log}
-    max-size: 10MB
-    max-history: 30

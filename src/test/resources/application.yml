@@ -16,7 +16,6 @@ spring:
     properties:
       hibernate:
         format-sql: false
-
 app:
   security:
     trusted-proxies: 
@@ -33,7 +32,6 @@ app:
       duration-minutes: 15
   rate-limiting:
     enabled: false  # Disable rate limiting during automated tests
-
 logging:
   level:
     '[com.vallexia]': INFO
