@@ -47,6 +47,12 @@ app:
       - Accept
       - X-Requested-With
     allow-credentials: true
+  spoonacular:
+    api-key: ${SPOONACULAR_API_KEY}
+    base-url: https://api.spoonacular.com
+    cache-ttl-hours: 1
+    rate-limit-per-minute: 60
+    daily-quota-points: 50
 logging:
   level:
     '[com.vallexia]': INFO

@@ -170,6 +170,40 @@
       "description": "Time window duration in minutes for refresh token rate limiting.",
       "defaultValue": 5,
       "sourceType": "com.vallexia.config.security.RateLimitingProperties"
+    },
+    {
+      "name": "app.spoonacular.api-key",
+      "type": "java.lang.String",
+      "description": "Spoonacular API key for authentication. Retrieved from environment variable SPOONACULAR_API_KEY. Must not be blank.",
+      "sourceType": "com.vallexia.config.spoonacular.SpoonacularProperties"
+    },
+    {
+      "name": "app.spoonacular.base-url",
+      "type": "java.lang.String",
+      "description": "Base URL for Spoonacular API.",
+      "defaultValue": "https://api.spoonacular.com",
+      "sourceType": "com.vallexia.config.spoonacular.SpoonacularProperties"
+    },
+    {
+      "name": "app.spoonacular.cache-ttl-hours",
+      "type": "java.lang.Integer",
+      "description": "Cache TTL in hours. Must be at least 1 hour (per Spoonacular Terms of Use).",
+      "defaultValue": 1,
+      "sourceType": "com.vallexia.config.spoonacular.SpoonacularProperties"
+    },
+    {
+      "name": "app.spoonacular.rate-limit-per-minute",
+      "type": "java.lang.Integer",
+      "description": "Rate limit per minute for API calls. Default: 60 requests/minute (free tier limit).",
+      "defaultValue": 60,
+      "sourceType": "com.vallexia.config.spoonacular.SpoonacularProperties"
+    },
+    {
+      "name": "app.spoonacular.daily-quota-points",
+      "type": "java.lang.Integer",
+      "description": "Daily quota points for API calls. Default: 50 points/day (free tier limit).",
+      "defaultValue": 50,
+      "sourceType": "com.vallexia.config.spoonacular.SpoonacularProperties"
     }
   ]
 }

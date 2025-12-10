@@ -11,6 +11,7 @@ import com.vallexia.config.security.JwtProperties;
 import com.vallexia.config.security.RateLimitingProperties;
 import com.vallexia.config.security.SecurityProperties;
 import com.vallexia.config.web.CorsProperties;
+import com.vallexia.config.api.SpoonacularProperties;
 import com.vallexia.config.audit.AuditProperties;
 
 /**
@@ -29,6 +30,7 @@ import com.vallexia.config.audit.AuditProperties;
     AccountSecurityProperties.class,
     SecurityProperties.class,
     AuditProperties.class,
+    SpoonacularProperties.class,
     RateLimitingProperties.class
 })
 public class VallexiaApplication {
