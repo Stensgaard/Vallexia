@@ -22,6 +22,7 @@ GET https://api.spoonacular.com/recipes/complexSearch
 &cuisine=<preferred_cuisines>             # Optional: e.g., italian,mexican
 &excludeCuisine=<excluded_cuisines>      # Optional: e.g., chinese,japanese
 &diet=<diet_type>                         # Optional: e.g., vegetarian,vegan
+&apiKey=your_api_key_here
 ```
 
 **Filter Parameters (No Extra Cost - All Free):**
