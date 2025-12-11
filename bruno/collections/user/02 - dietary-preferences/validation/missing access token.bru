@@ -1,17 +1,22 @@
 meta {
-  name: Get Nutritional Goals - Unauthorized
+  name: missing access token
   type: http
   seq: 1
 }
 
 get {
-  url: {{baseUrl}}/api/v1/users/nutritional-goals
+  url: {{baseUrl}}/api/{{apiVersion}}/users/dietary-preferences
   body: none
-  auth: none
+  auth: inherit
 }
 
 tests {
   test("Status is 401 Unauthorized", function() {
     expect(res.status).to.equal(401);
   });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
 }

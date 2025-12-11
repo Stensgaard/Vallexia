@@ -1,7 +1,7 @@
 meta {
   name: Update Nutritional Goals - Calories Too High
   type: http
-  seq: 7
+  seq: 4
 }
 
 put {
@@ -27,7 +27,7 @@ tests {
   test("Status is 400 Bad Request", function() {
     expect(res.status).to.equal(400);
   });
-
+  
   test("Daily calories validation error for too high", function() {
     expect(res.body.details).to.have.property("dailyCalories");
     expect(res.body.details.dailyCalories).to.satisfy(msg => 

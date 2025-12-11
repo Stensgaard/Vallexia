@@ -14,6 +14,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+// TODO - does not look like the delete call is working, and im not sure what the point of it is
+// should it just be removed? and merge it all with deleting the user and it delete it all
+
 /**
  * REST controller for dietary preferences management endpoints.
  * 

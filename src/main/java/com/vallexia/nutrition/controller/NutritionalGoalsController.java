@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 
+// TODO: what does the delete call do?
+
 /**
  * REST controller for nutritional goals management endpoints.
  * 
