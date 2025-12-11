@@ -1,0 +1,37 @@
+meta {
+  name: missing country
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/{{apiVersion}}/auth/register
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "username": "{{username}}{{$timestamp}}",
+    "email": "{{email}}{{$timestamp}}@example.com",
+    "country": "",
+    "password": "{{password}}",
+    "confirmPassword": "{{password}}"
+  }
+}
+
+tests {
+  test("Status is 400 Bad Request", function() {
+    expect(res.status).to.equal(400);
+  });
+  
+  test("country validation error in details", function() {
+    expect(res.body.details).to.have.property("country");
+    expect(res.body.details.country).to.include("required");
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,30 @@
+meta {
+  name: logged out successfully
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/{{apiVersion}}/auth/logout
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("Status is 204 No Content", function() {
+    expect(res.status).to.equal(204);
+  });
+  
+  test("Response body is empty", function() {
+    expect(res.body).to.be.empty;
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

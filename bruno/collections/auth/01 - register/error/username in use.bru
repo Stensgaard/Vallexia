@@ -1,0 +1,42 @@
+meta {
+  name: username in use
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/{{apiVersion}}/auth/register
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "username": "{{registeredUsername}}",
+    "email": "{{email}}{{$timestamp}}@example.com",
+    "country": "{{country}}",
+    "password": "{{password}}",
+    "confirmPassword": "{{password}}"
+  }
+}
+
+tests {
+  test("Status is 409 Conflict", function() {
+    expect(res.status).to.equal(409);
+  });
+  
+  test("Error code is USER_002", function() {
+    expect(res.body.code).to.equal("USER_002");
+  });
+  
+  test("Error message indicates user already exists", function() {
+    expect(res.body.message).to.satisfy(msg => 
+      msg.includes("already exists") || msg.includes("taken") || msg.includes("User already")
+    );
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
