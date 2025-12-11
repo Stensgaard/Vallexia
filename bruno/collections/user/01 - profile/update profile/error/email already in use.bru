@@ -1,11 +1,11 @@
 meta {
-  name: Update User Profile - Email Conflict
+  name: email already in use
   type: http
-  seq: 6
+  seq: 1
 }
 
 put {
-  url: {{baseUrl}}/api/v1/users/profile
+  url: {{baseUrl}}/api/{{apiVersion}}/users/profile
   body: json
   auth: bearer
 }
@@ -16,7 +16,7 @@ auth:bearer {
 
 body:json {
   {
-    "email": "{{adminEmail}}",
+    "email": "{{conflictEmail}}",
     "householdSize": 2,
     "mealTypes": ["BREAKFAST", "LUNCH", "DINNER"]
   }
@@ -26,10 +26,15 @@ tests {
   test("Status is 400 Bad Request", function() {
     expect(res.status).to.equal(400);
   });
-
+  
   test("Error message indicates email already in use", function() {
     expect(res.body.message).to.satisfy(msg => 
       msg.includes("already in use") || msg.includes("Email") || msg.includes("conflict")
     );
   });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
 }

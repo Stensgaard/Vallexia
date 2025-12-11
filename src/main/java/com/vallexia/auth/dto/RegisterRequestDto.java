@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-// TODO: do we need to send username and email back to the user when they successfully register?
 // TODO: testUser@example.com1765437293 is passing as an valid email, should be fixed
 // TODO: make validation errors more clear and helpful
 /*

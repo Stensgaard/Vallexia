@@ -1,11 +1,11 @@
 meta {
-  name: Update User Profile - Success
+  name: update user profile
   type: http
-  seq: 2
+  seq: 1
 }
 
 put {
-  url: {{baseUrl}}/api/v1/users/profile
+  url: {{baseUrl}}/api/{{apiVersion}}/users/profile
   body: json
   auth: bearer
 }
@@ -26,13 +26,18 @@ tests {
   test("Status is 200 OK", function() {
     expect(res.status).to.equal(200);
   });
-
+  
   test("Response contains updated email", function() {
     expect(res.body).to.have.property("email");
     expect(res.body.email).to.be.a("string");
   });
-
+  
   test("Response contains updated household size", function() {
     expect(res.body.householdSize).to.equal(3);
   });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
 }
