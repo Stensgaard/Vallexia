@@ -4,15 +4,8 @@ import io.github.cdimascio.dotenv.Dotenv;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import com.vallexia.config.security.AccountSecurityProperties;
-import com.vallexia.config.security.JwtProperties;
-import com.vallexia.config.security.RateLimitingProperties;
-import com.vallexia.config.security.SecurityProperties;
-import com.vallexia.config.web.CorsProperties;
-import com.vallexia.config.api.SpoonacularProperties;
-import com.vallexia.config.audit.AuditProperties;
 
 /**
  * Main Spring Boot application class for Vallexia Smart Meal Planning App.
@@ -24,15 +17,7 @@ import com.vallexia.config.audit.AuditProperties;
 @Slf4j
 @SpringBootApplication
 @EnableScheduling
-@EnableConfigurationProperties({
-    CorsProperties.class,
-    JwtProperties.class,
-    AccountSecurityProperties.class,
-    SecurityProperties.class,
-    AuditProperties.class,
-    SpoonacularProperties.class,
-    RateLimitingProperties.class
-})
+@ConfigurationPropertiesScan("com.vallexia.config")
 public class VallexiaApplication {
     public static void main(String[] args) {
         // Load .env file only in development (not in production)
