@@ -34,7 +34,7 @@
     "postcss": "^8.4.47",
     "prettier": "^3.7.4",
     "rimraf": "^6.1.2",
-    "tailwindcss": "^4.1.17",
+    "tailwindcss": "^4.1.18",
     "vite": "^7.2.6"
   }
 }
