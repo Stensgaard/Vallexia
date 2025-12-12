@@ -1,13 +1,18 @@
 meta {
-  name: Get My Audit Logs - Success
+  name: get own audit logs
   type: http
   seq: 1
 }
 
 get {
-  url: {{baseUrl}}/api/v1/audit-logs/me?page=0&size=20
+  url: {{baseUrl}}/api/{{apiVersion}}/audit-logs/me?page=0&size=20
   body: none
   auth: bearer
+}
+
+params:query {
+  page: 0
+  size: 20
 }
 
 auth:bearer {
@@ -18,10 +23,15 @@ tests {
   test("Status is 200 OK", function() {
     expect(res.status).to.equal(200);
   });
-
+  
   test("Response is paginated", function() {
     expect(res.body).to.have.property("content");
     expect(res.body.content).to.be.an("array");
     expect(res.body).to.have.property("totalElements");
   });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
 }

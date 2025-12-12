@@ -1,13 +1,18 @@
 meta {
-  name: Get All Audit Logs - Forbidden User Role
+  name: get all audit logs as user role
   type: http
-  seq: 9
+  seq: 2
 }
 
 get {
-  url: {{baseUrl}}/api/v1/audit-logs?page=0&size=20
+  url: {{baseUrl}}/api/{{apiVersion}}/audit-logs?page=0&size=20
   body: none
   auth: bearer
+}
+
+params:query {
+  page: 0
+  size: 20
 }
 
 auth:bearer {
@@ -18,8 +23,13 @@ tests {
   test("Status is 403 Forbidden (requires ADMIN role)", function() {
     expect(res.status).to.equal(403);
   });
-
+  
   test("Error code is AUTH_005", function() {
     expect(res.body.code).to.equal("AUTH_005");
   });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
 }

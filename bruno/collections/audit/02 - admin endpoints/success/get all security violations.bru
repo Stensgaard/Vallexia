@@ -1,13 +1,18 @@
 meta {
-  name: Get Audit Logs By Date Range - Admin Success
+  name: get all security violations
   type: http
-  seq: 6
+  seq: 4
 }
 
 get {
-  url: {{baseUrl}}/api/v1/audit-logs/date-range?start=2024-01-01T00:00:00&end=2024-01-31T23:59:59&page=0&size=20
+  url: {{baseUrl}}/api/{{apiVersion}}/audit-logs/security-violations?page=0&size=20
   body: none
   auth: bearer
+}
+
+params:query {
+  page: 0
+  size: 20
 }
 
 auth:bearer {
@@ -18,8 +23,13 @@ tests {
   test("Status is 200 OK (requires ADMIN role)", function() {
     expect(res.status).to.equal(200);
   });
-
-  test("Response contains audit logs in date range", function() {
+  
+  test("Response contains security violations", function() {
     expect(res.body).to.have.property("content");
   });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
 }

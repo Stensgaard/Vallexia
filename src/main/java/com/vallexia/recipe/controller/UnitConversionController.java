@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 
+// TODO make api tests when this has been refactored to use spoonacular API
+
 /**
  * REST controller for unit conversion operations.
  * 

@@ -18,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 // TODO: refreshing token is not working getting html error code 500
+// TODO calling get on login returns 500 Internal Server Error check all cases like this for all endpoints
 
 /**
  * REST controller for authentication endpoints.

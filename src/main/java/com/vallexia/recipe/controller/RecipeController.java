@@ -20,6 +20,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+// TODO make api tests when this has been refactored to use spoonacular API
+
 /**
  * REST controller for recipe management endpoints.
  * 

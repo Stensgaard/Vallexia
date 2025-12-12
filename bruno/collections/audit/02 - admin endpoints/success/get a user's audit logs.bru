@@ -1,13 +1,18 @@
 meta {
-  name: Get User Audit Logs - Admin Success
+  name: get a user's audit logs
   type: http
-  seq: 2
+  seq: 1
 }
 
 get {
-  url: {{baseUrl}}/api/v1/audit-logs/user/1?page=0&size=20
+  url: {{baseUrl}}/api/{{apiVersion}}/audit-logs/user/1?page=0&size=20
   body: none
   auth: bearer
+}
+
+params:query {
+  page: 0
+  size: 20
 }
 
 auth:bearer {
@@ -18,9 +23,14 @@ tests {
   test("Status is 200 OK (requires ADMIN role)", function() {
     expect(res.status).to.equal(200);
   });
-
+  
   test("Response contains audit logs", function() {
     expect(res.body).to.have.property("content");
     expect(res.body.content).to.be.an("array");
   });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
 }

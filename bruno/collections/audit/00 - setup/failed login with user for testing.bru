@@ -1,0 +1,29 @@
+meta {
+  name: failed login with user for testing
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/{{apiVersion}}/auth/login
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "usernameOrEmail": "{{registeredUsername}}",
+    "password": "wrong"
+  }
+}
+
+tests {
+  test("Status is 401 Unauthorized", function() {
+    expect(res.status).to.equal(401);
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

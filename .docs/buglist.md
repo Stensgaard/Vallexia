@@ -1,7 +1,7 @@
 Overview over bugs that needs to be fixed:
 - invalid email or password shows "An unexpected error occurred. Please try again."
 - CANCELLED, EXPIRED from sub should be removed so only keep free, premium, family
-- 
+- make api tests for calling non supported methods on all controllers
 
 Need to remove from both backend and frontend and their respected bruno api test file:
  - remove all create recipe feature

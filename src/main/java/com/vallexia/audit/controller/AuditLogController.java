@@ -21,6 +21,28 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
+// TODO getting own audit logs contain many null values
+/* an example of a profile update audit log
+      "id": 149,
+      "eventType": "PROFILE_UPDATE",
+      "eventDescription": "User settings updated for user ID: 45",
+      "userId": 45,
+      "username": null,
+      "ipAddress": null,
+      "userAgent": null,
+      "requestMethod": null,
+      "requestUri": null,
+      "responseStatus": null,
+      "success": true,
+      "timestamp": "2025-12-12T08:49:26.917771"
+    },
+*/
+// TODO failed login dont trigger a audit log 
+// {{baseUrl}}/api/{{apiVersion}}/audit-logs/failed-logins?username=
+// {{registeredUsername}}&page=0&size=20 reutrns none
+// TODO trigger a security violation audit log for testing api in the setup folder in audit
+// TODO trigger audit log within the date range in the setup folder in audit for testing
+
 /**
  * REST controller for audit log operations.
  * Provides endpoints for querying audit logs with proper access control.

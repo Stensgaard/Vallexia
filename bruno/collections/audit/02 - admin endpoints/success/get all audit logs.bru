@@ -1,13 +1,18 @@
 meta {
-  name: Get All Audit Logs - Admin Success
+  name: get all audit logs
   type: http
-  seq: 3
+  seq: 2
 }
 
 get {
-  url: {{baseUrl}}/api/v1/audit-logs?page=0&size=20
+  url: {{baseUrl}}/api/{{apiVersion}}/audit-logs?page=0&size=20
   body: none
   auth: bearer
+}
+
+params:query {
+  page: 0
+  size: 20
 }
 
 auth:bearer {
@@ -18,9 +23,14 @@ tests {
   test("Status is 200 OK (requires ADMIN role)", function() {
     expect(res.status).to.equal(200);
   });
-
+  
   test("Response contains paginated audit logs", function() {
     expect(res.body).to.have.property("content");
     expect(res.body).to.have.property("totalPages");
   });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
 }

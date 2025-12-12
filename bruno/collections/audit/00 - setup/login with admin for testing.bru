@@ -1,0 +1,35 @@
+meta {
+  name: login with admin for testing
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/{{apiVersion}}/auth/login
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "usernameOrEmail": "admin",
+    "password": "AdminPass123!"
+  }
+}
+
+tests {
+  test("Status is 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response contains access token", function() {
+    expect(res.body).to.have.property("accessToken");
+    expect(res.body.accessToken).to.be.a("string");
+    bru.setVar("adminAccessToken", res.body.accessToken);
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,13 +1,19 @@
 meta {
-  name: Get Failed Login Attempts - Admin Success
+  name: get failed login attempts for a user
   type: http
-  seq: 4
+  seq: 3
 }
 
 get {
-  url: {{baseUrl}}/api/v1/audit-logs/failed-logins?username=testuser&page=0&size=20
+  url: {{baseUrl}}/api/{{apiVersion}}/audit-logs/failed-logins?username={{registeredUsername}}&page=0&size=20
   body: none
   auth: bearer
+}
+
+params:query {
+  username: {{registeredUsername}}
+  page: 0
+  size: 20
 }
 
 auth:bearer {
@@ -18,8 +24,13 @@ tests {
   test("Status is 200 OK (requires ADMIN role)", function() {
     expect(res.status).to.equal(200);
   });
-
+  
   test("Response contains failed login attempts", function() {
     expect(res.body).to.have.property("content");
   });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
 }
