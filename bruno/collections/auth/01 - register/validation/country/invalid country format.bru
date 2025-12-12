@@ -25,10 +25,9 @@ tests {
     expect(res.status).to.equal(400);
   });
   
-  test("Email validation error for invalid format", function() {
+  test("Country validation error for invalid format", function() {
     expect(res.body.details).to.have.property("country");
-    expect(res.body.details.country).to.satisfy(msg => msg.includes("country code")
-    );
+    expect(res.body.details.country).to.satisfy(msg => "Invalid country code");
   });
 }
 

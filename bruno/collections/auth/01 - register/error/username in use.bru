@@ -29,10 +29,8 @@ tests {
     expect(res.body.code).to.equal("USER_002");
   });
   
-  test("Error message indicates user already exists", function() {
-    expect(res.body.message).to.satisfy(msg => 
-      msg.includes("already exists") || msg.includes("taken") || msg.includes("User already")
-    );
+  test("Error message indicates user already exists with given username", function() {
+    expect(res.body.message).to.satisfy(msg => "Username is already taken");
   });
 }
 

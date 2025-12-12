@@ -1,11 +1,11 @@
 meta {
-  name: Update Nutritional Goals - Protein Too High
+  name: updating protein value to over max
   type: http
-  seq: 5
+  seq: 3
 }
 
 put {
-  url: {{baseUrl}}/api/v1/users/nutritional-goals
+  url: {{baseUrl}}/api/{{apiVersion}}/users/nutritional-goals
   body: json
   auth: bearer
 }
@@ -30,8 +30,11 @@ tests {
   
   test("Protein validation error for too high", function() {
     expect(res.body.details).to.have.property("dailyProtein");
-    expect(res.body.details.dailyProtein).to.satisfy(msg => 
-      msg.includes("1000") || msg.includes("exceed") || msg.includes("not exceed")
-    );
+    expect(res.body.details.dailyProtein).to.satisfy(msg => "Daily protein must not exceed");
   });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
 }

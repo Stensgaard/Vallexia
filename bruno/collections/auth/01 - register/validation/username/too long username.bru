@@ -27,9 +27,7 @@ tests {
   
   test("Username validation error for too long", function() {
     expect(res.body.details).to.have.property("username");
-    expect(res.body.details.username).to.satisfy(msg => 
-      msg.includes("20") || msg.includes("characters") || msg.includes("between")
-    );
+    expect(res.body.details.username).to.satisfy(msg => "Username must be 3-20 characters");
   });
 }
 

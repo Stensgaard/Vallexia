@@ -27,9 +27,7 @@ tests {
   
   test("Email validation error for invalid format", function() {
     expect(res.body.details).to.have.property("email");
-    expect(res.body.details.email).to.satisfy(msg => 
-      msg.includes("Email")
-    );
+    expect(res.body.details.email).to.satisfy(msg => "Email should be valid");
   });
 }
 

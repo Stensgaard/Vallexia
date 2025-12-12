@@ -1,11 +1,11 @@
 meta {
-  name: Update Nutritional Goals - Fiber Too High
+  name: updating fiber value to over max
   type: http
-  seq: 11
+  seq: 6
 }
 
 put {
-  url: {{baseUrl}}/api/v1/users/nutritional-goals
+  url: {{baseUrl}}/api/{{apiVersion}}/users/nutritional-goals
   body: json
   auth: bearer
 }
@@ -31,8 +31,11 @@ tests {
   
   test("Fiber validation error for too high", function() {
     expect(res.body.details).to.have.property("dailyFiber");
-    expect(res.body.details.dailyFiber).to.satisfy(msg => 
-      msg.includes("100") || msg.includes("exceed") || msg.includes("not exceed")
-    );
+    expect(res.body.details.dailyFiber).to.satisfy(msg => "Daily fiber must not exceed");
   });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
 }

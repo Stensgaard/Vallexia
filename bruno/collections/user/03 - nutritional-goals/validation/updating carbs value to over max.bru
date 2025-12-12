@@ -1,11 +1,11 @@
 meta {
-  name: Update Nutritional Goals - Carbs Too High
+  name: updating carbs value to over max
   type: http
-  seq: 6
+  seq: 4
 }
 
 put {
-  url: {{baseUrl}}/api/v1/users/nutritional-goals
+  url: {{baseUrl}}/api/{{apiVersion}}/users/nutritional-goals
   body: json
   auth: bearer
 }
@@ -30,8 +30,11 @@ tests {
   
   test("Carbs validation error for too high", function() {
     expect(res.body.details).to.have.property("dailyCarbs");
-    expect(res.body.details.dailyCarbs).to.satisfy(msg => 
-      msg.includes("1500") || msg.includes("exceed") || msg.includes("not exceed")
-    );
+    expect(res.body.details.dailyCarbs).to.satisfy(msg => "Daily carbs must not exceed");
   });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
 }

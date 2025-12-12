@@ -1,11 +1,11 @@
 meta {
-  name: Update Nutritional Goals - Sodium Too High
+  name: updating sodium value to over max
   type: http
-  seq: 12
+  seq: 7
 }
 
 put {
-  url: {{baseUrl}}/api/v1/users/nutritional-goals
+  url: {{baseUrl}}/api/{{apiVersion}}/users/nutritional-goals
   body: json
   auth: bearer
 }
@@ -31,8 +31,11 @@ tests {
   
   test("Sodium validation error for too high", function() {
     expect(res.body.details).to.have.property("dailySodium");
-    expect(res.body.details.dailySodium).to.satisfy(msg => 
-      msg.includes("10000") || msg.includes("exceed") || msg.includes("not exceed")
-    );
+    expect(res.body.details.dailySodium).to.satisfy(msg => "Daily sodium must not exceed");
   });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
 }

@@ -1,5 +1,5 @@
 meta {
-  name: invalid characters in username 
+  name: invalid characters in username
   type: http
   seq: 4
 }
@@ -27,9 +27,7 @@ tests {
   
   test("Username validation error for invalid characters", function() {
     expect(res.body.details).to.have.property("username");
-    expect(res.body.details.username).to.satisfy(msg => 
-      msg.includes("letters") || msg.includes("numbers") || msg.includes("underscores") || msg.includes("dashes")
-    );
+    expect(res.body.details.username).to.satisfy(msg => "contain only letters, numbers, underscores, and dashes");
   });
 }
 

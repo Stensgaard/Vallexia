@@ -1,11 +1,11 @@
 meta {
-  name: Update Nutritional Goals - Fats Too High
+  name: updating fats value to over max
   type: http
-  seq: 7
+  seq: 5
 }
 
 put {
-  url: {{baseUrl}}/api/v1/users/nutritional-goals
+  url: {{baseUrl}}/api/{{apiVersion}}/users/nutritional-goals
   body: json
   auth: bearer
 }
@@ -30,8 +30,11 @@ tests {
   
   test("Fats validation error for too high", function() {
     expect(res.body.details).to.have.property("dailyFats");
-    expect(res.body.details.dailyFats).to.satisfy(msg => 
-      msg.includes("500") || msg.includes("exceed") || msg.includes("not exceed")
-    );
+    expect(res.body.details.dailyFats).to.satisfy(msg => "Daily fats must not exceed");
   });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
 }

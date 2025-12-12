@@ -1,11 +1,11 @@
 meta {
-  name: Update Nutritional Goals - Negative Values
+  name: updating with negative values
   type: http
-  seq: 14
+  seq: 3
 }
 
-put {
-  url: {{baseUrl}}/api/v1/users/nutritional-goals
+get {
+  url: {{baseUrl}}/api/{{apiVersion}}/users/nutritional-goals
   body: json
   auth: bearer
 }
@@ -35,4 +35,9 @@ tests {
              (details.hasOwnProperty("dailyFats") && details.dailyFats.includes("0"));
     });
   });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
 }

@@ -1,0 +1,28 @@
+meta {
+  name: updating with no body
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/api/{{apiVersion}}/users/settings
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("Status is 400 Bad Request", function() {
+    expect(res.status).to.equal(400);
+  });
+  
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

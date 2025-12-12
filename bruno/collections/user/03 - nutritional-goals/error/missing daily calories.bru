@@ -1,11 +1,11 @@
 meta {
-  name: Update Nutritional Goals - Calories Zero
+  name: missing daily calories
   type: http
-  seq: 3
+  seq: 2
 }
 
 put {
-  url: {{baseUrl}}/api/v1/users/nutritional-goals
+  url: {{baseUrl}}/api/{{apiVersion}}/users/nutritional-goals
   body: json
   auth: bearer
 }
@@ -16,7 +16,6 @@ auth:bearer {
 
 body:json {
   {
-    "dailyCalories": 0.0,
     "dailyProtein": 150.0,
     "dailyCarbs": 200.0,
     "dailyFats": 65.0
@@ -28,10 +27,13 @@ tests {
     expect(res.status).to.equal(400);
   });
   
-  test("Daily calories validation error for zero", function() {
+  test("Daily calories validation error in details", function() {
     expect(res.body.details).to.have.property("dailyCalories");
-    expect(res.body.details.dailyCalories).to.satisfy(msg => 
-      msg.includes("greater than 0") || msg.includes("must be greater")
-    );
+    expect(res.body.details.dailyCalories).to.include("required");
   });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
 }

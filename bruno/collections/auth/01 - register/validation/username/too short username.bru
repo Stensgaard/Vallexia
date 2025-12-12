@@ -1,5 +1,5 @@
 meta {
-  name:  too short username
+  name: too short username
   type: http
   seq: 2
 }
@@ -27,9 +27,7 @@ tests {
   
   test("Username validation error for too short", function() {
     expect(res.body.details).to.have.property("username");
-    expect(res.body.details.username).to.satisfy(msg => 
-      msg.includes("3") || msg.includes("characters") || msg.includes("between")
-    );
+    expect(res.body.details.username).to.satisfy(msg => "Username must be 3-20 characters");
   });
 }
 

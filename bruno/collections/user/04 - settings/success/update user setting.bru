@@ -1,0 +1,42 @@
+meta {
+  name: update user setting
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/api/{{apiVersion}}/users/settings
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "language": "en",
+    "country": "DK",
+    "dateFormat": "DD_MM_YYYY_DOT",
+    "timezone": "Europe/Copenhagen",
+    "firstDayOfWeek": "Sunday",
+    "measurementSystem": "METRIC",
+    "currency": "DKK"
+  }
+}
+
+tests {
+  test("Status is 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response contains updated language", function() {
+    expect(res.body.language).to.equal("en");
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

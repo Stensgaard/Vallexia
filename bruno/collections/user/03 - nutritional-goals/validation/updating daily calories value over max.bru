@@ -1,11 +1,11 @@
 meta {
-  name: Update Nutritional Goals - Missing Daily Calories
+  name: updating daily calories value over max
   type: http
   seq: 2
 }
 
 put {
-  url: {{baseUrl}}/api/v1/users/nutritional-goals
+  url: {{baseUrl}}/api/{{apiVersion}}/users/nutritional-goals
   body: json
   auth: bearer
 }
@@ -16,6 +16,7 @@ auth:bearer {
 
 body:json {
   {
+    "dailyCalories": 10001.0,
     "dailyProtein": 150.0,
     "dailyCarbs": 200.0,
     "dailyFats": 65.0
@@ -27,8 +28,13 @@ tests {
     expect(res.status).to.equal(400);
   });
   
-  test("Daily calories validation error in details", function() {
+  test("Daily calories validation error for too high", function() {
     expect(res.body.details).to.have.property("dailyCalories");
-    expect(res.body.details.dailyCalories).to.include("required");
+    expect(res.body.details.dailyProtein).to.satisfy(msg => "Daily calories must not exceed");
   });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
 }

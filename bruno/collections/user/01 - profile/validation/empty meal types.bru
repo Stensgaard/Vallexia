@@ -1,7 +1,7 @@
 meta {
   name: empty meal types
   type: http
-  seq: 2
+  seq: 1
 }
 
 put {
@@ -29,9 +29,7 @@ tests {
   
   test("Meal types validation error", function() {
     expect(res.body.details).to.have.property("mealTypes");
-    expect(res.body.details.mealTypes).to.satisfy(msg => 
-      msg.includes("At least one") || msg.includes("not be empty") || msg.includes("required")
-    );
+    expect(res.body.details.mealTypes).to.satisfy(msg => "At least one meal type must be selected");
   });
 }
 

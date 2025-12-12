@@ -1,13 +1,13 @@
 meta {
   name: missing access token
   type: http
-  seq: 2
+  seq: 1
 }
 
 get {
-  url: {{baseUrl}}/api/{{apiVersion}}/users/profile
+  url: {{baseUrl}}/api/{{apiVersion}}/users/nutritional-goals
   body: none
-  auth: none
+  auth: inherit
 }
 
 tests {

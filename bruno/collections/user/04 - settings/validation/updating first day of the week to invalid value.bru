@@ -1,0 +1,43 @@
+meta {
+  name: updating first day of the week to invalid value
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrl}}/api/{{apiVersion}}/users/settings
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "language": "en",
+    "country": "DK",
+    "dateFormat": "DD_MM_YYYY_DOT",
+    "timezone": "Europe/Copenhagen",
+    "firstDayOfWeek": "invalid",
+    "measurementSystem": "METRIC",
+    "currency": "DKK"
+  }
+}
+
+tests {
+  test("Status is 400 Bad Request", function() {
+    expect(res.status).to.equal(400);
+  });
+  
+  test("First day of the week validation error with invalid value", function() {
+    expect(res.body.details).to.have.property("firstDayOfWeek");
+    expect(res.body.details.firstDayOfWeek).to.satisfy(msg => "First day of week must be one of the supported locales");
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

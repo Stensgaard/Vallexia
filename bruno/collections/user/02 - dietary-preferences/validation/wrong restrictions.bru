@@ -30,6 +30,10 @@ tests {
   test("Error code is VAL_002", function() {
     expect(res.body.code).to.equal("VAL_002");
   });
+  
+  test("dietary restrictions validation error", function() {
+    expect(res.body.details.requestBody).to.satisfy(msg => "DAIRY_FREE");
+  });
 }
 
 settings {

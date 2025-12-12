@@ -48,6 +48,12 @@ tests {
     expect(res.body.refreshToken).to.be.a("string");
     bru.setVar("refreshToken", res.body.refreshToken);
   });
+  
+  test("User is set to free subscription", function() {
+    expect(res.body).to.have.property("subscriptionStatus");
+    expect(res.body.subscriptionStatus).to.be.a("string");
+    expect(res.body.subscriptionStatus).equal("FREE")
+  });
 }
 
 settings {

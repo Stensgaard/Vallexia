@@ -1,11 +1,11 @@
 meta {
-  name: Update Nutritional Goals - Sugar Too High
+  name: updating sugar value to over max
   type: http
-  seq: 13
+  seq: 8
 }
 
 put {
-  url: {{baseUrl}}/api/v1/users/nutritional-goals
+  url: {{baseUrl}}/api/{{apiVersion}}/users/nutritional-goals
   body: json
   auth: bearer
 }
@@ -31,8 +31,11 @@ tests {
   
   test("Sugar validation error for too high", function() {
     expect(res.body.details).to.have.property("dailySugar");
-    expect(res.body.details.dailySugar).to.satisfy(msg => 
-      msg.includes("10000") || msg.includes("exceed") || msg.includes("not exceed")
-    );
+    expect(res.body.details.dailySugar).to.satisfy(msg => "Daily sugar must not exceed");
   });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
 }

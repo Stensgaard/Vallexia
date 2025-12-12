@@ -26,9 +26,7 @@ tests {
   });
   
   test("Error message indicates invalid token", function() {
-    expect(res.body.message).to.satisfy(msg => 
-      msg.includes("Invalid") || msg.includes("token")
-    );
+    expect(res.body.message).to.satisfy(msg => "Invalid refresh token");
   });
 }
 

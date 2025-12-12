@@ -14,6 +14,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+// TODO why is curreny not required but the rest is?
+// TODO make it so the currency is required and must be one of the 
+// supported currencies, make it so it says which is supported for them all
+
 /**
  * REST controller for user settings management endpoints.
  * 

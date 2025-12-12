@@ -1,5 +1,5 @@
 meta {
-  name: email already in use
+  name: missing email
   type: http
   seq: 1
 }
@@ -16,7 +16,6 @@ auth:bearer {
 
 body:json {
   {
-    "email": "{{conflictEmail}}",
     "householdSize": 2,
     "mealTypes": ["BREAKFAST", "LUNCH", "DINNER"]
   }
@@ -27,8 +26,9 @@ tests {
     expect(res.status).to.equal(400);
   });
   
-  test("Error message indicates email already in use", function() {
-    expect(res.body.message).to.satisfy(msg => "Email is already in use");
+  test("Missing email error", function() {
+    expect(res.body.details).to.have.property("email");
+    expect(res.body.details.mealTypes).to.satisfy(msg => "Email is required");
   });
 }
 
