@@ -43,6 +43,8 @@ import java.time.LocalDateTime;
 // TODO trigger a security violation audit log for testing api in the setup folder in audit
 // TODO trigger audit log within the date range in the setup folder in audit for testing
 
+// TODO make api tests for all audit log endpoints
+
 /**
  * REST controller for audit log operations.
  * Provides endpoints for querying audit logs with proper access control.

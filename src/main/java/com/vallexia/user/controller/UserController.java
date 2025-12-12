@@ -17,6 +17,12 @@ import org.springframework.web.bind.annotation.*;
 // TODO make it a requirement to send username with then you update the profile, 
 // and use this username to check instead of the email
 // TODO make sure they only edit their own profile
+// TODo make api tests once delete as been implemented
+
+
+// TODO HEAD {{baseUrl}}/api/{{apiVersion}}/users/profile returns 200 OK why is that the case?
+// should it not return 405 Method Not Allowed?
+
 
 /**
  * REST controller for user profile management endpoints.

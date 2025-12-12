@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.*;
 // TODO make it so the currency is required and must be one of the 
 // supported currencies, make it so it says which is supported for them all
 
+// TODO HEAD {{baseUrl}}/api/{{apiVersion}}/users/settings returns 200 OK why is that the case?
+// should it not return 405 Method Not Allowed?
+
 /**
  * REST controller for user settings management endpoints.
  * 

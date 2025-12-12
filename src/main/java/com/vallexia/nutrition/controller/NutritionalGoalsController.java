@@ -27,6 +27,9 @@ import java.math.BigDecimal;
 // TODO should maybe be moved under the user package? as it is goals for the user 
 // instead of being it own package
 
+// TODO HEAD {{baseUrl}}/api/{{apiVersion}}/users/nutritional-goals returns 200 OK why is that the case?
+// should it not return 405 Method Not Allowed?
+
 /**
  * REST controller for nutritional goals management endpoints.
  * 
