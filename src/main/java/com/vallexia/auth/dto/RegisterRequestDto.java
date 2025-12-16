@@ -9,8 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-// TODO: testUser@example.com1765437293 is passing as an valid email, should be fixed
-// TODO: make validation errors more clear and helpful
+// BUG: testUser@example.com1765437293 is passing as an valid email, should be fixed
+// FIXME: make validation errors more clear and helpful
 /*
 "username": "Username must be between 3 and 20 characters; 
 Username must be 3-20 characters and 

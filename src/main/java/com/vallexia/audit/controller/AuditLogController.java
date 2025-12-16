@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
-// TODO getting own audit logs contain many null values
+// BUG: getting own audit logs contain many null values
 /* an example of a profile update audit log
       "id": 149,
       "eventType": "PROFILE_UPDATE",
@@ -37,7 +37,7 @@ import java.time.LocalDateTime;
       "timestamp": "2025-12-12T08:49:26.917771"
     },
 */
-// TODO failed login dont trigger a audit log 
+// BUG: failed login dont trigger a audit log 
 // {{baseUrl}}/api/{{apiVersion}}/audit-logs/failed-logins?username=
 // {{registeredUsername}}&page=0&size=20 reutrns none
 // TODO trigger a security violation audit log for testing api in the setup folder in audit
@@ -45,7 +45,7 @@ import java.time.LocalDateTime;
 
 // TODO make api tests for all audit log endpoints
 
-// TODO unsupported http calls should return 405 Method Not Allowed
+// FIXME: unsupported http calls should return 405 Method Not Allowed
 
 // TODO do users need to be able to view their own audit logs?
 

@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 
 // TODO: what does the delete call do?
 // TODO should Daily calories be a required field?
-// TODO updating with negative values returns 200 but the goals are not updated should return 400 Bad Request
+// BUG: updating with negative values returns 200 but the goals are not updated should return 400 Bad Request
 // TODO make use of the defined goalType values instead of allowing users to set their own goalType values?
 //   but allow the users to make their own goalType with their own name and values?
 // TODO should maybe be moved under the user package? as it is goals for the user 
@@ -30,7 +30,7 @@ import java.math.BigDecimal;
 // TODO HEAD {{baseUrl}}/api/{{apiVersion}}/users/nutritional-goals returns 200 OK why is that the case?
 // should it not return 405 Method Not Allowed?
 
-// TODO unsupported http calls should return 405 Method Not Allowed
+// FIXME: unsupported http calls should return 405 Method Not Allowed
 
 /**
  * REST controller for nutritional goals management endpoints.
