@@ -14,9 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-// TODO - does not look like the delete call is working, and im not sure what the point of it is
-// should it just be removed? and merge it all with deleting the user and it delete it all
-
 /**
  * REST controller for dietary preferences management endpoints.
  * 
@@ -100,30 +97,5 @@ public class DietaryPreferencesController {
         DietaryPreferencesDto updatedPreferences = dietaryPreferencesService.updateDietaryPreferences(userId, dietaryPreferencesDto);
         
         return ResponseEntity.ok(updatedPreferences);
-    }
-    
-    /**
-     * Delete current user's dietary preferences.
-     * 
-     * @param authentication current authentication
-     * @return no content
-     */
-    @Operation(
-        summary = "Delete current user's dietary preferences", 
-        description = "Deletes the authenticated user's dietary preferences (GDPR compliance)")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "Dietary preferences deleted successfully"),
-        @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing JWT token"),
-        @ApiResponse(responseCode = "404", description = "User not found")
-    })
-    @DeleteMapping
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<Void> deleteCurrentUserDietaryPreferences(Authentication authentication) {
-        Long userId = authenticationHelper.getCurrentUserId(authentication);
-        log.info("Deleting dietary preferences for user ID: {}", userId);
-        
-        dietaryPreferencesService.deleteDietaryPreferences(userId);
-        
-        return ResponseEntity.noContent().build();
     }
 }

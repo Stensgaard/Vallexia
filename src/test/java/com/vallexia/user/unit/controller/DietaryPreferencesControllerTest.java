@@ -241,45 +241,4 @@ class DietaryPreferencesControllerTest {
     verify(authenticationHelper, times(1)).getCurrentUserId(mockAuthentication);
     verify(dietaryPreferencesService, times(1)).updateDietaryPreferences(eq(userId), eq(updateDto));
   }
-  
-  // ==================== deleteCurrentUserDietaryPreferences() Tests ====================
-  
-  @Test
-  @DisplayName("Should delete preferences successfully (204)")
-  void shouldDeletePreferencesSuccessfully() {
-    // Given
-    Long userId = 1L;
-    
-    when(authenticationHelper.getCurrentUserId(mockAuthentication))
-        .thenReturn(userId);
-    doNothing().when(dietaryPreferencesService).deleteDietaryPreferences(userId);
-    
-    // When
-    ResponseEntity<Void> response = dietaryPreferencesController.deleteCurrentUserDietaryPreferences(mockAuthentication);
-    
-    // Then
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
-    assertThat(response.getBody()).isNull();
-    
-    verify(authenticationHelper).getCurrentUserId(mockAuthentication);
-    verify(dietaryPreferencesService).deleteDietaryPreferences(userId);
-  }
-  
-  @Test
-  @DisplayName("Should handle authentication properly when deleting preferences")
-  void shouldHandleAuthenticationProperlyWhenDeletingPreferences() {
-    // Given
-    Long userId = 1L;
-    
-    when(authenticationHelper.getCurrentUserId(mockAuthentication))
-        .thenReturn(userId);
-    doNothing().when(dietaryPreferencesService).deleteDietaryPreferences(userId);
-    
-    // When
-    dietaryPreferencesController.deleteCurrentUserDietaryPreferences(mockAuthentication);
-    
-    // Then
-    verify(authenticationHelper, times(1)).getCurrentUserId(mockAuthentication);
-    verify(dietaryPreferencesService, times(1)).deleteDietaryPreferences(userId);
-  }
 }

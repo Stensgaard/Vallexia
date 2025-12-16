@@ -126,32 +126,4 @@ public class DietaryPreferencesService {
         user.setDietaryPreferences(savedPreferences);
         return savedPreferences;
     }
-    
-    /**
-     * Delete dietary preferences for user (GDPR compliance).
-     * 
-     * @param userId user ID
-     * @throws UserNotFoundException if user not found
-     */
-    public void deleteDietaryPreferences(Long userId) {
-        log.info("Deleting dietary preferences for user ID: {}", userId);
-        
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(
-                    String.format("User not found with id: %d. This may be due to account deletion or invalid user ID.", userId)
-                ));
-        
-        dietaryPreferencesRepository.findByUser(user).ifPresent(preferences -> {
-            dietaryPreferencesRepository.delete(preferences);
-            
-            // Audit log
-            auditService.logEvent(
-                EventType.PROFILE_UPDATE,
-                userId,
-                String.format("Dietary preferences deleted for user ID: %d", userId)
-            );
-        });
-        
-        log.info("Dietary preferences deleted successfully for user ID: {}", userId);
-    }
 }
