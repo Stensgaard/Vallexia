@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 // TODO: what does the delete call do?
 // TODO should Daily calories be a required field?
 // BUG: updating with negative values returns 200 but the goals are not updated should return 400 Bad Request
-// TODO make use of the defined goalType values instead of allowing users to set their own goalType values?
+// FIXME: make use of the defined goalType values instead of allowing users to set their own goalType values?
 //   but allow the users to make their own goalType with their own name and values?
 // TODO should maybe be moved under the user package? as it is goals for the user 
 // instead of being it own package
