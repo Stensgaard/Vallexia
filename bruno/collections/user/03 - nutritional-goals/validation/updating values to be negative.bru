@@ -1,7 +1,7 @@
 meta {
-  name: updating daily calories to 0
+  name: updating values to be negative
   type: http
-  seq: 1
+  seq: 3
 }
 
 put {
@@ -16,10 +16,10 @@ auth:bearer {
 
 body:json {
   {
-    "dailyCalories": 0.0,
-    "dailyProtein": 150.0,
-    "dailyCarbs": 200.0,
-    "dailyFats": 65.0,
+    "dailyCalories": 2000.0,
+    "dailyProtein": -150.0,
+    "dailyCarbs": -200.0,
+    "dailyFats": -65.0,
     "goalType": "MAINTENANCE"
   }
 }
