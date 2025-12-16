@@ -11,6 +11,8 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO remove this class
+
 /**
  * Filter for dietary restrictions with OR and AND match modes.
  * 

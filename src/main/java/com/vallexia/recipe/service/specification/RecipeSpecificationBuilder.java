@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+// TODO remove this class
+
 /**
  * Builder for creating JPA Specifications from recipe search criteria.
  * 

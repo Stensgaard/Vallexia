@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+// TODO remove this class? or rework to work with spoonacular API
 /**
  * Service for advanced recipe search with multiple filters and criteria.
  * 

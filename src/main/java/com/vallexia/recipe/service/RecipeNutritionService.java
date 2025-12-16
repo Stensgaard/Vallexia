@@ -21,6 +21,8 @@ import java.util.Optional;
 
 import static com.vallexia.nutrition.util.NutritionalConstants.*;
 
+// TODO no longer needed? with spoonacular API we can just use the nutritional information from the recipe
+
 /**
  * Service for calculating and managing nutritional information for recipes.
  * Handles recipe-specific nutrition calculations including ingredient aggregation,

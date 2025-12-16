@@ -15,6 +15,8 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+// TODO why is it called enrichment service? is there not better names for tihs?
+
 /**
  * Service for enriching RecipeDto with translations and ingredient names.
  * Handles batch loading of ingredients to avoid N+1 query problems.

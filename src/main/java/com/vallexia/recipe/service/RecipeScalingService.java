@@ -22,6 +22,9 @@ import java.util.stream.Collectors;
 
 import static com.vallexia.nutrition.util.NutritionalConstants.*;
 
+// TODO Rework this class to work with spoonacular API?
+// TODO why is favorite recipe needed here?
+
 /**
  * Service for scaling recipes to different serving sizes.
  * 

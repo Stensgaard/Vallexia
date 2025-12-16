@@ -27,6 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+// TODO rework this class to work with spoonacular API (no longer can edit, create or delete recipes)
+// TODO remove all the public / is private feature, as no longer needed
+
 /**
  * Service for managing recipe CRUD operations and business logic.
  * 

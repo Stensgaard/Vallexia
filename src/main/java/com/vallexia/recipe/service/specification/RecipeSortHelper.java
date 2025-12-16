@@ -6,6 +6,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+// TODO remove this class
+
 /**
  * Helper class for applying sorting to recipe search queries.
  * 

@@ -144,6 +144,9 @@ public class FavoriteRecipeService {
         });
     }
     
+
+    // TODO is this being used as the primary way to check if a recipe is favorited? 
+    // thoughtout the codebase?
     /**
      * Check if recipe is favorited by user.
      * 
