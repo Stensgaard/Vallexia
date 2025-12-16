@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 
-// BUG: updating with negative values returns 200 but the goals are not updated should return 400 Bad Request
 // FIXME: make use of the defined goalType values instead of allowing users to set their own goalType values?
 //   but allow the users to make their own goalType with their own name and values?
 
