@@ -47,6 +47,8 @@ import java.time.LocalDateTime;
 
 // TODO unsupported http calls should return 405 Method Not Allowed
 
+// TODO do users need to be able to view their own audit logs?
+
 /**
  * REST controller for audit log operations.
  * Provides endpoints for querying audit logs with proper access control.
