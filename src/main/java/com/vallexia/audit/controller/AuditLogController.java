@@ -45,8 +45,6 @@ import java.time.LocalDateTime;
 
 // TODO make api tests for all audit log endpoints
 
-// FIXME: unsupported http calls should return 405 Method Not Allowed
-
 // TODO do users need to be able to view their own audit logs?
 
 /**

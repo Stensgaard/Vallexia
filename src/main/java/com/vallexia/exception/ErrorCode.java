@@ -49,6 +49,7 @@ public enum ErrorCode {
   // Resource Errors (4xx)
   RESOURCE_NOT_FOUND("RES_001", HttpStatus.NOT_FOUND, "Requested resource not found"),
   RESOURCE_CONFLICT("RES_002", HttpStatus.CONFLICT, "Resource conflict detected"),
+  METHOD_NOT_ALLOWED("RES_003", HttpStatus.METHOD_NOT_ALLOWED, "HTTP method not allowed for this endpoint"),
   
   // Server Errors (5xx)
   INTERNAL_SERVER_ERROR("SYS_001", HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"),

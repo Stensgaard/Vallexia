@@ -19,14 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 
-// FIXME: make use of the defined goalType values instead of allowing users to set their own goalType values?
-//   but allow the users to make their own goalType with their own name and values?
-
-// TODO HEAD {{baseUrl}}/api/{{apiVersion}}/users/nutritional-goals returns 200 OK why is that the case?
-// should it not return 405 Method Not Allowed?
-
-// FIXME: unsupported http calls should return 405 Method Not Allowed
-
 /**
  * REST controller for nutritional goals management endpoints.
  * 

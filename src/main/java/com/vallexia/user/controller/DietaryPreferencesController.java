@@ -17,11 +17,6 @@ import org.springframework.web.bind.annotation.*;
 // TODO - does not look like the delete call is working, and im not sure what the point of it is
 // should it just be removed? and merge it all with deleting the user and it delete it all
 
-// TODO HEAD {{baseUrl}}/api/{{apiVersion}}/users/dietary-preferences returns 200 OK why is that the case?
-// should it not return 405 Method Not Allowed?
-
-// FIXME unsupported http calls should return 405 Method Not Allowed
-
 /**
  * REST controller for dietary preferences management endpoints.
  * 
