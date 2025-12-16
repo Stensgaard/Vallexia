@@ -1,3 +1,11 @@
+// TODO validate this is the case and fix if so
+/*
+Test was changed from `put` to `get` method but expects 400 Bad Request 
+with validation errors for negative values. 
+GET requests cannot have JSON body validation in the same way; 
+this test won't actually test the intended negative value validation logic. 
+*/
+
 meta {
   name: updating with negative values
   type: http

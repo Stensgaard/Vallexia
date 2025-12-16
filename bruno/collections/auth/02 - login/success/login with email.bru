@@ -1,3 +1,9 @@
+// TODO validate this is the case and fix if so
+/*
+The test for `login with email` checks `res.body.username` instead of `res.body.email`. 
+This assertion won't verify that the email was correctly returned in the response.
+*/
+
 meta {
   name: login with email
   type: http

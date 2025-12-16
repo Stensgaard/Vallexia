@@ -1,3 +1,10 @@
+// TODO validate this is the case and fix if so
+/*
+Assertion checks `res.body.details.mealTypes` when testing missing email validation, 
+but should check `res.body.details.email`. 
+This will fail to catch the actual validation error. 
+*/
+
 meta {
   name: missing email
   type: http

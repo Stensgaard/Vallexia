@@ -244,6 +244,13 @@
             </plugin>
             
             <!-- Maven Surefire Plugin for Unit Tests -->
+            <!-- TODO validate this is the case and fix if so -->
+            <!--
+                The `argLine` contains a hardcoded path to mockito javaagent 
+                that won't work consistently across different environments or team member machines. 
+                This configuration should either be removed or 
+                properly managed through Maven properties or profiles.
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
