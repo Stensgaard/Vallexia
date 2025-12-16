@@ -39,6 +39,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+// TODO unsupported http calls should return 405 Method Not Allowed
+
 /**
  * REST controller for locale-related configuration.
  *

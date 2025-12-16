@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 // TODO HEAD {{baseUrl}}/api/{{apiVersion}}/users/profile returns 200 OK why is that the case?
 // should it not return 405 Method Not Allowed?
 
+// TODO unsupported http calls should return 405 Method Not Allowed
 
 /**
  * REST controller for user profile management endpoints.

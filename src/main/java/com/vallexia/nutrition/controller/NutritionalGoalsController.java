@@ -30,6 +30,8 @@ import java.math.BigDecimal;
 // TODO HEAD {{baseUrl}}/api/{{apiVersion}}/users/nutritional-goals returns 200 OK why is that the case?
 // should it not return 405 Method Not Allowed?
 
+// TODO unsupported http calls should return 405 Method Not Allowed
+
 /**
  * REST controller for nutritional goals management endpoints.
  * 

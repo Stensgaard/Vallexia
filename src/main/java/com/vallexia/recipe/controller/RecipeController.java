@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 
 // TODO make api tests when this has been refactored to use spoonacular API
 
+// TODO unsupported http calls should return 405 Method Not Allowed
+
 /**
  * REST controller for recipe management endpoints.
  * 

@@ -45,6 +45,8 @@ import java.time.LocalDateTime;
 
 // TODO make api tests for all audit log endpoints
 
+// TODO unsupported http calls should return 405 Method Not Allowed
+
 /**
  * REST controller for audit log operations.
  * Provides endpoints for querying audit logs with proper access control.

@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 // TODO: refreshing token is not working getting html error code 500
 // TODO calling get on login returns 500 Internal Server Error check all cases like this for all endpoints
 
+// TODO unsupported http calls should return 405 Method Not Allowed
+
 /**
  * REST controller for authentication endpoints.
  * 
