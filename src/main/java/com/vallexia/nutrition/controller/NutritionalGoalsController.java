@@ -19,8 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 
-// TODO: what does the delete call do?
-// TODO should Daily calories be a required field?
 // BUG: updating with negative values returns 200 but the goals are not updated should return 400 Bad Request
 // FIXME: make use of the defined goalType values instead of allowing users to set their own goalType values?
 //   but allow the users to make their own goalType with their own name and values?
@@ -118,31 +116,6 @@ public class NutritionalGoalsController {
         NutritionalGoalsDto updatedGoals = nutritionalGoalsService.updateNutritionalGoals(userId, nutritionalGoalsDto);
         
         return ResponseEntity.ok(updatedGoals);
-    }
-    
-    /**
-     * Delete current user's nutritional goals.
-     * 
-     * @param authentication current authentication
-     * @return no content
-     */
-    @Operation(
-        summary = "Delete current user's nutritional goals", 
-        description = "Deletes the authenticated user's nutritional goals (GDPR compliance)")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "Nutritional goals deleted successfully"),
-        @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing JWT token"),
-        @ApiResponse(responseCode = "404", description = "User not found")
-    })
-    @DeleteMapping
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<Void> deleteCurrentUserNutritionalGoals(Authentication authentication) {
-        Long userId = authenticationHelper.getCurrentUserId(authentication);
-        log.info("Deleting nutritional goals for user ID: {}", userId);
-        
-        nutritionalGoalsService.deleteNutritionalGoals(userId);
-        
-        return ResponseEntity.noContent().build();
     }
     
     /**

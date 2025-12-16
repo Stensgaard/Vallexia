@@ -81,6 +81,7 @@ public class NutritionalGoalsDto {
     @DecimalMax(value = "10000.0", message = "Daily sugar must not exceed 10000 grams")
     private BigDecimal dailySugar;
     
+    @NotNull(message = "Goal type is required")
     @ValidGoalType
     private String goalType;
 }
