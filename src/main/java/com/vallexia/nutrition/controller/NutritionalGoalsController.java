@@ -22,8 +22,6 @@ import java.math.BigDecimal;
 // BUG: updating with negative values returns 200 but the goals are not updated should return 400 Bad Request
 // FIXME: make use of the defined goalType values instead of allowing users to set their own goalType values?
 //   but allow the users to make their own goalType with their own name and values?
-// TODO should maybe be moved under the user package? as it is goals for the user 
-// instead of being it own package
 
 // TODO HEAD {{baseUrl}}/api/{{apiVersion}}/users/nutritional-goals returns 200 OK why is that the case?
 // should it not return 405 Method Not Allowed?
