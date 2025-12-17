@@ -69,12 +69,6 @@
         >
           {{ $t(`constants.cuisineTypes.${recipe.cuisineType}`) }}
         </span>
-        <span
-          v-if="recipe.difficultyLevel"
-          class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded"
-        >
-          {{ $t(`recipes.difficulty.${recipe.difficultyLevel}`) }}
-        </span>
       </div>
 
       <div class="flex items-center justify-between text-sm text-gray-500">

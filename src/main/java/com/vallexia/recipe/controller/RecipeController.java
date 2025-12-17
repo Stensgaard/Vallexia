@@ -9,12 +9,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -32,13 +30,10 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/recipes")
-@Tag(
-    name = "Recipe Management", 
-    description = "Operations related to recipe management, search, and favorites")
+@Tag(name = "Recipe Management", description = "Operations related to recipe management, search, and favorites")
 public class RecipeController {
     
     private final RecipeService recipeService;
-    private final RecipeSearchService recipeSearchService;
     private final RecipeScalingService recipeScalingService;
     private final FavoriteRecipeService favoriteRecipeService;
     private final AuthenticationHelper authenticationHelper;
@@ -48,23 +43,19 @@ public class RecipeController {
      */
     public RecipeController(
             RecipeService recipeService,
-            RecipeSearchService recipeSearchService,
             RecipeScalingService recipeScalingService,
             FavoriteRecipeService favoriteRecipeService,
             AuthenticationHelper authenticationHelper) {
         this.recipeService = recipeService;
-        this.recipeSearchService = recipeSearchService;
         this.recipeScalingService = recipeScalingService;
         this.favoriteRecipeService = favoriteRecipeService;
         this.authenticationHelper = authenticationHelper;
     }
     
     /**
-     * List all public recipes with pagination.
+     * List all recipes with pagination.
      */
-    @Operation(
-        summary = "List public recipes", 
-        description = "Get a paginated list of all public recipes (requires authentication)")
+    @Operation(summary = "List recipes", description = "Get a paginated list of all recipes")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Recipes retrieved successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized")
@@ -75,11 +66,11 @@ public class RecipeController {
             @Parameter(description = "Page number (0-indexed)") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size,
             Authentication authentication) {
-        log.debug("Getting all public recipes - page: {}, size: {}", page, size);
+        log.debug("Getting all recipes - page: {}, size: {}", page, size);
         
         Long userId = authenticationHelper.getCurrentUserId(authentication);
         Pageable pageable = PageRequest.of(page, size);
-        Page<RecipeDto> recipes = recipeService.getPublicRecipes(pageable, userId);
+        Page<RecipeDto> recipes = recipeService.getRecipes(pageable, userId);
         
         return ResponseEntity.ok(recipes);
     }
@@ -87,9 +78,7 @@ public class RecipeController {
     /**
      * Get recipe by ID.
      */
-    @Operation(
-        summary = "Get recipe by ID", 
-        description = "Retrieve a specific recipe by its ID (requires authentication)")
+    @Operation(summary = "Get recipe by ID", description = "Retrieve a specific recipe by its ID")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Recipe retrieved successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
@@ -110,151 +99,9 @@ public class RecipeController {
     }
     
     /**
-     * Create a new recipe.
-     */
-    @Operation(
-        summary = "Create recipe", 
-        description = "Create a new recipe (requires authentication and admin role)")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "Recipe created successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid input data"),
-        @ApiResponse(responseCode = "401", description = "Unauthorized"),
-        @ApiResponse(responseCode = "403", description = "Forbidden - Admin role required")
-    })
-    @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<RecipeDto> createRecipe(
-            @Parameter(description = "Recipe creation data") @Valid @RequestBody CreateRecipeDto dto,
-            Authentication authentication) {
-        Long userId = authenticationHelper.getCurrentUserId(authentication);
-        log.info("Creating recipe '{}' by user ID {}", dto.getName(), userId);
-        
-        RecipeDto createdRecipe = recipeService.createRecipe(dto, userId);
-        
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdRecipe);
-    }
-    
-    /**
-     * Update an existing recipe.
-     */
-    @Operation(
-        summary = "Update recipe", 
-        description = "Update an existing recipe (requires authentication and admin role)")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Recipe updated successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid input data"),
-        @ApiResponse(responseCode = "401", description = "Unauthorized"),
-        @ApiResponse(responseCode = "403", description = "Forbidden - Admin role required"),
-        @ApiResponse(responseCode = "404", description = "Recipe not found")
-    })
-    @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<RecipeDto> updateRecipe(
-            @Parameter(description = "Recipe ID") @PathVariable Long id,
-            @Parameter(description = "Recipe update data") @Valid @RequestBody UpdateRecipeDto dto,
-            Authentication authentication) {
-        Long userId = authenticationHelper.getCurrentUserId(authentication);
-        log.info("Updating recipe ID {} by user ID {}", id, userId);
-        
-        RecipeDto updatedRecipe = recipeService.updateRecipe(id, dto, userId);
-        
-        return ResponseEntity.ok(updatedRecipe);
-    }
-    
-    /**
-     * Delete a recipe.
-     */
-    @Operation(
-        summary = "Delete recipe", 
-        description = "Delete a recipe (requires authentication and admin role)")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "Recipe deleted successfully"),
-        @ApiResponse(responseCode = "401", description = "Unauthorized"),
-        @ApiResponse(responseCode = "403", description = "Forbidden - Admin role required"),
-        @ApiResponse(responseCode = "404", description = "Recipe not found")
-    })
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteRecipe(
-            @Parameter(description = "Recipe ID") @PathVariable Long id,
-            Authentication authentication) {
-        Long userId = authenticationHelper.getCurrentUserId(authentication);
-        log.info("Deleting recipe ID {} by user ID {}", id, userId);
-        
-        recipeService.deleteRecipe(id, userId);
-        
-        return ResponseEntity.noContent().build();
-    }
-    
-    /**
-     * Get all recipes (including private) - Admin only.
-     */
-    @Operation(
-        summary = "Get all recipes", 
-        description = "Get all recipes including private ones (requires authentication and admin role)")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Recipes retrieved successfully"),
-        @ApiResponse(responseCode = "401", description = "Unauthorized"),
-        @ApiResponse(responseCode = "403", description = "Forbidden - Admin role required")
-    })
-    @GetMapping("/admin/all")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<RecipeDto>> getAllRecipesForAdmin(
-            @Parameter(description = "Page number (0-indexed)") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size,
-            Authentication authentication) {
-        log.debug("Admin getting all recipes - page: {}, size: {}", page, size);
-        
-        Long userId = authenticationHelper.getCurrentUserId(authentication);
-        Pageable pageable = PageRequest.of(page, size);
-        Page<RecipeDto> recipes = recipeService.getAllRecipesForAdmin(pageable, userId);
-        
-        return ResponseEntity.ok(recipes);
-    }
-    
-    /**
-     * Advanced recipe search with multiple filters.
-     */
-    @Operation(
-        summary = "Search recipes", 
-        description = "Search recipes with advanced filtering and sorting (requires authentication)")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Search completed successfully"),
-        @ApiResponse(responseCode = "401", description = "Unauthorized"),
-        @ApiResponse(responseCode = "400", description = "Invalid search criteria")
-    })
-    @GetMapping("/search")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<RecipeSearchResponseDto> searchRecipes(
-            @Valid @ModelAttribute RecipeSearchCriteria criteria,
-            @Parameter(description = "Page number (0-indexed)") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size,
-            Authentication authentication) {
-        log.debug("Searching recipes with criteria: {}", criteria);
-        
-        Long userId = authenticationHelper.getCurrentUserId(authentication);
-        Pageable pageable = PageRequest.of(page, size);
-        
-        // Prepare search criteria with user's dietary preferences
-        RecipeSearchService.UserSearchPreferences preferences = 
-                recipeSearchService.prepareSearchCriteriaWithUserPreferences(criteria, userId);
-        
-        RecipeSearchResponseDto response = recipeSearchService.searchRecipes(
-                preferences.criteria(), 
-                pageable, 
-                userId, 
-                preferences.userAllergies(), 
-                preferences.preferredCuisines());
-        
-        return ResponseEntity.ok(response);
-    }
-    
-    /**
      * Get scaled recipe for a specific number of servings.
      */
-    @Operation(
-        summary = "Scale recipe", 
-        description = "Get recipe scaled to a different number of servings (requires authentication)")
+    @Operation(summary = "Scale recipe", description = "Get recipe scaled to a different number of servings")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Scaled recipe retrieved successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
@@ -269,8 +116,7 @@ public class RecipeController {
             Authentication authentication) {
         log.debug("Scaling recipe ID {} to {} servings", id, servings);
         
-        Long userId = authenticationHelper.getCurrentUserId(authentication);
-        RecipeDto scaledRecipe = recipeScalingService.scaleRecipe(id, servings, userId);
+        RecipeDto scaledRecipe = recipeScalingService.scaleRecipe(id, servings);
         
         return ResponseEntity.ok(scaledRecipe);
     }
@@ -278,9 +124,7 @@ public class RecipeController {
     /**
      * Add recipe to favorites.
      */
-    @Operation(
-        summary = "Add to favorites", 
-        description = "Add a recipe to user's favorites (requires authentication)")
+    @Operation(summary = "Add to favorites", description = "Add a recipe to user's favorites")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Recipe added to favorites"),
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
@@ -302,9 +146,7 @@ public class RecipeController {
     /**
      * Remove recipe from favorites.
      */
-    @Operation(
-        summary = "Remove from favorites", 
-        description = "Remove a recipe from user's favorites (requires authentication)")
+    @Operation(summary = "Remove from favorites", description = "Remove a recipe from user's favorites")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Recipe removed from favorites"),
         @ApiResponse(responseCode = "401", description = "Unauthorized")
@@ -325,9 +167,7 @@ public class RecipeController {
     /**
      * Get user's favorite recipes.
      */
-    @Operation(
-        summary = "Get favorites", 
-        description = "Get all recipes favorited by the current user (requires authentication)")
+    @Operation(summary = "Get favorites", description = "Get all recipes favorited by the current user")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Favorites retrieved successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized")

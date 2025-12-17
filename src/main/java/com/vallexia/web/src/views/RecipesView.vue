@@ -9,14 +9,6 @@
       </div>
     </div>
 
-    <!-- Search and filters -->
-    <RecipeSearch
-      :criteria="recipeStore.searchCriteria"
-      :total-results="recipeStore.pagination.totalElements"
-      @search="handleSearch"
-      @criteria-changed="handleCriteriaChanged"
-    />
-
     <!-- Recipe list -->
     <RecipeList
       :recipes="recipeStore.filteredRecipes"
@@ -49,24 +41,13 @@ import { onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useRecipeStore } from "@/stores/recipe";
 import RecipeList from "@/components/Recipe/RecipeList.vue";
-import RecipeSearch from "@/components/Recipe/RecipeSearch.vue";
 
 const router = useRouter();
 const recipeStore = useRecipeStore();
 
 onMounted(async () => {
-  // Perform initial search with default criteria (all categories, cuisines, and difficulty levels)
-  await recipeStore.searchRecipes(recipeStore.searchCriteria, 0, 20);
+  await recipeStore.fetchRecipes(0, 20);
 });
-
-const handleSearch = async (criteria) => {
-  await recipeStore.searchRecipes(criteria, 0, 20);
-};
-
-const handleCriteriaChanged = (criteria) => {
-  // Store criteria for later use
-  recipeStore.searchCriteria = criteria;
-};
 
 const handleRecipeClick = (recipe) => {
   router.push(`/recipes/${recipe.id}`);
@@ -77,7 +58,6 @@ const handleFavoriteToggle = async (recipeId) => {
 };
 
 const handlePageChange = async (page) => {
-  // Always use searchRecipes since we default to "all" criteria
-  await recipeStore.searchRecipes(recipeStore.searchCriteria, page, 20);
+  await recipeStore.fetchRecipes(page, 20);
 };
 </script>

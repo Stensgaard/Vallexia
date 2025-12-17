@@ -107,14 +107,6 @@
           </button>
         </div>
       </div>
-      <div v-if="recipe.difficultyLevel" class="bg-gray-50 p-4 rounded-lg">
-        <div class="text-sm text-gray-600">
-          {{ $t("recipes.detail.difficulty") }}
-        </div>
-        <div class="text-xl font-semibold">
-          {{ $t(`recipes.difficulty.${recipe.difficultyLevel}`) }}
-        </div>
-      </div>
     </div>
 
     <!-- Ingredients and Instructions (Side by side on large screens) -->
