@@ -4,8 +4,6 @@ import com.vallexia.auth.dto.*;
 import com.vallexia.auth.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,11 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-// BUG: refreshing token is not working getting html error code 500
-
-// TODO calling get on login returns 500 Internal Server Error check all cases like this for all endpoints
-
 /**
  * REST controller for authentication endpoints.
  * 
@@ -31,9 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/auth")
-@Tag(
-    name = "Authentication", 
-    description = "User authentication and authorization endpoints")
+@Tag(name = "Authentication", description = "User authentication and authorization endpoints")
 public class AuthController {
     
     private final AuthService authService;
@@ -54,24 +45,10 @@ public class AuthController {
      * @param request HTTP request for audit logging
      * @return JWT response with tokens and user info
      */
-    @Operation(
-        summary = "Register a new user",
-        description = "Create a new user account with email verification and return JWT tokens"
-    )
+    @Operation(summary = "Register a new user", description = "Create a new user account with email verification and return JWT tokens")
     @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "201",
-            description = "User registered successfully",
-            content = @Content(schema = @Schema(implementation = JwtResponseDto.class))
-        ),
-        @ApiResponse(
-            responseCode = "400",
-            description = "Invalid input data or user already exists"
-        ),
-        @ApiResponse(
-            responseCode = "500",
-            description = "Internal server error"
-        )
+        @ApiResponse(responseCode = "201", description = "User registered successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid input data or user already exists")
     })
     @PostMapping("/register")
     public ResponseEntity<JwtResponseDto> registerUser(
@@ -93,24 +70,10 @@ public class AuthController {
      * @param request HTTP request for audit logging
      * @return JWT response with tokens and user info
      */
-    @Operation(
-        summary = "Authenticate user",
-        description = "Login with username/email and password to receive JWT access and refresh tokens"
-    )
+    @Operation(summary = "Authenticate user", description = "Login with username/email and password to receive JWT access and refresh tokens")
     @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Authentication successful",
-            content = @Content(schema = @Schema(implementation = JwtResponseDto.class))
-        ),
-        @ApiResponse(
-            responseCode = "401",
-            description = "Invalid credentials or account locked"
-        ),
-        @ApiResponse(
-            responseCode = "500",
-            description = "Internal server error"
-        )
+        @ApiResponse(responseCode = "200", description = "Authentication successful"),
+        @ApiResponse(responseCode = "401", description = "Invalid credentials or account locked")
     })
     @PostMapping("/login")
     public ResponseEntity<JwtResponseDto> authenticateUser(
@@ -131,24 +94,10 @@ public class AuthController {
      * @param refreshTokenRequest refresh token request
      * @return new JWT response
      */
-    @Operation(
-        summary = "Refresh access token",
-        description = "Use refresh token to obtain a new access token. Old refresh token will be invalidated (token rotation)."
-    )
+    @Operation(summary = "Refresh access token", description = "Use refresh token to obtain a new access token. Old refresh token will be invalidated (token rotation).")
     @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Token refreshed successfully",
-            content = @Content(schema = @Schema(implementation = JwtResponseDto.class))
-        ),
-        @ApiResponse(
-            responseCode = "401",
-            description = "Invalid or expired refresh token"
-        ),
-        @ApiResponse(
-            responseCode = "500",
-            description = "Internal server error"
-        )
+        @ApiResponse(responseCode = "200", description = "Token refreshed successfully"),
+        @ApiResponse(responseCode = "401", description = "Invalid or expired refresh token")
     })
     @PostMapping("/refresh")
     public ResponseEntity<JwtResponseDto> refreshToken(
@@ -168,23 +117,10 @@ public class AuthController {
      * @param request HTTP request to extract tokens
      * @return no content (204)
      */
-    @Operation(
-        summary = "Logout user",
-        description = "Invalidate the current access token by adding it to the blacklist. Requires authentication."
-    )
+    @Operation(summary = "Logout user", description = "Invalidate the current access token by adding it to the blacklist. Requires authentication.")
     @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "204",
-            description = "Logout successful - no content"
-        ),
-        @ApiResponse(
-            responseCode = "403",
-            description = "Access denied - authentication required"
-        ),
-        @ApiResponse(
-            responseCode = "500",
-            description = "Internal server error"
-        )
+        @ApiResponse(responseCode = "204", description = "Logout successful - no content"),
+        @ApiResponse(responseCode = "403", description = "Access denied - authentication required")
     })
     @PostMapping("/logout")
     @PreAuthorize("hasRole('USER')")
