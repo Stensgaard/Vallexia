@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Validator implementation for {@link ValidAllergy}.
@@ -33,12 +34,25 @@ public class ValidAllergyValidator implements ConstraintValidator<ValidAllergy, 
             return true;
         }
         if (value instanceof String allergy) {
-            return isValidString(allergy);
+            boolean isValid = isValidString(allergy);
+            if (!isValid && !allergy.isEmpty() && !allergy.trim().isEmpty()) {
+                String supportedValues = getSupportedValuesAsString();
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate(
+                    "Allergy must be one of the supported allergies: " + supportedValues
+                ).addConstraintViolation();
+            }
+            return isValid;
         }
         if (value instanceof Collection<?> collection) {
-            return isValidCollection(collection);
+            return isValidCollection(collection, context);
         }
         
+        String supportedValues = getSupportedValuesAsString();
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate(
+            "Allergy must be one of the supported allergies: " + supportedValues
+        ).addConstraintViolation();
         return false;
     }
 
@@ -65,11 +79,17 @@ public class ValidAllergyValidator implements ConstraintValidator<ValidAllergy, 
      * Validates a collection of allergy values.
      * 
      * @param collection the collection to validate
+     * @param context the constraint validator context
      * @return true if all elements are valid, false otherwise
      */
-    private boolean isValidCollection(Collection<?> collection) {
+    private boolean isValidCollection(Collection<?> collection, ConstraintValidatorContext context) {
         for (Object element : collection) {
             if (!isValidElement(element)) {
+                String supportedValues = getSupportedValuesAsString();
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate(
+                    "Allergy must be one of the supported allergies: " + supportedValues
+                ).addConstraintViolation();
                 return false;
             }
         }
@@ -93,5 +113,11 @@ public class ValidAllergyValidator implements ConstraintValidator<ValidAllergy, 
             return isValidString(allergyStr);
         }
         return false; // Invalid type in collection
+    }
+
+    private String getSupportedValuesAsString() {
+        return SupportedAllergy.getAll().stream()
+            .map(SupportedAllergy::name)
+            .collect(Collectors.joining(", "));
     }
 }

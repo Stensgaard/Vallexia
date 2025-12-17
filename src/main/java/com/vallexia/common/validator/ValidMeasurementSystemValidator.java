@@ -4,6 +4,8 @@ import com.vallexia.common.enums.SupportedMeasurementSystem;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
+import java.util.stream.Collectors;
+
 /**
  * Validator implementation for {@link ValidMeasurementSystem}.
  * Ensures provided measurement system values map to {@link com.vallexia.common.enums.SupportedMeasurementSystem}.
@@ -39,9 +41,28 @@ public class ValidMeasurementSystemValidator implements ConstraintValidator<Vali
                 return true;
             }
 
-            return SupportedMeasurementSystem.fromCode(trimmed).isPresent();
+            boolean isValid = SupportedMeasurementSystem.fromCode(trimmed).isPresent();
+            if (!isValid) {
+                String supportedValues = getSupportedValuesAsString();
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate(
+                    "Measurement system must be one of the supported systems: " + supportedValues
+                ).addConstraintViolation();
+            }
+            return isValid;
         }
 
+        String supportedValues = getSupportedValuesAsString();
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate(
+            "Measurement system must be one of the supported systems: " + supportedValues
+        ).addConstraintViolation();
         return false;
+    }
+
+    private String getSupportedValuesAsString() {
+        return SupportedMeasurementSystem.getAll().stream()
+            .map(SupportedMeasurementSystem::name)
+            .collect(Collectors.joining(", "));
     }
 }

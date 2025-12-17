@@ -4,6 +4,8 @@ import com.vallexia.common.enums.SupportedLocale;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
+import java.util.stream.Collectors;
+
 /**
  * Validator implementation for {@link ValidLocale}.
  * Ensures provided locale values map to {@link com.vallexia.common.enums.SupportedLocale}.
@@ -39,9 +41,28 @@ public class ValidLocaleValidator implements ConstraintValidator<ValidLocale, Ob
                 return true;
             }
 
-            return SupportedLocale.fromCode(trimmed).isPresent();
+            boolean isValid = SupportedLocale.fromCode(trimmed).isPresent();
+            if (!isValid) {
+                String supportedValues = getSupportedValuesAsString();
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate(
+                    "Locale must be one of the supported locales: " + supportedValues
+                ).addConstraintViolation();
+            }
+            return isValid;
         }
 
+        String supportedValues = getSupportedValuesAsString();
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate(
+            "Locale must be one of the supported locales: " + supportedValues
+        ).addConstraintViolation();
         return false;
+    }
+
+    private String getSupportedValuesAsString() {
+        return SupportedLocale.getAll().stream()
+            .map(SupportedLocale::getCode)
+            .collect(Collectors.joining(", "));
     }
 }

@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Validator implementation for {@link ValidCuisineType}.
@@ -33,12 +34,25 @@ public class ValidCuisineTypeValidator implements ConstraintValidator<ValidCuisi
             return true;
         }
         if (value instanceof String cuisineType) {
-            return isValidString(cuisineType);
+            boolean isValid = isValidString(cuisineType);
+            if (!isValid && !cuisineType.isEmpty() && !cuisineType.trim().isEmpty()) {
+                String supportedValues = getSupportedValuesAsString();
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate(
+                    "Cuisine type must be one of the supported cuisine types: " + supportedValues
+                ).addConstraintViolation();
+            }
+            return isValid;
         }
         if (value instanceof Collection<?> collection) {
-            return isValidCollection(collection);
+            return isValidCollection(collection, context);
         }
         
+        String supportedValues = getSupportedValuesAsString();
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate(
+            "Cuisine type must be one of the supported cuisine types: " + supportedValues
+        ).addConstraintViolation();
         return false;
     }
 
@@ -65,11 +79,17 @@ public class ValidCuisineTypeValidator implements ConstraintValidator<ValidCuisi
      * Validates a collection of cuisine type values.
      *
      * @param collection the collection to validate
+     * @param context the constraint validator context
      * @return true if all elements are valid, false otherwise
      */
-    private boolean isValidCollection(Collection<?> collection) {
+    private boolean isValidCollection(Collection<?> collection, ConstraintValidatorContext context) {
         for (Object element : collection) {
             if (!isValidElement(element)) {
+                String supportedValues = getSupportedValuesAsString();
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate(
+                    "Cuisine type must be one of the supported cuisine types: " + supportedValues
+                ).addConstraintViolation();
                 return false;
             }
         }
@@ -93,5 +113,11 @@ public class ValidCuisineTypeValidator implements ConstraintValidator<ValidCuisi
             return isValidString(cuisineTypeStr);
         }
         return false; // Invalid type in collection
+    }
+
+    private String getSupportedValuesAsString() {
+        return SupportedCuisineType.getAll().stream()
+            .map(SupportedCuisineType::name)
+            .collect(Collectors.joining(", "));
     }
 }

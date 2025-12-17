@@ -4,6 +4,8 @@ import com.vallexia.common.enums.SupportedCurrency;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
+import java.util.stream.Collectors;
+
 /**
  * Validator implementation for {@link ValidCurrency}.
  * Ensures provided currency values map to {@link com.vallexia.common.enums.SupportedCurrency}.
@@ -39,9 +41,28 @@ public class ValidCurrencyValidator implements ConstraintValidator<ValidCurrency
                 return true;
             }
 
-            return SupportedCurrency.fromCode(trimmed).isPresent();
+            boolean isValid = SupportedCurrency.fromCode(trimmed).isPresent();
+            if (!isValid) {
+                String supportedValues = getSupportedValuesAsString();
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate(
+                    "Currency must be one of the supported currencies: " + supportedValues
+                ).addConstraintViolation();
+            }
+            return isValid;
         }
         
+        String supportedValues = getSupportedValuesAsString();
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate(
+            "Currency must be one of the supported currencies: " + supportedValues
+        ).addConstraintViolation();
         return false;
+    }
+
+    private String getSupportedValuesAsString() {
+        return SupportedCurrency.getAll().stream()
+            .map(SupportedCurrency::getCode)
+            .collect(Collectors.joining(", "));
     }
 }

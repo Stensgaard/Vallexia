@@ -4,6 +4,8 @@ import com.vallexia.common.enums.SupportedTimezone;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
+import java.util.stream.Collectors;
+
 /**
  * Validator implementation for {@link ValidTimezone}.
  * Ensures provided timezone values map to {@link com.vallexia.common.enums.SupportedTimezone}.
@@ -39,9 +41,28 @@ public class ValidTimezoneValidator implements ConstraintValidator<ValidTimezone
                 return true;
             }
 
-            return SupportedTimezone.fromValue(trimmed).isPresent();
+            boolean isValid = SupportedTimezone.fromValue(trimmed).isPresent();
+            if (!isValid) {
+                String supportedValues = getSupportedValuesAsString();
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate(
+                    "Timezone must be one of the supported timezones: " + supportedValues
+                ).addConstraintViolation();
+            }
+            return isValid;
         }
 
+        String supportedValues = getSupportedValuesAsString();
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate(
+            "Timezone must be one of the supported timezones: " + supportedValues
+        ).addConstraintViolation();
         return false;
+    }
+
+    private String getSupportedValuesAsString() {
+        return SupportedTimezone.getAll().stream()
+            .map(SupportedTimezone::getValue)
+            .collect(Collectors.joining(", "));
     }
 }

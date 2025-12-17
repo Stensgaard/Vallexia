@@ -4,6 +4,8 @@ import com.vallexia.common.enums.SupportedDateFormat;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
+import java.util.stream.Collectors;
+
 /**
  * Validator implementation for {@link ValidDateFormat}.
  * Ensures provided date format values map to {@link com.vallexia.common.enums.SupportedDateFormat}.
@@ -39,9 +41,28 @@ public class ValidDateFormatValidator implements ConstraintValidator<ValidDateFo
                 return true;
             }
 
-            return SupportedDateFormat.isValidCode(trimmed);
+            boolean isValid = SupportedDateFormat.isValidCode(trimmed);
+            if (!isValid) {
+                String supportedValues = getSupportedValuesAsString();
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate(
+                    "Date format must be one of the supported formats: " + supportedValues
+                ).addConstraintViolation();
+            }
+            return isValid;
         }
         
+        String supportedValues = getSupportedValuesAsString();
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate(
+            "Date format must be one of the supported formats: " + supportedValues
+        ).addConstraintViolation();
         return false;
+    }
+
+    private String getSupportedValuesAsString() {
+        return SupportedDateFormat.getAll().stream()
+            .map(SupportedDateFormat::name)
+            .collect(Collectors.joining(", "));
     }
 }

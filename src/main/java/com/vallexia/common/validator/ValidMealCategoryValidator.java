@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Validator implementation for {@link ValidMealCategory}.
@@ -33,12 +34,25 @@ public class ValidMealCategoryValidator implements ConstraintValidator<ValidMeal
             return true;
         }
         if (value instanceof String mealCategory) {
-            return isValidString(mealCategory);
+            boolean isValid = isValidString(mealCategory);
+            if (!isValid && !mealCategory.isEmpty() && !mealCategory.trim().isEmpty()) {
+                String supportedValues = getSupportedValuesAsString();
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate(
+                    "Meal category must be one of the supported meal categories: " + supportedValues
+                ).addConstraintViolation();
+            }
+            return isValid;
         }
         if (value instanceof Collection<?> collection) {
-            return isValidCollection(collection);
+            return isValidCollection(collection, context);
         }
         
+        String supportedValues = getSupportedValuesAsString();
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate(
+            "Meal category must be one of the supported meal categories: " + supportedValues
+        ).addConstraintViolation();
         return false;
     }
 
@@ -65,11 +79,17 @@ public class ValidMealCategoryValidator implements ConstraintValidator<ValidMeal
      * Validates a collection of meal category values.
      * 
      * @param collection the collection to validate
+     * @param context the constraint validator context
      * @return true if all elements are valid, false otherwise
      */
-    private boolean isValidCollection(Collection<?> collection) {
+    private boolean isValidCollection(Collection<?> collection, ConstraintValidatorContext context) {
         for (Object element : collection) {
             if (!isValidElement(element)) {
+                String supportedValues = getSupportedValuesAsString();
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate(
+                    "Meal category must be one of the supported meal categories: " + supportedValues
+                ).addConstraintViolation();
                 return false;
             }
         }
@@ -93,5 +113,11 @@ public class ValidMealCategoryValidator implements ConstraintValidator<ValidMeal
             return isValidString(mealCategoryStr);
         }
         return false; // Invalid type in collection
+    }
+
+    private String getSupportedValuesAsString() {
+        return SupportedMealCategory.getAll().stream()
+            .map(SupportedMealCategory::name)
+            .collect(Collectors.joining(", "));
     }
 }

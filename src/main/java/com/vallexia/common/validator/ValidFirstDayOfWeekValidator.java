@@ -4,6 +4,8 @@ import com.vallexia.common.enums.SupportedFirstDayOfWeek;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
+import java.util.stream.Collectors;
+
 /**
  * Validator implementation for {@link ValidFirstDayOfWeek}.
  * Ensures provided first day of week values map to {@link com.vallexia.common.enums.SupportedFirstDayOfWeek}.
@@ -39,9 +41,28 @@ public class ValidFirstDayOfWeekValidator implements ConstraintValidator<ValidFi
                 return true;
             }
 
-            return SupportedFirstDayOfWeek.fromCode(trimmed).isPresent();
+            boolean isValid = SupportedFirstDayOfWeek.fromCode(trimmed).isPresent();
+            if (!isValid) {
+                String supportedValues = getSupportedValuesAsString();
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate(
+                    "First day of week must be one of the supported options: " + supportedValues
+                ).addConstraintViolation();
+            }
+            return isValid;
         }
 
+        String supportedValues = getSupportedValuesAsString();
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate(
+            "First day of week must be one of the supported options: " + supportedValues
+        ).addConstraintViolation();
         return false;
+    }
+
+    private String getSupportedValuesAsString() {
+        return SupportedFirstDayOfWeek.getAll().stream()
+            .map(SupportedFirstDayOfWeek::name)
+            .collect(Collectors.joining(", "));
     }
 }

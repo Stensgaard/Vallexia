@@ -4,6 +4,8 @@ import com.vallexia.common.enums.SupportedCountry;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
+import java.util.stream.Collectors;
+
 /**
  * Validator implementation for {@link ValidCountry}.
  * Ensures provided country values map to {@link com.vallexia.common.enums.SupportedCountry}.
@@ -39,9 +41,28 @@ public class ValidCountryValidator implements ConstraintValidator<ValidCountry, 
                 return true;
             }
 
-            return SupportedCountry.fromCountry(trimmed).isPresent();
+            boolean isValid = SupportedCountry.fromCountry(trimmed).isPresent();
+            if (!isValid) {
+                String supportedValues = getSupportedValuesAsString();
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate(
+                    "Country must be one of the supported countries: " + supportedValues
+                ).addConstraintViolation();
+            }
+            return isValid;
         }
 
+        String supportedValues = getSupportedValuesAsString();
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate(
+            "Country must be one of the supported countries: " + supportedValues
+        ).addConstraintViolation();
         return false;
+    }
+
+    private String getSupportedValuesAsString() {
+        return SupportedCountry.getAll().stream()
+            .map(SupportedCountry::getCountryCode)
+            .collect(Collectors.joining(", "));
     }
 }
