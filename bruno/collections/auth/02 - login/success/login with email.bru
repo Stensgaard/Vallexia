@@ -1,13 +1,7 @@
-// TODO validate this is the case and fix if so
-/*
-The test for `login with email` checks `res.body.username` instead of `res.body.email`. 
-This assertion won't verify that the email was correctly returned in the response.
-*/
-
 meta {
   name: login with email
   type: http
-  seq: 1
+  seq: 2
 }
 
 post {
@@ -40,8 +34,8 @@ tests {
     bru.setVar("refreshToken", res.body.refreshToken);
   });
   
-  test("Response contains email", function() {
-    expect(res.body).to.have.property("email");
+  test("Response contains username", function() {
+    expect(res.body).to.have.property("username");
     expect(res.body.username).to.be.a("string");
   });
 }

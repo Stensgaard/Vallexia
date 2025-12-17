@@ -1,10 +1,3 @@
-// TODO validate this is the case and fix if so
-/*
-Test assertions verify `res.body.accessToken` is a string 
-when they should verify the `username` property (line 36) and `email` property (line 42). 
-This causes incorrect test validation that won't catch actual response issues.
-*/
-
 meta {
   name: register user
   type: http
@@ -40,13 +33,13 @@ tests {
   
   test("Response contains username", function() {
     expect(res.body).to.have.property("username");
-    expect(res.body.accessToken).to.be.a("string");
+    expect(res.body.username).to.be.a("string");
     bru.setVar("registeredUsername", res.body.username);
   });
   
   test("Response contains email", function() {
     expect(res.body).to.have.property("email");
-    expect(res.body.accessToken).to.be.a("string");
+    expect(res.body.email).to.be.a("string");
     bru.setVar("registeredEmail", res.body.email);
   });
   

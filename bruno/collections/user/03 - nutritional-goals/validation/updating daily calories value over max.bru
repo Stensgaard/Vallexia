@@ -1,10 +1,3 @@
-// TODO validate this is the case and fix if so
-/*
-Assertion checks `res.body.details.dailyProtein` when testing daily calories 
-maximum validation error, but should check `res.body.details.dailyCalories`. 
-This will fail to validate the correct error field. 
-*/
-
 meta {
   name: updating daily calories value over max
   type: http
@@ -37,7 +30,7 @@ tests {
   
   test("Daily calories validation error for too high", function() {
     expect(res.body.details).to.have.property("dailyCalories");
-    expect(res.body.details.dailyProtein).to.satisfy(msg => "Daily calories must not exceed");
+    expect(res.body.details.dailyCalories).to.satisfy(msg => msg.includes("Daily calories must not exceed"));
   });
 }
 
