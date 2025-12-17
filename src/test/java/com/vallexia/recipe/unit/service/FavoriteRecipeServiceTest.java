@@ -64,7 +64,7 @@ class FavoriteRecipeServiceTest {
   private com.vallexia.user.service.UserSettingsService userSettingsService;
   
   @Mock
-  private com.vallexia.recipe.service.RecipeEnrichmentService recipeEnrichmentService;
+  private com.vallexia.recipe.service.RecipeLocalizationService recipeLocalizationService;
   
   @InjectMocks
   private FavoriteRecipeService favoriteRecipeService;
@@ -216,7 +216,7 @@ class FavoriteRecipeServiceTest {
         .thenReturn("en");
     when(recipeMapper.toRecipeDto(recipe, true))
         .thenReturn(recipeDto);
-    when(recipeEnrichmentService.enrichWithTranslations(recipeDto, recipe, "en"))
+    when(recipeLocalizationService.enrichWithTranslations(recipeDto, recipe, "en"))
         .thenReturn(enrichedDto);
     
     // When
@@ -227,7 +227,7 @@ class FavoriteRecipeServiceTest {
     assertThat(result.getContent()).hasSize(1);
     verify(favoriteRecipeRepository).findByUserId(UserTestFixtures.TEST_USER_ID, pageable);
     verify(userSettingsService).getUserLocale(UserTestFixtures.TEST_USER_ID);
-    verify(recipeEnrichmentService).enrichWithTranslations(recipeDto, recipe, "en");
+    verify(recipeLocalizationService).enrichWithTranslations(recipeDto, recipe, "en");
   }
   
   // ==================== isFavorite() Tests ====================

@@ -83,25 +83,6 @@ class RecipeMapperTest {
     assertThat(dto.getCreatorUsername()).isEqualTo(creator.getUsername());
   }
   
-  // ==================== toRecipe() Tests ====================
-  
-  @Test
-  @DisplayName("Should map CreateRecipeDto to Recipe entity")
-  void shouldMapCreateRecipeDtoToRecipeEntity() {
-    // Given
-    CreateRecipeDto dto = RecipeTestFixtures.createCreateRecipeDto();
-    
-    // When
-    Recipe recipe = recipeMapper.toRecipe(dto);
-    
-    // Then
-    assertThat(recipe).isNotNull();
-    assertThat(recipe.getName()).isEqualTo(dto.getName());
-    assertThat(recipe.getDescription()).isEqualTo(dto.getDescription());
-    assertThat(recipe.getId()).isNull(); // Should be ignored
-    assertThat(recipe.getCreator()).isNull(); // Should be ignored
-  }
-  
   // ==================== toIngredientDto() Tests ====================
   
   @Test
@@ -118,25 +99,6 @@ class RecipeMapperTest {
     assertThat(dto.getName()).isEqualTo(recipeIngredient.getIngredient().getName());
     assertThat(dto.getQuantity()).isEqualTo(recipeIngredient.getQuantity());
     assertThat(dto.getUnit()).isEqualTo(recipeIngredient.getUnit());
-  }
-  
-  // ==================== toNutritionalInfoDto() Tests ====================
-  
-  @Test
-  @DisplayName("Should map NutritionalInfo to NutritionalInfoDto")
-  void shouldMapNutritionalInfoToNutritionalInfoDto() {
-    // Given
-    NutritionalInfo nutritionalInfo = RecipeTestFixtures.createNutritionalInfo();
-    
-    // When
-    NutritionalInfoDto dto = recipeMapper.toNutritionalInfoDto(nutritionalInfo);
-    
-    // Then
-    assertThat(dto).isNotNull();
-    assertThat(dto.getCalories()).isEqualTo(nutritionalInfo.getCalories());
-    assertThat(dto.getProtein()).isEqualTo(nutritionalInfo.getProtein());
-    assertThat(dto.getCarbs()).isEqualTo(nutritionalInfo.getCarbs());
-    assertThat(dto.getFats()).isEqualTo(nutritionalInfo.getFats());
   }
   
   @Test

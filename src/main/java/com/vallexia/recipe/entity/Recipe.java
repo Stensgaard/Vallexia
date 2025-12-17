@@ -1,6 +1,5 @@
 package com.vallexia.recipe.entity;
 
-import com.vallexia.recipe.entity.enums.DifficultyLevel;
 import com.vallexia.common.enums.SupportedAllergy;
 import com.vallexia.common.enums.SupportedCuisineType;
 import com.vallexia.common.enums.SupportedDietaryRestriction;
@@ -74,10 +73,6 @@ public class Recipe {
     private Integer servings = 1; // Base servings count
     
     @Enumerated(EnumType.STRING)
-    @Column(name = "difficulty_level", length = 20)
-    private DifficultyLevel difficultyLevel;
-    
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
     private SupportedMealCategory category;
     
@@ -89,14 +84,8 @@ public class Recipe {
     @Column(name = "image_url", length = 500)
     private String imageUrl;
     
-    @Column(name = "is_public", nullable = false)
-    private Boolean isPublic = false;
-    
     @Column(name = "base_locale", nullable = false, length = 10)
     private String baseLocale = "en";
-    
-    @OneToOne(mappedBy = "recipe", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private NutritionalInfo nutritionalInfo;
     
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<RecipeTranslation> translations = new ArrayList<>();

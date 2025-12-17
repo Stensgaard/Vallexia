@@ -2,14 +2,14 @@
 -- Version: V8
 -- Description: Create recipes table and recipe_translations table for storing
 --              recipe information including name, description, instructions, timing,
---              difficulty, category, cuisine type, and visibility settings.
+--              category, and cuisine type.
 --              This depends on the users table.
 
 -- ============================================================================
 -- RECIPES TABLE
 -- ============================================================================
 -- Stores recipe information including name, description, instructions, timing,
--- difficulty, category, cuisine type, and visibility settings.
+-- category, and cuisine type.
 -- ============================================================================
 CREATE TABLE recipes (
     id BIGSERIAL PRIMARY KEY,
@@ -21,11 +21,9 @@ CREATE TABLE recipes (
     cook_time_minutes INTEGER,
     total_time_minutes INTEGER,
     servings INTEGER NOT NULL DEFAULT 1,
-    difficulty_level VARCHAR(20),
     category VARCHAR(50) NOT NULL,
     cuisine_type VARCHAR(50),
     image_url VARCHAR(500),
-    is_public BOOLEAN NOT NULL DEFAULT FALSE,
     base_locale VARCHAR(10) NOT NULL DEFAULT 'en',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -34,7 +32,6 @@ CREATE TABLE recipes (
     CONSTRAINT chk_cook_time CHECK (cook_time_minutes IS NULL OR cook_time_minutes >= 0),
     CONSTRAINT chk_total_time CHECK (total_time_minutes IS NULL OR total_time_minutes >= 0),
     CONSTRAINT chk_servings CHECK (servings >= 1),
-    CONSTRAINT chk_difficulty_level CHECK (difficulty_level IS NULL OR difficulty_level IN ('EASY', 'MEDIUM', 'HARD', 'EXPERT')),
     CONSTRAINT chk_category CHECK (category IN ('BREAKFAST', 'LUNCH', 'DINNER', 'SNACK')),
     CONSTRAINT chk_cuisine_type CHECK (cuisine_type IS NULL OR cuisine_type IN (
         'AMERICAN', 'ITALIAN', 'MEXICAN', 'CHINESE', 'JAPANESE', 'THAI', 'INDIAN',
@@ -53,11 +50,9 @@ COMMENT ON COLUMN recipes.prep_time_minutes IS 'Preparation time in minutes';
 COMMENT ON COLUMN recipes.cook_time_minutes IS 'Cooking time in minutes';
 COMMENT ON COLUMN recipes.total_time_minutes IS 'Total time (prep + cook) in minutes';
 COMMENT ON COLUMN recipes.servings IS 'Base number of servings';
-COMMENT ON COLUMN recipes.difficulty_level IS 'Difficulty level: EASY, MEDIUM, HARD, or EXPERT';
 COMMENT ON COLUMN recipes.category IS 'Recipe category';
 COMMENT ON COLUMN recipes.cuisine_type IS 'Cuisine type';
 COMMENT ON COLUMN recipes.image_url IS 'URL to recipe image';
-COMMENT ON COLUMN recipes.is_public IS 'Whether recipe is publicly visible';
 COMMENT ON COLUMN recipes.base_locale IS 'Base locale/language the recipe was originally created in (en, da)';
 
 -- ============================================================================
@@ -101,12 +96,6 @@ CREATE INDEX idx_recipes_category ON recipes(category);
 
 -- Search by cuisine type
 CREATE INDEX idx_recipes_cuisine_type ON recipes(cuisine_type);
-
--- Search by difficulty level
-CREATE INDEX idx_recipes_difficulty_level ON recipes(difficulty_level);
-
--- Search by public visibility
-CREATE INDEX idx_recipes_is_public ON recipes(is_public) WHERE is_public = TRUE;
 
 -- Search by created date (for recent recipes)
 CREATE INDEX idx_recipes_created_at ON recipes(created_at DESC);

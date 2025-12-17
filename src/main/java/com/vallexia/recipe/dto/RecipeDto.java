@@ -1,6 +1,5 @@
 package com.vallexia.recipe.dto;
 
-import com.vallexia.recipe.entity.enums.DifficultyLevel;
 import com.vallexia.common.enums.SupportedAllergy;
 import com.vallexia.common.enums.SupportedCuisineType;
 import com.vallexia.common.enums.SupportedDietaryRestriction;
@@ -47,15 +46,11 @@ public class RecipeDto {
     
     private Integer servings;
     
-    private DifficultyLevel difficultyLevel;
-    
     private SupportedMealCategory category;
     
     private SupportedCuisineType cuisineType;
     
     private String imageUrl;
-    
-    private Boolean isPublic;
     
     private String baseLocale;
     

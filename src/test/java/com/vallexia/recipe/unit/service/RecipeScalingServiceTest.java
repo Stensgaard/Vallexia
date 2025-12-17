@@ -3,7 +3,6 @@ package com.vallexia.recipe.unit.service;
 import com.vallexia.recipe.dto.IngredientDto;
 import com.vallexia.recipe.dto.NutritionalInfoDto;
 import com.vallexia.recipe.dto.RecipeDto;
-import com.vallexia.recipe.entity.NutritionalInfo;
 import com.vallexia.recipe.entity.Recipe;
 import com.vallexia.recipe.entity.RecipeIngredient;
 import com.vallexia.recipe.exception.InvalidRecipeServingsException;
@@ -11,7 +10,6 @@ import com.vallexia.recipe.exception.RecipeNotFoundException;
 import com.vallexia.recipe.fixtures.RecipeTestFixtures;
 import com.vallexia.recipe.mapper.RecipeMapper;
 import com.vallexia.recipe.repository.RecipeRepository;
-import com.vallexia.recipe.service.FavoriteRecipeService;
 import com.vallexia.recipe.service.RecipeScalingService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,9 +47,6 @@ class RecipeScalingServiceTest {
   @Mock
   private RecipeMapper recipeMapper;
   
-  @Mock
-  private FavoriteRecipeService favoriteRecipeService;
-  
   @InjectMocks
   private RecipeScalingService recipeScalingService;
   
@@ -69,19 +64,16 @@ class RecipeScalingServiceTest {
     
     when(recipeRepository.findById(RecipeTestFixtures.TEST_RECIPE_ID))
         .thenReturn(Optional.of(recipe));
-    when(favoriteRecipeService.isFavorite(RecipeTestFixtures.TEST_RECIPE_ID, 1L))
-        .thenReturn(false);
-    when(recipeMapper.toRecipeDto(recipe, false))
+    when(recipeMapper.toRecipeDto(recipe))
         .thenReturn(recipeDto);
     
     // When
-    RecipeDto result = recipeScalingService.scaleRecipe(RecipeTestFixtures.TEST_RECIPE_ID, 8, 1L);
+    RecipeDto result = recipeScalingService.scaleRecipe(RecipeTestFixtures.TEST_RECIPE_ID, 8);
     
     // Then
     assertThat(result).isNotNull();
     assertThat(result.getServings()).isEqualTo(8);
     verify(recipeRepository).findById(RecipeTestFixtures.TEST_RECIPE_ID);
-    verify(favoriteRecipeService).isFavorite(RecipeTestFixtures.TEST_RECIPE_ID, 1L);
   }
   
   @Test
@@ -92,7 +84,7 @@ class RecipeScalingServiceTest {
         .thenReturn(Optional.empty());
     
     // When & Then
-    assertThatThrownBy(() -> recipeScalingService.scaleRecipe(RecipeTestFixtures.TEST_RECIPE_ID, 8, 1L))
+    assertThatThrownBy(() -> recipeScalingService.scaleRecipe(RecipeTestFixtures.TEST_RECIPE_ID, 8))
         .isInstanceOf(RecipeNotFoundException.class);
   }
   
@@ -106,7 +98,7 @@ class RecipeScalingServiceTest {
         .thenReturn(Optional.of(recipe));
     
     // When & Then
-    assertThatThrownBy(() -> recipeScalingService.scaleRecipe(RecipeTestFixtures.TEST_RECIPE_ID, 0, 1L))
+    assertThatThrownBy(() -> recipeScalingService.scaleRecipe(RecipeTestFixtures.TEST_RECIPE_ID, 0))
         .isInstanceOf(InvalidRecipeServingsException.class)
         .hasMessageContaining("Target servings must be greater than 0");
   }
@@ -122,7 +114,7 @@ class RecipeScalingServiceTest {
         .thenReturn(Optional.of(recipe));
     
     // When & Then
-    assertThatThrownBy(() -> recipeScalingService.scaleRecipe(RecipeTestFixtures.TEST_RECIPE_ID, 8, 1L))
+    assertThatThrownBy(() -> recipeScalingService.scaleRecipe(RecipeTestFixtures.TEST_RECIPE_ID, 8))
         .isInstanceOf(InvalidRecipeServingsException.class)
         .hasMessageContaining("Recipe has invalid servings");
   }
@@ -138,60 +130,9 @@ class RecipeScalingServiceTest {
         .thenReturn(Optional.of(recipe));
     
     // When & Then
-    assertThatThrownBy(() -> recipeScalingService.scaleRecipe(RecipeTestFixtures.TEST_RECIPE_ID, 8, 1L))
+    assertThatThrownBy(() -> recipeScalingService.scaleRecipe(RecipeTestFixtures.TEST_RECIPE_ID, 8))
         .isInstanceOf(InvalidRecipeServingsException.class)
         .hasMessageContaining("Recipe has invalid servings");
-  }
-  
-  @Test
-  @DisplayName("Should set favorite status correctly when recipe is favorited")
-  void shouldSetFavoriteStatusCorrectlyWhenRecipeIsFavorited() {
-    // Given
-    Recipe recipe = RecipeTestFixtures.createRecipe();
-    recipe.setServings(4);
-    RecipeDto recipeDto = new RecipeDto();
-    recipeDto.setId(RecipeTestFixtures.TEST_RECIPE_ID);
-    recipeDto.setServings(4);
-    recipeDto.setIsFavorite(true);
-    
-    when(recipeRepository.findById(RecipeTestFixtures.TEST_RECIPE_ID))
-        .thenReturn(Optional.of(recipe));
-    when(favoriteRecipeService.isFavorite(RecipeTestFixtures.TEST_RECIPE_ID, 1L))
-        .thenReturn(true);
-    when(recipeMapper.toRecipeDto(recipe, true))
-        .thenReturn(recipeDto);
-    
-    // When
-    RecipeDto result = recipeScalingService.scaleRecipe(RecipeTestFixtures.TEST_RECIPE_ID, 8, 1L);
-    
-    // Then
-    assertThat(result).isNotNull();
-    verify(favoriteRecipeService).isFavorite(RecipeTestFixtures.TEST_RECIPE_ID, 1L);
-    verify(recipeMapper).toRecipeDto(recipe, true);
-  }
-  
-  @Test
-  @DisplayName("Should handle null userId gracefully")
-  void shouldHandleNullUserIdGracefully() {
-    // Given
-    Recipe recipe = RecipeTestFixtures.createRecipe();
-    recipe.setServings(4);
-    RecipeDto recipeDto = new RecipeDto();
-    recipeDto.setId(RecipeTestFixtures.TEST_RECIPE_ID);
-    recipeDto.setServings(4);
-    
-    when(recipeRepository.findById(RecipeTestFixtures.TEST_RECIPE_ID))
-        .thenReturn(Optional.of(recipe));
-    when(recipeMapper.toRecipeDto(recipe, false))
-        .thenReturn(recipeDto);
-    
-    // When
-    RecipeDto result = recipeScalingService.scaleRecipe(RecipeTestFixtures.TEST_RECIPE_ID, 8, null);
-    
-    // Then
-    assertThat(result).isNotNull();
-    verify(favoriteRecipeService, never()).isFavorite(any(), any());
-    verify(recipeMapper).toRecipeDto(recipe, false);
   }
   
   // ==================== scaleIngredientQuantities() Tests ====================
@@ -227,19 +168,12 @@ class RecipeScalingServiceTest {
   @DisplayName("Should scale nutritional info proportionally")
   void shouldScaleNutritionalInfoProportionally() {
     // Given
-    NutritionalInfo nutritionalInfo = RecipeTestFixtures.createNutritionalInfo();
-    nutritionalInfo.setCalories(BigDecimal.valueOf(500.0));
-    nutritionalInfo.setProtein(BigDecimal.valueOf(20.0));
-    
     NutritionalInfoDto nutritionalInfoDto = new NutritionalInfoDto();
-    nutritionalInfoDto.setCalories(nutritionalInfo.getCalories());
-    nutritionalInfoDto.setProtein(nutritionalInfo.getProtein());
-    
-    when(recipeMapper.toNutritionalInfoDto(nutritionalInfo))
-        .thenReturn(nutritionalInfoDto);
+    nutritionalInfoDto.setCalories(BigDecimal.valueOf(500.0));
+    nutritionalInfoDto.setProtein(BigDecimal.valueOf(20.0));
     
     // When
-    var result = recipeScalingService.scaleNutritionalInfo(nutritionalInfo, 4, 8);
+    var result = recipeScalingService.scaleNutritionalInfo(nutritionalInfoDto, 4, 8);
     
     // Then
     assertThat(result).isNotNull();
@@ -251,19 +185,12 @@ class RecipeScalingServiceTest {
   @DisplayName("Should scale nutritional info with null values")
   void shouldScaleNutritionalInfoWithNullValues() {
     // Given
-    NutritionalInfo nutritionalInfo = new NutritionalInfo();
-    nutritionalInfo.setCalories(BigDecimal.valueOf(500.0));
-    nutritionalInfo.setProtein(null); // Null value
-    
     NutritionalInfoDto nutritionalInfoDto = new NutritionalInfoDto();
-    nutritionalInfoDto.setCalories(nutritionalInfo.getCalories());
-    nutritionalInfoDto.setProtein(null);
-    
-    when(recipeMapper.toNutritionalInfoDto(nutritionalInfo))
-        .thenReturn(nutritionalInfoDto);
+    nutritionalInfoDto.setCalories(BigDecimal.valueOf(500.0));
+    nutritionalInfoDto.setProtein(null); // Null value
     
     // When
-    var result = recipeScalingService.scaleNutritionalInfo(nutritionalInfo, 4, 8);
+    var result = recipeScalingService.scaleNutritionalInfo(nutritionalInfoDto, 4, 8);
     
     // Then
     assertThat(result).isNotNull();

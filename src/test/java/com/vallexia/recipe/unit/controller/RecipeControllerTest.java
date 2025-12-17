@@ -45,9 +45,6 @@ class RecipeControllerTest {
   private RecipeService recipeService;
   
   @Mock
-  private RecipeSearchService recipeSearchService;
-  
-  @Mock
   private RecipeScalingService recipeScalingService;
   
   @Mock
@@ -72,14 +69,14 @@ class RecipeControllerTest {
   
 @SuppressWarnings("null")
 @Test
-  @DisplayName("Should retrieve all public recipes")
-  void shouldRetrieveAllPublicRecipes() {
+  @DisplayName("Should retrieve all recipes")
+  void shouldRetrieveAllRecipes() {
     // Given
     Pageable pageable = PageRequest.of(0, 20);
     RecipeDto recipeDto = new RecipeDto();
     Page<RecipeDto> recipePage = new PageImpl<>(List.of(recipeDto), pageable, 1);
     
-    when(recipeService.getPublicRecipes(pageable, 1L))
+    when(recipeService.getRecipes(pageable, 1L))
         .thenReturn(recipePage);
     
     // When
@@ -112,110 +109,17 @@ class RecipeControllerTest {
     assertThat(response.getBody()).isNotNull();
   }
   
-  // ==================== createRecipe() Tests ====================
-  // Note: @PreAuthorize("hasRole('ADMIN')") is tested via integration tests.
-  // This unit test verifies the controller logic assuming authorization passed.
-  
-  @Test
-  @DisplayName("Should create recipe successfully (admin only)")
-  void shouldCreateRecipeSuccessfully() {
-    // Given
-    CreateRecipeDto createDto = RecipeTestFixtures.createCreateRecipeDto();
-    RecipeDto recipeDto = new RecipeDto();
-    recipeDto.setId(RecipeTestFixtures.TEST_RECIPE_ID);
-    
-    when(recipeService.createRecipe(createDto, 1L))
-        .thenReturn(recipeDto);
-    
-    // When
-    ResponseEntity<RecipeDto> response = recipeController.createRecipe(createDto, mockAuthentication);
-    
-    // Then
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-    assertThat(response.getBody()).isNotNull();
-    verify(recipeService).createRecipe(createDto, 1L);
-  }
-  
-  // ==================== updateRecipe() Tests ====================
-  // Note: @PreAuthorize("hasRole('ADMIN')") is tested via integration tests.
-  // This unit test verifies the controller logic assuming authorization passed.
-  
-  @Test
-  @DisplayName("Should update recipe successfully (admin only)")
-  void shouldUpdateRecipeSuccessfully() {
-    // Given
-    UpdateRecipeDto updateDto = RecipeTestFixtures.createUpdateRecipeDto();
-    RecipeDto recipeDto = new RecipeDto();
-    
-    when(recipeService.updateRecipe(RecipeTestFixtures.TEST_RECIPE_ID, updateDto, 1L))
-        .thenReturn(recipeDto);
-    
-    // When
-    ResponseEntity<RecipeDto> response = recipeController.updateRecipe(RecipeTestFixtures.TEST_RECIPE_ID, updateDto, mockAuthentication);
-    
-    // Then
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    verify(recipeService).updateRecipe(RecipeTestFixtures.TEST_RECIPE_ID, updateDto, 1L);
-  }
-  
-  // ==================== deleteRecipe() Tests ====================
-  // Note: @PreAuthorize("hasRole('ADMIN')") is tested via integration tests.
-  // This unit test verifies the controller logic assuming authorization passed.
-  
-  @Test
-  @DisplayName("Should delete recipe successfully (admin only)")
-  void shouldDeleteRecipeSuccessfully() {
-    // Given
-    doNothing().when(recipeService).deleteRecipe(RecipeTestFixtures.TEST_RECIPE_ID, 1L);
-    
-    // When
-    ResponseEntity<Void> response = recipeController.deleteRecipe(RecipeTestFixtures.TEST_RECIPE_ID, mockAuthentication);
-    
-    // Then
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
-    verify(recipeService).deleteRecipe(RecipeTestFixtures.TEST_RECIPE_ID, 1L);
-  }
-  
-  // ==================== searchRecipes() Tests ====================
-  
-  @Test
-  @DisplayName("Should search recipes with criteria")
-  void shouldSearchRecipesWithCriteria() {
-    // Given
-    RecipeSearchCriteria criteria = new RecipeSearchCriteria();
-    criteria.setQuery("pasta");
-    Pageable pageable = PageRequest.of(0, 20);
-    RecipeSearchResponseDto responseDto = new RecipeSearchResponseDto();
-    
-    // Create UserSearchPreferences object with null allergies and preferred cuisines
-    RecipeSearchService.UserSearchPreferences userPreferences = 
-        new RecipeSearchService.UserSearchPreferences(null, null, criteria);
-    
-    when(recipeSearchService.prepareSearchCriteriaWithUserPreferences(criteria, 1L))
-        .thenReturn(userPreferences);
-    when(recipeSearchService.searchRecipes(criteria, pageable, 1L, null, null))
-        .thenReturn(responseDto);
-    
-    // When
-    ResponseEntity<RecipeSearchResponseDto> response = recipeController.searchRecipes(criteria, 0, 20, mockAuthentication);
-    
-    // Then
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    verify(recipeSearchService).prepareSearchCriteriaWithUserPreferences(criteria, 1L);
-    verify(recipeSearchService).searchRecipes(criteria, pageable, 1L, null, null);
-  }
-  
   // ==================== scaleRecipe() Tests ====================
   
 @SuppressWarnings("null")
-@Test
+  @Test
   @DisplayName("Should scale recipe successfully")
   void shouldScaleRecipeSuccessfully() {
     // Given
     RecipeDto scaledRecipe = new RecipeDto();
     scaledRecipe.setServings(8);
     
-    when(recipeScalingService.scaleRecipe(RecipeTestFixtures.TEST_RECIPE_ID, 8, 1L))
+    when(recipeScalingService.scaleRecipe(RecipeTestFixtures.TEST_RECIPE_ID, 8))
         .thenReturn(scaledRecipe);
     
     // When

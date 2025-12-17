@@ -35,7 +35,7 @@ public class FavoriteRecipeService {
     private final UserRepository userRepository;
     private final RecipeMapper recipeMapper;
     private final UserSettingsService userSettingsService;
-    private final RecipeEnrichmentService recipeEnrichmentService;
+    private final RecipeLocalizationService recipeLocalizationService;
     
     /**
      * Constructor for dependency injection.
@@ -45,7 +45,7 @@ public class FavoriteRecipeService {
      * @param userRepository the user repository
      * @param recipeMapper the recipe mapper
      * @param userSettingsService the user settings service (for locale resolution)
-     * @param recipeEnrichmentService the recipe enrichment service
+     * @param recipeLocalizationService the recipe localization service
      */
     public FavoriteRecipeService(
             FavoriteRecipeRepository favoriteRecipeRepository,
@@ -53,13 +53,13 @@ public class FavoriteRecipeService {
             UserRepository userRepository,
             RecipeMapper recipeMapper,
             UserSettingsService userSettingsService,
-            RecipeEnrichmentService recipeEnrichmentService) {
+            RecipeLocalizationService recipeLocalizationService) {
         this.favoriteRecipeRepository = favoriteRecipeRepository;
         this.recipeRepository = recipeRepository;
         this.userRepository = userRepository;
         this.recipeMapper = recipeMapper;
         this.userSettingsService = userSettingsService;
-        this.recipeEnrichmentService = recipeEnrichmentService;
+        this.recipeLocalizationService = recipeLocalizationService;
     }
     
     /**
@@ -79,7 +79,7 @@ public class FavoriteRecipeService {
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
         
         // Check if already favorited
-        if (favoriteRecipeRepository.existsByUserIdAndRecipeId(userId, recipeId)) {
+        if (isFavorite(recipeId, userId)) {
             log.debug("Recipe ID {} already in favorites for user ID {}", recipeId, userId);
             throw new RecipeAlreadyFavoritedException(
                 "Recipe with ID " + recipeId + " is already in your favorites"
@@ -108,7 +108,7 @@ public class FavoriteRecipeService {
         
         log.info("Removing recipe ID {} from favorites for user ID {}", recipeId, userId);
         
-        if (!favoriteRecipeRepository.existsByUserIdAndRecipeId(userId, recipeId)) {
+        if (!isFavorite(recipeId, userId)) {
             log.debug("Recipe ID {} is not in favorites for user ID {}", recipeId, userId);
             return; // Idempotent operation - no error if already removed
         }
@@ -140,13 +140,10 @@ public class FavoriteRecipeService {
             RecipeDto dto = recipeMapper.toRecipeDto(recipe, true); // Always true since these are favorites
             
             // Enrich with translations and ingredient names
-            return recipeEnrichmentService.enrichWithTranslations(dto, recipe, userLocale);
+            return recipeLocalizationService.enrichWithTranslations(dto, recipe, userLocale);
         });
     }
-    
 
-    // TODO is this being used as the primary way to check if a recipe is favorited? 
-    // thoughtout the codebase?
     /**
      * Check if recipe is favorited by user.
      * 
