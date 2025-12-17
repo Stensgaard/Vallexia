@@ -14,11 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-// FIXME: make it a requirement to send username with then you update the profile, 
-// and use this username to check instead of the email
-// TODO make sure they only edit their own profile
-// TODO make api tests once delete as been implemented
-
 /**
  * REST controller for user profile management endpoints.
  * 
@@ -29,9 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/users/profile")
-@Tag(
-    name = "User Profile Management", 
-    description = "Operations related to user profile management")
+@Tag(name = "User Profile Management", description = "Operations related to user profile management")
 public class UserController {
     
     private final UserService userService;
@@ -54,9 +47,7 @@ public class UserController {
      * @param authentication current authentication
      * @return UserProfileDto
      */
-    @Operation(
-        summary = "Get current user profile", 
-        description = "Retrieves the authenticated user's profile information")
+    @Operation(summary = "Get current user profile", description = "Retrieves the authenticated user's profile information")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Profile retrieved successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing JWT token"),
@@ -80,9 +71,7 @@ public class UserController {
      * @param authentication current authentication
      * @return updated UserProfileDto
      */
-    @Operation(
-        summary = "Update current user profile", 
-        description = "Updates the authenticated user's profile information")
+    @Operation(summary = "Update current user profile", description = "Updates the authenticated user's profile information")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Profile updated successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid input data"),

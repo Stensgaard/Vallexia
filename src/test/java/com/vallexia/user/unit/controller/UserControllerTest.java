@@ -294,4 +294,31 @@ class UserControllerTest {
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     verify(userService).updateUserProfile(eq(userId), eq(updateDto));
   }
+  
+  @Test
+  @DisplayName("Should handle partial update with only household size (no email)")
+  void shouldHandlePartialUpdateWithOnlyHouseholdSize() {
+    // Given
+    Long userId = 1L;
+    UserProfileDto updateDto = new UserProfileDto();
+    updateDto.setHouseholdSize(5);
+    // email and mealTypes are null
+    
+    UserProfileDto expectedDto = UserTestFixtures.createUserProfileDto();
+    expectedDto.setHouseholdSize(5);
+    
+    when(authenticationHelper.getCurrentUserId(mockAuthentication))
+        .thenReturn(userId);
+    when(userService.updateUserProfile(userId, updateDto))
+        .thenReturn(expectedDto);
+    
+    // When
+    ResponseEntity<UserProfileDto> response = userController.updateCurrentUserProfile(updateDto, mockAuthentication);
+    
+    // Then
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(response.getBody()).isNotNull();
+    assertThat(response.getBody().getHouseholdSize()).isEqualTo(5);
+    verify(userService).updateUserProfile(eq(userId), eq(updateDto));
+  }
 }

@@ -14,10 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-// TODO why is curreny not required but the rest is?
-// TODO make it so the currency is required and must be one of the 
-// supported currencies, make it so it says which is supported for them all
-
 /**
  * REST controller for user settings management endpoints.
  * 
@@ -28,9 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/users/settings")
-@Tag(
-    name = "User Settings Management", 
-    description = "Operations related to user settings management")
+@Tag(name = "User Settings Management", description = "Operations related to user settings management")
 public class UserSettingsController {
     
     private final UserSettingsService userSettingsService;
@@ -54,9 +48,7 @@ public class UserSettingsController {
      * @param authentication current authentication
      * @return UserSettingsDto
      */
-    @Operation(
-        summary = "Get current user's settings", 
-        description = "Retrieves the authenticated user's display preferences and settings")
+    @Operation(summary = "Get current user's settings", description = "Retrieves the authenticated user's display preferences and settings")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "User settings retrieved successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing JWT token"),
@@ -80,9 +72,7 @@ public class UserSettingsController {
      * @param authentication current authentication
      * @return updated UserSettingsDto
      */
-    @Operation(
-        summary = "Update current user's settings", 
-        description = "Updates the authenticated user's display preferences and settings")
+    @Operation(summary = "Update current user's settings", description = "Updates the authenticated user's display preferences and settings")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "User settings updated successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid input data"),

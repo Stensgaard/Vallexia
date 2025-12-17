@@ -58,6 +58,7 @@ public class UserSettingsDto {
     @Size(max = 10, message = "Measurement system must not exceed 10 characters")
     private String measurementSystem;
     
+    @NotNull(message = "Currency is required")
     @ValidCurrency
     @Size(max = 3, message = "Currency code must not exceed 3 characters")
     private String currency;

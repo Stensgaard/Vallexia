@@ -58,7 +58,8 @@ public class UserService {
     }
     
     /**
-     * Update user profile.
+     * Update user profile. 
+     * Supports partial updates - only fields provided (not null) will be updated.
      * 
      * @param userId user ID
      * @param userProfileDto updated profile data
@@ -74,16 +75,25 @@ public class UserService {
                     String.format("User not found with id: %d. This may be due to account deletion or invalid user ID.", userId)
                 ));
         
-        // Check if email is being changed and if it's already in use
-        if (!user.getEmail().equals(userProfileDto.getEmail()) && 
-            userRepository.existsByEmail(userProfileDto.getEmail())) {
-            throw new ValidationException("Email is already in use");
+        // Partial update: Only update email if provided
+        if (userProfileDto.getEmail() != null) {
+            // Check if email is being changed and if it's already in use
+            if (!user.getEmail().equals(userProfileDto.getEmail()) && 
+                userRepository.existsByEmail(userProfileDto.getEmail())) {
+                throw new ValidationException("Email is already in use");
+            }
+            user.setEmail(userProfileDto.getEmail());
         }
         
-        // Update user fields (username is immutable and not updated)
-        user.setEmail(userProfileDto.getEmail());
-        user.setHouseholdSize(userProfileDto.getHouseholdSize());
-        user.setMealTypes(userProfileDto.getMealTypes());
+        // Partial update: Only update household size if provided
+        if (userProfileDto.getHouseholdSize() != null) {
+            user.setHouseholdSize(userProfileDto.getHouseholdSize());
+        }
+        
+        // Partial update: Only update meal types if provided and not empty
+        if (userProfileDto.getMealTypes() != null && !userProfileDto.getMealTypes().isEmpty()) {
+            user.setMealTypes(userProfileDto.getMealTypes());
+        }
         
         User updatedUser = userRepository.save(user);
         

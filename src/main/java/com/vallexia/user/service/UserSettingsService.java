@@ -138,12 +138,8 @@ public class UserSettingsService {
         settings.setNumberDecimalSeparator(countryMeta.getDecimalSeparator());
         settings.setNumberThousandsSeparator(countryMeta.getThousandsSeparator());
         
-        // Currency: use override if provided, otherwise use country default
-        if (userSettingsDto.getCurrency() != null && !userSettingsDto.getCurrency().isEmpty()) {
-            settings.setCurrency(userSettingsDto.getCurrency());
-        } else {
-            settings.setCurrency(countryMeta.getCurrencyCode());
-        }
+        // Currency is now required, so set it directly
+        settings.setCurrency(userSettingsDto.getCurrency());
         
         UserSettings updatedSettings = userSettingsRepository.save(settings);
         
