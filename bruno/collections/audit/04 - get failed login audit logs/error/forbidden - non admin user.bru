@@ -1,0 +1,26 @@
+meta {
+  name: forbidden - non admin user
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/{{apiVersion}}/audit-logs/failed-logins?username={{registeredUsername}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("Status is 403 Forbidden", function() {
+    expect(res.status).to.equal(403);
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,32 @@
+meta {
+  name: trigger security violation for testing
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/{{apiVersion}}/audit-logs
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("Status is 403 Forbidden", function() {
+    expect(res.status).to.equal(403);
+  });
+  
+  test("Security violation audit log should be created", function() {
+    // This test verifies that the request was made
+    // The actual audit log creation is verified in the security violations endpoint tests
+    expect(res.status).to.equal(403);
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,33 @@
+meta {
+  name: start after end
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/{{apiVersion}}/audit-logs/date-range?start=2024-01-31T23:59:59&end=2024-01-01T00:00:00
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminAccessToken}}
+}
+
+tests {
+  test("Status is 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response contains empty paginated result", function() {
+    expect(res.body).to.have.property("content");
+    expect(res.body.content).to.be.an("array");
+    expect(res.body.content.length).to.equal(0);
+    expect(res.body.empty).to.equal(true);
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
