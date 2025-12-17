@@ -17,7 +17,6 @@ import com.vallexia.common.mapper.LocaleConfigBuilder;
 import com.vallexia.common.mapper.LocaleConfigInput;
 import com.vallexia.common.mapper.LocaleMapper;
 import com.vallexia.common.mapper.UnitMapper;
-import com.vallexia.recipe.entity.enums.DifficultyLevel;
 import com.vallexia.common.enums.SupportedAllergy;
 import com.vallexia.common.enums.SupportedCuisineType;
 import com.vallexia.common.enums.SupportedDietaryRestriction;
@@ -79,8 +78,6 @@ class LocaleConfigBuilderTest {
         DomainEnumMapper.toAllergyDto(SupportedAllergy.PEANUTS));
     List<CuisineTypeDto> cuisineTypes = Collections.singletonList(
         DomainEnumMapper.toCuisineTypeDto(SupportedCuisineType.ITALIAN));
-    List<DifficultyLevelDto> difficultyLevels = Collections.singletonList(
-        DomainEnumMapper.toDifficultyLevelDto(DifficultyLevel.EASY));
     List<GoalTypeDto> goalTypes = Collections.singletonList(
         DomainEnumMapper.toGoalTypeDto(GoalType.WEIGHT_LOSS));
     List<SubscriptionStatusDto> subscriptionStatuses = Collections.singletonList(
@@ -103,7 +100,6 @@ class LocaleConfigBuilderTest {
         .dietaryRestrictions(dietaryRestrictions)
         .allergies(allergies)
         .cuisineTypes(cuisineTypes)
-        .difficultyLevels(difficultyLevels)
         .goalTypes(goalTypes)
         .subscriptionStatuses(subscriptionStatuses)
         .build();
@@ -126,7 +122,6 @@ class LocaleConfigBuilderTest {
     assertThat(config.getDietaryRestrictions()).isEqualTo(dietaryRestrictions);
     assertThat(config.getAllergies()).isEqualTo(allergies);
     assertThat(config.getCuisineTypes()).isEqualTo(cuisineTypes);
-    assertThat(config.getDifficultyLevels()).isEqualTo(difficultyLevels);
     assertThat(config.getGoalTypes()).isEqualTo(goalTypes);
     assertThat(config.getSubscriptionStatuses()).isEqualTo(subscriptionStatuses);
   }
@@ -150,7 +145,6 @@ class LocaleConfigBuilderTest {
     List<DietaryRestrictionDto> emptyDietaryRestrictions = Collections.emptyList();
     List<AllergyDto> emptyAllergies = Collections.emptyList();
     List<CuisineTypeDto> emptyCuisineTypes = Collections.emptyList();
-    List<DifficultyLevelDto> emptyDifficultyLevels = Collections.emptyList();
     List<GoalTypeDto> emptyGoalTypes = Collections.emptyList();
     List<SubscriptionStatusDto> emptySubscriptionStatuses = Collections.emptyList();
 
@@ -171,7 +165,6 @@ class LocaleConfigBuilderTest {
         .dietaryRestrictions(emptyDietaryRestrictions)
         .allergies(emptyAllergies)
         .cuisineTypes(emptyCuisineTypes)
-        .difficultyLevels(emptyDifficultyLevels)
         .goalTypes(emptyGoalTypes)
         .subscriptionStatuses(emptySubscriptionStatuses)
         .build();
@@ -203,7 +196,6 @@ class LocaleConfigBuilderTest {
     List<DietaryRestrictionDto> emptyDietaryRestrictions = Collections.emptyList();
     List<AllergyDto> emptyAllergies = Collections.emptyList();
     List<CuisineTypeDto> emptyCuisineTypes = Collections.emptyList();
-    List<DifficultyLevelDto> emptyDifficultyLevels = Collections.emptyList();
     List<GoalTypeDto> emptyGoalTypes = Collections.emptyList();
     List<SubscriptionStatusDto> emptySubscriptionStatuses = Collections.emptyList();
 
@@ -229,7 +221,6 @@ class LocaleConfigBuilderTest {
         .dietaryRestrictions(emptyDietaryRestrictions)
         .allergies(emptyAllergies)
         .cuisineTypes(emptyCuisineTypes)
-        .difficultyLevels(emptyDifficultyLevels)
         .goalTypes(emptyGoalTypes)
         .subscriptionStatuses(emptySubscriptionStatuses)
         .build();
@@ -254,7 +245,6 @@ class LocaleConfigBuilderTest {
         .dietaryRestrictions(emptyDietaryRestrictions)
         .allergies(emptyAllergies)
         .cuisineTypes(emptyCuisineTypes)
-        .difficultyLevels(emptyDifficultyLevels)
         .goalTypes(emptyGoalTypes)
         .subscriptionStatuses(null)
         .build();

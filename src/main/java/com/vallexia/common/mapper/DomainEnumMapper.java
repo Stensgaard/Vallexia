@@ -1,7 +1,6 @@
 package com.vallexia.common.mapper;
 
 import com.vallexia.common.dto.*;
-import com.vallexia.recipe.entity.enums.DifficultyLevel;
 import com.vallexia.common.enums.SupportedAllergy;
 import com.vallexia.common.enums.SupportedCuisineType;
 import com.vallexia.common.enums.SupportedDietaryRestriction;
@@ -85,21 +84,6 @@ public class DomainEnumMapper {
         return CuisineTypeDto.builder()
                 .code(cuisineType.name())
                 .name(cuisineType.getDisplayName())
-                .build();
-    }
-
-    /**
-     * Converts a {@link DifficultyLevel} enum to a {@link DifficultyLevelDto}.
-     * 
-     * @param difficultyLevel the difficulty level enum to convert, must not be null
-     * @return the difficulty level DTO with code and display name
-     * @throws IllegalArgumentException if difficultyLevel is null
-     */
-    public static DifficultyLevelDto toDifficultyLevelDto(DifficultyLevel difficultyLevel) {
-        requireNonNull(difficultyLevel, "difficultyLevel");
-        return DifficultyLevelDto.builder()
-                .code(difficultyLevel.name())
-                .name(difficultyLevel.getDisplayName())
                 .build();
     }
 

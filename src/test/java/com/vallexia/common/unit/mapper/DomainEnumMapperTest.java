@@ -2,7 +2,6 @@ package com.vallexia.common.unit.mapper;
 
 import com.vallexia.common.dto.*;
 import com.vallexia.common.mapper.DomainEnumMapper;
-import com.vallexia.recipe.entity.enums.DifficultyLevel;
 import com.vallexia.common.enums.SupportedAllergy;
 import com.vallexia.common.enums.SupportedCuisineType;
 import com.vallexia.common.enums.SupportedDietaryRestriction;
@@ -101,32 +100,6 @@ class DomainEnumMapperTest {
     assertThatThrownBy(() -> DomainEnumMapper.toCuisineTypeDto(null))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("cuisineType must not be null");
-  }
-
-  // ==================== toDifficultyLevelDto() Tests ====================
-
-  @Test
-  @DisplayName("Should map DifficultyLevel to DifficultyLevelDto")
-  void shouldMapDifficultyLevelToDifficultyLevelDto() {
-    // Given
-    DifficultyLevel difficultyLevel = DifficultyLevel.EASY;
-
-    // When
-    DifficultyLevelDto dto = DomainEnumMapper.toDifficultyLevelDto(difficultyLevel);
-
-    // Then
-    assertThat(dto).isNotNull();
-    assertThat(dto.getCode()).isEqualTo("EASY");
-    assertThat(dto.getName()).isNotNull();
-  }
-
-  @Test
-  @DisplayName("Should throw IllegalArgumentException when difficulty level is null")
-  void shouldThrowIllegalArgumentExceptionWhenDifficultyLevelIsNull() {
-    // When/Then
-    assertThatThrownBy(() -> DomainEnumMapper.toDifficultyLevelDto(null))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessageContaining("difficultyLevel must not be null");
   }
 
   // ==================== toGoalTypeDto() Tests ====================

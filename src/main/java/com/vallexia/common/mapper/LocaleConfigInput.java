@@ -32,7 +32,6 @@ public class LocaleConfigInput {
     private final List<DietaryRestrictionDto> dietaryRestrictions;
     private final List<AllergyDto> allergies;
     private final List<CuisineTypeDto> cuisineTypes;
-    private final List<DifficultyLevelDto> difficultyLevels;
     private final List<GoalTypeDto> goalTypes;
     private final List<SubscriptionStatusDto> subscriptionStatuses;
 }

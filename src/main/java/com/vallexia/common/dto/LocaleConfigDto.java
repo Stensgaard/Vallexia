@@ -33,7 +33,6 @@ public class LocaleConfigDto {
     List<DietaryRestrictionDto> dietaryRestrictions;
     List<AllergyDto> allergies;
     List<CuisineTypeDto> cuisineTypes;
-    List<DifficultyLevelDto> difficultyLevels;
     List<GoalTypeDto> goalTypes;
     List<SubscriptionStatusDto> subscriptionStatuses;
 }
