@@ -1,25 +1,10 @@
 Overview over bugs that needs to be fixed:
 - invalid email or password shows "An unexpected error occurred. Please try again."
 - CANCELLED, EXPIRED from sub should be removed so only keep free, premium, family
-- make api tests for calling non supported methods on all controllers
 - make sonar CI not run when it is dependablebot that made the pull request
 
 Need to remove from both backend and frontend and their respected bruno api test file:
- - remove all create recipe feature
- - remove all edit recipe feature
- - remove all delete recipe feature
- - remove all isPublic/isPrivate feature
- - remove all neutration recipe calculation
- - remove all difficulty feature
- - remove old search feature? 
-    (src/main/java/com/vallexia/recipe/util/AllergenCompatibilityUtil.java)
-    src/main/java/com/vallexia/recipe/service/specification/RecipeSortHelper.java
-    src/main/java/com/vallexia/recipe/service/specification/DietaryRestrictionFilter.java
-    src/main/java/com/vallexia/recipe/service/specification/RecipeSpecificationBuilder.java
- - remove all recipe seeding data
-
  - rework recipe service/controller/dto/enitiy to fit spoonacular API
- - rework recipe search to fit spoonacular API
  - rework Dietary Preferences on the profile setting, to make sure they allign with 
     what spoonacular API supports
  - rework isFavourite
