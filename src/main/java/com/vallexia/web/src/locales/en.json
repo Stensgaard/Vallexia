@@ -193,8 +193,6 @@
       "prepTime": "Prep Time (min)",
       "cookTime": "Cook Time (min)",
       "servings": "Servings",
-      "difficultyLevel": "Difficulty Level",
-      "difficultyPlaceholder": "Select Difficulty",
       "ingredients": "Ingredients",
       "addIngredient": "Add Ingredient",
       "ingredientName": "Ingredient name",
@@ -219,10 +217,7 @@
       "tags": "Tags",
       "tagsPlaceholder": "Add tags (e.g., vegetarian, quick, healthy)",
       "tagsHint": "Press Enter or comma to add a tag. At least one tag is required.",
-      "makePublic": "Make this recipe public",
-      "saving": "Saving...",
-      "updateRecipe": "Update Recipe",
-      "createRecipe": "Create Recipe"
+      "saving": "Saving..."
     },
     "card": {
       "prepTime": "Prep time",
@@ -240,18 +235,11 @@
       "BEVERAGE": "Beverage",
       "OTHER": "Other"
     },
-    "difficulty": {
-      "EASY": "Easy",
-      "MEDIUM": "Medium",
-      "HARD": "Hard",
-      "EXPERT": "Expert"
-    },
     "detail": {
       "by": "By",
       "prepTime": "Prep Time",
       "cookTime": "Cook Time",
       "servings": "Servings",
-      "difficulty": "Difficulty",
       "ingredients": "Ingredients",
       "instructions": "Instructions",
       "startCooking": "Start Cooking",
@@ -278,8 +266,6 @@
       "allCategories": "All Categories",
       "cuisine": "Cuisine",
       "allCuisines": "All Cuisines",
-      "difficulty": "Difficulty",
-      "allLevels": "All Levels",
       "maxPrepTime": "Max Prep Time (minutes)",
       "maxPrepTimePlaceholder": "e.g. 30",
       "maxCalories": "Max Calories",
@@ -296,16 +282,6 @@
       "previous": "Previous",
       "next": "Next",
       "page": "Page {current} of {total}"
-    },
-    "create": {
-      "title": "Create Recipe",
-      "description": "Add a new recipe to your collection",
-      "success": "Recipe created successfully"
-    },
-    "edit": {
-      "title": "Edit Recipe",
-      "description": "Update your recipe details",
-      "success": "Recipe updated successfully"
     },
     "view": {
       "backToRecipes": "Back to Recipes",

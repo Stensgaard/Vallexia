@@ -190,8 +190,6 @@
       "prepTime": "Forberedelsestid (min)",
       "cookTime": "Tilberedningstid (min)",
       "servings": "Portioner",
-      "difficultyLevel": "Sværhedsgrad",
-      "difficultyPlaceholder": "Vælg sværhedsgrad",
       "ingredients": "Ingredienser",
       "addIngredient": "Tilføj ingrediens",
       "ingredientName": "Ingrediensnavn",
@@ -216,10 +214,7 @@
       "tags": "Tags",
       "tagsPlaceholder": "Tilføj tags (f.eks. vegetarisk, hurtig, sund)",
       "tagsHint": "Tryk Enter eller komma for at tilføje et tag. Mindst ét tag er påkrævet.",
-      "makePublic": "Gør denne opskrift offentlig",
-      "saving": "Gemmer...",
-      "updateRecipe": "Opdater opskrift",
-      "createRecipe": "Opret opskrift"
+      "saving": "Gemmer..."
     },
     "card": {
       "prepTime": "Forberedelsestid",
@@ -237,18 +232,11 @@
       "BEVERAGE": "Drikkevare",
       "OTHER": "Andet"
     },
-    "difficulty": {
-      "EASY": "Let",
-      "MEDIUM": "Medium",
-      "HARD": "Svær",
-      "EXPERT": "Ekspert"
-    },
     "detail": {
       "by": "Af",
       "prepTime": "Forberedelsestid",
       "cookTime": "Tilberedningstid",
       "servings": "Portioner",
-      "difficulty": "Sværhedsgrad",
       "ingredients": "Ingredienser",
       "instructions": "Instruktioner",
       "startCooking": "Start tilberedning",
@@ -275,8 +263,6 @@
       "allCategories": "Alle kategorier",
       "cuisine": "Køkkenstil",
       "allCuisines": "Alle køkkenstile",
-      "difficulty": "Sværhedsgrad",
-      "allLevels": "Alle niveauer",
       "maxPrepTime": "Maks. forberedelsestid (minutter)",
       "maxPrepTimePlaceholder": "f.eks. 30",
       "maxCalories": "Maks. kalorier",
@@ -293,16 +279,6 @@
       "previous": "Forrige",
       "next": "Næste",
       "page": "Side {current} af {total}"
-    },
-    "create": {
-      "title": "Opret opskrift",
-      "description": "Tilføj en ny opskrift til din samling",
-      "success": "Opskrift oprettet med succes"
-    },
-    "edit": {
-      "title": "Rediger opskrift",
-      "description": "Opdater dine opskriftdetaljer",
-      "success": "Opskrift opdateret med succes"
     },
     "view": {
       "backToRecipes": "Tilbage til opskrifter",

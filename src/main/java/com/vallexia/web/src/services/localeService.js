@@ -59,7 +59,6 @@ class LocaleService {
           dietaryRestrictions: data.dietaryRestrictions || [],
           allergies: data.allergies || [],
           cuisineTypes: data.cuisineTypes || [],
-          difficultyLevels: data.difficultyLevels || [],
           goalTypes: data.goalTypes || [],
           subscriptionStatuses: data.subscriptionStatuses || [],
           mealTypes: data.mealCategories || [],

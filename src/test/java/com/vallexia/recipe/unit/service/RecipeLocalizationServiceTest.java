@@ -6,7 +6,7 @@ import com.vallexia.recipe.entity.Ingredient;
 import com.vallexia.recipe.entity.Recipe;
 import com.vallexia.recipe.fixtures.RecipeTestFixtures;
 import com.vallexia.recipe.repository.IngredientRepository;
-import com.vallexia.recipe.service.RecipeEnrichmentService;
+import com.vallexia.recipe.service.RecipeLocalizationService;
 import com.vallexia.recipe.util.TranslationResolver;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,8 +27,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit tests for RecipeEnrichmentService.
- * Tests recipe DTO enrichment with translations and batch ingredient loading.
+ * Unit tests for RecipeLocalizationService.
+ * Tests recipe DTO localization with translations and batch ingredient loading.
  * 
  * @author Henrik Stensgaard
  * @version 1.0
@@ -36,8 +36,8 @@ import static org.mockito.Mockito.*;
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-@DisplayName("RecipeEnrichmentService Unit Tests")
-class RecipeEnrichmentServiceTest {
+@DisplayName("RecipeLocalizationService Unit Tests")
+class RecipeLocalizationServiceTest {
   
   @Mock
   private TranslationResolver translationResolver;
@@ -46,7 +46,7 @@ class RecipeEnrichmentServiceTest {
   private IngredientRepository ingredientRepository;
   
   @InjectMocks
-  private RecipeEnrichmentService recipeEnrichmentService;
+  private RecipeLocalizationService recipeLocalizationService;
   
   // ==================== enrichWithTranslations() Tests ====================
   
@@ -75,7 +75,7 @@ class RecipeEnrichmentServiceTest {
         .thenReturn(List.of());
     
     // When
-    RecipeDto result = recipeEnrichmentService.enrichWithTranslations(dto, recipe, userLocale);
+    RecipeDto result = recipeLocalizationService.enrichWithTranslations(dto, recipe, userLocale);
     
     // Then
     assertThat(result).isNotNull();
@@ -131,7 +131,7 @@ class RecipeEnrichmentServiceTest {
         .thenReturn(translatedName2);
     
     // When
-    RecipeDto result = recipeEnrichmentService.enrichWithTranslations(dto, recipe, userLocale);
+    RecipeDto result = recipeLocalizationService.enrichWithTranslations(dto, recipe, userLocale);
     
     // Then
     assertThat(result).isNotNull();
@@ -161,7 +161,7 @@ class RecipeEnrichmentServiceTest {
         .thenReturn(recipeContent);
     
     // When
-    RecipeDto result = recipeEnrichmentService.enrichWithTranslations(dto, recipe, userLocale);
+    RecipeDto result = recipeLocalizationService.enrichWithTranslations(dto, recipe, userLocale);
     
     // Then
     assertThat(result).isNotNull();
@@ -186,7 +186,7 @@ class RecipeEnrichmentServiceTest {
         .thenReturn(recipeContent);
     
     // When
-    RecipeDto result = recipeEnrichmentService.enrichWithTranslations(dto, recipe, userLocale);
+    RecipeDto result = recipeLocalizationService.enrichWithTranslations(dto, recipe, userLocale);
     
     // Then
     assertThat(result).isNotNull();
@@ -217,7 +217,7 @@ class RecipeEnrichmentServiceTest {
         .thenReturn(recipeContent);
     
     // When
-    RecipeDto result = recipeEnrichmentService.enrichWithTranslations(dto, recipe, userLocale);
+    RecipeDto result = recipeLocalizationService.enrichWithTranslations(dto, recipe, userLocale);
     
     // Then
     assertThat(result).isNotNull();
@@ -251,7 +251,7 @@ class RecipeEnrichmentServiceTest {
         .thenReturn(List.of()); // Empty list - ingredient not found
     
     // When
-    RecipeDto result = recipeEnrichmentService.enrichWithTranslations(dto, recipe, userLocale);
+    RecipeDto result = recipeLocalizationService.enrichWithTranslations(dto, recipe, userLocale);
     
     // Then
     assertThat(result).isNotNull();
@@ -299,7 +299,7 @@ class RecipeEnrichmentServiceTest {
         .thenReturn(translatedName);
     
     // When
-    RecipeDto result = recipeEnrichmentService.enrichWithTranslations(dto, recipe, userLocale);
+    RecipeDto result = recipeLocalizationService.enrichWithTranslations(dto, recipe, userLocale);
     
     // Then
     assertThat(result).isNotNull();
@@ -355,7 +355,7 @@ class RecipeEnrichmentServiceTest {
     }
     
     // When
-    RecipeDto result = recipeEnrichmentService.enrichWithTranslations(dto, recipe, userLocale);
+    RecipeDto result = recipeLocalizationService.enrichWithTranslations(dto, recipe, userLocale);
     
     // Then
     assertThat(result).isNotNull();

@@ -16,7 +16,6 @@ const localeConfig = {
   dietaryRestrictions: [],
   allergies: [],
   cuisineTypes: [],
-  difficultyLevels: [],
   goalTypes: [],
   subscriptionStatuses: [],
   mealTypes: [],
@@ -44,7 +43,6 @@ const normalizeConfig = (config) => {
   localeConfig.dietaryRestrictions = config.dietaryRestrictions || [];
   localeConfig.allergies = config.allergies || [];
   localeConfig.cuisineTypes = config.cuisineTypes || [];
-  localeConfig.difficultyLevels = config.difficultyLevels || [];
   localeConfig.goalTypes = config.goalTypes || [];
   localeConfig.subscriptionStatuses = config.subscriptionStatuses || [];
   localeConfig.mealTypes = config.mealCategories || [];
@@ -81,7 +79,6 @@ export const getMealCategories = () => localeConfig.mealCategories;
 export const getDietaryRestrictions = () => localeConfig.dietaryRestrictions;
 export const getAllergies = () => localeConfig.allergies;
 export const getCuisineTypes = () => localeConfig.cuisineTypes;
-export const getDifficultyLevels = () => localeConfig.difficultyLevels;
 export const getGoalTypes = () => localeConfig.goalTypes;
 export const getSubscriptionStatuses = () => localeConfig.subscriptionStatuses;
 export const getMealTypes = () => localeConfig.mealTypes;

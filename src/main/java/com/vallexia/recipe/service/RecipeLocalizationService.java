@@ -15,10 +15,8 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-// TODO why is it called enrichment service? is there not better names for tihs?
-
 /**
- * Service for enriching RecipeDto with translations and ingredient names.
+ * Service for localizing RecipeDto with translations and ingredient names.
  * Handles batch loading of ingredients to avoid N+1 query problems.
  * 
  * @author Henrik Stensgaard
@@ -27,7 +25,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-public class RecipeEnrichmentService {
+public class RecipeLocalizationService {
     
     private final TranslationResolver translationResolver;
     private final IngredientRepository ingredientRepository;
@@ -38,7 +36,7 @@ public class RecipeEnrichmentService {
      * @param translationResolver the translation resolver
      * @param ingredientRepository the ingredient repository
      */
-    public RecipeEnrichmentService(
+    public RecipeLocalizationService(
             TranslationResolver translationResolver,
             IngredientRepository ingredientRepository) {
         this.translationResolver = translationResolver;
