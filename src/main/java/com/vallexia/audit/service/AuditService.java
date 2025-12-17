@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
@@ -69,6 +70,8 @@ public class AuditService {
   
   /**
    * Log an authentication event.
+   * Uses REQUIRES_NEW propagation to ensure audit logs are committed even if
+   * the calling transaction rolls back (e.g., on authentication failures).
    * 
    * @param eventType the type of event
    * @param description event description
@@ -77,7 +80,7 @@ public class AuditService {
    * @param request HTTP request for extracting metadata
    * @param success whether the operation was successful
    */
-  @Transactional
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void logAuthenticationEvent(
       EventType eventType,
       String description,
@@ -111,7 +114,7 @@ public class AuditService {
           success
       );
       
-      auditLogRepository.save(auditLog);
+      auditLogRepository.saveAndFlush(auditLog);
       log.debug("Audit log saved: {} for user {}", eventType, sanitizedUsername);
       
     } catch (Exception e) {

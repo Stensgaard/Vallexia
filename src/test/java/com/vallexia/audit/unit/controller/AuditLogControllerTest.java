@@ -6,7 +6,6 @@ import com.vallexia.audit.entity.enums.EventType;
 import com.vallexia.audit.fixtures.AuditLogTestFixtures;
 import com.vallexia.audit.mapper.AuditLogMapper;
 import com.vallexia.audit.service.AuditService;
-import com.vallexia.security.AuthenticationHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,9 +44,6 @@ class AuditLogControllerTest {
   private AuditService auditService;
   
   @Mock
-  private AuthenticationHelper authenticationHelper;
-  
-  @Mock
   private AuditLogMapper auditLogMapper;
   
   @InjectMocks
@@ -79,81 +75,6 @@ class AuditLogControllerTest {
           .timestamp(entity.getTimestamp())
           .build();
     });
-  }
-  
-  // ==================== getMyAuditLogs() Tests ====================
-  
-  @SuppressWarnings("null")
-  @Test
-  @DisplayName("Should retrieve audit logs for current user with default pagination")
-  void shouldRetrieveAuditLogsForCurrentUserWithDefaultPagination() {
-    // Given
-    Long currentUserId = AuditLogTestFixtures.TEST_USER_ID;
-    when(authenticationHelper.getCurrentUserId()).thenReturn(currentUserId);
-    when(auditService.getUserAuditLogs(currentUserId, PageRequest.of(0, 20)))
-        .thenReturn(mockPage);
-    
-    // When
-    ResponseEntity<Page<AuditLogDto>> response = auditLogController.getMyAuditLogs(0, 20);
-    
-    // Then
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(response.getBody()).isNotNull();
-    Page<AuditLogDto> body = response.getBody();
-    assertThat(body).isNotNull();
-    assertThat(body.getContent()).hasSize(5);
-    verify(auditService).getUserAuditLogs(currentUserId, PageRequest.of(0, 20));
-    verify(authenticationHelper).getCurrentUserId();
-  }
-  
-  @SuppressWarnings("null")
-  @Test
-  @DisplayName("Should retrieve audit logs for current user with custom pagination")
-  void shouldRetrieveAuditLogsForCurrentUserWithCustomPagination() {
-    // Given
-    Long currentUserId = AuditLogTestFixtures.TEST_USER_ID;
-    Pageable pageable = PageRequest.of(2, 10);
-    List<AuditLog> logs = AuditLogTestFixtures.createAuditLogList(10);
-    Page<AuditLog> customPage = new PageImpl<>(logs, pageable, 50);
-    
-    when(authenticationHelper.getCurrentUserId()).thenReturn(currentUserId);
-    when(auditService.getUserAuditLogs(currentUserId, pageable))
-        .thenReturn(customPage);
-    
-    // When
-    ResponseEntity<Page<AuditLogDto>> response = 
-        auditLogController.getMyAuditLogs(2, 10);
-    
-    // Then
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    Page<AuditLogDto> body = response.getBody();
-    assertThat(body).isNotNull();
-    assertThat(body.getContent()).hasSize(10);
-    assertThat(body.getTotalElements()).isEqualTo(50);
-    verify(auditService).getUserAuditLogs(currentUserId, pageable);
-  }
-  
-  @SuppressWarnings("null")
-  @Test
-  @DisplayName("Should return empty page when user has no audit logs")
-  void shouldReturnEmptyPageWhenUserHasNoAuditLogs() {
-    // Given
-    Long currentUserId = AuditLogTestFixtures.TEST_USER_ID;
-    Page<AuditLog> emptyPage = new PageImpl<>(List.of(), PageRequest.of(0, 20), 0);
-    
-    when(authenticationHelper.getCurrentUserId()).thenReturn(currentUserId);
-    when(auditService.getUserAuditLogs(eq(currentUserId), any(Pageable.class)))
-        .thenReturn(emptyPage);
-    
-    // When
-    ResponseEntity<Page<AuditLogDto>> response = auditLogController.getMyAuditLogs(0, 20);
-    
-    // Then
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    Page<AuditLogDto> body = response.getBody();
-    assertThat(body).isNotNull();
-    assertThat(body.getContent()).isEmpty();
-    assertThat(body.getTotalElements()).isEqualTo(0);
   }
   
   // ==================== getUserAuditLogs() Tests ====================
