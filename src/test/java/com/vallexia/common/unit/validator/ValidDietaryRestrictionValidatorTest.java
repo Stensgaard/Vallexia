@@ -79,9 +79,9 @@ class ValidDietaryRestrictionValidatorTest {
     assertThat(validator.isValid(SupportedDietaryRestriction.VEGETARIAN, null)).isTrue();
     assertThat(validator.isValid(SupportedDietaryRestriction.VEGAN, null)).isTrue();
     assertThat(validator.isValid(SupportedDietaryRestriction.GLUTEN_FREE, null)).isTrue();
-    assertThat(validator.isValid(SupportedDietaryRestriction.KETO, null)).isTrue();
+    assertThat(validator.isValid(SupportedDietaryRestriction.KETOGENIC, null)).isTrue();
     assertThat(validator.isValid(SupportedDietaryRestriction.PALEO, null)).isTrue();
-    assertThat(validator.isValid(SupportedDietaryRestriction.HALAL, null)).isTrue();
+    assertThat(validator.isValid(SupportedDietaryRestriction.PALEO, null)).isTrue();
   }
 
   // ==================== String Code Tests ====================
@@ -105,7 +105,7 @@ class ValidDietaryRestrictionValidatorTest {
     // When/Then
     assertThat(validator.isValid("  VEGETARIAN  ", null)).isTrue();
     assertThat(validator.isValid("\tVEGAN\n", null)).isTrue();
-    assertThat(validator.isValid("  KETO  ", null)).isTrue();
+    assertThat(validator.isValid("  KETOGENIC  ", null)).isTrue();
   }
 
   @Test
@@ -142,7 +142,7 @@ class ValidDietaryRestrictionValidatorTest {
   void shouldAcceptCollectionsOfValidDietaryRestrictionEnumInstances() {
     // When/Then
     assertThat(validator.isValid(java.util.Set.of(SupportedDietaryRestriction.VEGETARIAN, SupportedDietaryRestriction.VEGAN), null)).isTrue();
-    assertThat(validator.isValid(java.util.List.of(SupportedDietaryRestriction.GLUTEN_FREE, SupportedDietaryRestriction.KETO), null)).isTrue();
+    assertThat(validator.isValid(java.util.List.of(SupportedDietaryRestriction.GLUTEN_FREE, SupportedDietaryRestriction.KETOGENIC), null)).isTrue();
   }
 
   @Test
@@ -150,7 +150,7 @@ class ValidDietaryRestrictionValidatorTest {
   void shouldAcceptCollectionsWithValidDietaryRestrictionStringCodes() {
     // When/Then
     assertThat(validator.isValid(java.util.Set.of("VEGETARIAN", "VEGAN"), null)).isTrue();
-    assertThat(validator.isValid(java.util.List.of("gluten_free", "keto"), null)).isTrue();
+    assertThat(validator.isValid(java.util.List.of("gluten_free", "ketogenic"), null)).isTrue();
   }
 
   @Test

@@ -75,7 +75,7 @@ class LocaleConfigBuilderTest {
     List<DietaryRestrictionDto> dietaryRestrictions = Collections.singletonList(
         DomainEnumMapper.toDietaryRestrictionDto(SupportedDietaryRestriction.VEGETARIAN));
     List<AllergyDto> allergies = Collections.singletonList(
-        DomainEnumMapper.toAllergyDto(SupportedAllergy.PEANUTS));
+        DomainEnumMapper.toAllergyDto(SupportedAllergy.PEANUT));
     List<CuisineTypeDto> cuisineTypes = Collections.singletonList(
         DomainEnumMapper.toCuisineTypeDto(SupportedCuisineType.ITALIAN));
     List<GoalTypeDto> goalTypes = Collections.singletonList(

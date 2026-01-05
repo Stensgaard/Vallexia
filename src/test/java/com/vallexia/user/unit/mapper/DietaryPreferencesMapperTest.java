@@ -13,10 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.HashSet;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Unit tests for DietaryPreferencesMapper.
@@ -51,30 +52,25 @@ class DietaryPreferencesMapperTest {
     assertThat(dto).isNotNull();
     assertThat(dto.getId()).isEqualTo(preferences.getId());
     assertThat(dto.getUserId()).isEqualTo(preferences.getUser().getId());
-    assertThat(dto.getRestrictions()).isEqualTo(preferences.getRestrictions());
+    assertThat(dto.getRestriction()).isEqualTo(preferences.getRestriction());
     assertThat(dto.getAllergies()).isEqualTo(preferences.getAllergies());
     assertThat(dto.getPreferredCuisines()).isEqualTo(preferences.getPreferredCuisines());
   }
   
   @Test
-  @DisplayName("Should map restrictions set correctly")
-  void shouldMapRestrictionsSetCorrectly() {
+  @DisplayName("Should map restriction correctly")
+  void shouldMapRestrictionCorrectly() {
     // Given
     DietaryPreferences preferences = UserTestFixtures.createDietaryPreferences();
-    Set<SupportedDietaryRestriction> restrictions = new HashSet<>(Set.of(
-        SupportedDietaryRestriction.VEGETARIAN,
-        SupportedDietaryRestriction.GLUTEN_FREE,
-        SupportedDietaryRestriction.KETO
-    ));
-    preferences.setRestrictions(restrictions);
+    SupportedDietaryRestriction restriction = SupportedDietaryRestriction.VEGETARIAN;
+    preferences.setRestriction(restriction);
     
     // When
     DietaryPreferencesDto dto = dietaryPreferencesMapper.toDietaryPreferencesDto(preferences);
     
     // Then
-    assertThat(dto.getRestrictions()).isNotNull();
-    assertThat(dto.getRestrictions()).hasSize(3);
-    assertThat(dto.getRestrictions()).containsExactlyInAnyOrderElementsOf(restrictions);
+    assertThat(dto.getRestriction()).isNotNull();
+    assertThat(dto.getRestriction()).isEqualTo(restriction);
   }
   
   @Test
@@ -83,9 +79,9 @@ class DietaryPreferencesMapperTest {
     // Given
     DietaryPreferences preferences = UserTestFixtures.createDietaryPreferences();
     Set<SupportedAllergy> allergies = new HashSet<>(Set.of(
-        SupportedAllergy.PEANUTS,
-        SupportedAllergy.MILK,
-        SupportedAllergy.EGGS
+        SupportedAllergy.PEANUT,
+        SupportedAllergy.DAIRY,
+        SupportedAllergy.EGG
     ));
     preferences.setAllergies(allergies);
     
@@ -152,7 +148,7 @@ class DietaryPreferencesMapperTest {
   void shouldMapEmptyCollectionsCorrectly() {
     // Given
     DietaryPreferences preferences = UserTestFixtures.createDietaryPreferences();
-    preferences.setRestrictions(new HashSet<>());
+    preferences.setRestriction(null);
     preferences.setAllergies(new HashSet<>());
     preferences.setPreferredCuisines(new HashSet<>());
     
@@ -160,8 +156,7 @@ class DietaryPreferencesMapperTest {
     DietaryPreferencesDto dto = dietaryPreferencesMapper.toDietaryPreferencesDto(preferences);
     
     // Then
-    assertThat(dto.getRestrictions()).isNotNull();
-    assertThat(dto.getRestrictions()).isEmpty();
+    assertThat(dto.getRestriction()).isNull();
     assertThat(dto.getAllergies()).isNotNull();
     assertThat(dto.getAllergies()).isEmpty();
     assertThat(dto.getPreferredCuisines()).isNotNull();
@@ -173,7 +168,7 @@ class DietaryPreferencesMapperTest {
   void shouldHandleNullCollectionsGracefully() {
     // Given
     DietaryPreferences preferences = UserTestFixtures.createDietaryPreferences();
-    preferences.setRestrictions(null);
+    preferences.setRestriction(null);
     preferences.setAllergies(null);
     preferences.setPreferredCuisines(null);
     

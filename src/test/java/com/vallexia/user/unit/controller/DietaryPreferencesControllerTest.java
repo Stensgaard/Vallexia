@@ -145,7 +145,7 @@ class DietaryPreferencesControllerTest {
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     DietaryPreferencesDto body = response.getBody();
     assertThat(body).isNotNull();
-    assertThat(body.getRestrictions()).isEqualTo(expectedDto.getRestrictions());
+    assertThat(body.getRestriction()).isEqualTo(expectedDto.getRestriction());
     assertThat(body.getAllergies()).isEqualTo(expectedDto.getAllergies());
   }
   
@@ -192,7 +192,7 @@ class DietaryPreferencesControllerTest {
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     DietaryPreferencesDto body = response.getBody();
     assertThat(body).isNotNull();
-    assertThat(body.getRestrictions()).isEqualTo(updateDto.getRestrictions());
+    assertThat(body.getRestriction()).isEqualTo(updateDto.getRestriction());
     assertThat(body.getAllergies()).isEqualTo(updateDto.getAllergies());
     
     verify(authenticationHelper).getCurrentUserId(mockAuthentication);

@@ -95,7 +95,7 @@ class DietaryPreferencesServiceTest {
     User user = UserTestFixtures.createUser();
     DietaryPreferencesDto expectedDto = new DietaryPreferencesDto();
     expectedDto.setUserId(UserTestFixtures.TEST_USER_ID);
-    expectedDto.setRestrictions(new HashSet<>());
+    expectedDto.setRestriction(null);
     expectedDto.setAllergies(new HashSet<>());
     expectedDto.setPreferredCuisines(new HashSet<>());
     
@@ -115,7 +115,7 @@ class DietaryPreferencesServiceTest {
     assertThat(result).isNotNull();
     DietaryPreferences captured = preferencesCaptor.getValue();
     assertThat(captured.getUser()).isEqualTo(user);
-    assertThat(captured.getRestrictions()).isEmpty();
+    assertThat(captured.getRestriction()).isNull();
     assertThat(captured.getAllergies()).isEmpty();
     
     verify(userRepository).findById(UserTestFixtures.TEST_USER_ID);
@@ -187,7 +187,7 @@ class DietaryPreferencesServiceTest {
     
     // Then
     assertThat(result).isNotNull();
-    assertThat(result.getRestrictions()).isEqualTo(updateDto.getRestrictions());
+    assertThat(result.getRestriction()).isEqualTo(updateDto.getRestriction());
     assertThat(result.getAllergies()).isEqualTo(updateDto.getAllergies());
     
     verify(userRepository).findById(UserTestFixtures.TEST_USER_ID);
@@ -223,7 +223,7 @@ class DietaryPreferencesServiceTest {
     assertThat(result).isNotNull();
     DietaryPreferences captured = preferencesCaptor.getValue();
     assertThat(captured.getUser()).isEqualTo(user);
-    assertThat(captured.getRestrictions()).isEqualTo(updateDto.getRestrictions());
+    assertThat(captured.getRestriction()).isEqualTo(updateDto.getRestriction());
     
     verify(dietaryPreferencesRepository).save(any(DietaryPreferences.class));
     verify(auditService).logEvent(any(), any(), any());
@@ -270,7 +270,7 @@ class DietaryPreferencesServiceTest {
     dietaryPreferencesService.updateDietaryPreferences(UserTestFixtures.TEST_USER_ID, updateDto);
     
     // Then
-    assertThat(existingPreferences.getRestrictions()).isEqualTo(updateDto.getRestrictions());
+    assertThat(existingPreferences.getRestriction()).isEqualTo(updateDto.getRestriction());
     assertThat(existingPreferences.getAllergies()).isEqualTo(updateDto.getAllergies());
     assertThat(existingPreferences.getPreferredCuisines()).isEqualTo(updateDto.getPreferredCuisines());
     
@@ -338,7 +338,7 @@ class DietaryPreferencesServiceTest {
     User user = UserTestFixtures.createUser();
     DietaryPreferences existingPreferences = UserTestFixtures.createDietaryPreferences(user);
     DietaryPreferencesDto updateDto = new DietaryPreferencesDto();
-    updateDto.setRestrictions(new HashSet<>());
+    updateDto.setRestriction(null);
     updateDto.setAllergies(null);
     updateDto.setPreferredCuisines(new HashSet<>());
     

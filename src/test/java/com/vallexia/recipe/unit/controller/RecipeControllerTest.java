@@ -2,7 +2,6 @@ package com.vallexia.recipe.unit.controller;
 
 import com.vallexia.recipe.controller.RecipeController;
 import com.vallexia.recipe.dto.*;
-import com.vallexia.recipe.fixtures.RecipeTestFixtures;
 import com.vallexia.recipe.service.*;
 import com.vallexia.security.AuthenticationHelper;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,9 +44,6 @@ class RecipeControllerTest {
   private RecipeService recipeService;
   
   @Mock
-  private RecipeScalingService recipeScalingService;
-  
-  @Mock
   private FavoriteRecipeService favoriteRecipeService;
   
   @Mock
@@ -65,22 +61,25 @@ class RecipeControllerTest {
         .thenReturn(1L);
   }
   
-  // ==================== getAllRecipes() Tests ====================
+  // ==================== searchRecipes() Tests ====================
   
-@SuppressWarnings("null")
-@Test
-  @DisplayName("Should retrieve all recipes")
-  void shouldRetrieveAllRecipes() {
+  @SuppressWarnings("null")
+  @Test
+  @DisplayName("Should search recipes successfully")
+  void shouldSearchRecipesSuccessfully() {
     // Given
-    Pageable pageable = PageRequest.of(0, 20);
     RecipeDto recipeDto = new RecipeDto();
-    Page<RecipeDto> recipePage = new PageImpl<>(List.of(recipeDto), pageable, 1);
+    recipeDto.setSpoonacularId(12345);
+    Page<RecipeDto> recipePage = new PageImpl<>(List.of(recipeDto), PageRequest.of(0, 20), 1);
     
-    when(recipeService.getRecipes(pageable, 1L))
+    when(recipeService.searchRecipes(
+            isNull(), isNull(), isNull(), isNull(), 
+            isNull(), isNull(), isNull(), eq(0), eq(20), eq(1L)))
         .thenReturn(recipePage);
     
     // When
-    ResponseEntity<Page<RecipeDto>> response = recipeController.getAllRecipes(0, 20, mockAuthentication);
+    ResponseEntity<Page<RecipeDto>> response = recipeController.searchRecipes(
+            null, null, null, null, null, null, null, 0, 20, mockAuthentication);
     
     // Then
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -95,41 +94,20 @@ class RecipeControllerTest {
   @DisplayName("Should retrieve recipe by ID")
   void shouldRetrieveRecipeById() {
     // Given
+    Integer spoonacularId = 12345; // Spoonacular IDs are Integer
     RecipeDto recipeDto = new RecipeDto();
-    recipeDto.setId(RecipeTestFixtures.TEST_RECIPE_ID);
+    recipeDto.setSpoonacularId(spoonacularId);
     
-    when(recipeService.getRecipeById(RecipeTestFixtures.TEST_RECIPE_ID, 1L))
+    when(recipeService.getRecipeById(spoonacularId, 1L))
         .thenReturn(recipeDto);
     
     // When
-    ResponseEntity<RecipeDto> response = recipeController.getRecipeById(RecipeTestFixtures.TEST_RECIPE_ID, mockAuthentication);
+    ResponseEntity<RecipeDto> response = recipeController.getRecipeById(spoonacularId, mockAuthentication);
     
     // Then
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).isNotNull();
-  }
-  
-  // ==================== scaleRecipe() Tests ====================
-  
-@SuppressWarnings("null")
-  @Test
-  @DisplayName("Should scale recipe successfully")
-  void shouldScaleRecipeSuccessfully() {
-    // Given
-    RecipeDto scaledRecipe = new RecipeDto();
-    scaledRecipe.setServings(8);
-    
-    when(recipeScalingService.scaleRecipe(RecipeTestFixtures.TEST_RECIPE_ID, 8))
-        .thenReturn(scaledRecipe);
-    
-    // When
-    ResponseEntity<RecipeDto> response = recipeController.scaleRecipe(RecipeTestFixtures.TEST_RECIPE_ID, 8, mockAuthentication);
-    
-    // Then
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    RecipeDto body = response.getBody();
-    assertThat(body).isNotNull();
-    assertThat(body.getServings()).isEqualTo(8);
+    assertThat(response.getBody().getSpoonacularId()).isEqualTo(spoonacularId);
   }
   
   // ==================== addFavorite() Tests ====================
@@ -138,14 +116,15 @@ class RecipeControllerTest {
   @DisplayName("Should add recipe to favorites successfully")
   void shouldAddRecipeToFavoritesSuccessfully() {
     // Given
-    doNothing().when(favoriteRecipeService).addFavorite(RecipeTestFixtures.TEST_RECIPE_ID, 1L);
+    Integer spoonacularId = 12345; // Spoonacular IDs are Integer
+    doNothing().when(favoriteRecipeService).addFavorite(spoonacularId, 1L);
     
     // When
-    ResponseEntity<Void> response = recipeController.addFavorite(RecipeTestFixtures.TEST_RECIPE_ID, mockAuthentication);
+    ResponseEntity<Void> response = recipeController.addFavorite(spoonacularId, mockAuthentication);
     
     // Then
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
-    verify(favoriteRecipeService).addFavorite(RecipeTestFixtures.TEST_RECIPE_ID, 1L);
+    verify(favoriteRecipeService).addFavorite(spoonacularId, 1L);
   }
   
   // ==================== removeFavorite() Tests ====================
@@ -154,14 +133,15 @@ class RecipeControllerTest {
   @DisplayName("Should remove recipe from favorites successfully")
   void shouldRemoveRecipeFromFavoritesSuccessfully() {
     // Given
-    doNothing().when(favoriteRecipeService).removeFavorite(RecipeTestFixtures.TEST_RECIPE_ID, 1L);
+    Integer spoonacularId = 12345; // Spoonacular IDs are Integer
+    doNothing().when(favoriteRecipeService).removeFavorite(spoonacularId, 1L);
     
     // When
-    ResponseEntity<Void> response = recipeController.removeFavorite(RecipeTestFixtures.TEST_RECIPE_ID, mockAuthentication);
+    ResponseEntity<Void> response = recipeController.removeFavorite(spoonacularId, mockAuthentication);
     
     // Then
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
-    verify(favoriteRecipeService).removeFavorite(RecipeTestFixtures.TEST_RECIPE_ID, 1L);
+    verify(favoriteRecipeService).removeFavorite(spoonacularId, 1L);
   }
   
   // ==================== getFavorites() Tests ====================

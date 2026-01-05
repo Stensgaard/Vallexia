@@ -29,7 +29,7 @@ public class DietaryPreferencesDto {
     private Long userId;
     
     @ValidDietaryRestriction
-    private Set<SupportedDietaryRestriction> restrictions;
+    private SupportedDietaryRestriction restriction;
     
     @ValidAllergy
     private Set<SupportedAllergy> allergies;

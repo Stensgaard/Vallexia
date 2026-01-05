@@ -56,14 +56,14 @@ class DomainEnumMapperTest {
   @DisplayName("Should map SupportedAllergy to AllergyDto")
   void shouldMapAllergyToAllergyDto() {
     // Given
-    SupportedAllergy allergy = SupportedAllergy.PEANUTS;
+    SupportedAllergy allergy = SupportedAllergy.PEANUT;
 
     // When
     AllergyDto dto = DomainEnumMapper.toAllergyDto(allergy);
 
     // Then
     assertThat(dto).isNotNull();
-    assertThat(dto.getCode()).isEqualTo("PEANUTS");
+    assertThat(dto.getCode()).isEqualTo("PEANUT");
     assertThat(dto.getName()).isNotNull();
   }
 

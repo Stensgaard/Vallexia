@@ -183,13 +183,10 @@ public class UserTestFixtures {
     DietaryPreferences preferences = new DietaryPreferences();
     preferences.setId(1L);
     preferences.setUser(user);
-    preferences.setRestrictions(new HashSet<>(Set.of(
-        SupportedDietaryRestriction.VEGETARIAN,
-        SupportedDietaryRestriction.GLUTEN_FREE
-    )));
+    preferences.setRestriction(SupportedDietaryRestriction.VEGETARIAN);
     preferences.setAllergies(new HashSet<>(Set.of(
-        SupportedAllergy.PEANUTS,
-        SupportedAllergy.MILK
+        SupportedAllergy.PEANUT,
+        SupportedAllergy.DAIRY
     )));
     preferences.setPreferredCuisines(new HashSet<>(Set.of(
         SupportedCuisineType.ITALIAN,
@@ -207,13 +204,10 @@ public class UserTestFixtures {
     DietaryPreferencesDto dto = new DietaryPreferencesDto();
     dto.setId(1L);
     dto.setUserId(TEST_USER_ID);
-    dto.setRestrictions(new HashSet<>(Set.of(
-        SupportedDietaryRestriction.VEGETARIAN,
-        SupportedDietaryRestriction.GLUTEN_FREE
-    )));
+    dto.setRestriction(SupportedDietaryRestriction.VEGETARIAN);
     dto.setAllergies(new HashSet<>(Set.of(
-        SupportedAllergy.PEANUTS,
-        SupportedAllergy.MILK
+        SupportedAllergy.PEANUT,
+        SupportedAllergy.DAIRY
     )));
     dto.setPreferredCuisines(new HashSet<>(Set.of(
         SupportedCuisineType.ITALIAN,
@@ -229,13 +223,9 @@ public class UserTestFixtures {
     DietaryPreferencesDto dto = new DietaryPreferencesDto();
     dto.setId(1L);
     dto.setUserId(TEST_USER_ID);
-    dto.setRestrictions(new HashSet<>(Set.of(
-        SupportedDietaryRestriction.VEGAN,
-        SupportedDietaryRestriction.KETO,
-        SupportedDietaryRestriction.LOW_SODIUM
-    )));
+    dto.setRestriction(SupportedDietaryRestriction.VEGAN);
     dto.setAllergies(new HashSet<>(Set.of(
-        SupportedAllergy.TREE_NUTS,
+        SupportedAllergy.TREE_NUT,
         SupportedAllergy.SOY,
         SupportedAllergy.WHEAT
     )));

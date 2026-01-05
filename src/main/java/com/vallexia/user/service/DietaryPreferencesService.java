@@ -94,7 +94,7 @@ public class DietaryPreferencesService {
                 });
         
         // Update preferences
-        preferences.setRestrictions(dietaryPreferencesDto.getRestrictions());
+        preferences.setRestriction(dietaryPreferencesDto.getRestriction());
         preferences.setAllergies(dietaryPreferencesDto.getAllergies());
         preferences.setPreferredCuisines(dietaryPreferencesDto.getPreferredCuisines());
         
