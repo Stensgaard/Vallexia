@@ -68,7 +68,6 @@ import { useRoute, useRouter } from "vue-router";
 import { useRecipeStore } from "@/stores/recipe";
 import RecipeDetail from "@/components/Recipe/RecipeDetail.vue";
 import Toast from "@/components/common/Toast.vue";
-import { getErrorMessage } from "@/utils/errorUtils";
 
 const { t } = useI18n();
 

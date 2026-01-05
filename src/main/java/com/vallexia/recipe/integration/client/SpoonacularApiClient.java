@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 @Component
 public class SpoonacularApiClient {
     
+    private static final String SPOONACULAR_API_ERROR_MSG = "Spoonacular API error: {} {}";
+    
     private final RestClient restClient;
     private final SpoonacularProperties properties;
     
@@ -101,7 +103,7 @@ public class SpoonacularApiClient {
             
             SpoonacularSearchResponseDto response = uriSpec.retrieve()
                     .onStatus(status -> status.isError(), (request, response1) -> {
-                        log.error("Spoonacular API error: {} {}", response1.getStatusCode(), 
+                        log.error(SPOONACULAR_API_ERROR_MSG, response1.getStatusCode(), 
                                 response1.getStatusText());
                         throw new SpoonacularApiException(
                                 "Spoonacular API error: " + response1.getStatusCode());
@@ -133,7 +135,7 @@ public class SpoonacularApiClient {
                             spoonacularId, properties.getApiKey())
                     .retrieve()
                     .onStatus(status -> status.isError(), (request, response) -> {
-                        log.error("Spoonacular API error: {} {}", response.getStatusCode(), 
+                        log.error(SPOONACULAR_API_ERROR_MSG, response.getStatusCode(), 
                                 response.getStatusText());
                         throw new SpoonacularApiException(
                                 "Spoonacular API error: " + response.getStatusCode());
@@ -176,7 +178,7 @@ public class SpoonacularApiClient {
                             properties.getApiKey(), idsParam)
                     .retrieve()
                     .onStatus(status -> status.isError(), (request, response) -> {
-                        log.error("Spoonacular API error: {} {}", response.getStatusCode(), 
+                        log.error(SPOONACULAR_API_ERROR_MSG, response.getStatusCode(), 
                                 response.getStatusText());
                         throw new SpoonacularApiException(
                                 "Spoonacular API error: " + response.getStatusCode());

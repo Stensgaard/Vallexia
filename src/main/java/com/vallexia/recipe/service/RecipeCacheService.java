@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vallexia.config.api.SpoonacularProperties;
 import com.vallexia.recipe.entity.RecipeCache;
+import com.vallexia.recipe.exception.RecipeCacheException;
 import com.vallexia.recipe.integration.dto.SpoonacularRecipeDto;
 import com.vallexia.recipe.repository.RecipeCacheRepository;
 import com.vallexia.recipe.repository.RecipeTranslationCacheRepository;
@@ -104,7 +105,7 @@ public class RecipeCacheService {
             
         } catch (JsonProcessingException e) {
             log.error("Failed to serialize recipe to JSON", e);
-            throw new RuntimeException("Failed to cache recipe", e);
+            throw new RecipeCacheException("Failed to cache recipe", e);
         }
     }
     

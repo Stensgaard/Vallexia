@@ -14,45 +14,41 @@ let hookRegistered = false;
  * @param {Node} node - The DOM node being processed by DOMPurify
  */
 function addRelAttributeHook(node) {
-  try {
-    // Process anchor tags only
-    if (node.tagName !== 'A' || !node.hasAttribute('target')) {
-      return;
-    }
+  // Process anchor tags only
+  if (node.tagName !== 'A' || !node.hasAttribute('target')) {
+    return;
+  }
 
-    const target = node.getAttribute('target');
+  const target = node.getAttribute('target');
+  
+  // If target is "_blank", ensure rel="noopener noreferrer" is present
+  if (target === '_blank') {
+    const existingRel = node.getAttribute('rel');
     
-    // If target is "_blank", ensure rel="noopener noreferrer" is present
-    if (target === '_blank') {
-      const existingRel = node.getAttribute('rel');
+    if (!existingRel) {
+      // No existing rel attribute, add both
+      node.setAttribute('rel', 'noopener noreferrer');
+    } else {
+      // Parse existing rel values to avoid duplicates
+      const relValues = existingRel
+        .split(/\s+/)
+        .filter((val) => val.length > 0)
+        .map((val) => val.toLowerCase());
       
-      if (!existingRel) {
-        // No existing rel attribute, add both
-        node.setAttribute('rel', 'noopener noreferrer');
-      } else {
-        // Parse existing rel values to avoid duplicates
-        const relValues = existingRel
-          .split(/\s+/)
-          .filter((val) => val.length > 0)
-          .map((val) => val.toLowerCase());
-        
-        const hasNoopener = relValues.includes('noopener');
-        const hasNoreferrer = relValues.includes('noreferrer');
-        
-        // Only add missing values
-        if (!hasNoopener || !hasNoreferrer) {
-          if (!hasNoopener) {
-            relValues.push('noopener');
-          }
-          if (!hasNoreferrer) {
-            relValues.push('noreferrer');
-          }
-          node.setAttribute('rel', relValues.join(' '));
+      const hasNoopener = relValues.includes('noopener');
+      const hasNoreferrer = relValues.includes('noreferrer');
+      
+      // Only add missing values
+      if (!hasNoopener || !hasNoreferrer) {
+        if (!hasNoopener) {
+          relValues.push('noopener');
         }
+        if (!hasNoreferrer) {
+          relValues.push('noreferrer');
+        }
+        node.setAttribute('rel', relValues.join(' '));
       }
     }
-  } catch (error) {
-    // Silently fail to prevent breaking sanitization process
   }
 }
 
@@ -91,11 +87,7 @@ export function sanitizeHtml(html) {
   };
 
   // Sanitize the HTML (hook will automatically process anchor tags)
-  try {
-    return DOMPurify.sanitize(html, config);
-  } catch (error) {
-    return '';
-  }
+  return DOMPurify.sanitize(html, config);
 }
 
 /**
