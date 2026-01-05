@@ -14,11 +14,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+
+import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-// TODO make api tests when this has been refactored to use spoonacular API
 
 /**
  * REST controller for recipe management endpoints.
@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.*;
 public class RecipeController {
     
     private final RecipeService recipeService;
-    private final RecipeScalingService recipeScalingService;
     private final FavoriteRecipeService favoriteRecipeService;
     private final AuthenticationHelper authenticationHelper;
     
@@ -43,52 +42,62 @@ public class RecipeController {
      */
     public RecipeController(
             RecipeService recipeService,
-            RecipeScalingService recipeScalingService,
             FavoriteRecipeService favoriteRecipeService,
             AuthenticationHelper authenticationHelper) {
         this.recipeService = recipeService;
-        this.recipeScalingService = recipeScalingService;
         this.favoriteRecipeService = favoriteRecipeService;
         this.authenticationHelper = authenticationHelper;
     }
     
     /**
-     * List all recipes with pagination.
+     * Search recipes with filters.
      */
-    @Operation(summary = "List recipes", description = "Get a paginated list of all recipes")
+    @Operation(summary = "Search recipes", description = "Search recipes with filters including dietary preferences, cuisines, and ingredients")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Recipes retrieved successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
-    @GetMapping
+    @GetMapping("/search")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<Page<RecipeDto>> getAllRecipes(
+    public ResponseEntity<Page<RecipeDto>> searchRecipes(
+            @Parameter(description = "Search query") @RequestParam(required = false) String query,
+            @Parameter(description = "Ingredients to include (comma-separated)") 
+                @RequestParam(required = false) List<String> includeIngredients,
+            @Parameter(description = "Ingredients to exclude (comma-separated)") 
+                @RequestParam(required = false) List<String> excludeIngredients,
+            @Parameter(description = "Diet type") @RequestParam(required = false) String diet,
+            @Parameter(description = "Intolerances (comma-separated)") 
+                @RequestParam(required = false) List<String> intolerances,
+            @Parameter(description = "Cuisines to include (comma-separated)") 
+                @RequestParam(required = false) List<String> cuisine,
+            @Parameter(description = "Cuisines to exclude (comma-separated)") 
+                @RequestParam(required = false) List<String> excludeCuisine,
             @Parameter(description = "Page number (0-indexed)") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size,
             Authentication authentication) {
-        log.debug("Getting all recipes - page: {}, size: {}", page, size);
+        log.debug("Searching recipes - page: {}, size: {}", page, size);
         
         Long userId = authenticationHelper.getCurrentUserId(authentication);
-        Pageable pageable = PageRequest.of(page, size);
-        Page<RecipeDto> recipes = recipeService.getRecipes(pageable, userId);
+        Page<RecipeDto> recipes = recipeService.searchRecipes(
+                query, includeIngredients, excludeIngredients, diet, 
+                intolerances, cuisine, excludeCuisine, page, size, userId);
         
         return ResponseEntity.ok(recipes);
     }
     
     /**
-     * Get recipe by ID.
+     * Get recipe by Spoonacular ID.
      */
-    @Operation(summary = "Get recipe by ID", description = "Retrieve a specific recipe by its ID")
+    @Operation(summary = "Get recipe by ID", description = "Retrieve a specific recipe by its Spoonacular ID")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Recipe retrieved successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
-        @ApiResponse(responseCode = "404", description = "Recipe not found"),
-        @ApiResponse(responseCode = "403", description = "Access denied")
+        @ApiResponse(responseCode = "404", description = "Recipe not found")
     })
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<RecipeDto> getRecipeById(
-            @Parameter(description = "Recipe ID") @PathVariable Long id,
+            @Parameter(description = "Spoonacular Recipe ID") @PathVariable Integer id,
             Authentication authentication) {
         log.debug("Getting recipe ID {}", id);
         
@@ -96,29 +105,6 @@ public class RecipeController {
         RecipeDto recipe = recipeService.getRecipeById(id, userId);
         
         return ResponseEntity.ok(recipe);
-    }
-    
-    /**
-     * Get scaled recipe for a specific number of servings.
-     */
-    @Operation(summary = "Scale recipe", description = "Get recipe scaled to a different number of servings")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Scaled recipe retrieved successfully"),
-        @ApiResponse(responseCode = "401", description = "Unauthorized"),
-        @ApiResponse(responseCode = "404", description = "Recipe not found"),
-        @ApiResponse(responseCode = "400", description = "Invalid servings number")
-    })
-    @GetMapping("/{id}/scale")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<RecipeDto> scaleRecipe(
-            @Parameter(description = "Recipe ID") @PathVariable Long id,
-            @Parameter(description = "Target number of servings") @RequestParam Integer servings,
-            Authentication authentication) {
-        log.debug("Scaling recipe ID {} to {} servings", id, servings);
-        
-        RecipeDto scaledRecipe = recipeScalingService.scaleRecipe(id, servings);
-        
-        return ResponseEntity.ok(scaledRecipe);
     }
     
     /**
@@ -133,7 +119,7 @@ public class RecipeController {
     @PostMapping("/{id}/favorite")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> addFavorite(
-            @Parameter(description = "Recipe ID") @PathVariable Long id,
+            @Parameter(description = "Spoonacular Recipe ID") @PathVariable Integer id,
             Authentication authentication) {
         Long userId = authenticationHelper.getCurrentUserId(authentication);
         log.info("Adding recipe ID {} to favorites for user ID {}", id, userId);
@@ -154,7 +140,7 @@ public class RecipeController {
     @DeleteMapping("/{id}/favorite")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> removeFavorite(
-            @Parameter(description = "Recipe ID") @PathVariable Long id,
+            @Parameter(description = "Spoonacular Recipe ID") @PathVariable Integer id,
             Authentication authentication) {
         Long userId = authenticationHelper.getCurrentUserId(authentication);
         log.info("Removing recipe ID {} from favorites for user ID {}", id, userId);

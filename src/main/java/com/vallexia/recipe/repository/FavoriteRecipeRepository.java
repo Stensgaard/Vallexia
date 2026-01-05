@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * Repository interface for FavoriteRecipe entity operations.
  * 
@@ -29,16 +31,24 @@ public interface FavoriteRecipeRepository extends JpaRepository<FavoriteRecipe, 
      * Check if recipe is favorited by user.
      * 
      * @param userId the user ID
-     * @param recipeId the recipe ID
+     * @param spoonacularId the Spoonacular recipe ID
      * @return true if favorited, false otherwise
      */
-    boolean existsByUserIdAndRecipeId(Long userId, Long recipeId);
+    boolean existsByUserIdAndSpoonacularId(Long userId, Integer spoonacularId);
     
     /**
-     * Delete favorite recipe by user and recipe IDs.
+     * Delete favorite recipe by user and Spoonacular recipe IDs.
      * 
      * @param userId the user ID
-     * @param recipeId the recipe ID
+     * @param spoonacularId the Spoonacular recipe ID
      */
-    void deleteByUserIdAndRecipeId(Long userId, Long recipeId);
+    void deleteByUserIdAndSpoonacularId(Long userId, Integer spoonacularId);
+    
+    /**
+     * Find all favorite recipes by Spoonacular IDs.
+     * 
+     * @param spoonacularIds list of Spoonacular recipe IDs
+     * @return list of favorite recipes
+     */
+    List<FavoriteRecipe> findBySpoonacularIdIn(List<Integer> spoonacularIds);
 }

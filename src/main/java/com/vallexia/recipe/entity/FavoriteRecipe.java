@@ -19,7 +19,11 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "favorite_recipes", 
        uniqueConstraints = {
-           @UniqueConstraint(columnNames = {"user_id", "recipe_id"})
+           @UniqueConstraint(columnNames = {"user_id", "spoonacular_id"})
+       },
+       indexes = {
+           @Index(name = "idx_favorite_recipes_user_id", columnList = "user_id"),
+           @Index(name = "idx_favorite_recipes_spoonacular_id", columnList = "spoonacular_id")
        })
 @Data
 @NoArgsConstructor
@@ -34,9 +38,8 @@ public class FavoriteRecipe {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recipe_id", nullable = false)
-    private Recipe recipe;
+    @Column(name = "spoonacular_id", nullable = false)
+    private Integer spoonacularId;
     
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -26,11 +25,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class RecipeDto {
     
-    private Long id;
-    
-    private Long creatorId;
-    
-    private String creatorUsername;
+    private Integer spoonacularId;
     
     private String name;
     
@@ -65,8 +60,4 @@ public class RecipeDto {
     private Set<SupportedAllergy> allergens = new HashSet<>();
     
     private Boolean isFavorite;
-    
-    private LocalDateTime createdAt;
-    
-    private LocalDateTime updatedAt;
 }

@@ -192,18 +192,24 @@
       "sourceType": "com.vallexia.config.spoonacular.SpoonacularProperties"
     },
     {
-      "name": "app.spoonacular.rate-limit-per-minute",
-      "type": "java.lang.Integer",
-      "description": "Rate limit per minute for API calls. Default: 60 requests/minute (free tier limit).",
-      "defaultValue": 60,
-      "sourceType": "com.vallexia.config.spoonacular.SpoonacularProperties"
+      "name": "app.google.translation.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether Google Cloud Translation is enabled. When disabled, translations will not be performed.",
+      "defaultValue": true,
+      "sourceType": "com.vallexia.config.api.GoogleTranslationProperties"
     },
     {
-      "name": "app.spoonacular.daily-quota-points",
-      "type": "java.lang.Integer",
-      "description": "Daily quota points for API calls. Default: 50 points/day (free tier limit).",
-      "defaultValue": 50,
-      "sourceType": "com.vallexia.config.spoonacular.SpoonacularProperties"
+      "name": "app.google.translation.project-id",
+      "type": "java.lang.String",
+      "description": "Google Cloud project ID for Translation API. Can be set via environment variable GOOGLE_CLOUD_PROJECT_ID.",
+      "sourceType": "com.vallexia.config.api.GoogleTranslationProperties"
+    },
+    {
+      "name": "app.google.translation.default-source-language",
+      "type": "java.lang.String",
+      "description": "Default source language for translations. Default: \"en\" (English, which is Spoonacular's default).",
+      "defaultValue": "en",
+      "sourceType": "com.vallexia.config.api.GoogleTranslationProperties"
     }
   ]
 }

@@ -51,8 +51,11 @@ app:
     api-key: ${SPOONACULAR_API_KEY}
     base-url: https://api.spoonacular.com
     cache-ttl-hours: 1
-    rate-limit-per-minute: 60
-    daily-quota-points: 50
+  google:
+    translation:
+      enabled: true
+      project-id: ${GOOGLE_CLOUD_PROJECT_ID:}
+      default-source-language: en
 logging:
   level:
     '[com.vallexia]': INFO
