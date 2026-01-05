@@ -1,10 +1,7 @@
 package com.vallexia.common.validator;
 
 import com.vallexia.common.enums.SupportedMeasurementSystem;
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
-
-import java.util.stream.Collectors;
+import com.vallexia.common.validator.strategy.MeasurementSystemValidationStrategy;
 
 /**
  * Validator implementation for {@link ValidMeasurementSystem}.
@@ -13,56 +10,12 @@ import java.util.stream.Collectors;
  * <p>Values are trimmed before validation so surrounding whitespace does not cause false negatives.
  *
  * @author Henrik Stensgaard
- * @version 1.0
+ * @version 2.0
  * @since 2025-11-15
  */
-public class ValidMeasurementSystemValidator implements ConstraintValidator<ValidMeasurementSystem, Object> {
-    
-    @Override
-    public void initialize(ValidMeasurementSystem constraintAnnotation) {
-        // No initialization needed
-    }
-    
-    @Override
-    public boolean isValid(Object value, ConstraintValidatorContext context) {
-        if (value == null) {
-            return true;
-        }
-        if (value instanceof SupportedMeasurementSystem) {
-            return true;
-        }
-        if (value instanceof String measurementSystem) {
-            if (measurementSystem.isEmpty()) {
-                return true;
-            }
+public class ValidMeasurementSystemValidator extends AbstractEnumValidator<ValidMeasurementSystem, SupportedMeasurementSystem> {
 
-            String trimmed = measurementSystem.trim();
-            if (trimmed.isEmpty()) {
-                return true;
-            }
-
-            boolean isValid = SupportedMeasurementSystem.fromCode(trimmed).isPresent();
-            if (!isValid) {
-                String supportedValues = getSupportedValuesAsString();
-                context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate(
-                    "Measurement system must be one of the supported systems: " + supportedValues
-                ).addConstraintViolation();
-            }
-            return isValid;
-        }
-
-        String supportedValues = getSupportedValuesAsString();
-        context.disableDefaultConstraintViolation();
-        context.buildConstraintViolationWithTemplate(
-            "Measurement system must be one of the supported systems: " + supportedValues
-        ).addConstraintViolation();
-        return false;
-    }
-
-    private String getSupportedValuesAsString() {
-        return SupportedMeasurementSystem.getAll().stream()
-            .map(SupportedMeasurementSystem::name)
-            .collect(Collectors.joining(", "));
+    public ValidMeasurementSystemValidator() {
+        super(new MeasurementSystemValidationStrategy());
     }
 }
