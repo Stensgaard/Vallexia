@@ -51,8 +51,3 @@ CREATE INDEX idx_recipe_cache_cuisine ON recipe_cache USING gin(cuisine);
 CREATE INDEX idx_recipe_cache_diets ON recipe_cache USING gin(diets);
 CREATE INDEX idx_recipe_cache_intolerances ON recipe_cache USING gin(intolerances);
 CREATE INDEX idx_recipe_cache_ingredients ON recipe_cache USING gin(ingredients);
-
-
-
-
-

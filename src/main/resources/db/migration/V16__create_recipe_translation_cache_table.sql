@@ -40,8 +40,3 @@ CREATE INDEX idx_recipe_translation_cache_expires_at ON recipe_translation_cache
 
 -- Index for efficient lookup by recipe and locale
 CREATE INDEX idx_recipe_translation_cache_spoonacular_locale ON recipe_translation_cache(spoonacular_id, locale);
-
-
-
-
-
