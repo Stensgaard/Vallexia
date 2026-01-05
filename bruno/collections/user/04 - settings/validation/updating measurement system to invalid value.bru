@@ -1,0 +1,43 @@
+meta {
+  name: updating measurement system to invalid value
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{baseUrl}}/api/{{apiVersion}}/users/settings
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "language": "en",
+    "country": "DK",
+    "dateFormat": "DD_MM_YYYY_DOT",
+    "timezone": "Europe/Copenhagen",
+    "firstDayOfWeek": "SUNDAY",
+    "measurementSystem": "invalid",
+    "currency": "DKK"
+  }
+}
+
+tests {
+  test("Status is 400 Bad Request", function() {
+    expect(res.status).to.equal(400);
+  });
+  
+  test("Measurement system validation error with invalid value", function() {
+    expect(res.body.details).to.have.property("measurementSystem");
+    expect(res.body.details.measurementSystem).to.satisfy(msg => "Measurement system must be one of the supported locales");
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -170,6 +170,46 @@
       "description": "Time window duration in minutes for refresh token rate limiting.",
       "defaultValue": 5,
       "sourceType": "com.vallexia.config.security.RateLimitingProperties"
+    },
+    {
+      "name": "app.spoonacular.api-key",
+      "type": "java.lang.String",
+      "description": "Spoonacular API key for authentication. Retrieved from environment variable SPOONACULAR_API_KEY. Must not be blank.",
+      "sourceType": "com.vallexia.config.spoonacular.SpoonacularProperties"
+    },
+    {
+      "name": "app.spoonacular.base-url",
+      "type": "java.lang.String",
+      "description": "Base URL for Spoonacular API.",
+      "defaultValue": "https://api.spoonacular.com",
+      "sourceType": "com.vallexia.config.spoonacular.SpoonacularProperties"
+    },
+    {
+      "name": "app.spoonacular.cache-ttl-hours",
+      "type": "java.lang.Integer",
+      "description": "Cache TTL in hours. Must be at least 1 hour (per Spoonacular Terms of Use).",
+      "defaultValue": 1,
+      "sourceType": "com.vallexia.config.spoonacular.SpoonacularProperties"
+    },
+    {
+      "name": "app.google.translation.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether Google Cloud Translation is enabled. When disabled, translations will not be performed.",
+      "defaultValue": true,
+      "sourceType": "com.vallexia.config.api.GoogleTranslationProperties"
+    },
+    {
+      "name": "app.google.translation.project-id",
+      "type": "java.lang.String",
+      "description": "Google Cloud project ID for Translation API. Can be set via environment variable GOOGLE_CLOUD_PROJECT_ID.",
+      "sourceType": "com.vallexia.config.api.GoogleTranslationProperties"
+    },
+    {
+      "name": "app.google.translation.default-source-language",
+      "type": "java.lang.String",
+      "description": "Default source language for translations. Default: \"en\" (English, which is Spoonacular's default).",
+      "defaultValue": "en",
+      "sourceType": "com.vallexia.config.api.GoogleTranslationProperties"
     }
   ]
 }

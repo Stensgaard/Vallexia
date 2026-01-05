@@ -1,10 +1,7 @@
 package com.vallexia.common.validator;
 
+import com.vallexia.common.validator.strategy.SubscriptionStatusValidationStrategy;
 import com.vallexia.user.entity.enums.SubscriptionStatus;
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
-
-import java.util.Arrays;
 
 /**
  * Validator implementation for {@link ValidSubscriptionStatus}.
@@ -13,38 +10,12 @@ import java.util.Arrays;
  * <p>Values are trimmed before validation so surrounding whitespace does not cause false negatives.
  *
  * @author Henrik Stensgaard
- * @version 1.0
+ * @version 2.0
  * @since 2025-11-25
  */
-public class ValidSubscriptionStatusValidator implements ConstraintValidator<ValidSubscriptionStatus, Object> {
+public class ValidSubscriptionStatusValidator extends AbstractEnumValidator<ValidSubscriptionStatus, SubscriptionStatus> {
 
-    @Override
-    public void initialize(ValidSubscriptionStatus constraintAnnotation) {
-        // No initialization required
-    }
-
-    @Override
-    public boolean isValid(Object value, ConstraintValidatorContext context) {
-        if (value == null) {
-            return true;
-        }
-        if (value instanceof SubscriptionStatus) {
-            return true;
-        }
-        if (value instanceof String subscriptionStatus) {
-            if (subscriptionStatus.isEmpty()) {
-                return true;
-            }
-
-            String trimmed = subscriptionStatus.trim();
-            if (trimmed.isEmpty()) {
-                return true;
-            }
-
-            return Arrays.stream(SubscriptionStatus.values())
-                    .anyMatch(item -> item.name().equalsIgnoreCase(trimmed));
-        }
-
-        return false;
+    public ValidSubscriptionStatusValidator() {
+        super(new SubscriptionStatusValidationStrategy());
     }
 }

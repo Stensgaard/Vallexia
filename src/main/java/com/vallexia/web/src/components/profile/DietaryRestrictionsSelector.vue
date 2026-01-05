@@ -11,17 +11,17 @@
         :key="option.code"
         class="relative flex items-start p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 focus-within:ring-2 focus-within:ring-blue-500"
         :class="{
-          'bg-blue-50 border-blue-300': selectedValues.includes(option.code),
+          'bg-blue-50 border-blue-300': selectedValue === option.code,
         }"
       >
         <div class="flex items-center h-5">
           <input
             :id="`${id}-${option.code}`"
-            v-model="selectedValues"
+            :checked="selectedValue === option.code"
             :value="option.code"
-            type="checkbox"
-            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-            @change="handleChange"
+            type="radio"
+            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+            @click="handleClick(option.code)"
           />
         </div>
 
@@ -58,11 +58,11 @@ const props = defineProps({
   },
   label: {
     type: String,
-    default: "Dietary Restrictions",
+    default: "Diet",
   },
   modelValue: {
-    type: Array,
-    default: () => [],
+    type: String,
+    default: null,
   },
   error: {
     type: String,
@@ -84,7 +84,7 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue"]);
 
-const selectedValues = ref([...props.modelValue]);
+const selectedValue = ref(props.modelValue);
 
 const translatedOptions = computed(() => {
   return getDietaryRestrictions().map((option) => {
@@ -101,12 +101,17 @@ const translatedOptions = computed(() => {
 watch(
   () => props.modelValue,
   (newValue) => {
-    selectedValues.value = [...newValue];
+    selectedValue.value = newValue;
   },
-  { deep: true },
 );
 
-const handleChange = () => {
-  emit("update:modelValue", [...selectedValues.value]);
+const handleClick = (value) => {
+  // If clicking the same option that's already selected, deselect it
+  if (selectedValue.value === value) {
+    selectedValue.value = null;
+  } else {
+    selectedValue.value = value;
+  }
+  emit("update:modelValue", selectedValue.value);
 };
 </script>

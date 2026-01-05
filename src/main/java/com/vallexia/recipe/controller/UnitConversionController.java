@@ -23,9 +23,7 @@ import java.math.BigDecimal;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/units")
-@Tag(
-    name = "Unit Conversion",
-    description = "Operations for converting between measurement units")
+@Tag(name = "Unit Conversion", description = "Operations for converting between measurement units")
 public class UnitConversionController {
     
     private final UnitConversionService unitConversionService;
@@ -46,14 +44,10 @@ public class UnitConversionController {
      * @param request the conversion request
      * @return conversion response with converted value
      */
-    @Operation(
-        summary = "Convert between units",
-        description = "Converts a value from one unit to another. Supports weight (g, kg, mg, oz, lb) " +
-            "and volume (ml, l, cup, tbsp, tsp, fl oz) unit conversions.")
+    @Operation(summary = "Convert between units", description = "Converts a value from one unit to another.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Conversion successful"),
-        @ApiResponse(responseCode = "400", description = "Invalid request (invalid units or value)"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
+        @ApiResponse(responseCode = "400", description = "Invalid request (invalid units or value)")
     })
     @PostMapping("/convert")
     public ResponseEntity<UnitConversionResponseDto> convert(
@@ -79,10 +73,7 @@ public class UnitConversionController {
      * @param request the display unit request
      * @return display unit response
      */
-    @Operation(
-        summary = "Get display unit",
-        description = "Returns the appropriate display unit based on measurement system. " +
-            "For weight units, converts between metric and imperial. For volume and count units, returns original.")
+    @Operation(summary = "Get display unit", description = "Returns the appropriate display unit based on measurement system. For weight units, converts between metric and imperial. For volume and count units, returns original.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Display unit retrieved successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid request")
@@ -110,9 +101,7 @@ public class UnitConversionController {
      * @param request the unit type check request
      * @return unit type check response
      */
-    @Operation(
-        summary = "Check unit type",
-        description = "Checks if a unit is a weight, volume, or count unit.")
+    @Operation(summary = "Check unit type", description = "Checks if a unit is a weight, volume, or count unit.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Unit type check completed successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid request")

@@ -88,7 +88,9 @@ public class NutritionalGoals {
     @Column(precision = 10, scale = 2)
     private BigDecimal dailySugar; // in grams
     
+    @NotNull
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private GoalType goalType = GoalType.MAINTENANCE;
     
     @CreationTimestamp

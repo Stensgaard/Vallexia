@@ -31,6 +31,11 @@ class LocaleService {
   }
 
   async getLocaleConfig(forceRefresh = false) {
+    if (forceRefresh) {
+      this.cachedConfig = null;
+      this.configPromise = null;
+    }
+    
     if (this.cachedConfig && !forceRefresh) {
       return this.cachedConfig;
     }
@@ -59,7 +64,6 @@ class LocaleService {
           dietaryRestrictions: data.dietaryRestrictions || [],
           allergies: data.allergies || [],
           cuisineTypes: data.cuisineTypes || [],
-          difficultyLevels: data.difficultyLevels || [],
           goalTypes: data.goalTypes || [],
           subscriptionStatuses: data.subscriptionStatuses || [],
           mealTypes: data.mealCategories || [],

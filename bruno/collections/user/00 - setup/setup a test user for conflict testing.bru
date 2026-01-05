@@ -1,0 +1,36 @@
+meta {
+  name: setup a test user for conflict testing
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/{{apiVersion}}/auth/register
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "username": "{{username}}1{{$timestamp}}",
+    "email": "{{email}}1{{$timestamp}}@example.com",
+    "country": "{{country}}",
+    "password": "{{password}}",
+    "confirmPassword": "{{password}}"
+  }
+}
+
+tests {
+  // NOTE: used for conflict tests
+  test("Status is 201 Created", function() {
+    expect(res.status).to.equal(201);
+  });
+  
+  bru.setVar("conflictUsername", res.body.username);
+  bru.setVar("conflictEmail", res.body.email);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

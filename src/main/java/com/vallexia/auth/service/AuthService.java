@@ -256,7 +256,7 @@ public class AuthService {
      * @throws AccountLockedException if account is locked
      * @throws AccountDisabledException if account is disabled
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public JwtResponseDto refreshToken(String refreshToken) {
         // Validate token structure and signature first (handles null/empty/invalid)
         if (!jwtTokenService.isValidToken(refreshToken)) {

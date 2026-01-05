@@ -8,11 +8,6 @@ export const useRecipeStore = defineStore("recipe", () => {
   const recipes = ref([]);
   const currentRecipe = ref(null);
   const favorites = ref([]);
-  const searchCriteria = ref({
-    category: "",
-    cuisineType: "",
-    difficultyLevel: "",
-  });
   const isLoading = ref(false);
   const error = ref(null);
   const pagination = ref({
@@ -28,20 +23,20 @@ export const useRecipeStore = defineStore("recipe", () => {
   });
 
   const recipeById = computed(() => {
-    return (id) => recipes.value.find((r) => r.id === id);
+    return (id) => recipes.value.find((r) => r.spoonacularId === id);
   });
 
   const isFavorite = computed(() => {
-    return (id) => favorites.value.some((f) => f.id === id);
+    return (id) => favorites.value.some((f) => f.spoonacularId === id);
   });
 
   // Actions
-  const fetchRecipes = async (page = 0, size = 20, filters = {}) => {
+  const fetchRecipes = async (page = 0, size = 20, searchParams = {}) => {
     try {
       isLoading.value = true;
       error.value = null;
 
-      const response = await recipeService.getAllRecipes(page, size, filters);
+      const response = await recipeService.searchRecipes(searchParams, page, size);
 
       recipes.value = response.content || [];
       pagination.value = {
@@ -49,6 +44,34 @@ export const useRecipeStore = defineStore("recipe", () => {
         size: response.size || size,
         totalElements: response.totalElements || 0,
         totalPages: response.totalPages || 0,
+      };
+
+      return response;
+    } catch (err) {
+      error.value = getErrorMessage(err);
+      throw err;
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  // Fetch all recipes in a single API call
+  const fetchAllRecipes = async (searchParams = {}) => {
+    try {
+      isLoading.value = true;
+      error.value = null;
+
+      // Fetch all results with a large page size (1000 should cover most cases)
+      const response = await recipeService.searchRecipes(searchParams, 0, 1000);
+
+      recipes.value = response.content || [];
+      
+      // Update pagination to reflect all results are loaded
+      pagination.value = {
+        page: 0,
+        size: response.content?.length || 0,
+        totalElements: response.totalElements || response.content?.length || 0,
+        totalPages: 1, // All results on one "page"
       };
 
       return response;
@@ -69,7 +92,7 @@ export const useRecipeStore = defineStore("recipe", () => {
       currentRecipe.value = recipe;
 
       // Update recipes list if not present
-      const index = recipes.value.findIndex((r) => r.id === id);
+      const index = recipes.value.findIndex((r) => r.spoonacularId === id);
       if (index >= 0) {
         recipes.value[index] = recipe;
       } else {
@@ -77,130 +100,6 @@ export const useRecipeStore = defineStore("recipe", () => {
       }
 
       return recipe;
-    } catch (err) {
-      error.value = getErrorMessage(err);
-      throw err;
-    } finally {
-      isLoading.value = false;
-    }
-  };
-
-  /**
-   * Create a new recipe (ADMIN ONLY)
-   * Note: This method requires admin privileges. Regular users cannot create recipes.
-   */
-  const createRecipe = async (recipeData) => {
-    try {
-      isLoading.value = true;
-      error.value = null;
-
-      const recipe = await recipeService.createRecipe(recipeData);
-
-      // Add to recipes list
-      recipes.value.unshift(recipe);
-      currentRecipe.value = recipe;
-
-      return recipe;
-    } catch (err) {
-      error.value = getErrorMessage(err);
-      throw err;
-    } finally {
-      isLoading.value = false;
-    }
-  };
-
-  /**
-   * Update an existing recipe (ADMIN ONLY)
-   * Note: This method requires admin privileges. Regular users cannot update recipes.
-   */
-  const updateRecipe = async (id, recipeData) => {
-    try {
-      isLoading.value = true;
-      error.value = null;
-
-      const recipe = await recipeService.updateRecipe(id, recipeData);
-
-      // Update in recipes list
-      const index = recipes.value.findIndex((r) => r.id === id);
-      if (index >= 0) {
-        recipes.value[index] = recipe;
-      }
-
-      // Update current recipe if it's the same
-      if (currentRecipe.value?.id === id) {
-        currentRecipe.value = recipe;
-      }
-
-      return recipe;
-    } catch (err) {
-      error.value = getErrorMessage(err);
-      throw err;
-    } finally {
-      isLoading.value = false;
-    }
-  };
-
-  /**
-   * Delete a recipe (ADMIN ONLY)
-   * Note: This method requires admin privileges. Regular users cannot delete recipes.
-   */
-  const deleteRecipe = async (id) => {
-    try {
-      isLoading.value = true;
-      error.value = null;
-
-      await recipeService.deleteRecipe(id);
-
-      // Remove from recipes list
-      recipes.value = recipes.value.filter((r) => r.id !== id);
-
-      // Clear current recipe if it's the deleted one
-      if (currentRecipe.value?.id === id) {
-        currentRecipe.value = null;
-      }
-
-      // Remove from favorites if present
-      favorites.value = favorites.value.filter((f) => f.id !== id);
-    } catch (err) {
-      error.value = getErrorMessage(err);
-      throw err;
-    } finally {
-      isLoading.value = false;
-    }
-  };
-
-  const searchRecipes = async (criteria, page = 0, size = 20) => {
-    try {
-      isLoading.value = true;
-      error.value = null;
-      searchCriteria.value = criteria;
-
-      const response = await recipeService.searchRecipes(criteria, page, size);
-
-      recipes.value = response.recipes || [];
-      pagination.value = {
-        page: response.pagination?.page || page,
-        size: response.pagination?.size || size,
-        totalElements: response.pagination?.totalElements || 0,
-        totalPages: response.pagination?.totalPages || 0,
-      };
-
-      return response;
-    } catch (err) {
-      error.value = getErrorMessage(err);
-      throw err;
-    } finally {
-      isLoading.value = false;
-    }
-  };
-
-  const scaleRecipe = async (id, servings) => {
-    try {
-      isLoading.value = true;
-      error.value = null;
-
-      const scaledRecipe = await recipeService.scaleRecipe(id, servings);
-      return scaledRecipe;
     } catch (err) {
       error.value = getErrorMessage(err);
       throw err;
@@ -218,14 +117,14 @@ export const useRecipeStore = defineStore("recipe", () => {
 
       if (isFav) {
         await recipeService.removeFavorite(id);
-        favorites.value = favorites.value.filter((f) => f.id !== id);
+        favorites.value = favorites.value.filter((f) => f.spoonacularId !== id);
 
         // Update recipe in list
-        const recipe = recipes.value.find((r) => r.id === id);
+        const recipe = recipes.value.find((r) => r.spoonacularId === id);
         if (recipe) {
           recipe.isFavorite = false;
         }
-        if (currentRecipe.value?.id === id) {
+        if (currentRecipe.value?.spoonacularId === id) {
           currentRecipe.value.isFavorite = false;
         }
       } else {
@@ -233,11 +132,11 @@ export const useRecipeStore = defineStore("recipe", () => {
 
         // Add to favorites if we have the recipe
         const recipe =
-          recipes.value.find((r) => r.id === id) || currentRecipe.value;
-        if (recipe && recipe.id === id) {
+          recipes.value.find((r) => r.spoonacularId === id) || currentRecipe.value;
+        if (recipe && recipe.spoonacularId === id) {
           favorites.value.push({ ...recipe, isFavorite: true });
           recipe.isFavorite = true;
-          if (currentRecipe.value?.id === id) {
+          if (currentRecipe.value?.spoonacularId === id) {
             currentRecipe.value.isFavorite = true;
           }
         }
@@ -285,11 +184,6 @@ export const useRecipeStore = defineStore("recipe", () => {
   const clearRecipes = () => {
     recipes.value = [];
     currentRecipe.value = null;
-    searchCriteria.value = {
-      category: "",
-      cuisineType: "",
-      difficultyLevel: "",
-    };
   };
 
   return {
@@ -297,7 +191,6 @@ export const useRecipeStore = defineStore("recipe", () => {
     recipes,
     currentRecipe,
     favorites,
-    searchCriteria,
     isLoading,
     error,
     pagination,
@@ -309,12 +202,8 @@ export const useRecipeStore = defineStore("recipe", () => {
 
     // Actions
     fetchRecipes,
+    fetchAllRecipes,
     fetchRecipe,
-    createRecipe,
-    updateRecipe,
-    deleteRecipe,
-    searchRecipes,
-    scaleRecipe,
     toggleFavorite,
     fetchFavorites,
     clearError,

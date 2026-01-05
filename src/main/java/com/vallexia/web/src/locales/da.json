@@ -25,6 +25,7 @@
     "select": "Vælg",
     "selectAll": "Vælg alle",
     "deselectAll": "Fravælg alle",
+    "selected": "valgt",
     "noResults": "Ingen resultater fundet",
     "noData": "Ingen data tilgængelig",
     "required": "Påkrævet",
@@ -124,9 +125,9 @@
     },
     "dietary": {
       "title": "Diætpræferencer",
-      "description": "Indstil dine diætrestriktioner, allergier og madpræferencer.",
+      "description": "Indstil din diæt, allergier og madpræferencer.",
       "savePreferences": "Gem præferencer",
-      "restrictionsHint": "Vælg eventuelle diætrestriktioner, der gælder for dig.",
+      "restrictionsHint": "Vælg en diættype, der gælder for dig.",
       "cuisinesHint": "Vælg køkkenstile, du nyder, for at få personlige opskriftanbefalinger."
     },
     "nutritional": {
@@ -176,6 +177,36 @@
     "searchPlaceholder": "Søg efter opskrifter, måltider...",
     "noRecipes": "Ingen opskrifter fundet",
     "loading": "Indlæser opskrifter...",
+    "search": {
+      "title": "Søg efter opskrifter",
+      "dietRestrictions": "Diæt",
+      "cuisine": "Køkkentype",
+      "intolerances": "Intolerancer",
+      "includeIngredients": "Inkluder ingredienser",
+      "excludeIngredients": "Ekskluder ingredienser",
+      "addIngredient": "Tilføj ingrediens",
+      "usingProfilePreferences": "Bruger dine profilindstillinger som standard",
+      "overrideHint": "Du kan tilsidesætte disse ved at vælge forskellige indstillinger nedenfor",
+      "resetToProfile": "Nulstil til profil",
+      "resetAllToProfile": "Nulstil alle til profil",
+      "selectDietRestrictions": "Vælg diæt...",
+      "selectCuisines": "Vælg køkkentyper...",
+      "selectIntolerances": "Vælg intolerancer...",
+      "search": "Søg",
+      "searchPlaceholder": "Søg efter opskrifter...",
+      "category": "Kategori",
+      "allCategories": "Alle kategorier",
+      "allCuisines": "Alle køkkenstile",
+      "maxPrepTime": "Maks. forberedelsestid (minutter)",
+      "maxPrepTimePlaceholder": "f.eks. 30",
+      "maxCalories": "Maks. kalorier",
+      "maxCaloriesPlaceholder": "f.eks. 500",
+      "searchButton": "Søg",
+      "clearFilters": "Ryd filtre",
+      "resultsFound": "{count} opskrift fundet",
+      "resultsFoundPlural": "{count} opskrifter fundet",
+      "cuisineTooltip": "Hvis tomt, og du har foretrukne køkkenstile sat i din profil, vises kun disse. Ellers vises alle køkkenstile."
+    },
     "form": {
       "basicInfo": "Grundlæggende information",
       "name": "Opskriftnavn",
@@ -190,8 +221,6 @@
       "prepTime": "Forberedelsestid (min)",
       "cookTime": "Tilberedningstid (min)",
       "servings": "Portioner",
-      "difficultyLevel": "Sværhedsgrad",
-      "difficultyPlaceholder": "Vælg sværhedsgrad",
       "ingredients": "Ingredienser",
       "addIngredient": "Tilføj ingrediens",
       "ingredientName": "Ingrediensnavn",
@@ -216,10 +245,7 @@
       "tags": "Tags",
       "tagsPlaceholder": "Tilføj tags (f.eks. vegetarisk, hurtig, sund)",
       "tagsHint": "Tryk Enter eller komma for at tilføje et tag. Mindst ét tag er påkrævet.",
-      "makePublic": "Gør denne opskrift offentlig",
-      "saving": "Gemmer...",
-      "updateRecipe": "Opdater opskrift",
-      "createRecipe": "Opret opskrift"
+      "saving": "Gemmer..."
     },
     "card": {
       "prepTime": "Forberedelsestid",
@@ -237,18 +263,11 @@
       "BEVERAGE": "Drikkevare",
       "OTHER": "Andet"
     },
-    "difficulty": {
-      "EASY": "Let",
-      "MEDIUM": "Medium",
-      "HARD": "Svær",
-      "EXPERT": "Ekspert"
-    },
     "detail": {
       "by": "Af",
       "prepTime": "Forberedelsestid",
       "cookTime": "Tilberedningstid",
       "servings": "Portioner",
-      "difficulty": "Sværhedsgrad",
       "ingredients": "Ingredienser",
       "instructions": "Instruktioner",
       "startCooking": "Start tilberedning",
@@ -267,42 +286,14 @@
       "loading": "Indlæser opskrift...",
       "minutes": "minutter"
     },
-    "search": {
-      "title": "Søg og filtrer opskrifter",
-      "search": "Søg",
-      "searchPlaceholder": "Søg efter opskrifter...",
-      "category": "Kategori",
-      "allCategories": "Alle kategorier",
-      "cuisine": "Køkkenstil",
-      "allCuisines": "Alle køkkenstile",
-      "difficulty": "Sværhedsgrad",
-      "allLevels": "Alle niveauer",
-      "maxPrepTime": "Maks. forberedelsestid (minutter)",
-      "maxPrepTimePlaceholder": "f.eks. 30",
-      "maxCalories": "Maks. kalorier",
-      "maxCaloriesPlaceholder": "f.eks. 500",
-      "searchButton": "Søg",
-      "clearFilters": "Ryd filtre",
-      "resultsFound": "{count} opskrift fundet",
-      "resultsFoundPlural": "{count} opskrifter fundet",
-      "cuisineTooltip": "Hvis tomt, og du har foretrukne køkkenstile sat i din profil, vises kun disse. Ellers vises alle køkkenstile."
-    },
     "list": {
       "noRecipes": "Ingen opskrifter fundet",
       "tryAdjusting": "Prøv at justere dine søgefiltre",
       "previous": "Forrige",
       "next": "Næste",
-      "page": "Side {current} af {total}"
-    },
-    "create": {
-      "title": "Opret opskrift",
-      "description": "Tilføj en ny opskrift til din samling",
-      "success": "Opskrift oprettet med succes"
-    },
-    "edit": {
-      "title": "Rediger opskrift",
-      "description": "Opdater dine opskriftdetaljer",
-      "success": "Opskrift opdateret med succes"
+      "page": "Side {current} af {total}",
+      "resultsCount": "{count} opskrifter fundet",
+      "showingRange": "Viser {start} til {end} af {total}"
     },
     "view": {
       "backToRecipes": "Tilbage til opskrifter",
@@ -389,7 +380,9 @@
       "title": "Denne uges måltidsplan",
       "viewAll": "Vis alle",
       "generatePlan": "Generer plan",
-      "clear": "Ryd"
+      "clear": "Ryd",
+      "previousWeek": "Forrige uge",
+      "nextWeek": "Næste uge"
     }
   },
   "groceryLists": {
@@ -567,13 +560,15 @@
         "VEGETARIAN": "Intet kød, men kan inkludere æg og mælkeprodukter",
         "VEGAN": "Ingen animalske produkter inklusive kød, æg, mælkeprodukter og honning",
         "GLUTEN_FREE": "Ingen hvede, byg, rug eller andre glutenholdige korn",
+        "KETOGENIC": "Meget lavt kulhydrat, højt fedt diæt der fremmer ketose",
+        "PESCETARIAN": "Vegetarisk diæt der inkluderer fisk og skaldyr",
+        "PALEO": "Fokuserer på hele fødevarer som kød, fisk, frugt og grøntsager, mens man undgår forarbejdede fødevarer, korn og mælkeprodukter",
         "DAIRY_FREE": "Ingen mælk, ost, yoghurt eller andre mælkeprodukter",
         "NUT_FREE": "Ingen trænødder eller jordnødder",
         "SOY_FREE": "Ingen sojabønner eller sojaprodukter",
         "EGG_FREE": "Ingen æg eller ægprodukter",
         "LOW_CARB": "Reduceret kulhydratindtag",
         "KETO": "Meget lavt kulhydrat, højt fedt diæt",
-        "PALEO": "Baseret på formodet paleolitisk diæt",
         "MEDITERRANEAN": "Baseret på middelhavsdiætmønstre",
         "LOW_SODIUM": "Reduceret natriumindtag",
         "LOW_FAT": "Reduceret fedtindtag",
@@ -582,14 +577,16 @@
         "KOSHER": "Fødevarer i overensstemmelse med jødisk diætlov"
       },
       "VEGAN": "Vegansk",
+      "KETOGENIC": "Ketogen",
       "GLUTEN_FREE": "Glutenfri",
+      "PESCETARIAN": "Pescetarisk",
+      "PALEO": "Paleo",
       "DAIRY_FREE": "Mælkefri",
       "NUT_FREE": "Nødefri",
       "SOY_FREE": "Sojafri",
       "EGG_FREE": "Æggefri",
       "LOW_CARB": "Lavt kulhydrat",
       "KETO": "Keto",
-      "PALEO": "Paleo",
       "MEDITERRANEAN": "Middelhavs",
       "LOW_SODIUM": "Lavt natrium",
       "LOW_FAT": "Fedtfattig",
@@ -630,8 +627,7 @@
       "VIETNAMESE": "Vietnamesisk",
       "MIDDLE_EASTERN": "Mellemøstlig",
       "CARIBBEAN": "Caribisk",
-      "AFRICAN": "Afrikansk",
-      "SOUTH_AMERICAN": "Sydamerikansk"
+      "AFRICAN": "Afrikansk"
     },
     "goalTypes": {
       "WEIGHT_LOSS": "Vægttab",

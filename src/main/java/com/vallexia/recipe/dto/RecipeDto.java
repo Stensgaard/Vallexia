@@ -1,6 +1,5 @@
 package com.vallexia.recipe.dto;
 
-import com.vallexia.recipe.entity.enums.DifficultyLevel;
 import com.vallexia.common.enums.SupportedAllergy;
 import com.vallexia.common.enums.SupportedCuisineType;
 import com.vallexia.common.enums.SupportedDietaryRestriction;
@@ -9,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -27,11 +25,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class RecipeDto {
     
-    private Long id;
-    
-    private Long creatorId;
-    
-    private String creatorUsername;
+    private Integer spoonacularId;
     
     private String name;
     
@@ -47,15 +41,11 @@ public class RecipeDto {
     
     private Integer servings;
     
-    private DifficultyLevel difficultyLevel;
-    
     private SupportedMealCategory category;
     
     private SupportedCuisineType cuisineType;
     
     private String imageUrl;
-    
-    private Boolean isPublic;
     
     private String baseLocale;
     
@@ -70,8 +60,4 @@ public class RecipeDto {
     private Set<SupportedAllergy> allergens = new HashSet<>();
     
     private Boolean isFavorite;
-    
-    private LocalDateTime createdAt;
-    
-    private LocalDateTime updatedAt;
 }

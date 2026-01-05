@@ -61,7 +61,6 @@ public class LocaleConfigBuilder {
         requireNonNull(input.getDietaryRestrictions(), "dietaryRestrictions");
         requireNonNull(input.getAllergies(), "allergies");
         requireNonNull(input.getCuisineTypes(), "cuisineTypes");
-        requireNonNull(input.getDifficultyLevels(), "difficultyLevels");
         requireNonNull(input.getGoalTypes(), "goalTypes");
         requireNonNull(input.getSubscriptionStatuses(), "subscriptionStatuses");
         
@@ -81,7 +80,6 @@ public class LocaleConfigBuilder {
                 .dietaryRestrictions(input.getDietaryRestrictions())
                 .allergies(input.getAllergies())
                 .cuisineTypes(input.getCuisineTypes())
-                .difficultyLevels(input.getDifficultyLevels())
                 .goalTypes(input.getGoalTypes())
                 .subscriptionStatuses(input.getSubscriptionStatuses())
                 .build();

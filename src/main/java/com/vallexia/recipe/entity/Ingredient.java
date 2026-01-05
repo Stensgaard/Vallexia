@@ -34,9 +34,6 @@ public class Ingredient {
     @Column(unique = true, nullable = false, length = 255)
     private String name;
     
-    @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<RecipeIngredient> recipeIngredients = new ArrayList<>();
-    
     @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<IngredientTranslation> translations = new ArrayList<>();
     

@@ -1,0 +1,22 @@
+meta {
+  name: non supported http method TRACE
+  type: http
+  seq: 5
+}
+
+trace {
+  url: {{baseUrl}}/api/{{apiVersion}}/auth/login
+  body: none
+  auth: inherit
+}
+
+tests {
+  test("Status is 405 Method Not Allowed", function() {
+    expect(res.status).to.equal(405);
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

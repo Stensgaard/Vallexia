@@ -34,26 +34,26 @@ class SupportedAllergyTest {
   @DisplayName("Should resolve allergies case-insensitively")
   void shouldResolveAllergiesCaseInsensitively() {
     // When/Then
-    assertThat(SupportedAllergy.fromCode("peanuts"))
-        .contains(SupportedAllergy.PEANUTS);
-    assertThat(SupportedAllergy.fromCode("PEANUTS"))
-        .contains(SupportedAllergy.PEANUTS);
-    assertThat(SupportedAllergy.fromCode("Peanuts"))
-        .contains(SupportedAllergy.PEANUTS);
-    assertThat(SupportedAllergy.fromCode("milk"))
-        .contains(SupportedAllergy.MILK);
-    assertThat(SupportedAllergy.fromCode("TREE_NUTS"))
-        .contains(SupportedAllergy.TREE_NUTS);
+    assertThat(SupportedAllergy.fromCode("PEANUT"))
+        .contains(SupportedAllergy.PEANUT);
+    assertThat(SupportedAllergy.fromCode("peanut"))
+        .contains(SupportedAllergy.PEANUT);
+    assertThat(SupportedAllergy.fromCode("Peanut"))
+        .contains(SupportedAllergy.PEANUT);
+    assertThat(SupportedAllergy.fromCode("DAIRY"))
+        .contains(SupportedAllergy.DAIRY);
+    assertThat(SupportedAllergy.fromCode("TREE_NUT"))
+        .contains(SupportedAllergy.TREE_NUT);
   }
 
   @Test
   @DisplayName("Should resolve allergies with whitespace trimming")
   void shouldResolveAllergiesWithWhitespaceTrimming() {
     // When/Then
-    assertThat(SupportedAllergy.fromCode(" peanuts "))
-        .contains(SupportedAllergy.PEANUTS);
-    assertThat(SupportedAllergy.fromCode("  MILK  "))
-        .contains(SupportedAllergy.MILK);
+    assertThat(SupportedAllergy.fromCode(" PEANUT "))
+        .contains(SupportedAllergy.PEANUT);
+    assertThat(SupportedAllergy.fromCode("  DAIRY  "))
+        .contains(SupportedAllergy.DAIRY);
   }
 
   @Test
@@ -61,7 +61,8 @@ class SupportedAllergyTest {
   void shouldReturnEmptyForInvalidCodes() {
     // When/Then
     assertThat(SupportedAllergy.fromCode("unknown")).isEmpty();
-    assertThat(SupportedAllergy.fromCode("PEANUT")).isEmpty();
+    assertThat(SupportedAllergy.fromCode("INVALID_ALLERGY")).isEmpty();
+    assertThat(SupportedAllergy.fromCode("PEANUTS")).isEmpty();
     assertThat(SupportedAllergy.fromCode("")).isEmpty();
     assertThat(SupportedAllergy.fromCode("   ")).isEmpty();
     assertThat(SupportedAllergy.fromCode(null)).isEmpty();

@@ -36,11 +36,9 @@ public class DietaryPreferences {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     
-    @ElementCollection(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "dietary_restrictions", joinColumns = @JoinColumn(name = "preferences_id"))
     @Column(name = "restriction")
-    private Set<SupportedDietaryRestriction> restrictions = new HashSet<>();
+    private SupportedDietaryRestriction restriction;
     
     @ElementCollection(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
@@ -63,14 +61,6 @@ public class DietaryPreferences {
     private LocalDateTime updatedAt;
     
     // Helper methods
-    public void addRestriction(SupportedDietaryRestriction restriction) {
-        this.restrictions.add(restriction);
-    }
-    
-    public void removeRestriction(SupportedDietaryRestriction restriction) {
-        this.restrictions.remove(restriction);
-    }
-    
     public void addAllergy(SupportedAllergy allergy) {
         this.allergies.add(allergy);
     }

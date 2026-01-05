@@ -8,9 +8,11 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.http.HttpHeaders;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -260,6 +262,58 @@ public class GlobalExceptionHandler {
     );
     
     return ResponseEntity.badRequest().body(error);
+  }
+  
+  /**
+   * Handle HTTP request method not supported exceptions.
+   * Returns 405 Method Not Allowed with Allow header listing supported methods.
+   * 
+   * @param ex HttpRequestMethodNotSupportedException
+   * @param request WebRequest
+   * @return ErrorResponseDto with 405 status and Allow header
+   */
+  @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+  public ResponseEntity<ErrorResponseDto> handleHttpRequestMethodNotSupportedException(
+      HttpRequestMethodNotSupportedException ex, WebRequest request) {
+    String requestId = errorResponseMapper.generateRequestId();
+    String method = ex.getMethod();
+    String[] supportedMethods = ex.getSupportedMethods();
+    
+    log.warn("HTTP method not supported [requestId={}]: {} method not allowed. Supported methods: {}", 
+        requestId, method, supportedMethods != null ? String.join(", ", supportedMethods) : "none");
+    
+    // Build error message with supported methods
+    String supportedMethodsStr = supportedMethods != null && supportedMethods.length > 0
+        ? String.join(", ", supportedMethods)
+        : "none";
+    String errorMessage = String.format(
+        "HTTP method '%s' is not supported. Supported methods: %s",
+        method, supportedMethodsStr
+    );
+    
+    Map<String, String> errors = new HashMap<>();
+    errors.put("error", errorMessage);
+    errors.put("method", method);
+    if (supportedMethods != null && supportedMethods.length > 0) {
+      errors.put("supportedMethods", supportedMethodsStr);
+    }
+    
+    ErrorResponseDto error = errorResponseMapper.toValidationErrorResponse(
+        ErrorCode.METHOD_NOT_ALLOWED,
+        errors,
+        request,
+        requestId
+    );
+    
+    // Set Allow header with supported methods (RFC 7231)
+    HttpHeaders headers = new HttpHeaders();
+    if (supportedMethods != null && supportedMethods.length > 0) {
+      headers.set("Allow", String.join(", ", supportedMethods));
+    }
+    
+    return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+        .headers(headers)
+        .body(error);
   }
   
   /**

@@ -95,7 +95,7 @@ class DietaryPreferencesServiceTest {
     User user = UserTestFixtures.createUser();
     DietaryPreferencesDto expectedDto = new DietaryPreferencesDto();
     expectedDto.setUserId(UserTestFixtures.TEST_USER_ID);
-    expectedDto.setRestrictions(new HashSet<>());
+    expectedDto.setRestriction(null);
     expectedDto.setAllergies(new HashSet<>());
     expectedDto.setPreferredCuisines(new HashSet<>());
     
@@ -115,7 +115,7 @@ class DietaryPreferencesServiceTest {
     assertThat(result).isNotNull();
     DietaryPreferences captured = preferencesCaptor.getValue();
     assertThat(captured.getUser()).isEqualTo(user);
-    assertThat(captured.getRestrictions()).isEmpty();
+    assertThat(captured.getRestriction()).isNull();
     assertThat(captured.getAllergies()).isEmpty();
     
     verify(userRepository).findById(UserTestFixtures.TEST_USER_ID);
@@ -187,7 +187,7 @@ class DietaryPreferencesServiceTest {
     
     // Then
     assertThat(result).isNotNull();
-    assertThat(result.getRestrictions()).isEqualTo(updateDto.getRestrictions());
+    assertThat(result.getRestriction()).isEqualTo(updateDto.getRestriction());
     assertThat(result.getAllergies()).isEqualTo(updateDto.getAllergies());
     
     verify(userRepository).findById(UserTestFixtures.TEST_USER_ID);
@@ -223,7 +223,7 @@ class DietaryPreferencesServiceTest {
     assertThat(result).isNotNull();
     DietaryPreferences captured = preferencesCaptor.getValue();
     assertThat(captured.getUser()).isEqualTo(user);
-    assertThat(captured.getRestrictions()).isEqualTo(updateDto.getRestrictions());
+    assertThat(captured.getRestriction()).isEqualTo(updateDto.getRestriction());
     
     verify(dietaryPreferencesRepository).save(any(DietaryPreferences.class));
     verify(auditService).logEvent(any(), any(), any());
@@ -270,7 +270,7 @@ class DietaryPreferencesServiceTest {
     dietaryPreferencesService.updateDietaryPreferences(UserTestFixtures.TEST_USER_ID, updateDto);
     
     // Then
-    assertThat(existingPreferences.getRestrictions()).isEqualTo(updateDto.getRestrictions());
+    assertThat(existingPreferences.getRestriction()).isEqualTo(updateDto.getRestriction());
     assertThat(existingPreferences.getAllergies()).isEqualTo(updateDto.getAllergies());
     assertThat(existingPreferences.getPreferredCuisines()).isEqualTo(updateDto.getPreferredCuisines());
     
@@ -338,7 +338,7 @@ class DietaryPreferencesServiceTest {
     User user = UserTestFixtures.createUser();
     DietaryPreferences existingPreferences = UserTestFixtures.createDietaryPreferences(user);
     DietaryPreferencesDto updateDto = new DietaryPreferencesDto();
-    updateDto.setRestrictions(new HashSet<>());
+    updateDto.setRestriction(null);
     updateDto.setAllergies(null);
     updateDto.setPreferredCuisines(new HashSet<>());
     
@@ -429,111 +429,5 @@ class DietaryPreferencesServiceTest {
     
     // Then
     verify(dietaryPreferencesRepository, times(1)).save(any(DietaryPreferences.class));
-  }
-  
-  // ==================== deleteDietaryPreferences() Tests ====================
-  
-  @Test
-  @DisplayName("Should delete preferences successfully")
-  void shouldDeletePreferencesSuccessfully() {
-    // Given
-    User user = UserTestFixtures.createUser();
-    DietaryPreferences preferences = UserTestFixtures.createDietaryPreferences(user);
-    
-    when(userRepository.findById(UserTestFixtures.TEST_USER_ID))
-        .thenReturn(Optional.of(user));
-    when(dietaryPreferencesRepository.findByUser(user))
-        .thenReturn(Optional.of(preferences));
-    doNothing().when(dietaryPreferencesRepository).delete(preferences);
-    
-    // When
-    dietaryPreferencesService.deleteDietaryPreferences(UserTestFixtures.TEST_USER_ID);
-    
-    // Then
-    verify(userRepository).findById(UserTestFixtures.TEST_USER_ID);
-    verify(dietaryPreferencesRepository).findByUser(user);
-    verify(dietaryPreferencesRepository).delete(preferences);
-    verify(auditService).logEvent(eq(EventType.PROFILE_UPDATE), eq(UserTestFixtures.TEST_USER_ID), any(String.class));
-  }
-  
-  @Test
-  @DisplayName("Should throw UserNotFoundException when user doesn't exist")
-  void shouldThrowUserNotFoundExceptionWhenUserDoesNotExistOnDelete() {
-    // Given
-    when(userRepository.findById(UserTestFixtures.TEST_USER_ID))
-        .thenReturn(Optional.empty());
-    
-    // When & Then
-    assertThatThrownBy(() -> dietaryPreferencesService.deleteDietaryPreferences(UserTestFixtures.TEST_USER_ID))
-        .isInstanceOf(UserNotFoundException.class)
-        .hasMessageContaining("User not found with id: " + UserTestFixtures.TEST_USER_ID);
-    
-    verify(userRepository).findById(UserTestFixtures.TEST_USER_ID);
-    verify(dietaryPreferencesRepository, never()).findByUser(any());
-    verify(dietaryPreferencesRepository, never()).delete(any());
-  }
-  
-  @Test
-  @DisplayName("Should handle case when preferences don't exist (no-op)")
-  void shouldHandleCaseWhenPreferencesDontExist() {
-    // Given
-    User user = UserTestFixtures.createUser();
-    
-    when(userRepository.findById(UserTestFixtures.TEST_USER_ID))
-        .thenReturn(Optional.of(user));
-    when(dietaryPreferencesRepository.findByUser(user))
-        .thenReturn(Optional.empty());
-    
-    // When
-    dietaryPreferencesService.deleteDietaryPreferences(UserTestFixtures.TEST_USER_ID);
-    
-    // Then
-    verify(userRepository).findById(UserTestFixtures.TEST_USER_ID);
-    verify(dietaryPreferencesRepository).findByUser(user);
-    verify(dietaryPreferencesRepository, never()).delete(any());
-    verify(auditService, never()).logEvent(any(), any(), any());
-  }
-  
-  @Test
-  @DisplayName("Should log audit event via AuditService")
-  void shouldLogAuditEventViaAuditServiceOnDelete() {
-    // Given
-    User user = UserTestFixtures.createUser();
-    DietaryPreferences preferences = UserTestFixtures.createDietaryPreferences(user);
-    
-    when(userRepository.findById(UserTestFixtures.TEST_USER_ID))
-        .thenReturn(Optional.of(user));
-    when(dietaryPreferencesRepository.findByUser(user))
-        .thenReturn(Optional.of(preferences));
-    doNothing().when(dietaryPreferencesRepository).delete(preferences);
-    
-    // When
-    dietaryPreferencesService.deleteDietaryPreferences(UserTestFixtures.TEST_USER_ID);
-    
-    // Then
-    verify(auditService, times(1)).logEvent(
-        eq(EventType.PROFILE_UPDATE),
-        eq(UserTestFixtures.TEST_USER_ID),
-        any(String.class)
-    );
-  }
-  
-  @Test
-  @DisplayName("Should not throw exception when preferences already deleted")
-  void shouldNotThrowExceptionWhenPreferencesAlreadyDeleted() {
-    // Given
-    User user = UserTestFixtures.createUser();
-    
-    when(userRepository.findById(UserTestFixtures.TEST_USER_ID))
-        .thenReturn(Optional.of(user));
-    when(dietaryPreferencesRepository.findByUser(user))
-        .thenReturn(Optional.empty());
-    
-    // When & Then - should not throw
-    dietaryPreferencesService.deleteDietaryPreferences(UserTestFixtures.TEST_USER_ID);
-    
-    verify(userRepository).findById(UserTestFixtures.TEST_USER_ID);
-    verify(dietaryPreferencesRepository).findByUser(user);
-    verify(dietaryPreferencesRepository, never()).delete(any());
   }
 }

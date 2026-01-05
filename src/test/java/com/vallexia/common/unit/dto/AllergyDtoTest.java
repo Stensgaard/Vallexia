@@ -65,7 +65,7 @@ class AllergyDtoTest {
         .name("Peanuts")
         .build();
     AllergyDto dto2 = AllergyDto.builder()
-        .code("TREE_NUTS")
+        .code("TREE_NUT")
         .name("Tree Nuts")
         .build();
 

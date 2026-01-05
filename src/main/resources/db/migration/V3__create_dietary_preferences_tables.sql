@@ -13,27 +13,14 @@
 CREATE TABLE dietary_preferences (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL UNIQUE,
+    restriction VARCHAR(100),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 COMMENT ON TABLE dietary_preferences IS 'User dietary preferences and restrictions';
-
--- ============================================================================
--- DIETARY RESTRICTIONS TABLE (ElementCollection)
--- ============================================================================
--- Stores individual dietary restrictions associated with dietary preferences.
--- ============================================================================
-CREATE TABLE dietary_restrictions (
-    preferences_id BIGINT NOT NULL,
-    restriction VARCHAR(100) NOT NULL,
-    PRIMARY KEY (preferences_id, restriction),
-    FOREIGN KEY (preferences_id) REFERENCES dietary_preferences(id) ON DELETE CASCADE
-);
-
-COMMENT ON TABLE dietary_restrictions IS 'Dietary restrictions (ElementCollection mapping)';
-COMMENT ON COLUMN dietary_restrictions.restriction IS 'Dietary restriction type (enum value)';
+COMMENT ON COLUMN dietary_preferences.restriction IS 'Dietary restriction type (enum value, single selection)';
 
 -- ============================================================================
 -- ALLERGIES TABLE (ElementCollection)

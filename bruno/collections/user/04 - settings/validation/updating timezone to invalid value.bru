@@ -1,0 +1,43 @@
+meta {
+  name: updating timezone to invalid value
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/{{apiVersion}}/users/settings
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "language": "en",
+    "country": "DK",
+    "dateFormat": "DD_MM_YYYY_DOT",
+    "timezone": "invalid",
+    "firstDayOfWeek": "SUNDAY",
+    "measurementSystem": "METRIC",
+    "currency": "DKK"
+  }
+}
+
+tests {
+  test("Status is 400 Bad Request", function() {
+    expect(res.status).to.equal(400);
+  });
+  
+  test("Timezone validation error with invalid value", function() {
+    expect(res.body.details).to.have.property("timezone");
+    expect(res.body.details.timezone).to.satisfy(msg => "Timezone must be one of the supported locales");
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

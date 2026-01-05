@@ -6,7 +6,6 @@ import com.vallexia.common.dto.CuisineTypeDto;
 import com.vallexia.common.dto.CurrencyDto;
 import com.vallexia.common.dto.DateFormatDto;
 import com.vallexia.common.dto.DietaryRestrictionDto;
-import com.vallexia.common.dto.DifficultyLevelDto;
 import com.vallexia.common.dto.FirstDayOfWeekDto;
 import com.vallexia.common.dto.FormattingRuleDto;
 import com.vallexia.common.dto.GoalTypeDto;
@@ -104,9 +103,6 @@ class LocaleConfigDtoTest {
     List<CuisineTypeDto> cuisineTypes = List.of(
         CuisineTypeDto.builder().code("ITALIAN").name("Italian").build()
     );
-    List<DifficultyLevelDto> difficultyLevels = List.of(
-        DifficultyLevelDto.builder().code("EASY").name("Easy").build()
-    );
     List<GoalTypeDto> goalTypes = List.of(
         GoalTypeDto.builder().code("WEIGHT_LOSS").name("Weight Loss").build()
     );
@@ -131,7 +127,6 @@ class LocaleConfigDtoTest {
         .dietaryRestrictions(dietaryRestrictions)
         .allergies(allergies)
         .cuisineTypes(cuisineTypes)
-        .difficultyLevels(difficultyLevels)
         .goalTypes(goalTypes)
         .subscriptionStatuses(subscriptionStatuses)
         .build();
@@ -153,7 +148,6 @@ class LocaleConfigDtoTest {
     assertThat(dto.getDietaryRestrictions()).isEqualTo(dietaryRestrictions);
     assertThat(dto.getAllergies()).isEqualTo(allergies);
     assertThat(dto.getCuisineTypes()).isEqualTo(cuisineTypes);
-    assertThat(dto.getDifficultyLevels()).isEqualTo(difficultyLevels);
     assertThat(dto.getGoalTypes()).isEqualTo(goalTypes);
     assertThat(dto.getSubscriptionStatuses()).isEqualTo(subscriptionStatuses);
   }
@@ -178,7 +172,6 @@ class LocaleConfigDtoTest {
         .dietaryRestrictions(List.of())
         .allergies(List.of())
         .cuisineTypes(List.of())
-        .difficultyLevels(List.of())
         .goalTypes(List.of())
         .subscriptionStatuses(List.of())
         .build();
@@ -214,7 +207,6 @@ class LocaleConfigDtoTest {
         .dietaryRestrictions(List.of())
         .allergies(List.of())
         .cuisineTypes(List.of())
-        .difficultyLevels(List.of())
         .goalTypes(List.of())
         .subscriptionStatuses(List.of())
         .build();
@@ -234,7 +226,6 @@ class LocaleConfigDtoTest {
         .dietaryRestrictions(List.of())
         .allergies(List.of())
         .cuisineTypes(List.of())
-        .difficultyLevels(List.of())
         .goalTypes(List.of())
         .subscriptionStatuses(List.of())
         .build();

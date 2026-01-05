@@ -1,0 +1,27 @@
+meta {
+  name: non supported http method PUT
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/api/{{apiVersion}}/auth/refresh
+  body: none
+  auth: inherit
+}
+
+tests {
+  test("Status is 405 Method Not Allowed", function() {
+    expect(res.status).to.equal(405);
+  });
+  
+  test("Http response include allowed http methods", function() {
+    expect(res.body.details).to.have.property("error");
+    expect(res.body.details.error).to.include("Supported methods");
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

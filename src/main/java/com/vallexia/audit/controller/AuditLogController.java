@@ -4,7 +4,6 @@ import com.vallexia.audit.dto.AuditLogDto;
 import com.vallexia.audit.entity.AuditLog;
 import com.vallexia.audit.mapper.AuditLogMapper;
 import com.vallexia.audit.service.AuditService;
-import com.vallexia.security.AuthenticationHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -36,54 +35,17 @@ import java.time.LocalDateTime;
 public class AuditLogController {
   
   private final AuditService auditService;
-  private final AuthenticationHelper authenticationHelper;
   private final AuditLogMapper auditLogMapper;
   
   /**
    * Constructor for dependency injection.
    * 
    * @param auditService the audit service
-   * @param authenticationHelper the authentication helper
    * @param auditLogMapper the audit log mapper
    */
-  public AuditLogController(AuditService auditService, AuthenticationHelper authenticationHelper, 
-                            AuditLogMapper auditLogMapper) {
+  public AuditLogController(AuditService auditService, AuditLogMapper auditLogMapper) {
     this.auditService = auditService;
-    this.authenticationHelper = authenticationHelper;
     this.auditLogMapper = auditLogMapper;
-  }
-  
-  /**
-   * Get audit logs for the current user.
-   * Users can only view their own audit logs.
-   * 
-   * @param page page number (0-based)
-   * @param size page size
-   * @return page of audit logs
-   */
-  @Operation(
-      summary = "Get my audit logs",
-      description = "Retrieve paginated audit logs for the currently authenticated user"
-  )
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Successfully retrieved audit logs"),
-      @ApiResponse(responseCode = "401", description = "Unauthorized - invalid or missing JWT token"),
-      @ApiResponse(responseCode = "500", description = "Internal server error")
-  })
-  @GetMapping("/me")
-  public ResponseEntity<Page<AuditLogDto>> getMyAuditLogs(
-      @Parameter(description = "Page number (0-based)", example = "0") 
-      @RequestParam(defaultValue = "0") int page,
-      @Parameter(description = "Number of records per page", example = "20")
-      @RequestParam(defaultValue = "20") int size) {
-    
-    // Get the current user's ID from SecurityContext
-    Long currentUserId = authenticationHelper.getCurrentUserId();
-    Pageable pageable = PageRequest.of(page, size);
-    Page<AuditLog> auditLogs = auditService.getUserAuditLogs(currentUserId, pageable);
-    Page<AuditLogDto> auditLogDtos = auditLogs.map(auditLogMapper::toDto);
-    
-    return ResponseEntity.ok(auditLogDtos);
   }
   
   /**
@@ -94,15 +56,11 @@ public class AuditLogController {
    * @param size page size
    * @return page of audit logs
    */
-  @Operation(
-      summary = "Get audit logs for specific user (Admin only)",
-      description = "Retrieve paginated audit logs for a specific user. Requires ADMIN role."
-  )
+  @Operation(summary = "Get audit logs for specific user (Admin only)", description = "Retrieve paginated audit logs for a specific user. Requires ADMIN role.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Successfully retrieved audit logs"),
       @ApiResponse(responseCode = "401", description = "Unauthorized - invalid or missing JWT token"),
-      @ApiResponse(responseCode = "403", description = "Forbidden - requires ADMIN role"),
-      @ApiResponse(responseCode = "500", description = "Internal server error")
+      @ApiResponse(responseCode = "403", description = "Forbidden - requires ADMIN role")
   })
   @GetMapping("/user/{userId}")
   @PreAuthorize("hasRole('ADMIN')")
@@ -128,15 +86,11 @@ public class AuditLogController {
    * @param size page size
    * @return page of audit logs
    */
-  @Operation(
-      summary = "Get all audit logs (Admin only)",
-      description = "Retrieve all audit logs from the system with pagination. Requires ADMIN role."
-  )
+  @Operation(summary = "Get all audit logs (Admin only)", description = "Retrieve all audit logs from the system with pagination. Requires ADMIN role.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Successfully retrieved audit logs"),
       @ApiResponse(responseCode = "401", description = "Unauthorized - invalid or missing JWT token"),
-      @ApiResponse(responseCode = "403", description = "Forbidden - requires ADMIN role"),
-      @ApiResponse(responseCode = "500", description = "Internal server error")
+      @ApiResponse(responseCode = "403", description = "Forbidden - requires ADMIN role")
   })
   @GetMapping
   @PreAuthorize("hasRole('ADMIN')")
@@ -161,15 +115,11 @@ public class AuditLogController {
    * @param size page size
    * @return page of failed login attempts
    */
-  @Operation(
-      summary = "Get failed login attempts (Admin only)",
-      description = "Retrieve failed login attempts for a specific username. Requires ADMIN role."
-  )
+  @Operation(summary = "Get failed login attempts (Admin only)", description = "Retrieve failed login attempts for a specific username. Requires ADMIN role.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Successfully retrieved failed login attempts"),
       @ApiResponse(responseCode = "401", description = "Unauthorized - invalid or missing JWT token"),
-      @ApiResponse(responseCode = "403", description = "Forbidden - requires ADMIN role"),
-      @ApiResponse(responseCode = "500", description = "Internal server error")
+      @ApiResponse(responseCode = "403", description = "Forbidden - requires ADMIN role")
   })
   @GetMapping("/failed-logins")
   @PreAuthorize("hasRole('ADMIN')")
@@ -195,15 +145,11 @@ public class AuditLogController {
    * @param size page size
    * @return page of security violations
    */
-  @Operation(
-      summary = "Get security violations (Admin only)",
-      description = "Retrieve all security violation events. Requires ADMIN role."
-  )
+  @Operation(summary = "Get security violations (Admin only)", description = "Retrieve all security violation events. Requires ADMIN role.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Successfully retrieved security violations"),
       @ApiResponse(responseCode = "401", description = "Unauthorized - invalid or missing JWT token"),
-      @ApiResponse(responseCode = "403", description = "Forbidden - requires ADMIN role"),
-      @ApiResponse(responseCode = "500", description = "Internal server error")
+      @ApiResponse(responseCode = "403", description = "Forbidden - requires ADMIN role")
   })
   @GetMapping("/security-violations")
   @PreAuthorize("hasRole('ADMIN')")
@@ -229,16 +175,12 @@ public class AuditLogController {
    * @param size page size
    * @return page of audit logs
    */
-  @Operation(
-      summary = "Get audit logs by date range (Admin only)",
-      description = "Retrieve audit logs within a specific date and time range. Requires ADMIN role."
-  )
+  @Operation(summary = "Get audit logs by date range (Admin only)", description = "Retrieve audit logs within a specific date and time range. Requires ADMIN role.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Successfully retrieved audit logs"),
       @ApiResponse(responseCode = "400", description = "Bad request - invalid date format"),
       @ApiResponse(responseCode = "401", description = "Unauthorized - invalid or missing JWT token"),
-      @ApiResponse(responseCode = "403", description = "Forbidden - requires ADMIN role"),
-      @ApiResponse(responseCode = "500", description = "Internal server error")
+      @ApiResponse(responseCode = "403", description = "Forbidden - requires ADMIN role")
   })
   @GetMapping("/date-range")
   @PreAuthorize("hasRole('ADMIN')")

@@ -151,9 +151,7 @@ public class NutritionalGoalsService {
         goals.setDailySugar(nutritionalGoalsDto.getDailySugar());
         
         // Convert String goalType to GoalType enum
-        if (nutritionalGoalsDto.getGoalType() != null && !nutritionalGoalsDto.getGoalType().isEmpty()) {
-            goals.setGoalType(GoalType.valueOf(nutritionalGoalsDto.getGoalType().toUpperCase()));
-        }
+        goals.setGoalType(GoalType.valueOf(nutritionalGoalsDto.getGoalType().toUpperCase()));
         
         try {
             // Calculate percentages using MacroCalculator
@@ -200,34 +198,6 @@ public class NutritionalGoalsService {
         NutritionalGoals savedGoals = nutritionalGoalsRepository.save(nutritionalGoals);
         user.setNutritionalGoals(savedGoals);
         return savedGoals;
-    }
-    
-    /**
-     * Delete nutritional goals for user (GDPR compliance).
-     * 
-     * @param userId user ID
-     * @throws UserNotFoundException if user not found
-     */
-    public void deleteNutritionalGoals(Long userId) {
-        log.info("Deleting nutritional goals for user ID: {}", userId);
-        
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(
-                    String.format(USER_NOT_FOUND_MSG, userId)
-                ));
-        
-        nutritionalGoalsRepository.findByUser(user).ifPresent(goals -> {
-            nutritionalGoalsRepository.delete(goals);
-            
-            // Audit log
-            auditService.logEvent(
-                EventType.PROFILE_UPDATE,
-                userId,
-                String.format("Nutritional goals deleted for user ID: %d", userId)
-            );
-        });
-        
-        log.info("Nutritional goals deleted successfully for user ID: {}", userId);
     }
     
     /**

@@ -1,0 +1,37 @@
+meta {
+  name: invalid characters in username
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/{{apiVersion}}/auth/register
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "username": "test user@123",
+    "email": "{{email}}{{$timestamp}}@example.com",
+    "country": "{{country}}",
+    "password": "{{password}}",
+    "confirmPassword": "{{password}}"
+  }
+}
+
+tests {
+  test("Status is 400 Bad Request", function() {
+    expect(res.status).to.equal(400);
+  });
+  
+  test("Username validation error for invalid characters", function() {
+    expect(res.body.details).to.have.property("username");
+    expect(res.body.details.username).to.satisfy(msg => "contain only letters, numbers, underscores, and dashes");
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

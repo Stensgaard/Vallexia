@@ -25,6 +25,7 @@
     "select": "Select",
     "selectAll": "Select All",
     "deselectAll": "Deselect All",
+    "selected": "selected",
     "noResults": "No results found",
     "noData": "No data available",
     "required": "Required",
@@ -124,9 +125,9 @@
     },
     "dietary": {
       "title": "Dietary Preferences",
-      "description": "Set your dietary restrictions, allergies, and food preferences.",
+      "description": "Set your diet, allergies, and food preferences.",
       "savePreferences": "Save Preferences",
-      "restrictionsHint": "Select any dietary restrictions that apply to you.",
+      "restrictionsHint": "Select a diet type that applies to you.",
       "cuisinesHint": "Select cuisines you enjoy to get personalized recipe recommendations."
     },
     "nutritional": {
@@ -179,6 +180,36 @@
     "searchPlaceholder": "Search recipes, meals...",
     "noRecipes": "No recipes found",
     "loading": "Loading recipes...",
+    "search": {
+      "title": "Search Recipes",
+      "dietRestrictions": "Diet",
+      "cuisine": "Cuisine Type",
+      "intolerances": "Intolerances",
+      "includeIngredients": "Include Ingredients",
+      "excludeIngredients": "Exclude Ingredients",
+      "addIngredient": "Add ingredient",
+      "usingProfilePreferences": "Using your profile preferences as defaults",
+      "overrideHint": "You can override these by selecting different options below",
+      "resetToProfile": "Reset to profile",
+      "resetAllToProfile": "Reset all to profile",
+      "selectDietRestrictions": "Select diet...",
+      "selectCuisines": "Select cuisines...",
+      "selectIntolerances": "Select intolerances...",
+      "search": "Search",
+      "searchPlaceholder": "Search recipes...",
+      "category": "Category",
+      "allCategories": "All Categories",
+      "allCuisines": "All Cuisines",
+      "maxPrepTime": "Max Prep Time (minutes)",
+      "maxPrepTimePlaceholder": "e.g. 30",
+      "maxCalories": "Max Calories",
+      "maxCaloriesPlaceholder": "e.g. 500",
+      "searchButton": "Search",
+      "clearFilters": "Clear Filters",
+      "resultsFound": "{count} recipe found",
+      "resultsFoundPlural": "{count} recipes found",
+      "cuisineTooltip": "If left empty and you have preferred cuisines set in your profile, only those will be shown. Otherwise, all cuisines will be shown."
+    },
     "form": {
       "basicInfo": "Basic Information",
       "name": "Recipe Name",
@@ -193,8 +224,6 @@
       "prepTime": "Prep Time (min)",
       "cookTime": "Cook Time (min)",
       "servings": "Servings",
-      "difficultyLevel": "Difficulty Level",
-      "difficultyPlaceholder": "Select Difficulty",
       "ingredients": "Ingredients",
       "addIngredient": "Add Ingredient",
       "ingredientName": "Ingredient name",
@@ -219,10 +248,7 @@
       "tags": "Tags",
       "tagsPlaceholder": "Add tags (e.g., vegetarian, quick, healthy)",
       "tagsHint": "Press Enter or comma to add a tag. At least one tag is required.",
-      "makePublic": "Make this recipe public",
-      "saving": "Saving...",
-      "updateRecipe": "Update Recipe",
-      "createRecipe": "Create Recipe"
+      "saving": "Saving..."
     },
     "card": {
       "prepTime": "Prep time",
@@ -240,18 +266,11 @@
       "BEVERAGE": "Beverage",
       "OTHER": "Other"
     },
-    "difficulty": {
-      "EASY": "Easy",
-      "MEDIUM": "Medium",
-      "HARD": "Hard",
-      "EXPERT": "Expert"
-    },
     "detail": {
       "by": "By",
       "prepTime": "Prep Time",
       "cookTime": "Cook Time",
       "servings": "Servings",
-      "difficulty": "Difficulty",
       "ingredients": "Ingredients",
       "instructions": "Instructions",
       "startCooking": "Start Cooking",
@@ -270,42 +289,14 @@
       "loading": "Loading recipe...",
       "minutes": "minutes"
     },
-    "search": {
-      "title": "Search & Filter Recipes",
-      "search": "Search",
-      "searchPlaceholder": "Search recipes...",
-      "category": "Category",
-      "allCategories": "All Categories",
-      "cuisine": "Cuisine",
-      "allCuisines": "All Cuisines",
-      "difficulty": "Difficulty",
-      "allLevels": "All Levels",
-      "maxPrepTime": "Max Prep Time (minutes)",
-      "maxPrepTimePlaceholder": "e.g. 30",
-      "maxCalories": "Max Calories",
-      "maxCaloriesPlaceholder": "e.g. 500",
-      "searchButton": "Search",
-      "clearFilters": "Clear Filters",
-      "resultsFound": "{count} recipe found",
-      "resultsFoundPlural": "{count} recipes found",
-      "cuisineTooltip": "If left empty and you have preferred cuisines set in your profile, only those will be shown. Otherwise, all cuisines will be shown."
-    },
     "list": {
       "noRecipes": "No recipes found",
       "tryAdjusting": "Try adjusting your search filters",
       "previous": "Previous",
       "next": "Next",
-      "page": "Page {current} of {total}"
-    },
-    "create": {
-      "title": "Create Recipe",
-      "description": "Add a new recipe to your collection",
-      "success": "Recipe created successfully"
-    },
-    "edit": {
-      "title": "Edit Recipe",
-      "description": "Update your recipe details",
-      "success": "Recipe updated successfully"
+      "page": "Page {current} of {total}",
+      "resultsCount": "{count} recipes found",
+      "showingRange": "Showing {start} to {end} of {total}"
     },
     "view": {
       "backToRecipes": "Back to Recipes",
@@ -392,7 +383,9 @@
       "title": "This Week's Meal Plan",
       "viewAll": "View All",
       "generatePlan": "Generate Plan",
-      "clear": "Clear"
+      "clear": "Clear",
+      "previousWeek": "Previous Week",
+      "nextWeek": "Next Week"
     }
   },
   "groceryLists": {
@@ -570,13 +563,15 @@
         "VEGETARIAN": "No meat, but may include eggs and dairy",
         "VEGAN": "No animal products including meat, eggs, dairy, and honey",
         "GLUTEN_FREE": "No wheat, barley, rye, or other gluten-containing grains",
+        "KETOGENIC": "Very low carb, high fat diet that promotes ketosis",
+        "PESCETARIAN": "Vegetarian diet that includes fish and seafood",
+        "PALEO": "Focuses on whole foods like meat, fish, fruits, and vegetables, while avoiding processed foods, grains, and dairy",
         "DAIRY_FREE": "No milk, cheese, yogurt, or other dairy products",
         "NUT_FREE": "No tree nuts or peanuts",
         "SOY_FREE": "No soybeans or soy products",
         "EGG_FREE": "No eggs or egg products",
         "LOW_CARB": "Reduced carbohydrate intake",
         "KETO": "Very low carb, high fat diet",
-        "PALEO": "Based on presumed Paleolithic diet",
         "MEDITERRANEAN": "Based on Mediterranean diet patterns",
         "LOW_SODIUM": "Reduced sodium intake",
         "LOW_FAT": "Reduced fat intake",
@@ -585,14 +580,16 @@
         "KOSHER": "Foods conforming to Jewish dietary law"
       },
       "VEGAN": "Vegan",
+      "KETOGENIC": "Ketogenic",
       "GLUTEN_FREE": "Gluten-Free",
+      "PESCETARIAN": "Pescetarian",
+      "PALEO": "Paleo",
       "DAIRY_FREE": "Dairy-Free",
       "NUT_FREE": "Nut-Free",
       "SOY_FREE": "Soy-Free",
       "EGG_FREE": "Egg-Free",
       "LOW_CARB": "Low-Carb",
       "KETO": "Keto",
-      "PALEO": "Paleo",
       "MEDITERRANEAN": "Mediterranean",
       "LOW_SODIUM": "Low-Sodium",
       "LOW_FAT": "Low-Fat",
@@ -633,8 +630,7 @@
       "VIETNAMESE": "Vietnamese",
       "MIDDLE_EASTERN": "Middle Eastern",
       "CARIBBEAN": "Caribbean",
-      "AFRICAN": "African",
-      "SOUTH_AMERICAN": "South American"
+      "AFRICAN": "African"
     },
     "goalTypes": {
       "WEIGHT_LOSS": "Weight Loss",

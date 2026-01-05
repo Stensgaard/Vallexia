@@ -249,47 +249,6 @@ class NutritionalGoalsControllerTest {
     verify(nutritionalGoalsService, times(1)).updateNutritionalGoals(eq(userId), eq(updateDto));
   }
   
-  // ==================== deleteCurrentUserNutritionalGoals() Tests ====================
-  
-  @Test
-  @DisplayName("Should delete goals successfully (204)")
-  void shouldDeleteGoalsSuccessfully() {
-    // Given
-    Long userId = 1L;
-    
-    when(authenticationHelper.getCurrentUserId(mockAuthentication))
-        .thenReturn(userId);
-    doNothing().when(nutritionalGoalsService).deleteNutritionalGoals(userId);
-    
-    // When
-    ResponseEntity<Void> response = nutritionalGoalsController.deleteCurrentUserNutritionalGoals(mockAuthentication);
-    
-    // Then
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
-    assertThat(response.getBody()).isNull();
-    
-    verify(authenticationHelper).getCurrentUserId(mockAuthentication);
-    verify(nutritionalGoalsService).deleteNutritionalGoals(userId);
-  }
-  
-  @Test
-  @DisplayName("Should handle authentication properly when deleting goals")
-  void shouldHandleAuthenticationProperlyWhenDeletingGoals() {
-    // Given
-    Long userId = 1L;
-    
-    when(authenticationHelper.getCurrentUserId(mockAuthentication))
-        .thenReturn(userId);
-    doNothing().when(nutritionalGoalsService).deleteNutritionalGoals(userId);
-    
-    // When
-    nutritionalGoalsController.deleteCurrentUserNutritionalGoals(mockAuthentication);
-    
-    // Then
-    verify(authenticationHelper, times(1)).getCurrentUserId(mockAuthentication);
-    verify(nutritionalGoalsService, times(1)).deleteNutritionalGoals(userId);
-  }
-  
   // ==================== calculateMacrosFromGoalType() Tests ====================
   
   @Test

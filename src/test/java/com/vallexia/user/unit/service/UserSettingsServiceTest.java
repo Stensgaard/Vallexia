@@ -110,6 +110,7 @@ class UserSettingsServiceTest {
         dto.setTimezone(SupportedTimezone.AMERICA_NEW_YORK.getValue());
         dto.setFirstDayOfWeek(SupportedFirstDayOfWeek.SUNDAY.name());
         dto.setMeasurementSystem("GALACTIC");
+        dto.setCurrency(SupportedCurrency.USD.getCode());
 
         assertThatThrownBy(() -> userSettingsService.updateUserSettings(userId, dto))
                 .isInstanceOf(ValidationException.class)
@@ -141,57 +142,6 @@ class UserSettingsServiceTest {
         assertThat(existingSettings.getCurrency()).isEqualTo(SupportedCurrency.DKK.getCode());
     }
 
-    @Test
-    @DisplayName("Currency defaults to country when not provided in DTO")
-    void shouldUseCountryDefaultCurrencyWhenNotProvided() {
-        Long userId = 42L;
-        User user = UserTestFixtures.createUser(userId);
-        UserSettings existingSettings = UserTestFixtures.createUserSettings(user);
-
-        when(userRepository.findById(userId)).thenReturn(java.util.Optional.of(user));
-        when(userSettingsRepository.findByUserId(userId)).thenReturn(java.util.Optional.of(existingSettings));
-        when(userSettingsRepository.save(existingSettings)).thenReturn(existingSettings);
-
-        UserSettingsDto dto = new UserSettingsDto();
-        dto.setLanguage(SupportedLocale.DA.getCode());
-        dto.setCountry(SupportedCountry.DK.getCountryCode());
-        dto.setDateFormat(SupportedDateFormat.DD_MM_YYYY_DOT.name());
-        dto.setTimezone(SupportedTimezone.EUROPE_COPENHAGEN.getValue());
-        dto.setFirstDayOfWeek(SupportedFirstDayOfWeek.MONDAY.name());
-        dto.setMeasurementSystem(SupportedMeasurementSystem.METRIC.name());
-        dto.setCurrency(null); // Not provided, should use country default
-
-        userSettingsService.updateUserSettings(userId, dto);
-
-        assertThat(existingSettings.getCurrency()).isEqualTo(SupportedCountry.DK.getCurrencyCode());
-        assertThat(existingSettings.getCurrency()).isEqualTo(SupportedCurrency.DKK.getCode());
-    }
-
-    @Test
-    @DisplayName("Currency defaults to country when empty string is provided")
-    void shouldUseCountryDefaultCurrencyWhenEmptyStringProvided() {
-        Long userId = 42L;
-        User user = UserTestFixtures.createUser(userId);
-        UserSettings existingSettings = UserTestFixtures.createUserSettings(user);
-
-        when(userRepository.findById(userId)).thenReturn(java.util.Optional.of(user));
-        when(userSettingsRepository.findByUserId(userId)).thenReturn(java.util.Optional.of(existingSettings));
-        when(userSettingsRepository.save(existingSettings)).thenReturn(existingSettings);
-
-        UserSettingsDto dto = new UserSettingsDto();
-        dto.setLanguage(SupportedLocale.EN.getCode());
-        dto.setCountry(SupportedCountry.US.getCountryCode());
-        dto.setDateFormat(SupportedDateFormat.MM_DD_YYYY.name());
-        dto.setTimezone(SupportedTimezone.AMERICA_NEW_YORK.getValue());
-        dto.setFirstDayOfWeek(SupportedFirstDayOfWeek.SUNDAY.name());
-        dto.setMeasurementSystem(SupportedMeasurementSystem.IMPERIAL.name());
-        dto.setCurrency(""); // Empty string, should use country default
-
-        userSettingsService.updateUserSettings(userId, dto);
-
-        assertThat(existingSettings.getCurrency()).isEqualTo(SupportedCountry.US.getCurrencyCode());
-        assertThat(existingSettings.getCurrency()).isEqualTo(SupportedCurrency.USD.getCode());
-    }
     
     // ==================== getUserSettings() Tests ====================
     
@@ -475,6 +425,7 @@ class UserSettingsServiceTest {
         updateDto.setTimezone(SupportedTimezone.AMERICA_NEW_YORK.getValue());
         updateDto.setFirstDayOfWeek(SupportedFirstDayOfWeek.SUNDAY.name());
         updateDto.setMeasurementSystem("INVALID_SYSTEM");
+        updateDto.setCurrency(SupportedCurrency.USD.getCode());
         
         when(userRepository.findById(UserTestFixtures.TEST_USER_ID))
             .thenReturn(Optional.of(user));

@@ -65,18 +65,4 @@ public enum EventType {
    */
   SECURITY_VIOLATION,
   
-  /**
-   * Recipe created.
-   */
-  RECIPE_CREATED,
-  
-  /**
-   * Recipe updated.
-   */
-  RECIPE_UPDATED,
-  
-  /**
-   * Recipe deleted.
-   */
-  RECIPE_DELETED
 }

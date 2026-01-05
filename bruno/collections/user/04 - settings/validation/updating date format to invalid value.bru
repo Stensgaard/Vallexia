@@ -1,0 +1,43 @@
+meta {
+  name: updating date format to invalid value
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/api/{{apiVersion}}/users/settings
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "language": "en",
+    "country": "DK",
+    "dateFormat": "invalid",
+    "timezone": "Europe/Copenhagen",
+    "firstDayOfWeek": "SUNDAY",
+    "measurementSystem": "METRIC",
+    "currency": "DKK"
+  }
+}
+
+tests {
+  test("Status is 400 Bad Request", function() {
+    expect(res.status).to.equal(400);
+  });
+  
+  test("Date format validation error with invalid value", function() {
+    expect(res.body.details).to.have.property("dateFormat");
+    expect(res.body.details.dateFormat).to.satisfy(msg => "Date format must be one of the supported locales");
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

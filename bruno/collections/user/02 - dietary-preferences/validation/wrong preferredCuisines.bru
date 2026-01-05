@@ -1,0 +1,42 @@
+meta {
+  name: wrong preferredCuisines
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/{{apiVersion}}/users/dietary-preferences
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "restrictions": ["VEGETARIAN", "GLUTEN_FREE"],
+    "allergies": ["PEANUTS", "TREE_NUTS"],
+    "preferredCuisines": ["invalid.preferredCuisines", "MEDITERRANEAN"]
+  }
+}
+
+tests {
+  test("Status is 400 bad request", function() {
+    expect(res.status).to.equal(400);
+  });
+  
+  test("Error code is VAL_002", function() {
+    expect(res.body.code).to.equal("VAL_002");
+  });
+  
+  test("invalid cuisine validation error", function() {
+    expect(res.body.details.requestBody).to.satisfy(msg => "MEDITERRANEAN");
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

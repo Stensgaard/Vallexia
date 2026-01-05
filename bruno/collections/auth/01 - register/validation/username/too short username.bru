@@ -1,0 +1,37 @@
+meta {
+  name: too short username
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/{{apiVersion}}/auth/register
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "username": "ab",
+    "email": "{{email}}{{$timestamp}}@example.com",
+    "country": "{{country}}",
+    "password": "{{password}}",
+    "confirmPassword": "{{password}}"
+  }
+}
+
+tests {
+  test("Status is 400 Bad Request", function() {
+    expect(res.status).to.equal(400);
+  });
+  
+  test("Username validation error for too short", function() {
+    expect(res.body.details).to.have.property("username");
+    expect(res.body.details.username).to.satisfy(msg => "Username must be 3-20 characters");
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

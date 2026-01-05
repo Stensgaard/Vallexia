@@ -9,12 +9,12 @@
       </div>
     </div>
 
-    <!-- Search and filters -->
-    <RecipeSearch
-      :criteria="recipeStore.searchCriteria"
-      :total-results="recipeStore.pagination.totalElements"
+    <!-- Search form -->
+    <RecipeSearchForm
+      :search-params="searchParams"
+      :is-loading="recipeStore.isLoading"
       @search="handleSearch"
-      @criteria-changed="handleCriteriaChanged"
+      @clear="handleClearSearch"
     />
 
     <!-- Recipe list -->
@@ -45,31 +45,34 @@
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useRecipeStore } from "@/stores/recipe";
 import RecipeList from "@/components/Recipe/RecipeList.vue";
-import RecipeSearch from "@/components/Recipe/RecipeSearch.vue";
+import RecipeSearchForm from "@/components/Recipe/RecipeSearchForm.vue";
 
 const router = useRouter();
 const recipeStore = useRecipeStore();
+const searchParams = ref({});
 
-onMounted(async () => {
-  // Perform initial search with default criteria (all categories, cuisines, and difficulty levels)
-  await recipeStore.searchRecipes(recipeStore.searchCriteria, 0, 20);
-});
-
-const handleSearch = async (criteria) => {
-  await recipeStore.searchRecipes(criteria, 0, 20);
+const handleSearch = async (params) => {
+  try {
+    // Store search params for potential future use
+    searchParams.value = params;
+    // Fetch all results in one call with a large page size
+    await recipeStore.fetchAllRecipes(params);
+  } catch (error) {
+    console.error('Failed to search recipes:', error);
+  }
 };
 
-const handleCriteriaChanged = (criteria) => {
-  // Store criteria for later use
-  recipeStore.searchCriteria = criteria;
+const handleClearSearch = () => {
+  searchParams.value = {};
+  recipeStore.clearRecipes();
 };
 
 const handleRecipeClick = (recipe) => {
-  router.push(`/recipes/${recipe.id}`);
+  router.push(`/recipes/${recipe.spoonacularId}`);
 };
 
 const handleFavoriteToggle = async (recipeId) => {
@@ -77,7 +80,7 @@ const handleFavoriteToggle = async (recipeId) => {
 };
 
 const handlePageChange = async (page) => {
-  // Always use searchRecipes since we default to "all" criteria
-  await recipeStore.searchRecipes(recipeStore.searchCriteria, page, 20);
+  // Pagination is now client-side only - all results are already loaded
+  // This handler is kept for compatibility but does nothing
 };
 </script>

@@ -1,0 +1,37 @@
+meta {
+  name: too long email
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/{{apiVersion}}/auth/register
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "username": "{{username}}{{$timestamp}}",
+    "email": "verylongemailaddressthatexceedsfiftycharacterslimit@example.com",
+    "country": "{{country}}",
+    "password": "{{password}}",
+    "confirmPassword": "{{password}}"
+  }
+}
+
+tests {
+  test("Status is 400 Bad Request", function() {
+    expect(res.status).to.equal(400);
+  });
+  
+  test("Email validation error for too long", function() {
+    expect(res.body.details).to.have.property("email");
+    expect(res.body.details.email).to.satisfy(msg => "Email must not exceed");
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

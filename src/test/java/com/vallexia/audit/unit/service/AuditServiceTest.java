@@ -93,7 +93,7 @@ class AuditServiceTest {
   @DisplayName("Should log authentication event successfully")
   void shouldLogAuthenticationEventSuccessfully() {
     // Given
-    when(auditLogRepository.save(any(AuditLog.class)))
+    when(auditLogRepository.saveAndFlush(any(AuditLog.class)))
         .thenAnswer(i -> i.getArgument(0));
     
     // When
@@ -108,7 +108,7 @@ class AuditServiceTest {
     
     // Then
     ArgumentCaptor<AuditLog> captor = ArgumentCaptor.forClass(AuditLog.class);
-    verify(auditLogRepository).save(captor.capture());
+    verify(auditLogRepository).saveAndFlush(captor.capture());
     
     AuditLog savedLog = captor.getValue();
     assertThat(savedLog.getEventType()).isEqualTo(EventType.LOGIN_SUCCESS);
@@ -126,7 +126,7 @@ class AuditServiceTest {
     String sanitizedInput = "alert xss";
     
     when(inputSanitizer.sanitizeDescription(maliciousInput)).thenReturn(sanitizedInput);
-    when(auditLogRepository.save(any(AuditLog.class))).thenAnswer(i -> i.getArgument(0));
+    when(auditLogRepository.saveAndFlush(any(AuditLog.class))).thenAnswer(i -> i.getArgument(0));
     
     // When
     auditService.logAuthenticationEvent(
@@ -150,7 +150,7 @@ class AuditServiceTest {
   @DisplayName("Should fall back to file logging when database fails")
   void shouldFallBackToFileLoggingWhenDatabaseFails() {
     // Given
-    when(auditLogRepository.save(any(AuditLog.class)))
+    when(auditLogRepository.saveAndFlush(any(AuditLog.class)))
         .thenThrow(new RuntimeException("Database error"));
     
     // When - should not throw exception
@@ -163,8 +163,8 @@ class AuditServiceTest {
         true
     );
     
-    // Then - verify save was attempted
-    verify(auditLogRepository).save(any(AuditLog.class));
+    // Then - verify saveAndFlush was attempted
+    verify(auditLogRepository).saveAndFlush(any(AuditLog.class));
   }
   
   // ==================== logProfileUpdateEvent() Tests ====================
@@ -173,7 +173,7 @@ class AuditServiceTest {
   @DisplayName("Should log profile update event successfully")
   void shouldLogProfileUpdateEventSuccessfully() {
     // Given
-    when(auditLogRepository.save(any(AuditLog.class))).thenAnswer(i -> i.getArgument(0));
+    when(auditLogRepository.saveAndFlush(any(AuditLog.class))).thenAnswer(i -> i.getArgument(0));
     
     // When
     auditService.logProfileUpdateEvent(
@@ -185,7 +185,7 @@ class AuditServiceTest {
     
     // Then
     ArgumentCaptor<AuditLog> captor = ArgumentCaptor.forClass(AuditLog.class);
-    verify(auditLogRepository).save(captor.capture());
+    verify(auditLogRepository).saveAndFlush(captor.capture());
     
     AuditLog savedLog = captor.getValue();
     assertThat(savedLog.getEventType()).isEqualTo(EventType.PROFILE_UPDATE);
@@ -223,7 +223,7 @@ class AuditServiceTest {
   @DisplayName("Should log security violation successfully")
   void shouldLogSecurityViolationSuccessfully() {
     // Given
-    when(auditLogRepository.save(any(AuditLog.class))).thenAnswer(i -> i.getArgument(0));
+    when(auditLogRepository.saveAndFlush(any(AuditLog.class))).thenAnswer(i -> i.getArgument(0));
     
     // When
     auditService.logSecurityViolation(
@@ -234,7 +234,7 @@ class AuditServiceTest {
     
     // Then
     ArgumentCaptor<AuditLog> captor = ArgumentCaptor.forClass(AuditLog.class);
-    verify(auditLogRepository).save(captor.capture());
+    verify(auditLogRepository).saveAndFlush(captor.capture());
     
     AuditLog savedLog = captor.getValue();
     assertThat(savedLog.getEventType()).isEqualTo(EventType.SECURITY_VIOLATION);

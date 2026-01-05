@@ -1,0 +1,52 @@
+meta {
+  name: update nutritional goals
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/api/{{apiVersion}}/users/nutritional-goals
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "dailyCalories": 2000.0,
+    "dailyProtein": 150.0,
+    "dailyCarbs": 200.0,
+    "dailyFats": 65.0,
+    "proteinPercentage": 30.0,
+    "carbsPercentage": 40.0,
+    "fatsPercentage": 30.0,
+    "dailyFiber": 25.0,
+    "dailySodium": 2300.0,
+    "dailySugar": 50.0,
+    "goalType": "MAINTENANCE"
+  }
+}
+
+tests {
+  test("Status is 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response contains updated daily calories", function() {
+    expect(res.body.dailyCalories).to.equal(2000.0);
+  });
+  
+  test("Response contains updated macros", function() {
+    expect(res.body).to.have.property("dailyProtein");
+    expect(res.body).to.have.property("dailyCarbs");
+    expect(res.body).to.have.property("dailyFats");
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,8 +1,7 @@
 package com.vallexia.common.validator;
 
 import com.vallexia.common.enums.SupportedMeasurementSystem;
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
+import com.vallexia.common.validator.strategy.MeasurementSystemValidationStrategy;
 
 /**
  * Validator implementation for {@link ValidMeasurementSystem}.
@@ -11,37 +10,12 @@ import jakarta.validation.ConstraintValidatorContext;
  * <p>Values are trimmed before validation so surrounding whitespace does not cause false negatives.
  *
  * @author Henrik Stensgaard
- * @version 1.0
+ * @version 2.0
  * @since 2025-11-15
  */
-public class ValidMeasurementSystemValidator implements ConstraintValidator<ValidMeasurementSystem, Object> {
-    
-    @Override
-    public void initialize(ValidMeasurementSystem constraintAnnotation) {
-        // No initialization needed
-    }
-    
-    @Override
-    public boolean isValid(Object value, ConstraintValidatorContext context) {
-        if (value == null) {
-            return true;
-        }
-        if (value instanceof SupportedMeasurementSystem) {
-            return true;
-        }
-        if (value instanceof String measurementSystem) {
-            if (measurementSystem.isEmpty()) {
-                return true;
-            }
+public class ValidMeasurementSystemValidator extends AbstractEnumValidator<ValidMeasurementSystem, SupportedMeasurementSystem> {
 
-            String trimmed = measurementSystem.trim();
-            if (trimmed.isEmpty()) {
-                return true;
-            }
-
-            return SupportedMeasurementSystem.fromCode(trimmed).isPresent();
-        }
-
-        return false;
+    public ValidMeasurementSystemValidator() {
+        super(new MeasurementSystemValidationStrategy());
     }
 }

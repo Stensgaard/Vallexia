@@ -1,0 +1,37 @@
+meta {
+  name: invalid country format
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/{{apiVersion}}/auth/register
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "username": "{{username}}{{$timestamp}}",
+    "email": "{{email}}{{$timestamp}}@example.com",
+    "country": "not-a-country",
+    "password": "{{password}}",
+    "confirmPassword": "{{password}}"
+  }
+}
+
+tests {
+  test("Status is 400 Bad Request", function() {
+    expect(res.status).to.equal(400);
+  });
+  
+  test("Country validation error for invalid format", function() {
+    expect(res.body.details).to.have.property("country");
+    expect(res.body.details.country).to.satisfy(msg => "Invalid country code");
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

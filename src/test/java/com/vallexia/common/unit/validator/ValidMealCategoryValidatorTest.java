@@ -2,11 +2,19 @@ package com.vallexia.common.unit.validator;
 
 import com.vallexia.common.enums.SupportedMealCategory;
 import com.vallexia.common.validator.ValidMealCategoryValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for ValidMealCategoryValidator.
@@ -16,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @version 1.0
  * @since 2025-11-25
  */
+@ExtendWith(MockitoExtension.class)
 @DisplayName("ValidMealCategoryValidator Unit Tests")
 class ValidMealCategoryValidatorTest {
 
@@ -25,6 +34,23 @@ class ValidMealCategoryValidatorTest {
   void setUp() {
     validator = new ValidMealCategoryValidator();
     validator.initialize(null);
+  }
+
+  /**
+   * Creates a mocked ConstraintValidatorContext for testing validation failures.
+   * 
+   * @return a mocked context with proper method chaining setup
+   */
+  private ConstraintValidatorContext createMockContext() {
+    ConstraintValidatorContext context = mock(ConstraintValidatorContext.class);
+    ConstraintValidatorContext.ConstraintViolationBuilder builder = 
+        mock(ConstraintValidatorContext.ConstraintViolationBuilder.class);
+    
+    doNothing().when(context).disableDefaultConstraintViolation();
+    when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(builder);
+    doReturn(context).when(builder).addConstraintViolation();
+    
+    return context;
   }
 
   // ==================== Null and Empty Value Tests ====================
@@ -85,11 +111,14 @@ class ValidMealCategoryValidatorTest {
   @Test
   @DisplayName("Should reject unknown or invalid meal category codes")
   void shouldRejectUnknownMealCategoryCodes() {
+    // Given
+    ConstraintValidatorContext context = createMockContext();
+    
     // When/Then
-    assertThat(validator.isValid("INVALID", null)).isFalse();
-    assertThat(validator.isValid("MEAL", null)).isFalse();
-    assertThat(validator.isValid("FOOD", null)).isFalse();
-    assertThat(validator.isValid("BRUNCH", null)).isFalse();
+    assertThat(validator.isValid("INVALID", context)).isFalse();
+    assertThat(validator.isValid("MEAL", context)).isFalse();
+    assertThat(validator.isValid("FOOD", context)).isFalse();
+    assertThat(validator.isValid("BRUNCH", context)).isFalse();
   }
 
   // ==================== Type Validation Tests ====================
@@ -97,10 +126,13 @@ class ValidMealCategoryValidatorTest {
   @Test
   @DisplayName("Should reject non-string and non-SupportedMealCategory types")
   void shouldRejectNonStringAndNonEnumTypes() {
+    // Given
+    ConstraintValidatorContext context = createMockContext();
+    
     // When/Then
-    assertThat(validator.isValid(123, null)).isFalse();
-    assertThat(validator.isValid(true, null)).isFalse();
-    assertThat(validator.isValid(new Object(), null)).isFalse();
+    assertThat(validator.isValid(123, context)).isFalse();
+    assertThat(validator.isValid(true, context)).isFalse();
+    assertThat(validator.isValid(new Object(), context)).isFalse();
   }
 
   // ==================== Collection Tests ====================
@@ -142,16 +174,22 @@ class ValidMealCategoryValidatorTest {
   @Test
   @DisplayName("Should reject collections with invalid meal category codes")
   void shouldRejectCollectionsWithInvalidMealCategoryCodes() {
+    // Given
+    ConstraintValidatorContext context = createMockContext();
+    
     // When/Then
-    assertThat(validator.isValid(java.util.Set.of("INVALID", "BREAKFAST"), null)).isFalse();
-    assertThat(validator.isValid(java.util.List.of("LUNCH", "INVALID"), null)).isFalse();
+    assertThat(validator.isValid(java.util.Set.of("INVALID", "BREAKFAST"), context)).isFalse();
+    assertThat(validator.isValid(java.util.List.of("LUNCH", "INVALID"), context)).isFalse();
   }
 
   @Test
   @DisplayName("Should reject collections with invalid types")
   void shouldRejectCollectionsWithInvalidTypes() {
+    // Given
+    ConstraintValidatorContext context = createMockContext();
+    
     // When/Then
-    assertThat(validator.isValid(java.util.Set.of(123, 456), null)).isFalse();
-    assertThat(validator.isValid(java.util.List.of(true, false), null)).isFalse();
+    assertThat(validator.isValid(java.util.Set.of(123, 456), context)).isFalse();
+    assertThat(validator.isValid(java.util.List.of(true, false), context)).isFalse();
   }
 }

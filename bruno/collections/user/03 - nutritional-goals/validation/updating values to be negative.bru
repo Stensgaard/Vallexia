@@ -1,0 +1,36 @@
+meta {
+  name: updating values to be negative
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/api/{{apiVersion}}/users/nutritional-goals
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "dailyCalories": 2000.0,
+    "dailyProtein": -150.0,
+    "dailyCarbs": -200.0,
+    "dailyFats": -65.0,
+    "goalType": "MAINTENANCE"
+  }
+}
+
+tests {
+  test("Status is 400 Bad Request", function() {
+    expect(res.status).to.equal(400);
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

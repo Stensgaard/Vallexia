@@ -22,7 +22,7 @@ public class CuisineTypeDto {
         allowableValues = {"AMERICAN", "ITALIAN", "MEXICAN", "CHINESE", "JAPANESE", 
             "THAI", "INDIAN", "FRENCH", "MEDITERRANEAN", "GREEK", "SPANISH", 
             "GERMAN", "BRITISH", "KOREAN", "VIETNAMESE", "MIDDLE_EASTERN", 
-            "CARIBBEAN", "AFRICAN", "SOUTH_AMERICAN"})
+            "CARIBBEAN", "AFRICAN"})
     String code;
 
     @Schema(

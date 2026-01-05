@@ -1,0 +1,51 @@
+meta {
+  name: get audit logs by date range
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/{{apiVersion}}/audit-logs/date-range?start={{dateRangeStart}}&end={{dateRangeEnd}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminAccessToken}}
+}
+
+tests {
+  test("Status is 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response contains pagination structure", function() {
+    expect(res.body).to.have.property("content");
+    expect(res.body).to.have.property("totalElements");
+    expect(res.body).to.have.property("totalPages");
+    expect(res.body).to.have.property("number");
+    expect(res.body).to.have.property("size");
+  });
+  
+  test("Response contains audit log array", function() {
+    expect(res.body.content).to.be.an("array");
+  });
+  
+  test("Audit logs are within date range", function() {
+    if (res.body.content.length > 0) {
+      const startDate = new Date("{{dateRangeStart}}");
+      const endDate = new Date("{{dateRangeEnd}}");
+      
+      res.body.content.forEach(log => {
+        const logDate = new Date(log.timestamp);
+        expect(logDate.getTime()).to.be.at.least(startDate.getTime());
+        expect(logDate.getTime()).to.be.at.most(endDate.getTime());
+      });
+    }
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

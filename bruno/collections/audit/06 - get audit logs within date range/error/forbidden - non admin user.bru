@@ -1,0 +1,26 @@
+meta {
+  name: forbidden - non admin user
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/{{apiVersion}}/audit-logs/date-range?start=2024-01-01T00:00:00&end=2024-01-31T23:59:59
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("Status is 403 Forbidden", function() {
+    expect(res.status).to.equal(403);
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

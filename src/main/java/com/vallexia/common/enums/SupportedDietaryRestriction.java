@@ -25,31 +25,32 @@ import java.util.stream.Collectors;
  */
 @Getter
 public enum SupportedDietaryRestriction {
-    VEGETARIAN("Vegetarian"),
-    VEGAN("Vegan"),
-    GLUTEN_FREE("Gluten-Free"),
-    DAIRY_FREE("Dairy-Free"),
-    NUT_FREE("Nut-Free"),
-    SOY_FREE("Soy-Free"),
-    EGG_FREE("Egg-Free"),
-    LOW_CARB("Low-Carb"),
-    KETO("Keto"),
-    PALEO("Paleo"),
-    MEDITERRANEAN("Mediterranean"),
-    LOW_SODIUM("Low-Sodium"),
-    LOW_FAT("Low-Fat"),
-    HIGH_PROTEIN("High-Protein"),
-    HALAL("Halal"),
-    KOSHER("Kosher");
+    VEGETARIAN("Vegetarian", "vegetarian"),
+    VEGAN("Vegan", "vegan"),
+    KETOGENIC("Ketogenic", "ketogenic"),
+    GLUTEN_FREE("Gluten-Free", "gluten free"),
+    PESCETARIAN("Pescetarian", "pescetarian"),
+    PALEO("Paleo", "paleo");
     
     private final String displayName;
+    private final String spoonacularValue;
     private static final Map<String, SupportedDietaryRestriction> BY_CODE = Arrays.stream(values())
             .collect(Collectors.toUnmodifiableMap(
                     restriction -> restriction.name().toUpperCase(Locale.ROOT),
                     restriction -> restriction));
     
-    SupportedDietaryRestriction(String displayName) {
+    SupportedDietaryRestriction(String displayName, String spoonacularValue) {
         this.displayName = displayName;
+        this.spoonacularValue = spoonacularValue;
+    }
+    
+    /**
+     * Get the Spoonacular API value for this dietary restriction.
+     * 
+     * @return the Spoonacular API string value
+     */
+    public String getSpoonacularValue() {
+        return spoonacularValue;
     }
     
     /**
@@ -73,5 +74,21 @@ public enum SupportedDietaryRestriction {
         }
         String normalized = code.trim().toUpperCase(Locale.ROOT);
         return Optional.ofNullable(BY_CODE.get(normalized));
+    }
+    
+    /**
+     * Get a supported dietary restriction by Spoonacular API value.
+     * 
+     * @param spoonacularValue the Spoonacular API value
+     * @return Optional containing the supported dietary restriction, or empty if not found
+     */
+    public static Optional<SupportedDietaryRestriction> fromSpoonacularValue(String spoonacularValue) {
+        if (spoonacularValue == null || spoonacularValue.isBlank()) {
+            return Optional.empty();
+        }
+        String normalized = spoonacularValue.trim().toLowerCase(Locale.ROOT);
+        return Arrays.stream(values())
+                .filter(restriction -> restriction.spoonacularValue.equalsIgnoreCase(normalized))
+                .findFirst();
     }
 }

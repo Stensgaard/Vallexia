@@ -20,7 +20,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -399,6 +401,259 @@ class UserServiceTest {
     
     // Then
     assertThat(result).isNotNull();
+    verify(userRepository).save(any(User.class));
+  }
+  
+  // ==================== Partial Update Tests ====================
+  
+  @Test
+  @DisplayName("Should update only email when other fields are null")
+  void shouldUpdateOnlyEmailWhenOtherFieldsAreNull() {
+    // Given
+    User existingUser = UserTestFixtures.createUser();
+    Integer originalHouseholdSize = existingUser.getHouseholdSize();
+    var originalMealTypes = existingUser.getMealTypes();
+    
+    UserProfileDto updateDto = new UserProfileDto();
+    updateDto.setEmail("newemail@example.com");
+    // householdSize and mealTypes are null
+    
+    User updatedUser = UserTestFixtures.createUser();
+    updatedUser.setEmail("newemail@example.com");
+    UserProfileDto expectedDto = UserTestFixtures.createUserProfileDto();
+    
+    when(userRepository.findById(UserTestFixtures.TEST_USER_ID))
+        .thenReturn(Optional.of(existingUser));
+    when(userRepository.existsByEmail("newemail@example.com"))
+        .thenReturn(false);
+    when(userRepository.save(any(User.class)))
+        .thenReturn(updatedUser);
+    when(userMapper.toUserProfileDto(updatedUser))
+        .thenReturn(expectedDto);
+    
+    // When
+    userService.updateUserProfile(UserTestFixtures.TEST_USER_ID, updateDto);
+    
+    // Then
+    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+    verify(userRepository).save(userCaptor.capture());
+    
+    User savedUser = userCaptor.getValue();
+    assertThat(savedUser.getEmail()).isEqualTo("newemail@example.com");
+    assertThat(savedUser.getHouseholdSize()).isEqualTo(originalHouseholdSize); // Preserved
+    assertThat(savedUser.getMealTypes()).isEqualTo(originalMealTypes); // Preserved
+  }
+  
+  @Test
+  @DisplayName("Should update only household size when email and meal types are null")
+  void shouldUpdateOnlyHouseholdSizeWhenEmailAndMealTypesAreNull() {
+    // Given
+    User existingUser = UserTestFixtures.createUser();
+    String originalEmail = existingUser.getEmail();
+    var originalMealTypes = existingUser.getMealTypes();
+    
+    UserProfileDto updateDto = new UserProfileDto();
+    updateDto.setHouseholdSize(5);
+    // email and mealTypes are null
+    
+    User updatedUser = UserTestFixtures.createUser();
+    updatedUser.setHouseholdSize(5);
+    UserProfileDto expectedDto = UserTestFixtures.createUserProfileDto();
+    
+    when(userRepository.findById(UserTestFixtures.TEST_USER_ID))
+        .thenReturn(Optional.of(existingUser));
+    when(userRepository.save(any(User.class)))
+        .thenReturn(updatedUser);
+    when(userMapper.toUserProfileDto(updatedUser))
+        .thenReturn(expectedDto);
+    
+    // When
+    userService.updateUserProfile(UserTestFixtures.TEST_USER_ID, updateDto);
+    
+    // Then
+    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+    verify(userRepository).save(userCaptor.capture());
+    
+    User savedUser = userCaptor.getValue();
+    assertThat(savedUser.getHouseholdSize()).isEqualTo(5);
+    assertThat(savedUser.getEmail()).isEqualTo(originalEmail); // Preserved
+    assertThat(savedUser.getMealTypes()).isEqualTo(originalMealTypes); // Preserved
+    verify(userRepository, never()).existsByEmail(any()); // Email validation not called
+  }
+  
+  @Test
+  @DisplayName("Should update only meal types when email and household size are null")
+  void shouldUpdateOnlyMealTypesWhenEmailAndHouseholdSizeAreNull() {
+    // Given
+    User existingUser = UserTestFixtures.createUser();
+    String originalEmail = existingUser.getEmail();
+    Integer originalHouseholdSize = existingUser.getHouseholdSize();
+    Set<com.vallexia.common.enums.SupportedMealCategory> newMealTypes = new HashSet<>();
+    newMealTypes.add(com.vallexia.common.enums.SupportedMealCategory.BREAKFAST);
+    
+    UserProfileDto updateDto = new UserProfileDto();
+    updateDto.setMealTypes(newMealTypes);
+    // email and householdSize are null
+    
+    User updatedUser = UserTestFixtures.createUser();
+    updatedUser.setMealTypes(newMealTypes);
+    UserProfileDto expectedDto = UserTestFixtures.createUserProfileDto();
+    
+    when(userRepository.findById(UserTestFixtures.TEST_USER_ID))
+        .thenReturn(Optional.of(existingUser));
+    when(userRepository.save(any(User.class)))
+        .thenReturn(updatedUser);
+    when(userMapper.toUserProfileDto(updatedUser))
+        .thenReturn(expectedDto);
+    
+    // When
+    userService.updateUserProfile(UserTestFixtures.TEST_USER_ID, updateDto);
+    
+    // Then
+    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+    verify(userRepository).save(userCaptor.capture());
+    
+    User savedUser = userCaptor.getValue();
+    assertThat(savedUser.getMealTypes()).isEqualTo(newMealTypes);
+    assertThat(savedUser.getEmail()).isEqualTo(originalEmail); // Preserved
+    assertThat(savedUser.getHouseholdSize()).isEqualTo(originalHouseholdSize); // Preserved
+    verify(userRepository, never()).existsByEmail(any()); // Email validation not called
+  }
+  
+  @Test
+  @DisplayName("Should update multiple fields when some are null")
+  void shouldUpdateMultipleFieldsWhenSomeAreNull() {
+    // Given
+    User existingUser = UserTestFixtures.createUser();
+    String originalEmail = existingUser.getEmail();
+    
+    Set<com.vallexia.common.enums.SupportedMealCategory> newMealTypes = new HashSet<>();
+    newMealTypes.add(com.vallexia.common.enums.SupportedMealCategory.DINNER);
+    
+    UserProfileDto updateDto = new UserProfileDto();
+    updateDto.setHouseholdSize(3);
+    updateDto.setMealTypes(newMealTypes);
+    // email is null
+    
+    User updatedUser = UserTestFixtures.createUser();
+    updatedUser.setHouseholdSize(3);
+    updatedUser.setMealTypes(newMealTypes);
+    UserProfileDto expectedDto = UserTestFixtures.createUserProfileDto();
+    
+    when(userRepository.findById(UserTestFixtures.TEST_USER_ID))
+        .thenReturn(Optional.of(existingUser));
+    when(userRepository.save(any(User.class)))
+        .thenReturn(updatedUser);
+    when(userMapper.toUserProfileDto(updatedUser))
+        .thenReturn(expectedDto);
+    
+    // When
+    userService.updateUserProfile(UserTestFixtures.TEST_USER_ID, updateDto);
+    
+    // Then
+    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+    verify(userRepository).save(userCaptor.capture());
+    
+    User savedUser = userCaptor.getValue();
+    assertThat(savedUser.getHouseholdSize()).isEqualTo(3);
+    assertThat(savedUser.getMealTypes()).containsExactly(com.vallexia.common.enums.SupportedMealCategory.DINNER);
+    assertThat(savedUser.getEmail()).isEqualTo(originalEmail); // Preserved
+    verify(userRepository, never()).existsByEmail(any()); // Email validation not called
+  }
+  
+  @Test
+  @DisplayName("Should preserve existing values when all fields are null")
+  void shouldPreserveExistingValuesWhenAllFieldsAreNull() {
+    // Given
+    User existingUser = UserTestFixtures.createUser();
+    String originalEmail = existingUser.getEmail();
+    Integer originalHouseholdSize = existingUser.getHouseholdSize();
+    var originalMealTypes = existingUser.getMealTypes();
+    
+    UserProfileDto updateDto = new UserProfileDto();
+    // All fields are null
+    
+    User updatedUser = UserTestFixtures.createUser();
+    UserProfileDto expectedDto = UserTestFixtures.createUserProfileDto();
+    
+    when(userRepository.findById(UserTestFixtures.TEST_USER_ID))
+        .thenReturn(Optional.of(existingUser));
+    when(userRepository.save(any(User.class)))
+        .thenReturn(updatedUser);
+    when(userMapper.toUserProfileDto(updatedUser))
+        .thenReturn(expectedDto);
+    
+    // When
+    userService.updateUserProfile(UserTestFixtures.TEST_USER_ID, updateDto);
+    
+    // Then
+    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+    verify(userRepository).save(userCaptor.capture());
+    
+    User savedUser = userCaptor.getValue();
+    assertThat(savedUser.getEmail()).isEqualTo(originalEmail); // Preserved
+    assertThat(savedUser.getHouseholdSize()).isEqualTo(originalHouseholdSize); // Preserved
+    assertThat(savedUser.getMealTypes()).isEqualTo(originalMealTypes); // Preserved
+    verify(userRepository, never()).existsByEmail(any()); // Email validation not called
+  }
+  
+  @Test
+  @DisplayName("Should not validate email uniqueness when email is not provided")
+  void shouldNotValidateEmailUniquenessWhenEmailIsNotProvided() {
+    // Given
+    User existingUser = UserTestFixtures.createUser();
+    
+    UserProfileDto updateDto = new UserProfileDto();
+    updateDto.setHouseholdSize(4);
+    // email is null
+    
+    User updatedUser = UserTestFixtures.createUser();
+    updatedUser.setHouseholdSize(4);
+    UserProfileDto expectedDto = UserTestFixtures.createUserProfileDto();
+    
+    when(userRepository.findById(UserTestFixtures.TEST_USER_ID))
+        .thenReturn(Optional.of(existingUser));
+    when(userRepository.save(any(User.class)))
+        .thenReturn(updatedUser);
+    when(userMapper.toUserProfileDto(updatedUser))
+        .thenReturn(expectedDto);
+    
+    // When
+    userService.updateUserProfile(UserTestFixtures.TEST_USER_ID, updateDto);
+    
+    // Then
+    verify(userRepository, never()).existsByEmail(any()); // Email validation not called
+    verify(userRepository).save(any(User.class));
+  }
+  
+  @Test
+  @DisplayName("Should not validate email uniqueness when email is same as current")
+  void shouldNotValidateEmailUniquenessWhenEmailIsSameAsCurrent() {
+    // Given
+    User existingUser = UserTestFixtures.createUser();
+    String currentEmail = existingUser.getEmail();
+    
+    UserProfileDto updateDto = new UserProfileDto();
+    updateDto.setEmail(currentEmail); // Same email
+    updateDto.setHouseholdSize(4);
+    
+    User updatedUser = UserTestFixtures.createUser();
+    updatedUser.setEmail(currentEmail);
+    updatedUser.setHouseholdSize(4);
+    UserProfileDto expectedDto = UserTestFixtures.createUserProfileDto();
+    
+    when(userRepository.findById(UserTestFixtures.TEST_USER_ID))
+        .thenReturn(Optional.of(existingUser));
+    when(userRepository.save(any(User.class)))
+        .thenReturn(updatedUser);
+    when(userMapper.toUserProfileDto(updatedUser))
+        .thenReturn(expectedDto);
+    
+    // When
+    userService.updateUserProfile(UserTestFixtures.TEST_USER_ID, updateDto);
+    
+    // Then
+    verify(userRepository, never()).existsByEmail(any()); // Email validation not called when same
     verify(userRepository).save(any(User.class));
   }
 }

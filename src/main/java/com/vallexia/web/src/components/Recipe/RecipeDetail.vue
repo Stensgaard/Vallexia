@@ -7,16 +7,37 @@
           <h1 class="text-3xl font-bold text-gray-900 mb-2">
             {{ recipe.name }}
           </h1>
-          <div class="flex items-center gap-4 text-sm text-gray-600">
-            <span v-if="recipe.creatorUsername"
-              >{{ $t("recipes.detail.by") }} {{ recipe.creatorUsername }}</span
+          <div class="flex items-center gap-3 flex-wrap">
+            <!-- Category and Cuisine Tags -->
+            <span
+              v-if="recipe.category"
+              class="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-full font-medium"
             >
-            <span v-if="recipe.category">{{
-              $t(`recipes.categories.${recipe.category}`)
-            }}</span>
-            <span v-if="recipe.cuisineType">{{
-              $t(`constants.cuisineTypes.${recipe.cuisineType}`)
-            }}</span>
+              {{ $t(`recipes.categories.${recipe.category}`) }}
+            </span>
+            <span
+              v-if="recipe.cuisineType"
+              class="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-full font-medium"
+            >
+              {{ $t(`constants.cuisineTypes.${recipe.cuisineType}`) }}
+            </span>
+            
+            <!-- Separator if both category/cuisine and tags exist -->
+            <span
+              v-if="(recipe.category || recipe.cuisineType) && recipe.tags && recipe.tags.length > 0"
+              class="text-gray-400"
+            >
+              •
+            </span>
+            
+            <!-- Recipe Tags (dish types) -->
+            <span
+              v-for="tag in recipe.tags"
+              :key="tag"
+              class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full"
+            >
+              {{ tag }}
+            </span>
           </div>
         </div>
         <button
@@ -25,7 +46,7 @@
             'text-red-500': recipe.isFavorite,
             'text-gray-400': !recipe.isFavorite,
           }"
-          @click="$emit('favorite-toggled', recipe.id)"
+          @click="$emit('favorite-toggled', recipe.spoonacularId)"
         >
           <svg
             class="w-6 h-6"
@@ -41,10 +62,6 @@
             />
           </svg>
         </button>
-      </div>
-
-      <div v-if="recipe.description" class="text-gray-700 mb-4">
-        {{ recipe.description }}
       </div>
     </div>
 
@@ -79,40 +96,8 @@
         <div class="text-sm text-gray-600">
           {{ $t("recipes.detail.servings") }}
         </div>
-        <div class="flex items-center gap-2">
-          <input
-            :value="targetServings || recipe.servings"
-            type="number"
-            min="1"
-            class="w-20 text-xl font-semibold bg-transparent border-none p-0 focus:outline-none focus:ring-0 cursor-pointer"
-            @input="
-              $emit('update-target-servings', Number($event.target.value))
-            "
-          />
-          <button
-            :disabled="
-              scaling ||
-              !targetServings ||
-              targetServings < 1 ||
-              (targetServings || recipe.servings) === recipe.servings
-            "
-            class="px-3 py-1 text-xs bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
-            @click="$emit('scale-recipe', targetServings || recipe.servings)"
-          >
-            {{
-              scaling
-                ? $t("recipes.detail.scaling")
-                : $t("recipes.detail.scale")
-            }}
-          </button>
-        </div>
-      </div>
-      <div v-if="recipe.difficultyLevel" class="bg-gray-50 p-4 rounded-lg">
-        <div class="text-sm text-gray-600">
-          {{ $t("recipes.detail.difficulty") }}
-        </div>
         <div class="text-xl font-semibold">
-          {{ $t(`recipes.difficulty.${recipe.difficultyLevel}`) }}
+          {{ recipe.servings }}
         </div>
       </div>
     </div>
@@ -230,9 +215,8 @@
                 'line-through text-gray-500':
                   isCookingMode && checkedSteps[index],
               }"
-            >
-              {{ step }}
-            </div>
+              v-html="sanitizeRecipeInstructions(step)"
+            ></div>
           </li>
         </ul>
         <div
@@ -314,20 +298,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Tags -->
-    <div
-      v-if="recipe.tags && recipe.tags.length > 0"
-      class="flex flex-wrap gap-2"
-    >
-      <span
-        v-for="tag in recipe.tags"
-        :key="tag"
-        class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full"
-      >
-        {{ tag }}
-      </span>
-    </div>
   </div>
 
   <div v-else class="text-center py-12">
@@ -340,6 +310,7 @@ import { computed, ref, watch, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { useSettingsStore } from "@/stores/settings";
 import { useFormattedValue } from "@/composables/useFormattedValue";
+import { sanitizeRecipeInstructions } from "@/utils/sanitizeUtils";
 
 useI18n();
 const settingsStore = useSettingsStore();
@@ -357,17 +328,9 @@ const props = defineProps({
     type: Object,
     default: null,
   },
-  targetServings: {
-    type: Number,
-    default: null,
-  },
-  scaling: {
-    type: Boolean,
-    default: false,
-  },
 });
 
-defineEmits(["favorite-toggled", "scale-recipe", "update-target-servings"]);
+defineEmits(["favorite-toggled"]);
 
 // Cooking mode state
 const isCookingMode = ref(false);
@@ -378,11 +341,11 @@ const getStorageKey = (recipeId) => `recipe_cooking_${recipeId}`;
 
 // Load saved state from localStorage
 const loadSavedState = () => {
-  if (!props.recipe?.id) {
+  if (!props.recipe?.spoonacularId) {
     return;
   }
 
-  const storageKey = getStorageKey(props.recipe.id);
+  const storageKey = getStorageKey(props.recipe.spoonacularId);
   const saved = localStorage.getItem(storageKey);
 
   if (saved) {
@@ -394,11 +357,11 @@ const loadSavedState = () => {
 
 // Save state to localStorage
 const saveState = () => {
-  if (!props.recipe?.id) {
+  if (!props.recipe?.spoonacularId) {
     return;
   }
 
-  const storageKey = getStorageKey(props.recipe.id);
+  const storageKey = getStorageKey(props.recipe.spoonacularId);
   const state = {
     isCookingMode: isCookingMode.value,
     checkedSteps: checkedSteps.value,
@@ -452,7 +415,7 @@ const parsedInstructions = computed(() => {
 
 // Reset state when recipe changes
 watch(
-  () => props.recipe?.id,
+  () => props.recipe?.spoonacularId,
   (newId, oldId) => {
     if (newId !== oldId) {
       isCookingMode.value = false;
@@ -466,7 +429,7 @@ watch(
 
 // Load state on mount
 onMounted(() => {
-  if (props.recipe?.id) {
+  if (props.recipe?.spoonacularId) {
     loadSavedState();
   }
 });

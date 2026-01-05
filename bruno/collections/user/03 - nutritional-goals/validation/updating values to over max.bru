@@ -1,0 +1,44 @@
+meta {
+  name: updating values to over max
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/api/{{apiVersion}}/users/nutritional-goals
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "dailyCalories": 2000.0,
+    "dailyProtein": 1001.0,
+    "dailyCarbs": 1600.0,
+    "dailyFats": 501.0,
+    "dailyFiber": 101.0,
+    "dailySodium": 10001.0,
+    "dailySugar": 10001.0,
+    "goalType": "MAINTENANCE"
+  }
+}
+
+tests {
+  test("Status is 400 Bad Request", function() {
+    expect(res.status).to.equal(400);
+  });
+  
+  test("Protein validation error for too high", function() {
+    expect(res.body.details).to.have.property("dailyProtein");
+    expect(res.body.details.dailyProtein).to.satisfy(msg => "Daily protein must not exceed");
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

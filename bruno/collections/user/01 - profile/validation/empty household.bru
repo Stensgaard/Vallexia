@@ -1,0 +1,38 @@
+meta {
+  name: empty household
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/api/{{apiVersion}}/users/profile
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "email": "updated{{$timestamp}}@example.com",
+    "mealTypes": ["BREAKFAST"]
+  }
+}
+
+tests {
+  test("Status is 400 Bad Request", function() {
+    expect(res.status).to.equal(400);
+  });
+  
+  test("Meal types validation error", function() {
+    expect(res.body.details).to.have.property("householdSize");
+    expect(res.body.details.mealTypes).to.satisfy(msg=> "Household size is required");
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

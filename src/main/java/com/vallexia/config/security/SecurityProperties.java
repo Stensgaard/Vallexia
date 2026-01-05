@@ -24,4 +24,3 @@ public class SecurityProperties {
    */
   private String trustedProxies = "";
 }
-
