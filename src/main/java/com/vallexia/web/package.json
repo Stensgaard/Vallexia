@@ -19,7 +19,7 @@
     "vee-validate": "^4.12.0",
     "vue": "^3.5.26",
     "vue-i18n": "^9.14.1",
-    "vue-router": "^4.4.0",
+    "vue-router": "^4.6.4",
     "yup": "^1.4.0"
   },
   "devDependencies": {
