@@ -77,7 +77,7 @@
         <!-- Diet Restrictions -->
         <div>
           <div class="flex items-center gap-2 mb-2">
-            <label class="block text-sm font-medium text-gray-700">
+            <label for="search-dietary-restrictions" class="block text-sm font-medium text-gray-700">
               {{ $t('recipes.search.dietRestrictions') }}
             </label>
             <button
@@ -102,7 +102,7 @@
         <!-- Cuisine Types -->
         <div>
           <div class="flex items-center gap-2 mb-2">
-            <label class="block text-sm font-medium text-gray-700">
+            <label for="search-cuisines" class="block text-sm font-medium text-gray-700">
               {{ $t('recipes.search.cuisine') }}
             </label>
             <button
@@ -127,7 +127,7 @@
         <!-- Intolerances -->
         <div>
           <div class="flex items-center gap-2 mb-2">
-            <label class="block text-sm font-medium text-gray-700">
+            <label for="search-allergies" class="block text-sm font-medium text-gray-700">
               {{ $t('recipes.search.intolerances') }}
             </label>
             <button
@@ -152,7 +152,7 @@
 
       <!-- Include Ingredients -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
+        <label for="include-ingredient-input" class="block text-sm font-medium text-gray-700 mb-2">
           {{ $t("recipes.search.includeIngredients") }}
         </label>
         <div class="flex flex-wrap gap-2 mb-2">
@@ -173,6 +173,7 @@
         </div>
         <div class="flex gap-2">
           <input
+            id="include-ingredient-input"
             v-model="newIncludeIngredient"
             type="text"
             class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
@@ -191,7 +192,7 @@
 
       <!-- Exclude Ingredients -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
+        <label for="exclude-ingredient-input" class="block text-sm font-medium text-gray-700 mb-2">
           {{ $t("recipes.search.excludeIngredients") }}
         </label>
         <div class="flex flex-wrap gap-2 mb-2">
@@ -212,6 +213,7 @@
         </div>
         <div class="flex gap-2">
           <input
+            id="exclude-ingredient-input"
             v-model="newExcludeIngredient"
             type="text"
             class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
@@ -296,7 +298,7 @@ const dietaryRestrictionOptions = computed(() => {
       return {
         value: restriction.code,
         label: te(key) ? t(key) : restriction.name,
-        spoonacularValue: mapping[restriction.code] || restriction.code.toLowerCase().replace(/_/g, " "),
+        spoonacularValue: mapping[restriction.code] || restriction.code.toLowerCase().replaceAll("_", " "),
       };
     });
   } catch (error) {
@@ -330,7 +332,7 @@ const allergyOptions = computed(() => {
       return {
         value: allergy.code,
         label: te(key) ? t(key) : allergy.name,
-        spoonacularValue: mapping[allergy.code] || allergy.code.toLowerCase().replace(/_/g, " "),
+        spoonacularValue: mapping[allergy.code] || allergy.code.toLowerCase().replaceAll("_", " "),
       };
     });
   } catch (error) {
@@ -377,7 +379,7 @@ const cuisineTypeOptions = computed(() => {
       return {
         value: cuisine.code,
         label: te(key) ? t(key) : cuisine.name,
-        spoonacularValue: mapping[cuisine.code] || cuisine.code.toLowerCase().replace(/_/g, " "),
+        spoonacularValue: mapping[cuisine.code] || cuisine.code.toLowerCase().replaceAll("_", " "),
       };
     });
   } catch (error) {
@@ -506,7 +508,7 @@ const getSpoonacularValue = (code, type) => {
   } else if (type === "cuisine") {
     option = cuisineTypeOptions.value.find((opt) => opt.value === code);
   }
-  return option?.spoonacularValue || (code ? code.toLowerCase().replace(/_/g, " ") : null);
+  return option?.spoonacularValue || (code ? code.toLowerCase().replaceAll("_", " ") : null);
 };
 
 const handleSearch = () => {

@@ -47,7 +47,7 @@ public class GoogleTranslationClient {
             log.info("Google Translation client initialized successfully");
         } catch (Exception e) {
             log.error("Failed to initialize Google Translation client", e);
-            throw new RuntimeException("Failed to initialize Google Translation client: " + e.getMessage(), e);
+            throw new GoogleTranslationException("Failed to initialize Google Translation client: " + e.getMessage(), e);
         }
     }
     

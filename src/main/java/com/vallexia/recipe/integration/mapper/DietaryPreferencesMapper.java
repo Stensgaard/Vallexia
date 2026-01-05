@@ -6,7 +6,6 @@ import com.vallexia.recipe.integration.dto.SpoonacularSearchParams;
 import com.vallexia.user.dto.DietaryPreferencesDto;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -39,19 +38,17 @@ public class DietaryPreferencesMapper {
         // Map allergies to intolerances parameter (comma-separated)
         if (dietaryPreferences.getAllergies() != null && 
                 !dietaryPreferences.getAllergies().isEmpty()) {
-            List<String> intolerances = dietaryPreferences.getAllergies().stream()
+            builder.intolerances(dietaryPreferences.getAllergies().stream()
                     .map(SupportedAllergy::getSpoonacularValue)
-                    .collect(Collectors.toList());
-            builder.intolerances(intolerances);
+                    .collect(Collectors.toList()));
         }
         
         // Map preferred cuisines to cuisine parameter (comma-separated)
         if (dietaryPreferences.getPreferredCuisines() != null && 
                 !dietaryPreferences.getPreferredCuisines().isEmpty()) {
-            List<String> cuisines = dietaryPreferences.getPreferredCuisines().stream()
+            builder.cuisine(dietaryPreferences.getPreferredCuisines().stream()
                     .map(SupportedCuisineType::getSpoonacularValue)
-                    .collect(Collectors.toList());
-            builder.cuisine(cuisines);
+                    .collect(Collectors.toList()));
         }
         
         return builder;

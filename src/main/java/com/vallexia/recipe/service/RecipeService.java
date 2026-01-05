@@ -44,6 +44,8 @@ import java.util.stream.Collectors;
 @Transactional
 public class RecipeService {
     
+    private static final String FAILED_TO_DESERIALIZE_CACHED_RECIPE_MSG = "Failed to deserialize cached recipe: {}";
+    
     private final SpoonacularApiClient spoonacularApiClient;
     private final SpoonacularMapper spoonacularMapper;
     private final RecipeCacheService cacheService;
@@ -109,7 +111,7 @@ public class RecipeService {
                     return dto;
                 }
             } catch (Exception e) {
-                log.warn("Failed to deserialize cached recipe: {}", spoonacularId, e);
+                log.warn(FAILED_TO_DESERIALIZE_CACHED_RECIPE_MSG, spoonacularId, e);
             }
         }
         
@@ -167,7 +169,7 @@ public class RecipeService {
                                 
                                 return dto;
                             } catch (Exception e) {
-                                log.warn("Failed to deserialize cached recipe: {}", cache.getSpoonacularId(), e);
+                                log.warn(FAILED_TO_DESERIALIZE_CACHED_RECIPE_MSG, cache.getSpoonacularId(), e);
                                 return null;
                             }
                         })
@@ -211,7 +213,7 @@ public class RecipeService {
                                 
                                 return dto;
                             } catch (Exception e) {
-                                log.warn("Failed to deserialize cached recipe: {}", cache.getSpoonacularId(), e);
+                                log.warn(FAILED_TO_DESERIALIZE_CACHED_RECIPE_MSG, cache.getSpoonacularId(), e);
                                 return null;
                             }
                         })
