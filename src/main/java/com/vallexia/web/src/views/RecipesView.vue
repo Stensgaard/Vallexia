@@ -9,6 +9,14 @@
       </div>
     </div>
 
+    <!-- Search form -->
+    <RecipeSearchForm
+      :search-params="searchParams"
+      :is-loading="recipeStore.isLoading"
+      @search="handleSearch"
+      @clear="handleClearSearch"
+    />
+
     <!-- Recipe list -->
     <RecipeList
       :recipes="recipeStore.filteredRecipes"
@@ -37,20 +45,34 @@
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useRecipeStore } from "@/stores/recipe";
 import RecipeList from "@/components/Recipe/RecipeList.vue";
+import RecipeSearchForm from "@/components/Recipe/RecipeSearchForm.vue";
 
 const router = useRouter();
 const recipeStore = useRecipeStore();
+const searchParams = ref({});
 
-onMounted(async () => {
-  await recipeStore.fetchRecipes(0, 20);
-});
+const handleSearch = async (params) => {
+  try {
+    // Store search params for potential future use
+    searchParams.value = params;
+    // Fetch all results in one call with a large page size
+    await recipeStore.fetchAllRecipes(params);
+  } catch (error) {
+    console.error('Failed to search recipes:', error);
+  }
+};
+
+const handleClearSearch = () => {
+  searchParams.value = {};
+  recipeStore.clearRecipes();
+};
 
 const handleRecipeClick = (recipe) => {
-  router.push(`/recipes/${recipe.id}`);
+  router.push(`/recipes/${recipe.spoonacularId}`);
 };
 
 const handleFavoriteToggle = async (recipeId) => {
@@ -58,6 +80,7 @@ const handleFavoriteToggle = async (recipeId) => {
 };
 
 const handlePageChange = async (page) => {
-  await recipeStore.fetchRecipes(page, 20);
+  // Pagination is now client-side only - all results are already loaded
+  // This handler is kept for compatibility but does nothing
 };
 </script>

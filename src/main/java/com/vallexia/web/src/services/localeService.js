@@ -31,6 +31,11 @@ class LocaleService {
   }
 
   async getLocaleConfig(forceRefresh = false) {
+    if (forceRefresh) {
+      this.cachedConfig = null;
+      this.configPromise = null;
+    }
+    
     if (this.cachedConfig && !forceRefresh) {
       return this.cachedConfig;
     }

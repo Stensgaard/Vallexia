@@ -141,7 +141,7 @@
 
           <DietaryRestrictionsSelector
             id="dietary-restrictions"
-            v-model="dietaryForm.restrictions"
+            v-model="dietaryForm.restriction"
             :error="dietaryErrors.restrictions"
           />
 
@@ -643,7 +643,7 @@ const personalErrors = reactive({
 
 // Dietary Preferences Form
 const dietaryForm = reactive({
-  restrictions: [],
+  restriction: null,
   allergies: [],
   preferredCuisines: [],
 });
@@ -974,7 +974,7 @@ const updateSettings = async () => {
 };
 
 onMounted(async () => {
-  await ensureLocaleConfigLoaded();
+  await ensureLocaleConfigLoaded(true);
   refreshLocaleOptions();
 
   try {
@@ -1007,11 +1007,12 @@ onMounted(async () => {
     // Load dietary preferences
     const dietaryPreferences = await userService.getDietaryPreferences();
 
-    // Filter restrictions array to only include valid values
-    dietaryForm.restrictions = filterValidValues(
-      dietaryPreferences.restrictions || [],
-      dietaryRestrictionOptions.value,
-      "dietary restrictions",
+    // Validate restriction single value
+    dietaryForm.restriction = validateEnumValue(
+      dietaryPreferences.restriction,
+      createEnumFromList(dietaryRestrictionOptions.value),
+      null,
+      "restriction",
     );
 
     // Filter allergies array to only include valid values

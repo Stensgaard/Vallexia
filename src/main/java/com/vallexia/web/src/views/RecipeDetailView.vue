@@ -44,11 +44,7 @@
       <!-- Recipe detail -->
       <RecipeDetail
         :recipe="recipeStore.currentRecipe"
-        :target-servings="targetServings"
-        :scaling="scaling"
         @favorite-toggled="handleFavoriteToggle"
-        @scale-recipe="handleScale"
-        @update-target-servings="handleUpdateTargetServings"
       />
     </div>
   </div>
@@ -66,7 +62,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from "vue";
+import { reactive, onMounted, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 import { useRecipeStore } from "@/stores/recipe";
@@ -81,8 +77,6 @@ const router = useRouter();
 const recipeStore = useRecipeStore();
 
 const recipeId = computed(() => Number(route.params.id));
-const targetServings = ref(null);
-const scaling = ref(false);
 
 const toast = reactive({
   show: false,
@@ -98,41 +92,11 @@ const showToast = (type, title, message) => {
   toast.show = true;
 };
 
-// Edit/Delete functionality removed - only admins can manage recipes
-
 onMounted(async () => {
-  targetServings.value = recipeStore.currentRecipe?.servings || 4;
   await recipeStore.fetchRecipe(recipeId.value);
-  if (recipeStore.currentRecipe?.servings) {
-    targetServings.value = recipeStore.currentRecipe.servings;
-  }
 });
 
 const handleFavoriteToggle = async (recipeId) => {
   await recipeStore.toggleFavorite(recipeId);
-};
-
-const handleUpdateTargetServings = (value) => {
-  targetServings.value = value;
-};
-
-const handleScale = async (newServings) => {
-  if (!newServings || newServings < 1) return;
-
-  try {
-    scaling.value = true;
-    const scaledRecipe = await recipeStore.scaleRecipe(
-      recipeId.value,
-      newServings,
-    );
-    // Update current recipe with scaled data
-    recipeStore.currentRecipe = scaledRecipe;
-    showToast("success", t("common.success"), t("recipes.detail.scaling"));
-  } catch (error) {
-    const errorMessage = getErrorMessage(error);
-    showToast("error", t("common.error"), errorMessage);
-  } finally {
-    scaling.value = false;
-  }
 };
 </script>

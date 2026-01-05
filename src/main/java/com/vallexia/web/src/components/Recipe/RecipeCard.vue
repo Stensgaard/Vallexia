@@ -31,7 +31,7 @@
             'text-red-500': recipe.isFavorite,
             'text-gray-400': !recipe.isFavorite,
           }"
-          @click.stop="$emit('favorite-toggled', recipe.id)"
+          @click.stop="$emit('favorite-toggled', recipe.spoonacularId)"
         >
           <svg
             class="w-5 h-5"
@@ -49,12 +49,11 @@
         </button>
       </div>
 
-      <p
+      <div
         v-if="recipe.description"
-        class="text-sm text-gray-600 line-clamp-2 mb-3"
-      >
-        {{ recipe.description }}
-      </p>
+        class="text-sm text-gray-600 line-clamp-2 mb-3 recipe-card-description"
+        v-html="sanitizedDescription"
+      ></div>
 
       <div class="flex flex-wrap gap-2 mb-3">
         <span
@@ -118,8 +117,10 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useSettingsStore } from "@/stores/settings";
+import { sanitizeRecipeDescription } from "@/utils/sanitizeUtils";
 
 useI18n();
 const settingsStore = useSettingsStore();
@@ -128,7 +129,7 @@ const formatNumber = (number, decimals = 0) => {
   return settingsStore.formatNumberFn(number, decimals);
 };
 
-defineProps({
+const props = defineProps({
   recipe: {
     type: Object,
     required: true,
@@ -136,4 +137,33 @@ defineProps({
 });
 
 defineEmits(["recipe-clicked", "favorite-toggled"]);
+
+// Sanitize recipe description HTML
+const sanitizedDescription = computed(() => {
+  if (!props.recipe?.description) {
+    return "";
+  }
+  return sanitizeRecipeDescription(props.recipe.description);
+});
 </script>
+
+<style scoped>
+.recipe-card-description :deep(a) {
+  color: rgb(37, 99, 235);
+  text-decoration: underline;
+}
+
+.recipe-card-description :deep(a:hover) {
+  color: rgb(30, 64, 175);
+}
+
+.recipe-card-description :deep(b),
+.recipe-card-description :deep(strong) {
+  font-weight: 600;
+}
+
+.recipe-card-description :deep(i),
+.recipe-card-description :deep(em) {
+  font-style: italic;
+}
+</style>

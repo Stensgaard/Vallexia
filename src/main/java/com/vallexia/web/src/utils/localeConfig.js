@@ -48,10 +48,14 @@ const normalizeConfig = (config) => {
   localeConfig.mealTypes = config.mealCategories || [];
 };
 
-export const ensureLocaleConfigLoaded = async () => {
+export const ensureLocaleConfigLoaded = async (forceRefresh = false) => {
+  if (forceRefresh) {
+    configPromise = null;
+  }
+  
   if (!configPromise) {
     configPromise = localeService
-      .getLocaleConfig()
+      .getLocaleConfig(forceRefresh)
       .then((config) => {
         normalizeConfig(config);
         return localeConfig;
