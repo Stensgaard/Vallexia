@@ -14,10 +14,6 @@ dev: ## Start all development services
 	@echo "Starting development environment..."
 	$(COMPOSE_DEV) up -d
 	@echo "Development environment started!"
-	@echo "  - Backend: http://localhost:8080"
-	@echo "  - Frontend: http://localhost:5173"
-	@echo "  - PostgreSQL: localhost:5432"
-	@echo "  - Redis: localhost:6379"
 
 dev-build: ## Build and start all development services (rebuilds images, clears volumes)
 	@echo "Building and starting development environment..."
@@ -26,10 +22,6 @@ dev-build: ## Build and start all development services (rebuilds images, clears 
 	@echo "Building and starting services..."
 	$(COMPOSE_DEV) up --build -d
 	@echo "Development environment built and started!"
-	@echo "  - Backend: http://localhost:8080"
-	@echo "  - Frontend: http://localhost:5173"
-	@echo "  - PostgreSQL: localhost:5432"
-	@echo "  - Redis: localhost:6379"
 
 dev-stop: ## Stop all development services
 	@echo "Stopping development environment..."
@@ -44,8 +36,6 @@ dev-db: ## Start only database and Redis (for local Spring Boot development)
 	@echo "Starting development database and Redis..."
 	$(COMPOSE_DEV) up -d postgres redis
 	@echo "Database and Redis started!"
-	@echo "  - PostgreSQL: localhost:5432"
-	@echo "  - Redis: localhost:6379"
 
 dev-clean: ## Stop and remove all development containers and volumes (WARNING: deletes data)
 	@echo "WARNING: This will delete all development data!"
@@ -60,15 +50,11 @@ prod: ## Start all production services
 	@echo "Starting production environment..."
 	$(COMPOSE_PROD) up -d
 	@echo "Production environment started!"
-	@echo "  - Application: http://localhost:80"
-	@echo "  - Backend API: http://localhost:80/api"
 
 prod-build: ## Build and start all production services (rebuilds images)
 	@echo "Building and starting production environment..."
 	$(COMPOSE_PROD) up --build -d
 	@echo "Production environment built and started!"
-	@echo "  - Application: http://localhost:80"
-	@echo "  - Backend API: http://localhost:80/api"
 
 prod-stop: ## Stop all production services
 	@echo "Stopping production environment..."
@@ -123,7 +109,7 @@ help: ## Display this help message
 	@echo   make prod-clean  - Stop and remove production containers and volumes
 	@echo.
 	@echo Utilities:
-	@echo   make clean       - Stop all containers
+	@echo   make clean       - Stop all containers and remove all data
 	@echo   make ps          - Show running containers
 	@echo   make status      - Show container status
 	@echo   make help        - Display this help message
