@@ -51,6 +51,10 @@ public enum ErrorCode {
   RESOURCE_CONFLICT("RES_002", HttpStatus.CONFLICT, "Resource conflict detected"),
   METHOD_NOT_ALLOWED("RES_003", HttpStatus.METHOD_NOT_ALLOWED, "HTTP method not allowed for this endpoint"),
   
+  // Store Errors (4xx/5xx)
+  STORE_NOT_FOUND("STORE_001", HttpStatus.NOT_FOUND, "Store not found"),
+  STORE_SCRAPING_ERROR("STORE_002", HttpStatus.INTERNAL_SERVER_ERROR, "Error scraping store flyer"),
+  
   // Server Errors (5xx)
   INTERNAL_SERVER_ERROR("SYS_001", HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"),
   SERVICE_UNAVAILABLE("SYS_002", HttpStatus.SERVICE_UNAVAILABLE, "Service temporarily unavailable"),
