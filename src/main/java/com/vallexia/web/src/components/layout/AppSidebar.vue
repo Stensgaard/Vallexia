@@ -58,7 +58,8 @@
 
       <!-- Navigation -->
       <nav class="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
-        <template v-for="item in navigationItems" :key="item.name">
+        <!-- User navigation items -->
+        <template v-for="item in userItems" :key="item.name">
           <RouterLink
             v-if="item.href"
             :to="item.href"
@@ -104,25 +105,64 @@
             {{ item.name }}
           </button>
         </template>
-      </nav>
 
-      <!-- User info -->
-      <div class="border-t border-gray-200 p-4">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <div
-              class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center"
-            >
-              <span class="text-sm font-medium text-blue-600">
-                {{ userInitials }}
-              </span>
-            </div>
-          </div>
-          <div class="ml-3">
-            <p class="text-sm font-medium text-gray-900">{{ userFullName }}</p>
-            <p class="text-xs text-gray-500">{{ userEmail }}</p>
+        <!-- Admin tools divider -->
+        <div v-if="adminItems.length > 0" class="pt-4 mt-4 border-t border-gray-200">
+          <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            Admin tools
           </div>
         </div>
+
+        <!-- Admin navigation items -->
+        <template v-for="item in adminItems" :key="item.name">
+          <RouterLink
+            v-if="item.href"
+            :to="item.href"
+            :class="[
+              'group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
+              route.path === item.href ||
+              (route.path.startsWith(item.href) && item.href !== '/')
+                ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
+                : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900',
+            ]"
+            @click="$emit('close')"
+          >
+            <component
+              :is="item.icon"
+              :class="[
+                'mr-3 h-5 w-5 flex-shrink-0',
+                route.path === item.href ||
+                (route.path.startsWith(item.href) && item.href !== '/')
+                  ? 'text-blue-500'
+                  : 'text-gray-400 group-hover:text-gray-500',
+              ]"
+            />
+            {{ item.name }}
+          </RouterLink>
+        </template>
+      </nav>
+
+      <!-- Logout (separated from admin tools) -->
+      <div class="border-t border-gray-200 p-4">
+        <button
+          :class="[
+            'group flex items-center w-full px-3 py-2 text-sm font-medium rounded-md transition-colors text-gray-700 hover:bg-gray-50 hover:text-gray-900 cursor-pointer',
+          ]"
+          @click="
+            () => {
+              logoutItem.action();
+              $emit('close');
+            }
+          "
+        >
+          <component
+            :is="logoutItem.icon"
+            :class="[
+              'mr-3 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500',
+            ]"
+          />
+          {{ logoutItem.name }}
+        </button>
       </div>
     </div>
   </div>
@@ -287,8 +327,27 @@ const LogoutIcon = (props) =>
     ],
   );
 
-// Make navigationItems reactive by using computed
-const navigationItems = computed(() => [
+const AdminIcon = (props) =>
+  h(
+    "svg",
+    {
+      fill: "none",
+      stroke: "currentColor",
+      viewBox: "0 0 24 24",
+      ...props,
+    },
+    [
+      h("path", {
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+        "stroke-width": "2",
+        d: "M9 12l2 2 4-4m5 2a9 9 0 11-18 0 9 9 0 0118 0z",
+      }),
+    ],
+  );
+
+// Split navigation items into user, admin, and logout
+const userItems = computed(() => [
   {
     name: t("layout.navigation.dashboard"),
     href: "/home",
@@ -319,22 +378,33 @@ const navigationItems = computed(() => [
     href: "/profile",
     icon: ProfileIcon,
   },
-  {
-    name: t("layout.navigation.logout"),
-    action: handleLogout,
-    icon: LogoutIcon,
-  },
 ]);
 
-const userFullName = computed(() => authStore.user?.username || "");
-const userEmail = computed(() => authStore.user?.email || "");
-const userInitials = computed(() => {
-  if (!userFullName.value) return "U";
-  return userFullName.value
-    .split(" ")
-    .map((name) => name.charAt(0))
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-});
+const adminItems = computed(() =>
+  authStore.isAdmin
+    ? [
+        {
+          name: "Ingredient curation",
+          href: "/admin/ingredients",
+          icon: AdminIcon,
+        },
+        {
+          name: "Stores",
+          href: "/admin/stores",
+          icon: AdminIcon,
+        },
+        {
+          name: "Offer filters",
+          href: "/admin/offer-filters",
+          icon: AdminIcon,
+        },
+      ]
+    : []
+);
+
+const logoutItem = computed(() => ({
+  name: t("layout.navigation.logout"),
+  action: handleLogout,
+  icon: LogoutIcon,
+}));
 </script>

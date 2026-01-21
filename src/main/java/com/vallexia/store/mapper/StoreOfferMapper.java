@@ -61,6 +61,13 @@ public interface StoreOfferMapper {
     @Mapping(target = "storeId", source = "store.id")
     @Mapping(target = "storeName", source = "store.displayName")
     @Mapping(target = "price", source = "price")
+    @Mapping(target = "bundlePrice", source = "bundlePrice")
+    @Mapping(target = "unitPrice", source = "unitPrice")
+    @Mapping(target = "minPurchaseQty", source = "minPurchaseQty")
+    @Mapping(target = "minPurchaseUnit", source = "minPurchaseUnit")
+    @Mapping(target = "packageQtyMin", source = "packageQtyMin")
+    @Mapping(target = "packageQtyMax", source = "packageQtyMax")
+    @Mapping(target = "packageUnit", source = "packageUnit")
     @Mapping(target = "valid", ignore = true)
     StoreOfferDto toStoreOfferDto(StoreOffer storeOffer);
     
@@ -85,4 +92,3 @@ public interface StoreOfferMapper {
      */
     List<StoreOfferDto> toStoreOfferDtoList(List<StoreOffer> storeOffers);
 }
-

@@ -92,6 +92,58 @@ public class GoogleTranslationClient {
             throw new GoogleTranslationException("Failed to translate text: " + e.getMessage(), e);
         }
     }
+
+    /**
+     * Translate a single text from an explicit source language to target language.
+     *
+     * <p>This is useful when the source is not the application's default source language
+     * (e.g., translating Danish flyer text to English).</p>
+     *
+     * @param text the text to translate
+     * @param sourceLanguage the source language code (e.g., "da", "en")
+     * @param targetLanguage the target language code (e.g., "da", "en")
+     * @return translated text
+     */
+    public String translateText(String text, String sourceLanguage, String targetLanguage) {
+        if (!properties.isEnabled() || translate == null) {
+            log.debug("Translation disabled, returning original text");
+            return text;
+        }
+
+        if (text == null || text.isBlank()) {
+            return text;
+        }
+
+        if (targetLanguage == null || targetLanguage.isBlank()) {
+            return text;
+        }
+
+        if (sourceLanguage != null && !sourceLanguage.isBlank()
+            && targetLanguage.equals(sourceLanguage)) {
+            return text;
+        }
+
+        try {
+            Translation translation;
+            if (sourceLanguage == null || sourceLanguage.isBlank()) {
+                translation = translate.translate(
+                    text,
+                    Translate.TranslateOption.targetLanguage(targetLanguage)
+                );
+            } else {
+                translation = translate.translate(
+                    text,
+                    Translate.TranslateOption.sourceLanguage(sourceLanguage),
+                    Translate.TranslateOption.targetLanguage(targetLanguage)
+                );
+            }
+
+            return translation.getTranslatedText();
+        } catch (Exception e) {
+            log.error("Failed to translate text from {} to {}: {}", sourceLanguage, targetLanguage, e.getMessage());
+            throw new GoogleTranslationException("Failed to translate text: " + e.getMessage(), e);
+        }
+    }
     
     /**
      * Translate multiple texts in batch to target language.

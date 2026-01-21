@@ -1,10 +1,12 @@
 package com.vallexia.recipe.repository;
 
 import com.vallexia.recipe.entity.IngredientTranslation;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
+import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 /**
  * Repository interface for IngredientTranslation entity operations.
@@ -24,4 +26,24 @@ public interface IngredientTranslationRepository extends JpaRepository<Ingredien
      * @return Optional containing the translation if found
      */
     Optional<IngredientTranslation> findByIngredientIdAndLocale(Long ingredientId, String locale);
+
+    @Query("""
+        select t
+        from IngredientTranslation t
+        join fetch t.ingredient i
+        where t.locale = :locale
+          and lower(t.name) = lower(:name)
+        """)
+    Optional<IngredientTranslation> findByLocaleAndNameIgnoreCase(
+        @Param("locale") String locale, @Param("name") String name);
+
+    @Query("""
+        select t
+        from IngredientTranslation t
+        join fetch t.ingredient i
+        where t.locale = :locale
+          and lower(t.name) like concat('%', lower(:needle), '%')
+        """)
+    List<IngredientTranslation> findByLocaleAndNameContainsIgnoreCase(
+        @Param("locale") String locale, @Param("needle") String needle);
 }

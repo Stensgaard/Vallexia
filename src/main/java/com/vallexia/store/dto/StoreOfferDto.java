@@ -31,6 +31,36 @@ public class StoreOfferDto {
      * Normalized offer price.
      */
     private BigDecimal price;
+
+    /**
+     * Bundle price (when a minimum purchase quantity applies).
+     */
+    private BigDecimal bundlePrice;
+
+    /**
+     * Derived per-unit price when minPurchaseQty is known.
+     */
+    private BigDecimal unitPrice;
+
+    private Integer minPurchaseQty;
+
+    private String minPurchaseUnit;
+
+    /**
+     * Extracted package size minimum quantity (e.g., 400 g -> 400, 1.6-2.8 kg -> 1.6).
+     */
+    private BigDecimal packageQtyMin;
+
+    /**
+     * Extracted package size maximum quantity for ranges (e.g., 1.6-2.8 kg -> 2.8).
+     * Null when the size is a single value.
+     */
+    private BigDecimal packageQtyMax;
+
+    /**
+     * Extracted package size unit (e.g., g, kg, ml, cl, l).
+     */
+    private String packageUnit;
     
     private LocalDate validFrom;
     

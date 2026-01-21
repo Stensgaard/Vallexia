@@ -33,5 +33,3 @@ public class StoreScrapingException extends VallexiaException {
     super(ErrorCode.STORE_SCRAPING_ERROR, message, cause);
   }
 }
-
-

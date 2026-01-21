@@ -31,6 +31,7 @@
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         <bucket4j.version>8.0.1</bucket4j.version>
         <google-cloud-libraries-bom.version>26.72.0</google-cloud-libraries-bom.version>
+        <shedlock.version>7.2.2</shedlock.version>
         
         <!-- Plugin versions -->
         <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
@@ -186,6 +187,18 @@
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
             <version>1.17.2</version>
+        </dependency>
+
+        <!-- ShedLock for distributed scheduler locks (multi-instance safety) -->
+        <dependency>
+            <groupId>net.javacrumbs.shedlock</groupId>
+            <artifactId>shedlock-spring</artifactId>
+            <version>${shedlock.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.javacrumbs.shedlock</groupId>
+            <artifactId>shedlock-provider-jdbc-template</artifactId>
+            <version>${shedlock.version}</version>
         </dependency>
 
         <!-- Testing -->

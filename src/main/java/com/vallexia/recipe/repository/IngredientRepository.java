@@ -1,6 +1,7 @@
 package com.vallexia.recipe.repository;
 
 import com.vallexia.recipe.entity.Ingredient;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -23,4 +24,9 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
      * @return Optional containing the ingredient if found
      */
     Optional<Ingredient> findByNameIgnoreCase(String name);
+
+    /**
+     * Search ingredients by canonical/base name (case-insensitive contains).
+     */
+    List<Ingredient> findTop50ByNameContainingIgnoreCase(String name);
 }

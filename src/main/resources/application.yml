@@ -39,6 +39,7 @@ app:
       - GET
       - POST
       - PUT
+      - PATCH
       - DELETE
       - OPTIONS
     allowed-headers:
@@ -51,6 +52,15 @@ app:
     api-key: ${SPOONACULAR_API_KEY}
     base-url: https://api.spoonacular.com
     cache-ttl-hours: 1
+  store-scrape:
+    orchestrator-enabled: true
+    orchestrator-fixed-delay-ms: 900000
+    max-stores-per-run: 25
+    delay-between-stores-ms: 0
+    failure-backoff-base-minutes: 15
+    failure-backoff-max-minutes: 360
+    matching-enabled: true
+    matching-fixed-delay-ms: 900000
   google:
     translation:
       enabled: true

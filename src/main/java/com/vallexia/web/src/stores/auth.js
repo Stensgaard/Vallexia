@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { authService } from "@/services/authService";
 import { getErrorMessage } from "@/utils/errorUtils";
+import { getJwtRoles } from "@/utils/jwt";
 import {
   getSubscriptionStatuses,
   createEnumFromList,
@@ -31,6 +32,14 @@ export const useAuthStore = defineStore("auth", () => {
   // Getters
   const isAuthenticated = computed(() => {
     return !!accessToken.value && !!user.value;
+  });
+
+  const roles = computed(() => {
+    return accessToken.value ? getJwtRoles(accessToken.value) : [];
+  });
+
+  const isAdmin = computed(() => {
+    return roles.value.includes("ROLE_ADMIN");
   });
 
   // Actions
@@ -191,6 +200,8 @@ export const useAuthStore = defineStore("auth", () => {
 
     // Getters
     isAuthenticated,
+    roles,
+    isAdmin,
 
     // Actions
     login,

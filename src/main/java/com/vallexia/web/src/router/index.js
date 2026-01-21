@@ -77,6 +77,24 @@ const router = createRouter({
       meta: { requiresAuth: true, layout: "main" },
     },
     {
+      path: "/admin/ingredients",
+      name: "AdminIngredients",
+      component: () => import("@/views/admin/AdminIngredientsView.vue"),
+      meta: { requiresAuth: true, requiresAdmin: true, layout: "main" },
+    },
+    {
+      path: "/admin/stores",
+      name: "AdminStores",
+      component: () => import("@/views/admin/AdminStoresView.vue"),
+      meta: { requiresAuth: true, requiresAdmin: true, layout: "main" },
+    },
+    {
+      path: "/admin/offer-filters",
+      name: "AdminOfferFilters",
+      component: () => import("@/views/admin/AdminOfferFiltersView.vue"),
+      meta: { requiresAuth: true, requiresAdmin: true, layout: "main" },
+    },
+    {
       path: "/:pathMatch(.*)*",
       name: "NotFound",
       component: () => import("@/views/NotFoundView.vue"),
@@ -100,6 +118,12 @@ router.beforeEach(async (to, from, next) => {
   // This handles token expiration scenarios - user goes to homepage instead of being forced to login
   if (to.meta.requiresAuth && !hasAuth) {
     next("/");
+    return;
+  }
+
+  // Admin routes: require admin role in JWT claims
+  if (to.meta.requiresAdmin && !authStore.isAdmin) {
+    next("/home");
     return;
   }
 

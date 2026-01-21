@@ -42,7 +42,7 @@ public interface StoreOfferRepository extends JpaRepository<StoreOffer, Long> {
     @Modifying
     @Query("DELETE FROM StoreOffer o WHERE o.store.id = :storeId AND o.validFrom = :validFrom")
     void deleteByStoreIdAndValidFrom(@Param("storeId") Long storeId, @Param("validFrom") LocalDate validFrom);
-    
+
     /**
      * Find all current offers (valid today).
      * 
@@ -53,5 +53,44 @@ public interface StoreOfferRepository extends JpaRepository<StoreOffer, Long> {
            "JOIN FETCH o.store " +
            "WHERE :date BETWEEN o.validFrom AND o.validTo")
     List<StoreOffer> findAllCurrentOffers(@Param("date") LocalDate date);
-}
 
+    /**
+     * Find current offers that do not yet have a stored offer->ingredient match.
+     * Excludes dismissed offers by default.
+     */
+    @Query("""
+        select o
+        from StoreOffer o
+        join fetch o.store
+        where :date between o.validFrom and o.validTo
+          and o.dismissed = false
+          and not exists (
+            select 1
+            from StoreOfferIngredientMatch m
+            where m.offer = o
+          )
+        order by o.id asc
+        """)
+    List<StoreOffer> findCurrentOffersWithoutIngredientMatch(@Param("date") LocalDate date);
+
+    /**
+     * Find current offers that do not yet have a stored offer->ingredient match.
+     * Optionally includes dismissed offers.
+     */
+    @Query("""
+        select o
+        from StoreOffer o
+        join fetch o.store
+        where :date between o.validFrom and o.validTo
+          and (:includeDismissed = true or o.dismissed = false)
+          and not exists (
+            select 1
+            from StoreOfferIngredientMatch m
+            where m.offer = o
+          )
+        order by o.id asc
+        """)
+    List<StoreOffer> findCurrentOffersWithoutIngredientMatch(
+        @Param("date") LocalDate date,
+        @Param("includeDismissed") boolean includeDismissed);
+}
