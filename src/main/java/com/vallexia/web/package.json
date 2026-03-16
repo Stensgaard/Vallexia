@@ -31,7 +31,7 @@
     "autoprefixer": "^10.4.23",
     "baseline-browser-mapping": "^2.9.11",
     "esbuild": "^0.27.2",
-    "eslint": "^9.39.2",
+    "eslint": "^10.0.3",
     "eslint-plugin-vue": "^10.6.2",
     "postcss": "^8.4.47",
     "prettier": "^3.7.4",
