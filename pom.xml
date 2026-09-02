@@ -33,7 +33,7 @@
         <google-cloud-libraries-bom.version>26.72.0</google-cloud-libraries-bom.version>
         
         <!-- Plugin versions -->
-        <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
         <maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
         <dependency-check-maven.version>12.1.9</dependency-check-maven.version>
         <versions-maven-plugin.version>2.20.1</versions-maven-plugin.version>
