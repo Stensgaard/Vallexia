@@ -13,9 +13,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit tests for IpAddressExtractor.
  * Tests IP extraction logic with various proxy configurations.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-27
  */
 @DisplayName("IpAddressExtractor Unit Tests")
 class IpAddressExtractorTest {

@@ -26,8 +26,6 @@ import java.time.LocalDateTime;
  * User settings entity storing user's display preferences including localization,
  * date formats, measurement units, and other UI preferences.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-15
  */
 @Entity

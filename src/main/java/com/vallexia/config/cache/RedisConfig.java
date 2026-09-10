@@ -13,8 +13,6 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  * {@code spring.data.redis.*} properties. This configuration only provides
  * a custom {@link RedisTemplate} with specific serializers for keys and values.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @Configuration

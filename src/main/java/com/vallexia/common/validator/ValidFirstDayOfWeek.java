@@ -12,8 +12,6 @@ import java.lang.annotation.Target;
 /**
  * Ensures a first day of week value matches the supported set.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-25
  */
 @Documented

@@ -45,8 +45,6 @@ import java.util.stream.Collectors;
  *   <li>Wire the method into {@link #buildLocaleConfigSnapshot()} so /config stays in sync</li>
  * </ol>
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-12-08
  */
 @Service

@@ -35,8 +35,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * Unit tests for LocaleConfigBuilder.
  * Tests building complete locale configuration DTOs with null safety validation.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-25
  */
 @DisplayName("LocaleConfigBuilder Unit Tests")

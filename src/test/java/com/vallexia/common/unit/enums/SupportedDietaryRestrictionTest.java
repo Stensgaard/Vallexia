@@ -10,8 +10,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit tests for SupportedDietaryRestriction enum.
  * Tests dietary restriction lookup and validation methods.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-24
  */
 @DisplayName("SupportedDietaryRestriction Unit Tests")

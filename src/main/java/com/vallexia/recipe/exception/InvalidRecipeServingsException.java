@@ -6,8 +6,6 @@ import com.vallexia.exception.VallexiaException;
 /**
  * Custom exception for invalid recipe servings errors.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-14
  */
 public class InvalidRecipeServingsException extends VallexiaException {

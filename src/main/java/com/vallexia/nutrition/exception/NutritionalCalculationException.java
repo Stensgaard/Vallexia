@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * Exception thrown when a nutritional calculation fails.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

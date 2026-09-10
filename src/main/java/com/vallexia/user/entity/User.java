@@ -24,9 +24,6 @@ import java.util.Set;
 /**
  * User entity representing application users with authentication and profile information.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-27
  */
 @Entity
 @Table(name = "users", 

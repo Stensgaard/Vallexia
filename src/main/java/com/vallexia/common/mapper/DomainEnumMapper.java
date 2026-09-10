@@ -18,8 +18,6 @@ import com.vallexia.user.entity.enums.SubscriptionStatus;
  * <p>This mapper is used by {@link com.vallexia.common.controller.LocaleConfigController}
  * to build locale configuration responses for the frontend.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-25
  */
 public class DomainEnumMapper {

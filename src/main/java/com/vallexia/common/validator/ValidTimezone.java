@@ -12,8 +12,6 @@ import java.lang.annotation.Target;
 /**
  * Ensures a timezone value matches SupportedTimezone.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-26
  */
 @Documented

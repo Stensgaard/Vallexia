@@ -8,8 +8,6 @@ import org.springframework.validation.annotation.Validated;
 /**
  * Configuration properties for Google Cloud Translation API integration.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-12-09
  */
 @Data

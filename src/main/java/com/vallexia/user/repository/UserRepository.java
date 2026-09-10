@@ -9,9 +9,6 @@ import java.util.Optional;
 /**
  * Repository interface for User entity operations.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-27
  */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {

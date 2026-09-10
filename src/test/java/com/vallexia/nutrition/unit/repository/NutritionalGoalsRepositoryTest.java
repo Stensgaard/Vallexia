@@ -19,8 +19,6 @@ import static org.mockito.Mockito.*;
  * Unit tests for NutritionalGoalsRepository.
  * Tests repository query methods with mocked implementations.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-26
  */
 @ExtendWith(MockitoExtension.class)

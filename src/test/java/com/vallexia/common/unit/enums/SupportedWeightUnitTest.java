@@ -12,8 +12,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit tests for SupportedWeightUnit enum.
  * Tests weight unit enumeration and conversion factors.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-25
  */
 @DisplayName("SupportedWeightUnit Unit Tests")

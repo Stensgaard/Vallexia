@@ -23,8 +23,6 @@ import org.springframework.web.bind.annotation.*;
 /**
  * REST controller for recipe management endpoints.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-14
  */
 @Slf4j

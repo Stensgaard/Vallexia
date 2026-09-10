@@ -20,8 +20,6 @@ import static org.mockito.Mockito.when;
  * Unit tests for ValidAllergyValidator.
  * Tests allergy validation with null safety, enum instances, string codes, and type checking.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-24
  */
 @ExtendWith(MockitoExtension.class)

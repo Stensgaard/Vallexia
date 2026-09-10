@@ -14,7 +14,6 @@ import java.util.Optional;
  * 
  * Recipe translations are now handled by RecipeLocalizationService using Google Cloud Translation API.
  * 
- * @author Henrik Stensgaard
  * @version 2.0
  * @since 2025-12-09
  */

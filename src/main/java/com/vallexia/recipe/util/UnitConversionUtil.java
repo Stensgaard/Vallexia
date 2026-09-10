@@ -13,7 +13,6 @@ import java.util.Optional;
 /**
  * Utility class for converting between measurement units (metric and imperial).
  * 
- * @author Henrik Stensgaard
  * @version 2.0
  * @since 2025-11-15
  */

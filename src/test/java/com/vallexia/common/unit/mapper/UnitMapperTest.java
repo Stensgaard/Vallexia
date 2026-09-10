@@ -15,8 +15,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * Unit tests for UnitMapper.
  * Tests enum-to-DTO mapping with null safety validation for measurement unit enums.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-25
  */
 @DisplayName("UnitMapper Unit Tests")

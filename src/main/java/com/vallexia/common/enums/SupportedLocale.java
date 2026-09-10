@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
  * 2. Add the corresponding translation file (e.g., fr.json) in the frontend locales directory
  * 3. All validation and API endpoints will automatically support the new locale
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-15
  */
 @Getter

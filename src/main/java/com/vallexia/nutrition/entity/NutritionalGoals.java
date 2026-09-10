@@ -18,8 +18,6 @@ import java.time.LocalDateTime;
 /**
  * Nutritional goals entity storing user's daily nutritional targets.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-27
  */
 @Entity

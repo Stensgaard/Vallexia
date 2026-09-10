@@ -26,9 +26,6 @@ import jakarta.servlet.http.HttpServletRequest;
 /**
  * Service for managing authentication operations including registration, login, token refresh, and logout.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-30
  */
 @Slf4j
 @Service

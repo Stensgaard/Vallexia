@@ -20,8 +20,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * Unit tests for UnitConversionService.
  * Tests business logic for unit conversions, display units, and unit type checking.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-12-02
  */
 @ExtendWith(MockitoExtension.class)

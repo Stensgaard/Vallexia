@@ -45,7 +45,6 @@ import static org.mockito.Mockito.*;
  * Unit tests for FavoriteRecipeService.
  * Tests favorite recipe management operations with Spoonacular API integration.
  * 
- * @author Henrik Stensgaard
  * @version 2.0
  * @since 2025-12-09
  */

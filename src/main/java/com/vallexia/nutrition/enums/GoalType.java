@@ -11,8 +11,6 @@ import java.util.stream.Collectors;
 /**
  * Nutritional goal types for different fitness objectives.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-27
  */
 @Getter

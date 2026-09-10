@@ -8,9 +8,6 @@ import org.mapstruct.Mapping;
 /**
  * MapStruct mapper for converting between User entity and DTO.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-27
  */
 @Mapper(componentModel = "spring")
 public interface UserMapper {

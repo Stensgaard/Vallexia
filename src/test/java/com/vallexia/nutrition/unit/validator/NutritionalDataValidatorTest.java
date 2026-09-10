@@ -14,8 +14,6 @@ import static org.assertj.core.api.Assertions.*;
 /**
  * Unit tests for NutritionalDataValidator.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @DisplayName("NutritionalDataValidator Unit Tests")

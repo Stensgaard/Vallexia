@@ -8,8 +8,6 @@ import java.util.List;
 /**
  * Parameters for searching recipes in Spoonacular API.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-12-09
  */
 @Data

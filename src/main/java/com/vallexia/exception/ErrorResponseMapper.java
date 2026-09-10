@@ -13,9 +13,6 @@ import java.util.UUID;
  * Mapper for converting exceptions to ErrorResponseDto objects.
  * Centralizes error response building logic and provides consistent error formatting.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-27
  */
 @Component
 public class ErrorResponseMapper {

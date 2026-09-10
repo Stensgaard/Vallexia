@@ -9,8 +9,6 @@ import com.vallexia.common.dto.*;
  * DTOs into a single bundle that can be returned to the frontend. All list
  * parameters can be empty lists, but null lists are not allowed.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-25
  */
 public class LocaleConfigBuilder {

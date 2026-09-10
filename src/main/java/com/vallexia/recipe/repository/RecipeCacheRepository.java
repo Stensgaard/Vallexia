@@ -13,8 +13,6 @@ import java.util.List;
 /**
  * Repository for RecipeCache entity operations.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-12-09
  */
 @Repository

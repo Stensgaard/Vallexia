@@ -11,8 +11,6 @@ import java.util.stream.Collectors;
 /**
  * Mapper for converting user dietary preferences to Spoonacular API search parameters.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-12-09
  */
 @Component

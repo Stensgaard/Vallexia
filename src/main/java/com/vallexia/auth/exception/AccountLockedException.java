@@ -6,9 +6,6 @@ import com.vallexia.exception.VallexiaException;
 /**
  * Custom exception for account locked errors.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-30
  */
 public class AccountLockedException extends VallexiaException {
   

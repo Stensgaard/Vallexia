@@ -12,8 +12,6 @@ import org.springframework.context.annotation.Configuration;
  * <p>This configuration ensures the ObjectMapper bean is available early
  * for security components that need it during initialization.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-12-10
  */
 @Configuration

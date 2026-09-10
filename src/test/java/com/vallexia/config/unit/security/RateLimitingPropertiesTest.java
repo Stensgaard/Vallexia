@@ -15,8 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit tests for RateLimitingProperties validation using Bean Validation.
  * Tests rate limiting properties validation with JSR-303 annotations.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @DisplayName("RateLimitingProperties Validation Tests")

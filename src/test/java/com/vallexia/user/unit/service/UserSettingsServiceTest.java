@@ -41,8 +41,6 @@ import static org.mockito.Mockito.*;
  * Unit tests for UserSettingsService.
  * Tests business logic with mocked dependencies.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-26
  */
 @ExtendWith(MockitoExtension.class)

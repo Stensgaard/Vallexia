@@ -30,8 +30,6 @@ import static com.vallexia.nutrition.util.NutritionalConstants.*;
  *   <li>Fats: 9 calories per gram</li>
  * </ul>
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @Slf4j

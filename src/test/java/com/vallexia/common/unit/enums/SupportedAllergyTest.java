@@ -10,8 +10,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit tests for SupportedAllergy enum.
  * Tests allergy lookup and validation methods.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-24
  */
 @DisplayName("SupportedAllergy Unit Tests")

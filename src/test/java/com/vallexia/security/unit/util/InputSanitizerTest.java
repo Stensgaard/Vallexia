@@ -12,8 +12,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit tests for InputSanitizer.
  * Tests input sanitization, edge cases, and security pattern filtering.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @DisplayName("InputSanitizer Unit Tests")

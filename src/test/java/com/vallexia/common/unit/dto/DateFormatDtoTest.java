@@ -13,8 +13,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit tests for DateFormatDto.
  * Tests builder pattern and immutability.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-25
  */
 @DisplayName("DateFormatDto Unit Tests")

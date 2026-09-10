@@ -40,7 +40,6 @@ import static org.mockito.Mockito.*;
  * Unit tests for RecipeService.
  * Tests business logic with Spoonacular API integration and caching.
  * 
- * @author Henrik Stensgaard
  * @version 2.0
  * @since 2025-12-09
  */

@@ -16,9 +16,6 @@ import java.util.stream.Collectors;
 /**
  * Service for JWT token generation and parsing operations.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-30
  */
 @Slf4j
 @Service

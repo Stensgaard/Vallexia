@@ -17,9 +17,6 @@ import java.util.Set;
 /**
  * Dietary preferences entity storing user's dietary restrictions and preferences.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-27
  */
 @Entity
 @Table(name = "dietary_preferences")

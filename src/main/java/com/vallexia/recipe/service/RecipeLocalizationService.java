@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
  * Service for localizing RecipeDto with translations using Google Cloud Translation API.
  * Handles translation caching and ingredient name translations.
  * 
- * @author Henrik Stensgaard
  * @version 2.0
  * @since 2025-12-09
  */

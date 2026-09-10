@@ -10,9 +10,6 @@ import java.time.LocalDateTime;
 /**
  * Data Transfer Object for JWT response containing tokens and user info.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-30
  */
 @Data
 @NoArgsConstructor

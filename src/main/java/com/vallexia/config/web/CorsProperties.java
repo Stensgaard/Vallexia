@@ -12,8 +12,6 @@ import java.util.List;
 /**
  * Configuration properties for CORS settings.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @Slf4j

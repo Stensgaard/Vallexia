@@ -34,7 +34,6 @@ import static org.mockito.Mockito.*;
  * Unit tests for RecipeLocalizationService.
  * Tests recipe DTO localization with Google Cloud Translation API and translation caching.
  * 
- * @author Henrik Stensgaard
  * @version 2.0
  * @since 2025-12-09
  */

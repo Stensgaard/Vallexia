@@ -14,8 +14,6 @@ import java.util.stream.Collectors;
  *
  * @param <A> the annotation type
  * @param <T> the enum type being validated
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-12-22
  */
 public abstract class AbstractEnumValidator<A extends Annotation, T extends Enum<T>> implements ConstraintValidator<A, Object> {

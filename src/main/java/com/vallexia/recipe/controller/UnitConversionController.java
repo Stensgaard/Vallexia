@@ -16,8 +16,6 @@ import java.math.BigDecimal;
 /**
  * REST controller for unit conversion operations.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-12-02
  */
 @Slf4j

@@ -24,8 +24,6 @@ import static org.mockito.Mockito.when;
  * Unit tests for UnitConversionController.
  * Tests REST endpoints with mocked dependencies.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-12-04
  */
 @ExtendWith(MockitoExtension.class)

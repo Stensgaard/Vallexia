@@ -18,8 +18,6 @@ import java.io.IOException;
 /**
  * JWT authentication entry point for handling unauthorized access.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @Slf4j

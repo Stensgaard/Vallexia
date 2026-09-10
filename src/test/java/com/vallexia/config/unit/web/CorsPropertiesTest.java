@@ -18,8 +18,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * Unit tests for CorsProperties validation.
  * Tests CORS configuration validation using Bean Validation and @PostConstruct.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @DisplayName("CorsProperties Validation Tests")

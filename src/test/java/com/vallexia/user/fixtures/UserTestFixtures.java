@@ -31,9 +31,6 @@ import java.util.Set;
  * Test fixtures for user testing.
  * Provides reusable test data and builder methods.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-27
  */
 public class UserTestFixtures {
   

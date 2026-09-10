@@ -22,9 +22,6 @@ import static org.mockito.Mockito.*;
  * Unit tests for AuditLogRetentionJob.
  * Tests scheduled cleanup of old audit logs.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-27
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("AuditLogRetentionJob Unit Tests")

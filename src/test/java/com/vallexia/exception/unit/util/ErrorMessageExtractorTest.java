@@ -22,8 +22,6 @@ import static org.mockito.Mockito.when;
  * Unit tests for ErrorMessageExtractor.
  * Tests error message extraction logic for various exception types.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-01
  */
 @DisplayName("ErrorMessageExtractor Unit Tests")

@@ -13,9 +13,6 @@ import java.time.LocalDateTime;
 /**
  * Helper component for account security operations including failed login attempt handling.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-30
  */
 @Slf4j
 @Component

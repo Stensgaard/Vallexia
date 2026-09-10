@@ -22,9 +22,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * Unit tests for AuthMapper.
  * Tests entity-to-DTO mapping with real MapStruct implementation.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-30
  */
 @SpringBootTest(classes = {
     com.vallexia.auth.mapper.AuthMapperImpl.class

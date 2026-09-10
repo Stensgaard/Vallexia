@@ -12,8 +12,6 @@ import java.math.RoundingMode;
  *   <li>Caloric values per gram for macronutrients (Atwater system)</li>
  * </ul>
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-27-11
  */
 public final class NutritionalConstants {

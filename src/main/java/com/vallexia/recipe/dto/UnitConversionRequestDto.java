@@ -12,8 +12,6 @@ import java.math.BigDecimal;
  * Data Transfer Object for unit conversion requests.
  * Conversion type is automatically detected from the units.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-12-02
  */
 @Data

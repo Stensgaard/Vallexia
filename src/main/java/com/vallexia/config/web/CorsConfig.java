@@ -11,8 +11,6 @@ import java.util.List;
 /**
  * CORS configuration for allowing frontend requests.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @Configuration

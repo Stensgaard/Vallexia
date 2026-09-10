@@ -35,8 +35,6 @@ import static org.mockito.Mockito.*;
  * Unit tests for NutritionalGoalsController.
  * Tests REST endpoints with mocked dependencies.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-27
  */
 @ExtendWith(MockitoExtension.class)

@@ -13,8 +13,6 @@ import java.lang.annotation.Target;
  * Validates that an allergy matches one of the {@link com.vallexia.common.enums.SupportedAllergy}
  * entries.
  *
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-24
  */
 @Documented

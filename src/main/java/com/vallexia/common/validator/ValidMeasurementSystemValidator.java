@@ -9,7 +9,6 @@ import com.vallexia.common.validator.strategy.MeasurementSystemValidationStrateg
  *
  * <p>Values are trimmed before validation so surrounding whitespace does not cause false negatives.
  *
- * @author Henrik Stensgaard
  * @version 2.0
  * @since 2025-11-15
  */

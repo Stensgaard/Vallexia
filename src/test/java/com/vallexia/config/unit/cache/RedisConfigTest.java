@@ -14,8 +14,6 @@ import static org.mockito.Mockito.mock;
  * Unit tests for RedisConfig.
  * Tests RedisTemplate bean creation with custom serializers.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @DisplayName("RedisConfig Tests")

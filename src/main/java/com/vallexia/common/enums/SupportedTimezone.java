@@ -19,8 +19,6 @@ import java.util.stream.Collectors;
  *   <li>The enums will automatically flow through {@link com.vallexia.common.controller.LocaleConfigController}</li>
  * </ol>
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-24
  */
 @Getter

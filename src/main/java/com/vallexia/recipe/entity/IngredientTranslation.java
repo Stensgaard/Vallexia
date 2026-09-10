@@ -15,8 +15,6 @@ import java.time.LocalDateTime;
 /**
  * Entity representing a translation of ingredient name for a specific locale.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-15
  */
 @Entity

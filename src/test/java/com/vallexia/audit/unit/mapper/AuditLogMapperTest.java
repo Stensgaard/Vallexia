@@ -19,9 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit tests for AuditLogMapper.
  * Tests entity-to-DTO mapping with real MapStruct implementation.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-27
  */
 @SpringBootTest(classes = {
     com.vallexia.audit.mapper.AuditLogMapperImpl.class

@@ -12,8 +12,6 @@ import java.util.stream.Collectors;
 /**
  * User principal implementation for Spring Security.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 public class UserPrincipal implements UserDetails {

@@ -14,8 +14,6 @@ import static org.assertj.core.data.Offset.offset;
  * Unit tests for UnitConversionUtil.
  * Tests conversion between different units and unit type checking.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-12-02
  */
 @DisplayName("UnitConversionUtil Unit Tests")

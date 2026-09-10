@@ -15,8 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit tests for AccountSecurityProperties validation using Bean Validation.
  * Tests account security properties validation with JSR-303 annotations.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @DisplayName("AccountSecurityProperties Validation Tests")

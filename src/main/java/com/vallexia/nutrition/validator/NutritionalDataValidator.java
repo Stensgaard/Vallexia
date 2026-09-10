@@ -20,8 +20,6 @@ import java.math.BigDecimal;
  * Only daily calories is required. When macros are provided, they must be within
  * the specified ranges.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 public class NutritionalDataValidator {

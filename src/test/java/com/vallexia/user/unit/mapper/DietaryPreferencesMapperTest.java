@@ -23,8 +23,6 @@ import java.util.Set;
  * Unit tests for DietaryPreferencesMapper.
  * Tests entity-to-DTO mapping with real MapStruct implementation.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-26
  */
 @SpringBootTest(classes = {

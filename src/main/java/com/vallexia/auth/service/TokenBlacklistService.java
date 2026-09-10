@@ -14,9 +14,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * Service for managing JWT token blacklisting using Redis.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-30
  */
 @Slf4j
 @Service

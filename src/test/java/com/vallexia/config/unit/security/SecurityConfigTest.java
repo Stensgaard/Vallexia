@@ -12,8 +12,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit tests for SecurityConfig.
  * Tests password encoder bean creation and BCrypt functionality.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @DisplayName("SecurityConfig Tests")

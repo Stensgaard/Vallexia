@@ -9,8 +9,6 @@ import java.util.List;
 /**
  * DTO for locale configuration options.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-24
  */
 @Value

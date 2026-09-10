@@ -11,8 +11,6 @@ import org.springframework.validation.annotation.Validated;
  * Allows configuration of rate limits per endpoint type and enables/disables
  * rate limiting globally or per endpoint.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-31
  */
 @Data

@@ -7,8 +7,6 @@ import com.vallexia.exception.VallexiaException;
  * Exception thrown when cryptographic operations fail.
  * Used for errors related to hashing, encryption, or other cryptographic functions.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-12-08
  */
 public class CryptographicException extends VallexiaException {

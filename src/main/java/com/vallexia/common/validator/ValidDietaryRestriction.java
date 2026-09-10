@@ -13,8 +13,6 @@ import java.lang.annotation.Target;
  * Validates that a dietary restriction matches one of the {@link com.vallexia.common.enums.SupportedDietaryRestriction}
  * entries.
  *
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-24
  */
 @Documented

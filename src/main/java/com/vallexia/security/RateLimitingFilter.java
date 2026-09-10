@@ -22,8 +22,6 @@ import java.util.Map;
  * Rate limiting filter using Bucket4j with per-IP rate limiting.
  * Uses trusted proxy validation to prevent IP spoofing.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @Slf4j

@@ -15,9 +15,6 @@ import java.util.Set;
  * Utility class for securely extracting client IP addresses from HTTP requests.
  * Handles proxy headers with validation against trusted proxy list.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-27
  */
 @Slf4j
 @Component

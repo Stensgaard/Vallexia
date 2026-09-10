@@ -17,9 +17,6 @@ import java.time.LocalDateTime;
  * - Framework level: @Immutable annotation prevents Hibernate updates
  * - Database level: triggers prevent updates/deletes
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-27
  */
 @Entity
 @Table(name = "audit_logs")

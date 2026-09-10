@@ -14,8 +14,6 @@ import java.math.BigDecimal;
  * Handles business logic for converting between measurement units,
  * determining display units, and checking unit types.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-12-02
  */
 @Slf4j

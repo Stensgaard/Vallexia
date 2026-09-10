@@ -16,8 +16,6 @@ import java.util.stream.Collectors;
 /**
  * Client for interacting with Google Cloud Translation API.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-12-09
  */
 @Slf4j

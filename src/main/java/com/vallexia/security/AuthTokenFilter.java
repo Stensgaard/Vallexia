@@ -27,8 +27,6 @@ import java.util.List;
  * JWT authentication filter for processing JWT tokens in requests.
  * Authenticates users directly from token claims (userId and roles) without database lookups.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @Slf4j

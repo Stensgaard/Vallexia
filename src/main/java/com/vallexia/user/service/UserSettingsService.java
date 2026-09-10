@@ -22,8 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Service for managing user settings operations.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-15
  */
 @Slf4j

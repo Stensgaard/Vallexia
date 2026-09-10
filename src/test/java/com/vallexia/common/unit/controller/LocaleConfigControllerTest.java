@@ -23,7 +23,6 @@ import static org.mockito.Mockito.*;
  * Unit tests for LocaleConfigController.
  * Tests REST endpoints with mocked dependencies.
  * 
- * @author Henrik Stensgaard
  * @version 2.0
  * @since 2025-11-25
  */

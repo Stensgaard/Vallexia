@@ -12,8 +12,6 @@ import java.lang.annotation.Target;
 /**
  * Ensures a currency value matches SupportedCurrency.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-25
  */
 @Documented

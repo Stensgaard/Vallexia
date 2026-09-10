@@ -11,9 +11,6 @@ import java.util.Map;
  * Immutable Data Transfer Object for error responses.
  * Provides consistent error information to API clients.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-27
  */
 @Value
 @Builder

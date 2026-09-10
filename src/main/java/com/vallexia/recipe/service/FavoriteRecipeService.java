@@ -29,8 +29,6 @@ import java.util.stream.Collectors;
 /**
  * Service for managing user favorite recipes.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-14
  */
 @Slf4j

@@ -7,8 +7,6 @@ import lombok.Value;
 /**
  * DTO for first day of week options.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-24
  */
 @Value

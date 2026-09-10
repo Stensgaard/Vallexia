@@ -20,8 +20,6 @@ import static org.mockito.Mockito.when;
  * Unit tests for ValidTimezoneValidator.
  * Tests timezone validation with null safety, enum instances, string values, and type checking.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-25
  */
 @ExtendWith(MockitoExtension.class)

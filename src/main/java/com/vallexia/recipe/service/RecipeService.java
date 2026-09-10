@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
  * Service for managing recipe operations with Spoonacular API integration.
  * Recipes are read-only and sourced from Spoonacular API with caching.
  * 
- * @author Henrik Stensgaard
  * @version 2.0
  * @since 2025-12-09
  */

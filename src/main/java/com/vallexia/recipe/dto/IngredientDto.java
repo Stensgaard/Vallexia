@@ -13,8 +13,6 @@ import java.math.BigDecimal;
 /**
  * Data Transfer Object for recipe ingredients.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-14
  */
 @Data

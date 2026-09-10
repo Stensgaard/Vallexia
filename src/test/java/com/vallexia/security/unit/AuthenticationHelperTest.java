@@ -24,8 +24,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * Unit tests for AuthenticationHelper.
  * Tests type safety, null handling, and authentication context extraction.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @DisplayName("AuthenticationHelper Unit Tests")

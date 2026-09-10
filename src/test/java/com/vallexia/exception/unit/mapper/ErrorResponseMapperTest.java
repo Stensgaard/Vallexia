@@ -21,9 +21,6 @@ import static org.mockito.Mockito.when;
  * Unit tests for ErrorResponseMapper.
  * Tests mapping logic for various exception types and error response building.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-27
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ErrorResponseMapper Unit Tests")

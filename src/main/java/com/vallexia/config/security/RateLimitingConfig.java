@@ -13,8 +13,6 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Rate limiting configuration using Bucket4j with per-IP bucket storage.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @Configuration

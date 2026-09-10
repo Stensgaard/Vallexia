@@ -12,8 +12,6 @@ import java.lang.annotation.Target;
 /**
  * Validates that a goal type string matches one of the supported {@link com.vallexia.user.entity.enums.GoalType} values.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-25
  */
 @Documented

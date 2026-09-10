@@ -19,8 +19,6 @@ import static org.assertj.core.api.Assertions.*;
 /**
  * Unit tests for MacroCalculator service.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @ExtendWith(MockitoExtension.class)

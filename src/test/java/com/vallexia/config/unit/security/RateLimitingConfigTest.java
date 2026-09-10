@@ -17,8 +17,6 @@ import static org.mockito.Mockito.when;
  * Unit tests for RateLimitingConfig.
  * Tests bucket Map beans and bucket creation methods.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @DisplayName("RateLimitingConfig Tests")

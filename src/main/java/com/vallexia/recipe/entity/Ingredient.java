@@ -14,8 +14,6 @@ import java.util.List;
 /**
  * Ingredient entity representing a food ingredient that can be used in recipes.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-14
  */
 @Entity

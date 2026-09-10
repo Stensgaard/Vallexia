@@ -18,8 +18,6 @@ import java.util.stream.Collectors;
  * JWT utility class for token generation and validation.
  * All tokens include userId and roles claims for stateless authentication.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @Slf4j

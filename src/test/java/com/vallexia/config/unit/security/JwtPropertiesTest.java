@@ -15,8 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit tests for JwtProperties validation using Bean Validation.
  * Tests JWT properties validation with JSR-303 annotations.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @DisplayName("JwtProperties Validation Tests")

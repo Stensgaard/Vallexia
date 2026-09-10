@@ -13,9 +13,6 @@ import java.time.LocalDateTime;
  * Test fixtures for authentication testing.
  * Provides reusable test data and builder methods.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-30
  */
 public class AuthTestFixtures {
   

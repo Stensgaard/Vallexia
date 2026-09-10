@@ -19,8 +19,6 @@ import java.util.stream.Collectors;
  *   <li>No further wiring is necessary; lookup helpers pick up the new value automatically</li>
  * </ol>
  *
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-24
  */
 @Getter

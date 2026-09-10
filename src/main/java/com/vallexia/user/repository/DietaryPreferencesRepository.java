@@ -10,9 +10,6 @@ import java.util.Optional;
 /**
  * Repository interface for DietaryPreferences entity operations.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-27
  */
 @Repository
 public interface DietaryPreferencesRepository extends JpaRepository<DietaryPreferences, Long> {

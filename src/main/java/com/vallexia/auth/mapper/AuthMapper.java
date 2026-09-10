@@ -11,9 +11,6 @@ import java.time.LocalDateTime;
 /**
  * MapStruct mapper for authentication-related data transformations.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-30
  */
 @Mapper(componentModel = "spring")
 public interface AuthMapper {

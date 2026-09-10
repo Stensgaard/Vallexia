@@ -19,8 +19,6 @@ import java.util.stream.Collectors;
 /**
  * Mapper for converting Spoonacular API DTOs to internal RecipeDto.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-12-09
  */
 @Component

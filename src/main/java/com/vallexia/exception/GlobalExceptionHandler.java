@@ -24,9 +24,6 @@ import static com.vallexia.exception.util.ErrorMessageExtractor.extractValidatio
  * Global exception handler for REST controllers.
  * Provides consistent error handling, request tracing, and security-safe error messages.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-27
  */
 @Slf4j
 @ControllerAdvice

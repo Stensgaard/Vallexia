@@ -18,9 +18,6 @@ import java.util.List;
  * Scheduled job for managing audit log retention policy.
  * Archives or deletes old audit logs according to configured retention period.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-27
  */
 @Slf4j
 @Component

@@ -4,9 +4,6 @@ package com.vallexia.audit.entity.enums;
  * Enum representing different types of audit events tracked in the system.
  * Used for categorizing security and user activity events.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-27
  */
 public enum EventType {
   

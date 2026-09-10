@@ -15,9 +15,6 @@ import java.util.Set;
 /**
  * Data Transfer Object for dietary preferences.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-27
  */
 @Data
 @NoArgsConstructor

@@ -25,9 +25,6 @@ import static org.mockito.Mockito.*;
 /**
  * Unit tests for AccountSecurityHelper.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-30
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)

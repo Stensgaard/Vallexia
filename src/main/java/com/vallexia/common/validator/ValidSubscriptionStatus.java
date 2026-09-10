@@ -12,8 +12,6 @@ import java.lang.annotation.Target;
 /**
  * Validates that a subscription status string matches one of the supported {@link com.vallexia.user.entity.enums.SubscriptionStatus} values.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-26
  */
 @Documented

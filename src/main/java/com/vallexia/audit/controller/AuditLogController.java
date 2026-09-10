@@ -24,9 +24,6 @@ import java.time.LocalDateTime;
  * REST controller for audit log operations.
  * Provides endpoints for querying audit logs with proper access control.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-27
  */
 @RestController
 @RequestMapping("/api/v1/audit-logs")

@@ -12,9 +12,6 @@ import java.time.LocalDateTime;
  * Data Transfer Object for audit log information.
  * Note: The details field is intentionally excluded for security reasons.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-27
  */
 @Data
 @Builder

@@ -29,9 +29,6 @@ import java.util.List;
  * Service for managing audit logging with security hardening.
  * Implements input sanitization, access control, and fallback logging.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-27
  */
 @Slf4j
 @Service

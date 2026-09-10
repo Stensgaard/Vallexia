@@ -16,8 +16,6 @@ import java.util.Set;
 /**
  * Data Transfer Object for recipe responses.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-14
  */
 @Data

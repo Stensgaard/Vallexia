@@ -8,8 +8,6 @@ import java.util.stream.Stream;
  * Encapsulates the differences between various enum types and their validation methods.
  *
  * @param <T> the enum type being validated
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-12-22
  */
 public interface EnumValidationStrategy<T extends Enum<T>> {

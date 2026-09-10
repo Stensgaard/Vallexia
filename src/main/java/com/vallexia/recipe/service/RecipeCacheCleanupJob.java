@@ -7,8 +7,6 @@ import org.springframework.stereotype.Component;
 /**
  * Scheduled job for cleaning up expired recipe cache entries.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-12-09
  */
 @Slf4j

@@ -12,8 +12,6 @@ import java.math.BigDecimal;
  * <p>Represents calculated macro values (protein, carbs, fats) in grams
  * based on goal type and daily calories.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-27
  */
 @Data

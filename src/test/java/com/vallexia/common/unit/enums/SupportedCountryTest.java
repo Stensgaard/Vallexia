@@ -10,8 +10,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit tests for SupportedCountry enum.
  * Tests that all country entries expose complete metadata.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-25
  */
 @DisplayName("SupportedCountry Unit Tests")

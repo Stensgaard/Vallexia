@@ -10,8 +10,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 /**
  * Main Spring Boot application class for Vallexia Smart Meal Planning App.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-26
  */
 @Slf4j

@@ -10,8 +10,6 @@ import java.util.List;
  * Parameter object for building locale configuration.
  * Encapsulates all locale-related configuration lists to reduce method parameter count.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-12-08
  */
 @Getter

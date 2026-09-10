@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
  *   <li>Wire the service method into {@link LocaleConfigService#buildLocaleConfigSnapshot()} so /config stays in sync</li>
  * </ol>
  *
- * @author Henrik Stensgaard
  * @version 2.0
  * @since 2025-11-20
  */

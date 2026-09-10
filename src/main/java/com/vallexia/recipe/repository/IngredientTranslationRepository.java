@@ -9,8 +9,6 @@ import java.util.Optional;
 /**
  * Repository interface for IngredientTranslation entity operations.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-15
  */
 @Repository

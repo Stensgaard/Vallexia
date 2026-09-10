@@ -10,8 +10,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit tests for SupportedWeightUnit enum lookup methods.
  * Tests fromDisplay lookup functionality and unit classification methods.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-25
  */
 @DisplayName("SupportedWeightUnitLookup Unit Tests")

@@ -13,8 +13,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * Scheduled job for cleaning up unused rate limiting buckets to prevent memory leaks.
  * Removes buckets that haven't been accessed in the last hour.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @Slf4j

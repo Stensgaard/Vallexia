@@ -12,8 +12,6 @@ import java.time.LocalDateTime;
 /**
  * Join entity representing a user's favorite recipe.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-14
  */
 @Entity

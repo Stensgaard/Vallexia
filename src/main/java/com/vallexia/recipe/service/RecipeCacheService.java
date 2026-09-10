@@ -21,8 +21,6 @@ import java.util.stream.Collectors;
 /**
  * Service for managing recipe cache operations.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-12-09
  */
 @Slf4j

@@ -18,8 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit tests for RateLimitingBucketCleanupJob.
  * Tests bucket cleanup logic, access tracking, and memory leak prevention.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @DisplayName("RateLimitingBucketCleanupJob Unit Tests")

@@ -15,9 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Service for managing user profile operations.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
- * @since 2025-10-27
  */
 @Slf4j
 @Service

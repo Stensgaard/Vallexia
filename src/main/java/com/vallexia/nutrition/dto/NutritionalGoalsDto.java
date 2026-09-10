@@ -13,8 +13,6 @@ import java.math.BigDecimal;
 /**
  * Data Transfer Object for nutritional goals.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-27
  */
 @Data

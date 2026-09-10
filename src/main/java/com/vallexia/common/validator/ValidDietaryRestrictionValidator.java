@@ -10,7 +10,6 @@ import com.vallexia.common.validator.strategy.DietaryRestrictionValidationStrate
  * <p>Values are trimmed before validation so surrounding whitespace does not cause false negatives.</p>
  * <p>For collections, validates each element in the collection.</p>
  *
- * @author Henrik Stensgaard
  * @version 2.0
  * @since 2025-11-24
  */

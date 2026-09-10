@@ -21,8 +21,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 /**
  * Spring Security configuration for JWT-based authentication.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @Configuration

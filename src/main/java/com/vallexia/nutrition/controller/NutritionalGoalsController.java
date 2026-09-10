@@ -22,8 +22,6 @@ import java.math.BigDecimal;
 /**
  * REST controller for nutritional goals management endpoints.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-27
  */
 @Slf4j

@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
  * Test fixtures for recipe testing.
  * Provides reusable test data and builder methods.
  * 
- * @author Henrik Stensgaard
  * @version 2.0
  * @since 2025-12-09
  */

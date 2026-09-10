@@ -20,8 +20,6 @@ import static org.mockito.Mockito.when;
  * Unit tests for CorsConfig.
  * Tests CORS configuration source bean creation and configuration values.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @DisplayName("CorsConfig Tests")

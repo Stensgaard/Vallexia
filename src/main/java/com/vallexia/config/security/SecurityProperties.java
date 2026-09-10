@@ -7,8 +7,6 @@ import org.springframework.validation.annotation.Validated;
 /**
  * Configuration properties for general security settings.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-10-29
  */
 @Data

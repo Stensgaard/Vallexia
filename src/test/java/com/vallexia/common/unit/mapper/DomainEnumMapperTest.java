@@ -17,8 +17,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * Unit tests for DomainEnumMapper.
  * Tests enum-to-DTO mapping with null safety validation for domain-specific enums.
  * 
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-11-25
  */
 @DisplayName("DomainEnumMapper Unit Tests")

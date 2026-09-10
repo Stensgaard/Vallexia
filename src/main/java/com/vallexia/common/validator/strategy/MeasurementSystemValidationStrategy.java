@@ -9,8 +9,6 @@ import java.util.stream.Stream;
 /**
  * Validation strategy for {@link SupportedMeasurementSystem} enum.
  *
- * @author Henrik Stensgaard
- * @version 1.0
  * @since 2025-12-22
  */
 public class MeasurementSystemValidationStrategy implements EnumValidationStrategy<SupportedMeasurementSystem> {
